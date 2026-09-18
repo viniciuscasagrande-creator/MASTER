@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { AuthProvider, useAuth } from './core/auth/AuthContext';
+import { DiskContextProvider, useDiskContext } from './core/context/DiskContext';
 import { ScopeProvider } from './core/context/ScopeContext';
 import { CoreDataProvider } from './core/context/CoreDataContext';
 import { ProtectedRoute } from './core/auth/ProtectedRoute';
@@ -23,13 +24,37 @@ import { FinanceDashboard } from './modules/finance/FinanceDashboard';
 import { AccountingDashboard } from './modules/accounting/AccountingDashboard';
 import { MarketingDashboard } from './modules/marketing/MarketingDashboard';
 import { RemarketingDashboard } from './modules/remarketing/RemarketingDashboard';
-import { AdminUsersView } from './modules/admin/AdminUsersView';
 import { SettingsView } from './modules/settings/SettingsView';
 
-const MainShell: React.FC = () => {
-  const { isAuthenticated, showLoginModal, setShowLoginModal } = useAuth();
+// Central Administrativa (Fase 1.1.5.2 & Fase 1.1.5.4)
+import { AdminDashboardView } from './modules/admin/AdminDashboardView';
+import { AdminUsersView } from './modules/admin/AdminUsersView';
+import { AdminRolesView } from './modules/admin/AdminRolesView';
+import { AdminPermissionsView } from './modules/admin/AdminPermissionsView';
+import { AdminSessionsView } from './modules/admin/AdminSessionsView';
+import { AdminAuditView } from './modules/admin/AdminAuditView';
+import { SecurityCenterView } from './modules/admin/SecurityCenterView';
 
-  const [activeModule, setActiveModule] = useState<string>('overview');
+const MODULE_NAMES: Record<string, string> = {
+  overview: 'Visão Geral',
+  events: 'Eventos',
+  commercial: 'Comercial',
+  'event-support': 'Suporte Eventos',
+  sac: 'Atendimento SAC',
+  refunds: 'Estorno',
+  finance: 'Financeiro',
+  accounting: 'Contabilidade',
+  marketing: 'Marketing',
+  remarketing: 'Remarketing',
+  admin: 'Administração',
+  settings: 'Configurações'
+};
+
+const MainShell: React.FC = () => {
+  const { currentUser, isAuthenticated, showLoginModal, setShowLoginModal } = useAuth();
+  const { defaultDashboard } = useDiskContext();
+
+  const [activeModule, setActiveModule] = useState<string>(defaultDashboard);
   const [activeSubItem, setActiveSubItem] = useState<string | undefined>('overview-main');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
 
@@ -38,6 +63,16 @@ const MainShell: React.FC = () => {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [isAuditOpen, setIsAuditOpen] = useState(false);
   const [isNewSaleModalOpen, setIsNewSaleModalOpen] = useState(false);
+
+  // Dynamic dashboard dispatch based on primary profile (Fase 1.1.5.3)
+  useEffect(() => {
+    setActiveModule(defaultDashboard);
+    if (defaultDashboard === 'admin') {
+      setActiveSubItem('admin-dashboard');
+    } else {
+      setActiveSubItem(`${defaultDashboard}-main`);
+    }
+  }, [currentUser.id, defaultDashboard]);
 
   const handleNavigate = (moduleId: string, subItemId?: string) => {
     setActiveModule(moduleId);
@@ -48,6 +83,37 @@ const MainShell: React.FC = () => {
   if (!isAuthenticated || showLoginModal) {
     return <LoginView onSuccess={() => setShowLoginModal(false)} />;
   }
+
+  const renderAdminSubContent = () => {
+    switch (activeSubItem) {
+      case 'admin-dashboard':
+        return (
+          <AdminDashboardView
+            onNavigateSubItem={(sub) => handleNavigate('admin', sub)}
+            onOpenNewUser={() => handleNavigate('admin', 'admin-users')}
+          />
+        );
+      case 'admin-users':
+        return <AdminUsersView />;
+      case 'admin-roles':
+        return <AdminRolesView />;
+      case 'admin-permissions':
+        return <AdminPermissionsView />;
+      case 'admin-sessions':
+        return <AdminSessionsView />;
+      case 'admin-security':
+        return <SecurityCenterView />;
+      case 'admin-audit':
+        return <AdminAuditView />;
+      default:
+        return (
+          <AdminDashboardView
+            onNavigateSubItem={(sub) => handleNavigate('admin', sub)}
+            onOpenNewUser={() => handleNavigate('admin', 'admin-users')}
+          />
+        );
+    }
+  };
 
   const renderModuleContent = () => {
     switch (activeModule) {
@@ -125,7 +191,7 @@ const MainShell: React.FC = () => {
       case 'admin':
         return (
           <ProtectedRoute permission="admin.usuarios.visualizar" onBack={() => handleNavigate('overview')}>
-            <AdminUsersView />
+            {renderAdminSubContent()}
           </ProtectedRoute>
         );
 
@@ -165,7 +231,8 @@ const MainShell: React.FC = () => {
           onOpenNotifications={() => setIsNotificationsOpen(true)}
           onOpenAudit={() => setIsAuditOpen(true)}
           onOpenNewSale={() => setIsNewSaleModalOpen(true)}
-          onNavigateToAdmin={() => handleNavigate('admin', 'admin-users')}
+          onNavigateToAdmin={() => handleNavigate('admin', 'admin-dashboard')}
+          activeModuleName={MODULE_NAMES[activeModule] || activeModule}
         />
 
         {/* Scrollable Module Workspace */}
@@ -209,11 +276,13 @@ const MainShell: React.FC = () => {
 export default function App() {
   return (
     <AuthProvider>
-      <ScopeProvider>
-        <CoreDataProvider>
-          <MainShell />
-        </CoreDataProvider>
-      </ScopeProvider>
+      <DiskContextProvider>
+        <ScopeProvider>
+          <CoreDataProvider>
+            <MainShell />
+          </CoreDataProvider>
+        </ScopeProvider>
+      </DiskContextProvider>
     </AuthProvider>
   );
 }

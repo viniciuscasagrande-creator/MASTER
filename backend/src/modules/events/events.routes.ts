@@ -1,12 +1,14 @@
 import { Router } from 'express';
 import { EventsRealController } from './events.controller';
 import { authenticate } from '../../core/middleware/authenticate';
+import { contextMiddleware } from '../context/context.middleware';
 import { requirePermission } from '../../core/middleware/requirePermission';
 import { requireScope } from '../../core/middleware/requireScope';
 
 const router = Router();
 
 router.use(authenticate);
+router.use(contextMiddleware);
 
 // List events with automatic query filtering based on user scope
 router.get('/', requirePermission('eventos.evento.visualizar'), EventsRealController.listEvents);

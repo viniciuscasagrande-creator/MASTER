@@ -314,9 +314,17 @@ export class InMemoryPrismaStore {
   public get producer() {
     return {
       findUnique: async (args: any) => {
-        return this.producers.find(p => p.id === args.where.id || p.cnpj === args.where.cnpj) || null;
+        return this.producers.find(p => p.id === args.where?.id || p.cnpj === args.where?.cnpj) || null;
       },
-      findMany: async () => [...this.producers],
+      findMany: async (args?: any) => {
+        let list = [...this.producers];
+        if (args?.where?.id?.in && Array.isArray(args.where.id.in)) {
+          list = list.filter(p => args.where.id.in.includes(p.id));
+        } else if (args?.where?.id && typeof args.where.id === 'string') {
+          list = list.filter(p => p.id === args.where.id);
+        }
+        return list;
+      },
       create: async (args: any) => {
         const newPrd = { id: args.data.id || `prd_${Date.now()}`, ...args.data, createdAt: new Date(), updatedAt: new Date() };
         this.producers.push(newPrd);
@@ -328,11 +336,24 @@ export class InMemoryPrismaStore {
   public get event() {
     return {
       findUnique: async (args: any) => {
-        return this.events.find(e => e.id === args.where.id) || null;
+        return this.events.find(e => e.id === args.where?.id) || null;
       },
       findMany: async (args?: any) => {
         let list = [...this.events];
-        if (args?.where?.producerId) list = list.filter(e => e.producerId === args.where.producerId);
+        if (args?.where?.producerId) {
+          if (typeof args.where.producerId === 'string') {
+            list = list.filter(e => e.producerId === args.where.producerId);
+          } else if (args.where.producerId?.in && Array.isArray(args.where.producerId.in)) {
+            list = list.filter(e => args.where.producerId.in.includes(e.producerId));
+          }
+        }
+        if (args?.where?.id) {
+          if (typeof args.where.id === 'string') {
+            list = list.filter(e => e.id === args.where.id);
+          } else if (args.where.id?.in && Array.isArray(args.where.id.in)) {
+            list = list.filter(e => args.where.id.in.includes(e.id));
+          }
+        }
         return list;
       },
       create: async (args: any) => {

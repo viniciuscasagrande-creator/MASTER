@@ -13,7 +13,8 @@ import {
   Eye,
   Sliders,
   UserCheck,
-  RotateCcw
+  RotateCcw,
+  MoreVertical
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { UserAccount, PermissionString, ScopeType } from '@shared/types/index';
@@ -21,6 +22,8 @@ import { StatCard } from '../../shared/components/StatCard';
 import { Badge } from '../../shared/components/Badge';
 import { Button } from '../../shared/components/Button';
 import { useCoreData } from '../../core/context/CoreDataContext';
+import { NewUserWizardModal } from './NewUserWizardModal';
+import { UserDetailsModal } from './UserDetailsModal';
 
 export const AdminUsersView: React.FC = () => {
   const { users, currentUser, switchUser, updateUserPermissions } = useAuth();
@@ -29,7 +32,9 @@ export const AdminUsersView: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [roleFilter, setRoleFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
-  const [selectedUser, setSelectedUser] = useState<UserAccount | null>(null);
+  const [selectedUserForDetails, setSelectedUserForDetails] = useState<UserAccount | null>(null);
+  const [isNewUserWizardOpen, setIsNewUserWizardOpen] = useState(false);
+  const [activeActionMenuUserId, setActiveActionMenuUserId] = useState<string | null>(null);
 
   // Filtered users list
   const filteredUsers = users.filter(u => {
@@ -42,49 +47,10 @@ export const AdminUsersView: React.FC = () => {
     return true;
   });
 
-  const handleTogglePermission = (permission: PermissionString) => {
-    if (!selectedUser) return;
-    const hasPerm = selectedUser.permissions.includes(permission);
-    const newPerms = hasPerm
-      ? selectedUser.permissions.filter(p => p !== permission)
-      : [...selectedUser.permissions, permission];
-
-    updateUserPermissions(selectedUser.id, newPerms, selectedUser.scope, selectedUser.status);
-    setSelectedUser({
-      ...selectedUser,
-      permissions: newPerms
-    });
-  };
-
-  const handleScopeTypeChange = (type: ScopeType) => {
-    if (!selectedUser) return;
-    const newScope = {
-      ...selectedUser.scope,
-      type
-    };
-    updateUserPermissions(selectedUser.id, selectedUser.permissions, newScope, selectedUser.status);
-    setSelectedUser({
-      ...selectedUser,
-      scope: newScope
-    });
-  };
-
-  const handleToggleProducerScope = (producerId: string) => {
-    if (!selectedUser) return;
-    const exists = selectedUser.scope.producerIds.includes(producerId);
-    const newProducerIds = exists
-      ? selectedUser.scope.producerIds.filter(id => id !== producerId)
-      : [...selectedUser.scope.producerIds, producerId];
-
-    const newScope = {
-      ...selectedUser.scope,
-      producerIds: newProducerIds
-    };
-    updateUserPermissions(selectedUser.id, selectedUser.permissions, newScope, selectedUser.status);
-    setSelectedUser({
-      ...selectedUser,
-      scope: newScope
-    });
+  const handleToggleStatus = (u: UserAccount) => {
+    const nextStatus = u.status === 'active' ? 'blocked' : 'active';
+    updateUserPermissions(u.id, u.permissions, u.scope, nextStatus);
+    setActiveActionMenuUserId(null);
   };
 
   return (
@@ -97,7 +63,7 @@ export const AdminUsersView: React.FC = () => {
               CENTRAL DE USUÁRIOS, PERFIS & PERMISSÕES
             </h1>
             <Badge variant="orange" size="sm">
-              Fase 1.1.5 RBAC Core
+              Fase 1.1.5.2 RBAC Core
             </Badge>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -108,7 +74,7 @@ export const AdminUsersView: React.FC = () => {
         <Button
           size="sm"
           variant="primary"
-          onClick={() => alert('Modal de criação de novo colaborador com perfil e escopo')}
+          onClick={() => setIsNewUserWizardOpen(true)}
           icon={<Plus className="h-3.5 w-3.5" />}
         >
           Novo Usuário
@@ -187,7 +153,6 @@ export const AdminUsersView: React.FC = () => {
           >
             <option value="all">Todos os Status</option>
             <option value="active">Ativo</option>
-            <option value="suspended">Suspenso</option>
             <option value="blocked">Bloqueado</option>
           </select>
         </div>
@@ -210,6 +175,8 @@ export const AdminUsersView: React.FC = () => {
             <tbody className="divide-y divide-slate-800/60">
               {filteredUsers.map((u) => {
                 const isCurrent = currentUser.id === u.id;
+                const isActionMenuOpen = activeActionMenuUserId === u.id;
+
                 return (
                   <tr key={u.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="py-3.5">
@@ -267,15 +234,15 @@ export const AdminUsersView: React.FC = () => {
                       </span>
                     </td>
 
-                    <td className="py-3.5 text-right">
+                    <td className="py-3.5 text-right relative">
                       <div className="flex items-center justify-end gap-1.5">
                         <Button
                           size="sm"
                           variant="secondary"
-                          onClick={() => setSelectedUser(u)}
+                          onClick={() => setSelectedUserForDetails(u)}
                           icon={<Sliders className="h-3.5 w-3.5" />}
                         >
-                          Permissões
+                          Detalhes
                         </Button>
 
                         {!isCurrent && (
@@ -288,6 +255,37 @@ export const AdminUsersView: React.FC = () => {
                             Simular
                           </Button>
                         )}
+
+                        <div className="relative">
+                          <button
+                            onClick={() => setActiveActionMenuUserId(isActionMenuOpen ? null : u.id)}
+                            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                          >
+                            <MoreVertical className="h-3.5 w-3.5" />
+                          </button>
+
+                          {isActionMenuOpen && (
+                            <div className="absolute right-0 top-full mt-1 w-48 rounded-xl border border-slate-800 bg-slate-900 p-1.5 shadow-2xl z-40 text-left text-xs animate-in fade-in duration-100">
+                              <button
+                                onClick={() => {
+                                  setSelectedUserForDetails(u);
+                                  setActiveActionMenuUserId(null);
+                                }}
+                                className="flex w-full items-center gap-2 px-2.5 py-1.5 rounded-lg text-slate-300 hover:bg-slate-800 hover:text-white"
+                              >
+                                Ver Detalhes & Permissões
+                              </button>
+                              <button
+                                onClick={() => handleToggleStatus(u)}
+                                className={`flex w-full items-center gap-2 px-2.5 py-1.5 rounded-lg ${
+                                  u.status === 'active' ? 'text-rose-400 hover:bg-rose-500/10' : 'text-emerald-400 hover:bg-emerald-500/10'
+                                }`}
+                              >
+                                {u.status === 'active' ? 'Bloquear Acesso' : 'Desbloquear Acesso'}
+                              </button>
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </td>
                   </tr>
@@ -298,209 +296,18 @@ export const AdminUsersView: React.FC = () => {
         </div>
       </div>
 
-      {/* User Detail & Permissions Editor Drawer */}
-      {selectedUser && (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/70 backdrop-blur-sm animate-in fade-in duration-150">
-          <div className="relative w-full max-w-2xl h-full border-l border-slate-800 bg-slate-950 p-6 shadow-2xl flex flex-col overflow-hidden">
-            {/* Drawer Header */}
-            <div className="flex items-start justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-800 text-sm font-bold text-orange-400 border border-slate-700">
-                  {selectedUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
-                </div>
-                <div>
-                  <h2 className="text-base font-bold text-white leading-tight">
-                    {selectedUser.name}
-                  </h2>
-                  <div className="flex items-center gap-2 text-xs text-slate-400 mt-0.5">
-                    <span>{selectedUser.email}</span>
-                    <span>•</span>
-                    <span className="text-orange-400 font-semibold">{selectedUser.roleName}</span>
-                  </div>
-                </div>
-              </div>
+      {/* New User Wizard Modal (7 Steps) */}
+      <NewUserWizardModal
+        isOpen={isNewUserWizardOpen}
+        onClose={() => setIsNewUserWizardOpen(false)}
+      />
 
-              <button
-                onClick={() => setSelectedUser(null)}
-                className="p-1 rounded-lg text-slate-400 hover:text-white"
-              >
-                ✕
-              </button>
-            </div>
-
-            {/* Drawer Body */}
-            <div className="flex-1 overflow-y-auto py-4 space-y-6">
-              {/* Scope Selection */}
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
-                <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                  Escopo de Dados Autorizado
-                </div>
-                <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { type: 'GLOBAL' as ScopeType, label: 'Toda DiskIngressos', desc: 'Acesso a todos os produtores' },
-                    { type: 'PRODUCER' as ScopeType, label: 'Produtor Específico', desc: 'Isolado ao CNPJ/produtor' },
-                    { type: 'EVENT' as ScopeType, label: 'Eventos Específicos', desc: 'Restrito a eventos selecionados' },
-                  ].map((s) => (
-                    <button
-                      key={s.type}
-                      onClick={() => handleScopeTypeChange(s.type)}
-                      className={`rounded-xl border p-2.5 text-left transition-all ${
-                        selectedUser.scope.type === s.type
-                          ? 'border-orange-500/60 bg-orange-500/10 text-white'
-                          : 'border-slate-800 bg-slate-950/60 text-slate-400 hover:text-white'
-                      }`}
-                    >
-                      <div className="font-semibold text-xs">{s.label}</div>
-                      <div className="text-[10px] text-slate-500 mt-0.5">{s.desc}</div>
-                    </button>
-                  ))}
-                </div>
-
-                {/* If Producer scope, checkboxes for producers */}
-                {selectedUser.scope.type === 'PRODUCER' && (
-                  <div className="pt-2 border-t border-slate-800/60 space-y-1.5">
-                    <div className="text-[11px] font-semibold text-slate-400">Selecione os Produtores Permitidos:</div>
-                    <div className="space-y-1">
-                      {producers.map(p => {
-                        const isChecked = selectedUser.scope.producerIds.includes(p.id);
-                        return (
-                          <label key={p.id} className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
-                            <input
-                              type="checkbox"
-                              checked={isChecked}
-                              onChange={() => handleToggleProducerScope(p.id)}
-                              className="accent-orange-500 rounded"
-                            />
-                            <span>{p.name}</span>
-                            <span className="text-[10px] text-slate-500 font-mono">({p.cnpj})</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Granular Permission Matrix */}
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3">
-                <div className="flex items-center justify-between">
-                  <div className="text-xs font-bold uppercase tracking-wider text-slate-300">
-                    Matriz de Permissões Granulares (Ação por Ação)
-                  </div>
-                  <span className="text-[10px] font-mono text-cyan-400">
-                    {selectedUser.permissions.length} concedidas
-                  </span>
-                </div>
-
-                <div className="space-y-4 text-xs">
-                  {/* Financeiro */}
-                  <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 space-y-2">
-                    <div className="font-bold text-orange-400 text-xs">Módulo Financeiro</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {[
-                        { slug: 'financeiro.saldo.visualizar', label: 'Visualizar Saldos & Vendas' },
-                        { slug: 'financeiro.transferencia.criar', label: 'Criar Transferência entre Eventos' },
-                        { slug: 'financeiro.transferencia.aprovar', label: 'Aprovar Transferência de Saldo' },
-                        { slug: 'financeiro.repasses.visualizar', label: 'Visualizar Lista de Repasses' },
-                        { slug: 'financeiro.repasses.aprovar', label: 'Aprovar Liquidação de Repasses' },
-                        { slug: 'financeiro.conciliacao.executar', label: 'Executar Auto-Conciliação' },
-                      ].map(perm => {
-                        const hasIt = selectedUser.permissions.includes(perm.slug as PermissionString);
-                        return (
-                          <label key={perm.slug} className="flex items-center gap-2 cursor-pointer text-[11px] text-slate-300 hover:text-white">
-                            <input
-                              type="checkbox"
-                              checked={hasIt}
-                              onChange={() => handleTogglePermission(perm.slug as PermissionString)}
-                              className="accent-orange-500 rounded"
-                            />
-                            <span>{perm.label}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* SAC & Estornos */}
-                  <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 space-y-2">
-                    <div className="font-bold text-cyan-400 text-xs">Atendimento SAC & Estornos</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {[
-                        { slug: 'sac.consulta.acessar', label: 'Acessar Central de Consulta 360°' },
-                        { slug: 'sac.pedido.visualizar', label: 'Visualizar Detalhes do Pedido' },
-                        { slug: 'sac.voucher.reenviar', label: 'Reenviar Voucher / QR Code' },
-                        { slug: 'estorno.solicitacao.criar', label: 'Solicitar Cancelamento / Estorno' },
-                        { slug: 'estorno.solicitacao.aprovar', label: 'Aprovar Estorno (Cascata Reversa)' },
-                        { slug: 'estorno.chargeback.gerenciar', label: 'Gerenciar Disputas de Chargeback' },
-                      ].map(perm => {
-                        const hasIt = selectedUser.permissions.includes(perm.slug as PermissionString);
-                        return (
-                          <label key={perm.slug} className="flex items-center gap-2 cursor-pointer text-[11px] text-slate-300 hover:text-white">
-                            <input
-                              type="checkbox"
-                              checked={hasIt}
-                              onChange={() => handleTogglePermission(perm.slug as PermissionString)}
-                              className="accent-orange-500 rounded"
-                            />
-                            <span>{perm.label}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  {/* Eventos & Suporte */}
-                  <div className="rounded-lg border border-slate-800 bg-slate-950/60 p-3 space-y-2">
-                    <div className="font-bold text-emerald-400 text-xs">Eventos & Suporte de Campo</div>
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                      {[
-                        { slug: 'eventos.evento.visualizar', label: 'Consultar Eventos' },
-                        { slug: 'eventos.evento.criar', label: 'Criar Novos Eventos' },
-                        { slug: 'eventos.checkin.operar', label: 'Operar Catracas / Portaria' },
-                        { slug: 'suporte.war_room.acessar', label: 'Acessar War Room' },
-                        { slug: 'suporte.incidentes.resolver', label: 'Resolver Incidentes de Campo' },
-                      ].map(perm => {
-                        const hasIt = selectedUser.permissions.includes(perm.slug as PermissionString);
-                        return (
-                          <label key={perm.slug} className="flex items-center gap-2 cursor-pointer text-[11px] text-slate-300 hover:text-white">
-                            <input
-                              type="checkbox"
-                              checked={hasIt}
-                              onChange={() => handleTogglePermission(perm.slug as PermissionString)}
-                              className="accent-orange-500 rounded"
-                            />
-                            <span>{perm.label}</span>
-                          </label>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Drawer Footer */}
-            <div className="pt-4 border-t border-slate-800 flex items-center justify-between">
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => switchUser(selectedUser.id)}
-                icon={<UserCheck className="h-3.5 w-3.5" />}
-              >
-                Simular Sessão deste Usuário
-              </Button>
-
-              <Button
-                variant="primary"
-                size="sm"
-                onClick={() => setSelectedUser(null)}
-              >
-                Salvar e Fechar
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
+      {/* User Details Modal (6 Tabs) */}
+      <UserDetailsModal
+        user={selectedUserForDetails}
+        isOpen={!!selectedUserForDetails}
+        onClose={() => setSelectedUserForDetails(null)}
+      />
     </div>
   );
 };

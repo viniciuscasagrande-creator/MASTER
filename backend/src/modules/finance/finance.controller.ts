@@ -1,7 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { prisma } from '../../core/database/prisma';
+import { NotFoundError, ForbiddenError } from '../../core/errors/AppError';
 import { AuditService } from '../audit/audit.service';
-import { NotFoundError } from '../../core/errors/AppError';
+import { SecurityService } from '../security/security.service';
 
 // In-memory transfers store for Phase 1.1.5.1 demonstration
 const transfersDB: any[] = [];
@@ -77,6 +78,22 @@ export class FinanceRealController {
       const transfer = transfersDB.find(t => t.id === String(id));
 
       if (!transfer) throw new NotFoundError('Transferência não encontrada.');
+
+      // High-Value Step-Up Reauthentication Rule (> R$ 50.000)
+      if (transfer.amount > 50000) {
+        const stepUpToken = req.headers['x-step-up-token'];
+        if (!stepUpToken || typeof stepUpToken !== 'string' || !SecurityService.verifyStepUpToken(req.user!.id, stepUpToken)) {
+          res.status(403).json({
+            error: 'OPERAÇÃO DE ALTO VALOR (> R$ 50.000) — Reautenticação de segurança (Step-Up) obrigatória.',
+            code: 'STEP_UP_REQUIRED',
+            statusCode: 403,
+            requiresStepUp: true,
+            threshold: 50000,
+            amount: transfer.amount
+          });
+          return;
+        }
+      }
 
       transfer.status = 'APPROVED';
       transfer.approvedBy = req.user?.name;

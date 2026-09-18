@@ -181,9 +181,13 @@ export const Sidebar: React.FC<SidebarProps> = ({
       icon: <ShieldCheck className="h-4 w-4" />,
       requiredPermission: 'admin.usuarios.visualizar',
       subItems: [
-        { id: 'admin-users', label: 'Usuários e Acessos' },
-        { id: 'admin-permissions', label: 'Matriz de Permissões' },
-        { id: 'admin-audit', label: 'Auditoria de Segurança' }
+        { id: 'admin-dashboard', label: 'Painel Administrativo' },
+        { id: 'admin-users', label: 'Usuários' },
+        { id: 'admin-roles', label: 'Perfis de Acesso' },
+        { id: 'admin-permissions', label: 'Permissões' },
+        { id: 'admin-sessions', label: 'Sessões Ativas' },
+        { id: 'admin-security', label: 'Segurança & 2FA' },
+        { id: 'admin-audit', label: 'Auditoria' }
       ]
     },
     {

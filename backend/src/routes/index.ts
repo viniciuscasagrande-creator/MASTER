@@ -8,11 +8,20 @@ import ordersRoutes from '../modules/orders/orders.routes';
 import auditRoutes from '../modules/audit/audit.routes';
 import marketingRoutes from '../modules/marketing/marketing.routes';
 import accountingRoutes from '../modules/accounting/accounting.routes';
+import contextRoutes from '../modules/context/context.routes';
+import adminDashboardRoutes from '../modules/admin/admin.dashboard.routes';
+import sessionsRoutes from '../modules/sessions/sessions.routes';
+import securityRoutes from '../modules/security/security.routes';
 
 const router = Router();
 
 // Primary v1 endpoints
 router.use('/auth', authRoutes);
+router.use('/context', contextRoutes);
+router.use('/security', securityRoutes);
+router.use('/admin', adminDashboardRoutes);
+router.use('/admin/security', securityRoutes);
+router.use('/admin/sessions', sessionsRoutes);
 router.use('/admin/users', usersRoutes);
 router.use('/admin/roles', rolesRoutes);
 router.use('/events', eventsRoutes);
