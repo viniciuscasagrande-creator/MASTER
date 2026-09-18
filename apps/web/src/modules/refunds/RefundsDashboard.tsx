@@ -16,11 +16,12 @@ import { useAuth } from '../../core/auth/AuthContext';
 import { StatCard } from '../../shared/components/StatCard';
 import { Badge } from '../../shared/components/Badge';
 import { Button } from '../../shared/components/Button';
+import { Can } from '../../core/auth/Can';
 import { formatCurrency, formatDateTime } from '../../shared/utils/formatters';
 
 export const RefundsDashboard: React.FC = () => {
   const { refunds, approveRefund, rejectRefund } = useCoreData();
-  const { user, canPerformAction } = useAuth();
+  const { currentUser } = useAuth();
 
   const [activeTab, setActiveTab] = useState<'pending' | 'approved' | 'all'>('pending');
   const [selectedRefund, setSelectedRefund] = useState<any>(null);
@@ -33,13 +34,13 @@ export const RefundsDashboard: React.FC = () => {
   const pendingAmount = pendingList.reduce((acc, r) => acc + r.amount, 0);
 
   const handleApprove = (refundId: string) => {
-    approveRefund(refundId, user.name);
+    approveRefund(refundId, currentUser.name);
   };
 
   const handleReject = (refundId: string) => {
     const reason = prompt('Informe a justificativa da recusa do estorno:', 'Fora do prazo legal de 7 dias do CDC.');
     if (reason) {
-      rejectRefund(refundId, user.name, reason);
+      rejectRefund(refundId, currentUser.name, reason);
     }
   };
 
@@ -218,22 +219,31 @@ export const RefundsDashboard: React.FC = () => {
                   <td className="py-3 text-right">
                     {ref.status === 'pending_approval' ? (
                       <div className="flex items-center justify-end gap-1.5">
-                        <Button
-                          size="sm"
-                          variant="primary"
-                          onClick={() => handleApprove(ref.id)}
-                          icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+                        <Can
+                          permission="estorno.solicitacao.aprovar"
+                          fallback={
+                            <span className="text-[10px] text-slate-500 italic">
+                              Aprovação restrita à Gerência
+                            </span>
+                          }
                         >
-                          Aprovar Cascata
-                        </Button>
-                        <Button
-                          size="sm"
-                          variant="danger"
-                          onClick={() => handleReject(ref.id)}
-                          icon={<XCircle className="h-3.5 w-3.5" />}
-                        >
-                          Recusar
-                        </Button>
+                          <Button
+                            size="sm"
+                            variant="primary"
+                            onClick={() => handleApprove(ref.id)}
+                            icon={<CheckCircle2 className="h-3.5 w-3.5" />}
+                          >
+                            Aprovar Cascata
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="danger"
+                            onClick={() => handleReject(ref.id)}
+                            icon={<XCircle className="h-3.5 w-3.5" />}
+                          >
+                            Recusar
+                          </Button>
+                        </Can>
                       </div>
                     ) : (
                       <div className="text-[11px] text-slate-500 font-mono">

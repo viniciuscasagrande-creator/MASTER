@@ -19,6 +19,7 @@ import { useScope } from '../../core/context/ScopeContext';
 import { StatCard } from '../../shared/components/StatCard';
 import { Badge } from '../../shared/components/Badge';
 import { Button } from '../../shared/components/Button';
+import { Can } from '../../core/auth/Can';
 import { formatCurrency, formatCompactCurrency } from '../../shared/utils/formatters';
 
 export const FinanceDashboard: React.FC = () => {
@@ -90,14 +91,23 @@ export const FinanceDashboard: React.FC = () => {
             </select>
           </div>
 
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => setIsPayoutModalOpen(true)}
-            icon={<Send className="h-3.5 w-3.5" />}
+          <Can
+            permission="financeiro.repasses.aprovar"
+            fallback={
+              <span className="text-[11px] text-slate-500 italic px-2 py-1 rounded border border-slate-800 bg-slate-900/50">
+                Aprovação de repasses restrita à Diretoria
+              </span>
+            }
           >
-            Novo Repasse
-          </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setIsPayoutModalOpen(true)}
+              icon={<Send className="h-3.5 w-3.5" />}
+            >
+              Novo Repasse
+            </Button>
+          </Can>
         </div>
       </div>
 

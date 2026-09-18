@@ -1,15 +1,19 @@
 {
   "name": "disk-interno-monorepo",
-  "version": "1.1.0",
+  "version": "1.1.5",
   "description": "Disk Interno PDT - Plataforma Unificada de Operações DiskIngressos",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "backend"
   ],
   "scripts": {
     "dev": "npm run dev --prefix apps/web",
     "dev:web": "npm run dev --prefix apps/web",
+    "dev:api": "npm run dev --prefix backend",
     "build": "npm run build --prefix apps/web",
+    "build:api": "npm run build --prefix backend",
+    "build:all": "npm run build --prefix apps/web && npm run build --prefix backend",
     "preview": "npm run preview --prefix apps/web"
   },
   "repository": {
@@ -21,6 +25,7 @@
     "pdt",
     "ticketing",
     "enterprise-saas",
+    "rbac",
     "core"
   ],
   "author": "DiskIngressos",

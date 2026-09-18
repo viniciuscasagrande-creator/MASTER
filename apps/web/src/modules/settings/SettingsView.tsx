@@ -4,7 +4,7 @@ import { Badge } from '../../shared/components/Badge';
 import { useAuth } from '../../core/auth/AuthContext';
 
 export const SettingsView: React.FC = () => {
-  const { user } = useAuth();
+  const { currentUser } = useAuth();
 
   return (
     <div className="space-y-6">
@@ -73,7 +73,7 @@ export const SettingsView: React.FC = () => {
 
           <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs text-slate-400">
             <span>Usuário autenticado:</span>
-            <span className="font-semibold text-white">{user.name} ({user.role})</span>
+            <span className="font-semibold text-white">{currentUser.name} ({currentUser.roleName})</span>
           </div>
         </div>
       </div>

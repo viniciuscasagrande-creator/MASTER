@@ -1,0 +1,454 @@
+// ==============================================================================
+// DISK INTERNO - PRISMA ORM SCHEMA (PostgreSQL)
+// Fase 1.1.5: Central de Autenticacao, Perfis, Permissoes e Escopo de Dados
+// ==============================================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BLOCKED
+}
+
+enum ScopeType {
+  GLOBAL
+  PRODUCER
+  EVENT
+}
+
+enum OrderStatus {
+  PENDING
+  PAID
+  REFUNDED
+  PARTIALLY_REFUNDED
+  CHARGEBACK
+  CANCELLED
+}
+
+enum TicketStatus {
+  VALID
+  USED
+  CANCELLED
+  REFUNDED
+  BLOCKED
+}
+
+enum PayoutStatus {
+  SCHEDULED
+  PROCESSING
+  COMPLETED
+  BLOCKED
+}
+
+enum RefundStatus {
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  PROCESSED
+}
+
+// ------------------------------------------------------------------------------
+// 1. AUTENTICACAO, IDENTIDADE E RBAC GRANULAR
+// ------------------------------------------------------------------------------
+
+model User {
+  id                String       @id @default(uuid())
+  name              String
+  email             String       @unique
+  passwordHash      String
+  phone             String?
+  status            UserStatus   @default(ACTIVE)
+  isInternalStaff   Boolean      @default(true)
+  organization      String       @default("DiskIngressos")
+  
+  roleId            String
+  role              Role         @relation(fields: [roleId], references: [id])
+
+  scopeType         ScopeType    @default(GLOBAL)
+  
+  // 2FA Security
+  twoFactorEnabled  Boolean      @default(false)
+  twoFactorSecret   String?
+  twoFactorEnforced Boolean      @default(false)
+
+  // Direct custom permissions (overrides / grants beyond the role)
+  customPermissions UserPermission[]
+
+  // Authorized data scopes (when scopeType is PRODUCER or EVENT)
+  authorizedProducers UserProducerAccess[]
+  authorizedEvents    UserEventAccess[]
+
+  // Sessions & Security
+  sessions          Session[]
+  loginAttempts     LoginAttempt[]
+  securityLogs      SecurityEvent[]
+  auditLogs         AuditLog[]
+
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  @@index([email])
+  @@index([status])
+}
+
+model Role {
+  id                String           @id @default(uuid())
+  slug              String           @unique // ex: "admin_geral", "financeiro", "produtor"
+  name              String
+  description       String
+  isSystem          Boolean          @default(false)
+  requiresTwoFactor Boolean          @default(false)
+  
+  users             User[]
+  permissions       RolePermission[]
+
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+}
+
+model Permission {
+  id          String           @id @default(uuid())
+  slug        String           @unique // ex: "financeiro.saldo.visualizar", "financeiro.transferencia.aprovar"
+  module      String           // ex: "financeiro", "eventos", "sac"
+  resource    String           // ex: "saldo", "evento", "pedido"
+  action      String           // ex: "visualizar", "criar", "aprovar"
+  description String
+
+  roles       RolePermission[]
+  users       UserPermission[]
+
+  createdAt   DateTime         @default(now())
+
+  @@index([slug])
+  @@index([module])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+}
+
+model UserPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  permissionId String
+  isGranted    Boolean    @default(true) // true = grant, false = explicit revoke
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+}
+
+model UserProducerAccess {
+  id         String   @id @default(uuid())
+  userId     String
+  producerId String
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  producer   Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, producerId])
+}
+
+model UserEventAccess {
+  id      String @id @default(uuid())
+  userId  String
+  eventId String
+
+  user    User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event   Event  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+}
+
+model Session {
+  id           String   @id @default(uuid())
+  userId       String
+  tokenHash    String   @unique
+  ipAddress    String
+  userAgent    String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime @default(now())
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([tokenHash])
+  @@index([userId])
+}
+
+model LoginAttempt {
+  id        String   @id @default(uuid())
+  userId    String?
+  email     String
+  ipAddress String
+  userAgent String?
+  success   Boolean
+  reason    String?
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([email])
+  @@index([ipAddress])
+}
+
+model SecurityEvent {
+  id        String   @id @default(uuid())
+  userId    String?
+  eventType String   // "2FA_ENABLED", "PASSWORD_CHANGED", "ACCESS_DENIED_403", "SESSION_REVOKED"
+  severity  String   // "INFO", "WARNING", "CRITICAL"
+  details   String
+  ipAddress String
+  createdAt DateTime @default(now())
+
+  user      User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([eventType])
+}
+
+model AuditLog {
+  id            String   @id @default(uuid())
+  userId        String?
+  userName      String
+  action        String
+  module        String
+  entityType    String
+  entityId      String
+  details       String
+  impactCascade Json?
+  ipAddress     String
+  createdAt     DateTime @default(now())
+
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([module])
+  @@index([entityType, entityId])
+  @@index([createdAt])
+}
+
+// ------------------------------------------------------------------------------
+// 2. CORE RELACIONAL: PRODUTOR -> EVENTO -> CLIENTE -> PEDIDO -> INGRESSO -> REPASSE
+// ------------------------------------------------------------------------------
+
+model Producer {
+  id               String               @id @default(uuid())
+  name             String
+  cnpj             String               @unique
+  email            String
+  phone            String
+  status           String               @default("active")
+  commissionRate   Decimal              @default(0.08) @db.Decimal(5, 4)
+  bankName         String
+  bankAgency       String
+  bankAccount      String
+  pixKey           String
+
+  events           Event[]
+  orders           Order[]
+  payouts          Payout[]
+  authorizedUsers  UserProducerAccess[]
+
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+}
+
+model Event {
+  id              String            @id @default(uuid())
+  producerId      String
+  title           String
+  category        String
+  venue           String
+  city            String
+  state           String            @db.VarChar(2)
+  eventDate       DateTime
+  doorsOpen       String
+  status          String            @default("published")
+  totalCapacity   Int
+
+  producer        Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
+  sectors         EventSector[]
+  orders          Order[]
+  tickets         Ticket[]
+  payouts         Payout[]
+  refunds         Refund[]
+  authorizedUsers UserEventAccess[]
+
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([producerId])
+  @@index([status])
+}
+
+model EventSector {
+  id           String   @id @default(uuid())
+  eventId      String
+  name         String
+  capacity     Int
+  currentBatch Int      @default(1)
+  unitPrice    Decimal  @db.Decimal(10, 2)
+
+  event        Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  tickets      Ticket[]
+
+  createdAt    DateTime @default(now())
+}
+
+model Customer {
+  id            String   @id @default(uuid())
+  name          String
+  cpf           String   @unique
+  email         String
+  phone         String
+  city          String?
+  state         String?  @db.VarChar(2)
+  isBlacklisted Boolean  @default(false)
+
+  orders        Order[]
+  tickets       Ticket[]
+  refunds       Refund[]
+
+  createdAt     DateTime @default(now())
+
+  @@index([cpf])
+  @@index([email])
+}
+
+model Order {
+  id            String       @id @default(uuid())
+  orderNumber   String       @unique // "DK-98421"
+  producerId    String
+  eventId       String
+  customerId    String
+  itemsCount    Int          @default(1)
+  grossAmount   Decimal      @db.Decimal(10, 2)
+  serviceFee    Decimal      @db.Decimal(10, 2)
+  totalAmount   Decimal      @db.Decimal(10, 2)
+  status        OrderStatus  @default(PENDING)
+  paymentMethod String
+  utmSource     String?
+  utmCampaign   String?
+
+  producer      Producer     @relation(fields: [producerId], references: [id])
+  event         Event        @relation(fields: [eventId], references: [id])
+  customer      Customer     @relation(fields: [customerId], references: [id])
+  tickets       Ticket[]
+  payment       Payment?
+  refunds       Refund[]
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([orderNumber])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([customerId])
+}
+
+model Ticket {
+  id              String       @id @default(uuid())
+  ticketCode      String       @unique // "TKT-98421-01"
+  orderId         String
+  eventId         String
+  sectorId        String
+  customerId      String
+  nominalAttendee String
+  price           Decimal      @db.Decimal(10, 2)
+  fee             Decimal      @db.Decimal(10, 2)
+  status          TicketStatus @default(VALID)
+  checkInAt       DateTime?
+  checkInGate     String?
+  qrCodePayload   String
+
+  order           Order        @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  event           Event        @relation(fields: [eventId], references: [id])
+  sector          EventSector  @relation(fields: [sectorId], references: [id])
+  customer        Customer     @relation(fields: [customerId], references: [id])
+
+  createdAt       DateTime     @default(now())
+
+  @@index([ticketCode])
+  @@index([orderId])
+  @@index([eventId])
+}
+
+model Payment {
+  id                   String   @id @default(uuid())
+  orderId              String   @unique
+  gateway              String   // "Cielo", "Rede", "PIX_BancoCentral"
+  gatewayTransactionId String
+  method               String
+  amount               Decimal  @db.Decimal(10, 2)
+  netAmount            Decimal  @db.Decimal(10, 2)
+  gatewayFee           Decimal  @db.Decimal(10, 2)
+  diskFee              Decimal  @db.Decimal(10, 2)
+  installments         Int      @default(1)
+  cardLast4            String?
+  cardBrand            String?
+  paidAt               DateTime
+  status               String   @default("settled")
+
+  order                Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model Payout {
+  id              String       @id @default(uuid())
+  producerId      String
+  eventId         String
+  amount          Decimal      @db.Decimal(12, 2)
+  status          PayoutStatus @default(SCHEDULED)
+  scheduledDate   DateTime
+  paidAt          DateTime?
+  bankInfo        String
+  auditApprovalBy String?
+
+  producer        Producer     @relation(fields: [producerId], references: [id])
+  event           Event        @relation(fields: [eventId], references: [id])
+
+  createdAt       DateTime     @default(now())
+
+  @@index([producerId])
+  @@index([scheduledDate])
+}
+
+model Refund {
+  id                String       @id @default(uuid())
+  orderId           String
+  eventId           String
+  customerId        String
+  type              String       @default("total")
+  amount            Decimal      @db.Decimal(10, 2)
+  reason            String
+  reasonDescription String
+  status            RefundStatus @default(PENDING_APPROVAL)
+  requestedAt       DateTime     @default(now())
+  processedAt       DateTime?
+  requestedBy       String
+  approvedBy        String?
+
+  order             Order        @relation(fields: [orderId], references: [id])
+  event             Event        @relation(fields: [eventId], references: [id])
+  customer          Customer     @relation(fields: [customerId], references: [id])
+
+  createdAt         DateTime     @default(now())
+
+  @@index([orderId])
+  @@index([status])
+}

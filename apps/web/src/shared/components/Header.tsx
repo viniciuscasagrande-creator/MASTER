@@ -10,7 +10,11 @@ import {
   ShieldCheck,
   RotateCcw,
   Sparkles,
-  Layers
+  Layers,
+  Lock,
+  LogOut,
+  UserCheck,
+  Users
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useScope } from '../../core/context/ScopeContext';
@@ -23,15 +27,17 @@ interface HeaderProps {
   onOpenNotifications: () => void;
   onOpenAudit: () => void;
   onOpenNewSale: () => void;
+  onNavigateToAdmin?: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
   onOpenCommandPalette,
   onOpenNotifications,
   onOpenAudit,
-  onOpenNewSale
+  onOpenNewSale,
+  onNavigateToAdmin
 }) => {
-  const { user, setRole, allRoles } = useAuth();
+  const { currentUser, users, switchUser, logout, hasPermission } = useAuth();
   const {
     producers,
     selectedProducerId,
@@ -43,10 +49,10 @@ export const Header: React.FC<HeaderProps> = ({
   } = useScope();
   const { notifications, auditLogs } = useCoreData();
 
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
-  const [isScopeDropdownOpen, setIsScopeDropdownOpen] = useState(false);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+  const isProducerScoped = currentUser.scope.type === 'PRODUCER';
   const isFiltered = selectedProducerId !== 'all' || selectedEventId !== 'all';
 
   return (
@@ -66,7 +72,7 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              <span>Core v1.1 • Conectado</span>
+              <span>Core v1.1.5 • RBAC Ativo</span>
             </div>
           </div>
         </div>
@@ -77,17 +83,28 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="flex items-center gap-1 px-2 text-xs text-slate-400">
             <Building2 className="h-3.5 w-3.5 text-slate-400" />
             <select
-              value={selectedProducerId}
+              value={isProducerScoped ? currentUser.scope.producerIds[0] || selectedProducerId : selectedProducerId}
               onChange={(e) => setSelectedProducerId(e.target.value)}
-              className="bg-transparent text-xs font-medium text-slate-200 outline-none cursor-pointer pr-1"
+              disabled={isProducerScoped}
+              className="bg-transparent text-xs font-medium text-slate-200 outline-none cursor-pointer pr-1 disabled:opacity-75"
             >
-              <option value="all" className="bg-slate-900 text-slate-200">Todos os Produtores</option>
-              {producers.map(p => (
-                <option key={p.id} value={p.id} className="bg-slate-900 text-slate-200">
-                  {p.name}
-                </option>
-              ))}
+              {!isProducerScoped && (
+                <option value="all" className="bg-slate-900 text-slate-200">Todos os Produtores</option>
+              )}
+              {producers.map(p => {
+                if (isProducerScoped && !currentUser.scope.producerIds.includes(p.id)) return null;
+                return (
+                  <option key={p.id} value={p.id} className="bg-slate-900 text-slate-200">
+                    {p.name}
+                  </option>
+                );
+              })}
             </select>
+            {isProducerScoped && (
+              <span title="Escopo travado ao seu Produtor" className="text-orange-400">
+                <Lock className="h-3 w-3" />
+              </span>
+            )}
           </div>
 
           <div className="h-4 w-px bg-slate-800" />
@@ -109,7 +126,7 @@ export const Header: React.FC<HeaderProps> = ({
             </select>
           </div>
 
-          {isFiltered && (
+          {isFiltered && !isProducerScoped && (
             <button
               onClick={resetScope}
               title="Limpar filtros globais"
@@ -137,7 +154,7 @@ export const Header: React.FC<HeaderProps> = ({
         </button>
       </div>
 
-      {/* Right: Actions, Notifications, Audit & Role Switcher */}
+      {/* Right: Actions, Notifications, Audit & User Switcher */}
       <div className="flex items-center gap-2.5">
         {/* Quick Simulator Button */}
         <Button
@@ -180,49 +197,91 @@ export const Header: React.FC<HeaderProps> = ({
 
         <div className="h-6 w-px bg-slate-800" />
 
-        {/* User Profile & RBAC Switcher */}
+        {/* User Identity & Persona Switcher */}
         <div className="relative">
           <button
-            onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
+            onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
             className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/40 p-1.5 text-left transition-colors hover:border-slate-700 hover:bg-slate-900"
           >
             <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-orange-400 border border-slate-700">
-              {user.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+              {currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
             </div>
             <div className="hidden md:block">
-              <div className="text-xs font-semibold text-slate-200 leading-none">{user.name}</div>
-              <div className="text-[10px] text-orange-400 font-medium mt-0.5">{allRoles.find(r => r.role === user.role)?.label}</div>
+              <div className="text-xs font-semibold text-slate-200 leading-none">{currentUser.name}</div>
+              <div className="text-[10px] text-orange-400 font-medium mt-0.5 flex items-center gap-1">
+                <span>{currentUser.roleName}</span>
+                {currentUser.twoFactorEnforced && (
+                  <span className="rounded bg-cyan-500/10 px-1 text-[8px] font-bold text-cyan-400 border border-cyan-500/20">
+                    2FA
+                  </span>
+                )}
+              </div>
             </div>
             <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
           </button>
 
-          {/* Role selection dropdown */}
-          {isRoleDropdownOpen && (
-            <div className="absolute right-0 top-full mt-2 w-64 rounded-xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50">
-              <div className="px-2 py-1 text-[11px] font-semibold uppercase tracking-wider text-slate-400">
-                Simular Papel / Permissão (RBAC)
+          {/* Persona Switcher Dropdown */}
+          {isUserDropdownOpen && (
+            <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+              <div className="px-2 py-1.5 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+                <span>Simular Perfil / Usuário</span>
+                <span className="text-[10px] text-orange-400 font-mono">Fase 1.1.5</span>
               </div>
-              <div className="mt-1 space-y-1">
-                {allRoles.map((r) => (
+
+              <div className="mt-1.5 space-y-1 max-h-72 overflow-y-auto">
+                {users.map((u) => {
+                  const isCurrent = currentUser.id === u.id;
+                  return (
+                    <button
+                      key={u.id}
+                      onClick={() => {
+                        switchUser(u.id);
+                        setIsUserDropdownOpen(false);
+                      }}
+                      className={`flex w-full items-start gap-2.5 rounded-xl p-2 text-left text-xs transition-colors ${
+                        isCurrent
+                          ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30 font-medium'
+                          : 'text-slate-300 hover:bg-slate-800'
+                      }`}
+                    >
+                      <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-[10px] font-bold text-slate-300 mt-0.5 border border-slate-700">
+                        {u.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
+                      </div>
+                      <div className="overflow-hidden">
+                        <div className="font-semibold text-white leading-tight truncate">{u.name}</div>
+                        <div className="text-[10px] text-slate-400 truncate">{u.roleName}</div>
+                        <div className="text-[9px] text-cyan-400 font-mono mt-0.5">
+                          Escopo: {u.scope.type} {u.scope.producerIds.length > 0 ? `(${u.scope.producerIds.join(',')})` : ''}
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between px-1">
+                {hasPermission('admin.usuarios.visualizar') && onNavigateToAdmin && (
                   <button
-                    key={r.role}
                     onClick={() => {
-                      setRole(r.role);
-                      setIsRoleDropdownOpen(false);
+                      setIsUserDropdownOpen(false);
+                      onNavigateToAdmin();
                     }}
-                    className={`flex w-full items-start gap-2 rounded-lg p-2 text-left text-xs transition-colors ${
-                      user.role === r.role
-                        ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30 font-medium'
-                        : 'text-slate-300 hover:bg-slate-800'
-                    }`}
+                    className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1"
                   >
-                    <ShieldCheck className="h-3.5 w-3.5 mt-0.5 shrink-0" />
-                    <div>
-                      <div className="font-semibold leading-tight">{r.label}</div>
-                      <div className="text-[10px] text-slate-400">{r.department}</div>
-                    </div>
+                    <ShieldCheck className="h-3.5 w-3.5 text-orange-400" />
+                    Gerenciar Acessos
                   </button>
-                ))}
+                )}
+                <button
+                  onClick={() => {
+                    setIsUserDropdownOpen(false);
+                    logout();
+                  }}
+                  className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1 ml-auto"
+                >
+                  <LogOut className="h-3.5 w-3.5" />
+                  Sair
+                </button>
               </div>
             </div>
           )}

@@ -1,7 +1,10 @@
 import React, { useState } from 'react';
-import { AuthProvider } from './core/auth/AuthContext';
+import { AuthProvider, useAuth } from './core/auth/AuthContext';
 import { ScopeProvider } from './core/context/ScopeContext';
 import { CoreDataProvider } from './core/context/CoreDataContext';
+import { ProtectedRoute } from './core/auth/ProtectedRoute';
+import { LoginView } from './core/auth/LoginView';
+
 import { Header } from './shared/components/Header';
 import { Sidebar } from './shared/components/Sidebar';
 import { CommandPalette } from './shared/components/CommandPalette';
@@ -20,9 +23,12 @@ import { FinanceDashboard } from './modules/finance/FinanceDashboard';
 import { AccountingDashboard } from './modules/accounting/AccountingDashboard';
 import { MarketingDashboard } from './modules/marketing/MarketingDashboard';
 import { RemarketingDashboard } from './modules/remarketing/RemarketingDashboard';
+import { AdminUsersView } from './modules/admin/AdminUsersView';
 import { SettingsView } from './modules/settings/SettingsView';
 
 const MainShell: React.FC = () => {
+  const { isAuthenticated, showLoginModal, setShowLoginModal } = useAuth();
+
   const [activeModule, setActiveModule] = useState<string>('overview');
   const [activeSubItem, setActiveSubItem] = useState<string | undefined>('overview-main');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
@@ -38,6 +44,11 @@ const MainShell: React.FC = () => {
     setActiveSubItem(subItemId);
   };
 
+  // If user is logged out, present the central login screen
+  if (!isAuthenticated || showLoginModal) {
+    return <LoginView onSuccess={() => setShowLoginModal(false)} />;
+  }
+
   const renderModuleContent = () => {
     switch (activeModule) {
       case 'overview':
@@ -47,26 +58,84 @@ const MainShell: React.FC = () => {
             onOpenNewSale={() => setIsNewSaleModalOpen(true)}
           />
         );
+
       case 'events':
-        return <EventsDashboard />;
+        return (
+          <ProtectedRoute permission="eventos.evento.visualizar" onBack={() => handleNavigate('overview')}>
+            <EventsDashboard />
+          </ProtectedRoute>
+        );
+
       case 'commercial':
-        return <CommercialDashboard />;
+        return (
+          <ProtectedRoute permission="comercial.produtores.visualizar" onBack={() => handleNavigate('overview')}>
+            <CommercialDashboard />
+          </ProtectedRoute>
+        );
+
       case 'event-support':
-        return <EventSupportDashboard />;
+        return (
+          <ProtectedRoute permission="suporte.incidentes.visualizar" onBack={() => handleNavigate('overview')}>
+            <EventSupportDashboard />
+          </ProtectedRoute>
+        );
+
       case 'sac':
-        return <SacDashboard onNavigateToRefunds={() => handleNavigate('refunds', 'refunds-approvals')} />;
+        return (
+          <ProtectedRoute permission="sac.consulta.acessar" onBack={() => handleNavigate('overview')}>
+            <SacDashboard onNavigateToRefunds={() => handleNavigate('refunds', 'refunds-approvals')} />
+          </ProtectedRoute>
+        );
+
       case 'refunds':
-        return <RefundsDashboard />;
+        return (
+          <ProtectedRoute permission="estorno.solicitacao.visualizar" onBack={() => handleNavigate('overview')}>
+            <RefundsDashboard />
+          </ProtectedRoute>
+        );
+
       case 'finance':
-        return <FinanceDashboard />;
+        return (
+          <ProtectedRoute permission="financeiro.saldo.visualizar" onBack={() => handleNavigate('overview')}>
+            <FinanceDashboard />
+          </ProtectedRoute>
+        );
+
       case 'accounting':
-        return <AccountingDashboard />;
+        return (
+          <ProtectedRoute permission="contabilidade.diario.visualizar" onBack={() => handleNavigate('overview')}>
+            <AccountingDashboard />
+          </ProtectedRoute>
+        );
+
       case 'marketing':
-        return <MarketingDashboard />;
+        return (
+          <ProtectedRoute permission="marketing.campanha.visualizar" onBack={() => handleNavigate('overview')}>
+            <MarketingDashboard />
+          </ProtectedRoute>
+        );
+
       case 'remarketing':
-        return <RemarketingDashboard />;
+        return (
+          <ProtectedRoute permission="remarketing.carrinhos.visualizar" onBack={() => handleNavigate('overview')}>
+            <RemarketingDashboard />
+          </ProtectedRoute>
+        );
+
+      case 'admin':
+        return (
+          <ProtectedRoute permission="admin.usuarios.visualizar" onBack={() => handleNavigate('overview')}>
+            <AdminUsersView />
+          </ProtectedRoute>
+        );
+
       case 'settings':
-        return <SettingsView />;
+        return (
+          <ProtectedRoute permission="admin.configuracoes.editar" onBack={() => handleNavigate('overview')}>
+            <SettingsView />
+          </ProtectedRoute>
+        );
+
       default:
         return (
           <OverviewDashboard
@@ -79,7 +148,7 @@ const MainShell: React.FC = () => {
 
   return (
     <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-100">
-      {/* Expandable Sidebar */}
+      {/* Expandable Sidebar with Dynamic RBAC filtering */}
       <Sidebar
         activeModule={activeModule}
         activeSubItem={activeSubItem}
@@ -96,6 +165,7 @@ const MainShell: React.FC = () => {
           onOpenNotifications={() => setIsNotificationsOpen(true)}
           onOpenAudit={() => setIsAuditOpen(true)}
           onOpenNewSale={() => setIsNewSaleModalOpen(true)}
+          onNavigateToAdmin={() => handleNavigate('admin', 'admin-users')}
         />
 
         {/* Scrollable Module Workspace */}
