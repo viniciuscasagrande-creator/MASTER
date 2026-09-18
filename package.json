@@ -1,0 +1,28 @@
+{
+  "name": "disk-interno-monorepo",
+  "version": "1.1.0",
+  "description": "Disk Interno PDT - Plataforma Unificada de Operações DiskIngressos",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --prefix apps/web",
+    "dev:web": "npm run dev --prefix apps/web",
+    "build": "npm run build --prefix apps/web",
+    "preview": "npm run preview --prefix apps/web"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viniciuscasagrande-creator/MASTER.git"
+  },
+  "keywords": [
+    "diskingressos",
+    "pdt",
+    "ticketing",
+    "enterprise-saas",
+    "core"
+  ],
+  "author": "DiskIngressos",
+  "license": "UNLICENSED"
+}
