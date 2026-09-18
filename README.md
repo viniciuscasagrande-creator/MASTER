@@ -121,6 +121,30 @@ npm run dev
 npm run dev:api
 ```
 
+### Executando os Testes Automatizados de RBAC & Escopo
+
+O projeto inclui uma suíte automatizada rigorosa que valida 100% dos 10 critérios de segurança e isolamento de dados:
+
+```bash
+# Executar a suíte de testes a partir da raiz:
+npm run test:api
+
+# Ou diretamente no backend:
+npm test --prefix backend
+```
+
+#### Critérios Homologados nos Testes:
+1. `CRITÉRIO 1`: **Administrador Geral** tem acesso irrestrito ao painel e recursos globais.
+2. `CRITÉRIO 2`: **Financeiro Master (Maria)** cria e aprova transferências financeiras inter-eventos.
+3. `CRITÉRIO 3`: **Financeiro Operacional (Carlos)** é bloqueado com `403 ACESSO NEGADO` ao tentar aprovar transferências.
+4. `CRITÉRIO 4`: **Marketing (Lucas)** é bloqueado com `403` ao tentar consultar saldos ou módulos financeiros.
+5. `CRITÉRIO 5`: **SAC (Ana)** consulta pedidos (200), mas é bloqueada em movimentações financeiras (403).
+6. `CRITÉRIO 6`: **Produtor (Roberto - Opus)** acessa eventos e pedidos da sua produtora (`evt-101` / `prod-1`).
+7. `CRITÉRIO 7`: **Isolamento de Escopo:** Produtor Opus é bloqueado com `403` ao tentar acessar dados do concorrente (`prod-2` / `evt-102`).
+8. `CRITÉRIO 8`: Chamadas diretas de API por usuários sem permissão granular retornam `403`.
+9. `CRITÉRIO 9`: Usuário com status `blocked` é barrado no Login e nas chamadas de API (`403`).
+10. `CRITÉRIO 10`: Auditoria imutável registra alterações de permissão, repasses e tentativas de violação de escopo.
+
 ### Compilação de Produção
 
 ```bash
@@ -139,3 +163,4 @@ Na barra superior (Header) ou tela de login, você pode alternar instantaneament
 3. **👤 Carlos Lima (Financeiro Júnior):** Acesso ao Painel Financeiro para visualização de saldos, porém **sem permissão para aprovar repasses** (demonstra a restrição de ação granular).
 4. **🎸 Roberto Viana (Produtor Opus):** Escopo segregado para a *Opus Entretenimento*. Módulos internos como SAC, Contabilidade e Suporte de Campo somem da sidebar, e o seletor de produtor fica bloqueado à sua organização.
 5. **🎧 Ana Paula Santos (Atendente SAC):** Central de Consulta 360°, pedidos, titulares e reenvio de vouchers.
+6. **🚫 Usuário Bloqueado:** Utilizado para teste de suspensão de acesso pela governança.

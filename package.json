@@ -14,6 +14,7 @@
     "build": "npm run build --prefix apps/web",
     "build:api": "npm run build --prefix backend",
     "build:all": "npm run build --prefix apps/web && npm run build --prefix backend",
+    "test:api": "npm run test --prefix backend",
     "preview": "npm run preview --prefix apps/web"
   },
   "repository": {
