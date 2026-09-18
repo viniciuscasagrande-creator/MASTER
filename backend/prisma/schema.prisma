@@ -1,0 +1,248 @@
+// ==============================================================================
+// DISK INTERNO - PRISMA ORM SCHEMA (PostgreSQL)
+// Fase 1.1.5.1: Core Node.js Real - Autenticacao + RBAC + Escopo Produtor/Evento
+// ==============================================================================
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  BLOCKED
+  PENDING
+}
+
+enum ScopeType {
+  GLOBAL
+  PRODUCER
+  EVENT
+}
+
+// ------------------------------------------------------------------------------
+// 1. USUÁRIO E IDENTIDADE
+// ------------------------------------------------------------------------------
+
+model User {
+  id                String               @id @default(uuid())
+  name              String
+  email             String               @unique
+  passwordHash      String
+  status            UserStatus           @default(ACTIVE)
+  isSuperAdmin      Boolean              @default(false)
+  twoFactorEnabled  Boolean              @default(false)
+  twoFactorSecret   String?
+  lastLoginAt       DateTime?
+  passwordChangedAt DateTime?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  // Relações do Core de Identidade
+  userRoles         UserRole[]
+  userPermissions   UserPermission[]
+  producerAccesses  UserProducerAccess[]
+  eventAccesses     UserEventAccess[]
+  sessions          Session[]
+  auditLogs         AuditLog[]
+
+  @@index([email])
+  @@index([status])
+}
+
+// ------------------------------------------------------------------------------
+// 2. PERFIS (ROLES)
+// ------------------------------------------------------------------------------
+
+model Role {
+  id              String           @id @default(uuid())
+  name            String
+  code            String           @unique // Ex: ADMINISTRADOR_GERAL, FINANCEIRO
+  description     String?
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  userRoles       UserRole[]
+  rolePermissions RolePermission[]
+
+  @@index([code])
+}
+
+model UserRole {
+  id        String   @id @default(uuid())
+  userId    String
+  roleId    String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+// ------------------------------------------------------------------------------
+// 3. PERMISSÕES GRANULARES (PERMISSION ENGINE)
+// ------------------------------------------------------------------------------
+
+model Permission {
+  id              String           @id @default(uuid())
+  module          String           // Ex: financeiro, eventos, sac
+  resource        String           // Ex: transferencia, saldo, pedido
+  action          String           // Ex: visualizar, criar, aprovar
+  code            String           @unique // Ex: financeiro.transferencia.aprovar
+  description     String?
+  createdAt       DateTime         @default(now())
+
+  rolePermissions RolePermission[]
+  userPermissions UserPermission[]
+
+  @@index([code])
+  @@index([module])
+}
+
+model RolePermission {
+  id           String     @id @default(uuid())
+  roleId       String
+  permissionId String
+  createdAt    DateTime   @default(now())
+
+  role         Role       @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([roleId, permissionId])
+  @@index([roleId])
+}
+
+model UserPermission {
+  id           String     @id @default(uuid())
+  userId       String
+  permissionId String
+  isGranted    Boolean    @default(true) // true = concessão direta, false = revogação explícita
+  createdAt    DateTime   @default(now())
+
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permission   Permission @relation(fields: [permissionId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, permissionId])
+  @@index([userId])
+}
+
+// ------------------------------------------------------------------------------
+// 4. ESCOPO DE DADOS: PRODUTOR & EVENTO
+// ------------------------------------------------------------------------------
+
+model Producer {
+  id             String               @id @default(uuid())
+  name           String
+  cnpj           String               @unique
+  email          String?
+  phone          String?
+  status         String               @default("ACTIVE")
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  events         Event[]
+  userAccesses   UserProducerAccess[]
+
+  @@index([cnpj])
+}
+
+model Event {
+  id           String            @id @default(uuid())
+  producerId   String
+  title        String
+  venue        String?
+  city         String?
+  state        String?
+  eventDate    DateTime?
+  status       String            @default("PUBLISHED")
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+
+  producer     Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
+  userAccesses UserEventAccess[]
+
+  @@index([producerId])
+}
+
+model UserProducerAccess {
+  id         String   @id @default(uuid())
+  userId     String
+  producerId String
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  producer   Producer @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, producerId])
+  @@index([userId])
+  @@index([producerId])
+}
+
+model UserEventAccess {
+  id        String   @id @default(uuid())
+  userId    String
+  eventId   String
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, eventId])
+  @@index([userId])
+  @@index([eventId])
+}
+
+// ------------------------------------------------------------------------------
+// 5. CONTROLE DE SESSÕES (JWT REFRESH)
+// ------------------------------------------------------------------------------
+
+model Session {
+  id           String    @id @default(uuid())
+  userId       String
+  token        String    @unique
+  refreshToken String?   @unique
+  ipAddress    String?
+  userAgent    String?
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime  @default(now())
+
+  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([token])
+  @@index([refreshToken])
+}
+
+// ------------------------------------------------------------------------------
+// 6. TRILHA DE AUDITORIA IMUTÁVEL
+// ------------------------------------------------------------------------------
+
+model AuditLog {
+  id         String   @id @default(uuid())
+  userId     String?
+  userName   String?
+  action     String
+  resource   String
+  producerId String?
+  eventId    String?
+  details    String?
+  ipAddress  String?
+  result     String   @default("SUCCESS") // SUCCESS, DENIED, FAILED
+  createdAt  DateTime @default(now())
+
+  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([action])
+  @@index([resource])
+  @@index([createdAt])
+}

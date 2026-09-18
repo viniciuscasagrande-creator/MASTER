@@ -14,136 +14,135 @@ Produtor ──> Evento ──> Cliente ──> Pedido ──> Ingresso ──> 
 
 ---
 
-## 🔐 Fase 1.1.5 — Central de Autenticação, Perfis, Permissões e Escopo de Dados
+## 🔐 Fase 1.1.5.1 — Core Node.js Real: Autenticação + RBAC + Escopo Produtor/Evento
 
-A segurança e o controle de acesso do Disk Interno separam estritamente **autenticação** de **autorização**. A autorização final é calculada dinamicamente:
+Esta etapa estabelece a **fundação real de infraestrutura do backend** que sustenta todos os módulos operacionais da DiskIngressos.
 
-$$\text{ACESSO} = \text{USUÁRIO} + \text{PERFIL} + \text{PERMISSÃO} + \text{ORGANIZAÇÃO} + \text{PRODUTOR} + \text{EVENTO} + \text{REGRA DE NEGÓCIO}$$
+### Stack Tecnológica
+- **Linguagem & Runtime:** Node.js + TypeScript
+- **Framework Web:** Express
+- **Banco de Dados & ORM:** PostgreSQL + Prisma ORM
+- **Autenticação & Sessões:** JWT (Access Token 15m + Refresh Token 7d)
+- **Criptografia de Senhas:** Argon2 (Argon2id profile)
+- **Validação de Payloads:** Zod
+- **Auditoria:** `AuditService` central e imutável
 
-### 1. Perfis Iniciais (Roles)
-
-| Perfil | Escopo Padrão | Descrição & Acesso |
-| :--- | :--- | :--- |
-| **Administrador Geral** | `GLOBAL` | Acesso irrestrito a todos os módulos, produtores, eventos, 2FA obrigatório e gestão de acessos. |
-| **Administrador Operacional** | `GLOBAL` | Operação do dia a dia de eventos, suporte de campo, bilheteria e SAC. |
-| **Produtor** | `PRODUCER` | Acesso restrito e segregado estritamente aos seus próprios eventos, bilheteria e relatórios. |
-| **Financeiro** | `GLOBAL` | Gestão de contas a pagar, receber, fluxo de caixa, conciliação e repasses. |
-| **Contabilidade** | `GLOBAL` | Livro diário em partidas dobradas, balancetes e DRE em tempo real. |
-| **Marketing & Growth** | `GLOBAL` | Campanhas Meta Ads, Google Ads, TikTok Ads, Spotify Ads, ROAS e pixels. |
-| **Remarketing** | `GLOBAL` | Recuperação de carrinhos abandonados e réguas de WhatsApp API e e-mail. |
-| **Comercial** | `GLOBAL` | Prospecção de produtores, pipeline de eventos, contratos e metas. |
-| **Atendimento SAC** | `GLOBAL` | Central de Consulta 360°, pedidos, titulares, reenvio de vouchers e abertura de estornos. |
-| **Suporte de Eventos** | `GLOBAL` | War Room presencial, monitoramento de catracas, links e incidentes de portaria. |
-| **Estorno & Chargebacks** | `GLOBAL` | Fila de aprovação de estornos (cascata reversa) e contestações de chargeback. |
-| **Auditor & Compliance** | `GLOBAL` | Acesso estritamente consultivo a logs imutáveis e trilhas de auditoria. |
-| **Personalizado** | Customizado | Concessão e revogação pontual de permissões pelo Administrador Geral. |
-
-> [!IMPORTANT]
-> **Perfil não é uma trava rígida:** Dois usuários com o perfil *Financeiro* podem possuir poderes distintos. Por exemplo, **Maria** (Diretora) pode aprovar repasses e transferir saldos, enquanto **Carlos** (Financeiro Júnior) pode apenas visualizar saldos e repasses.
-
-### 2. Permissões Granulares por Ação (`module.resource.action`)
-
-As ações são controladas tanto no frontend (desabilitando ou ocultando botões via `<Can>`) quanto validadas rigidamente no backend Node.js (`requirePermission`):
-
-- `eventos.evento.visualizar`, `eventos.evento.criar`, `eventos.evento.editar`, `eventos.evento.cancelar`
-- `financeiro.saldo.visualizar`, `financeiro.transferencia.criar`, `financeiro.transferencia.aprovar`, `financeiro.repasses.visualizar`, `financeiro.repasses.aprovar`, `financeiro.conciliacao.executar`
-- `sac.consulta.acessar`, `sac.pedido.visualizar`, `sac.ticket.criar`, `sac.voucher.reenviar`
-- `estorno.solicitacao.visualizar`, `estorno.solicitacao.criar`, `estorno.solicitacao.aprovar`, `estorno.solicitacao.executar`
-- `admin.usuarios.visualizar`, `admin.usuarios.gerenciar`, `admin.auditoria.visualizar`, `admin.configuracoes.editar`
-
-### 3. Escopo de Dados por Produtor e Evento (`requireScope`)
-
-Mesmo que um usuário possua a permissão `eventos.evento.visualizar`, se o seu escopo for `PRODUCER` (ex: Roberto da *Opus Entretenimento*), qualquer tentativa de consultar eventos ou dados financeiros de outros produtores (*Live Nation*, *CWB Brasil*) resultará em **403 — ACESSO NEGADO**.
-
-### 4. Sidebar Dinâmica Orientada a Permissões
-
-- Menus e submenus para os quais o usuário não tem autorização **não são renderizados** (não ocupam espaço cinza inútil).
-- O Produtor visualiza seu menu adaptado: *Meus Eventos, Comercial, Financeiro, Marketing, Remarketing*.
-- O SAC visualiza apenas: *Visão Geral, Atendimento SAC, Central de Consulta, Estorno (se concedido)*.
-- O Administrador Geral visualiza os 9 módulos + *Administração de Acessos* + *Configurações*.
-
----
-
-## 🏛️ Estrutura do Repositório (Monólito Modular Node.js + React)
+### 🏛️ Banco Central de Identidade (Prisma Schema)
 
 ```text
-MASTER/
-│
-├── apps/
-│   └── web/                 React 19 + TypeScript + Vite + Tailwind CSS v4
-│       └── src/
-│           ├── core/
-│           │   ├── auth/    AuthContext, LoginView, Can, ProtectedRoute, AccessDeniedView
-│           │   ├── context/ ScopeContext, CoreDataContext
-│           │   └── database/mockDatabase
-│           ├── modules/     overview, events, commercial, eventSupport, sac, refunds,
-│           │                finance, accounting, marketing, remarketing, admin, settings
-│           └── shared/      Header, Sidebar dinâmica, CommandPalette, StatCard, etc.
-│
-├── backend/                 Node.js + TypeScript (Monólito Modular)
-│   └── src/
-│       ├── auth/            authMiddleware, requirePermission, requireScope
-│       ├── permissions/     permissionsCatalog (45 ações granulares)
-│       ├── roles/           rolesCatalog (13 papéis)
-│       └── server.ts        Servidor Express com proteção RBAC e escopo
-│
+USER
+ │
+ ├──────── USER_ROLE ─────── ROLE
+ │                             │
+ │                       ROLE_PERMISSION
+ │                             │
+ │                         PERMISSION
+ │
+ ├──────── USER_PERMISSION
+ │
+ ├──────── USER_PRODUCER_ACCESS ─── PRODUCER
+ │
+ ├──────── USER_EVENT_ACCESS ────── EVENT
+ │
+ ├──────── SESSION
+ │
+ └──────── AUDIT_LOG
+```
+
+### 📦 Estrutura Modular do Backend
+
+```text
+backend/
+├── src/
+│   ├── server.ts                    # Entrypoint HTTP
+│   ├── app.ts                       # Configuração Express e middlewares
+│   ├── config/
+│   │   ├── env.ts                   # Variáveis de ambiente validadas com Zod
+│   │   └── auth.ts                  # Parâmetros JWT e Argon2
+│   ├── core/
+│   │   ├── database/
+│   │   │   └── prisma.ts            # Cliente Prisma & Engine Relacional em memória para testes
+│   │   ├── errors/
+│   │   │   └── AppError.ts          # Classes de erro tipadas (401, 403, 404, 400, 500)
+│   │   ├── middleware/
+│   │   │   ├── authenticate.ts      # Verificação Bearer JWT + Sessão no Banco
+│   │   │   ├── requirePermission.ts # Validação RBAC granular e superadmin bypass
+│   │   │   ├── requireScope.ts      # Scope Engine (Produtor -> Evento) & query builder
+│   │   │   └── errorHandler.ts      # Tratamento unificado de erros e ZodError
+│   │   └── security/
+│   │       ├── password.ts          # Hash & Verify com Argon2id
+│   │       ├── token.ts             # Assinatura e verificação de JWT
+│   │       └── twoFactor.ts         # Autenticação de dois fatores (TOTP/2FA)
+│   ├── modules/
+│   │   ├── auth/                    # Login, Refresh, Logout, /me, 2FA, Sessões
+│   │   ├── users/                   # Gestão de usuários, perfis, escopos e bloqueios
+│   │   ├── roles/                   # Catálogo de perfis e permissões granulares
+│   │   ├── events/                  # Eventos com isolamento por escopo
+│   │   ├── finance/                 # Saldos, transferências e aprovação
+│   │   ├── orders/                  # Pedidos com barreira contra vazamento entre produtores
+│   │   ├── marketing/               # Campanhas e tráfego
+│   │   ├── accounting/              # DRE e contabilidade
+│   │   └── audit/                   # Trilha de auditoria imutável
+│   └── routes/
+│       └── index.ts                 # Roteador central da API v1
 ├── prisma/
-│   └── schema.prisma        Modelagem completa PostgreSQL (Users, Roles, Permissions,
-│                            Scopes, Sessions, TwoFactor, Core Entities)
-│
-└── shared/
-    └── types/               Tipos centrais compartilhados entre frontend e backend
+│   ├── schema.prisma                # Modelagem relacional completa
+│   └── seed.ts                      # Semeadura com perfis e permissões dos 9 módulos
+├── tests/
+│   └── auth-rbac-real.test.ts       # Suíte de testes automatizados (15 casos)
+├── .env
+├── package.json
+└── tsconfig.json
 ```
 
 ---
 
-## 🚀 Como Executar o Projeto Localmente
+## 🧪 Suíte de Testes Automatizados da Fase 1.1.5.1
+
+A conformidade foi homologada com **15/15 testes aprovados (100%)**:
+
+```bash
+# Executar a partir da raiz do monorepo:
+npm run test:api
+
+# Ou diretamente na pasta backend:
+npm test --prefix backend
+```
+
+### Casos de Teste Homologados:
+1. `PASS`: **Login Válido** com e-mail, senha e geração de Access Token + Refresh Token.
+2. `PASS`: **Senha Inválida** rejeitada com `401 Unauthorized`.
+3. `PASS`: **Usuário Bloqueado** barrado no login com `403 Forbidden`.
+4. `PASS`: **Token Inválido/Corrompido** retorna `401 Unauthorized`.
+5. `PASS`: **Token Expirado** retorna `401 Unauthorized`.
+6. `PASS`: **Refresh Token Válido** gera novos pares de tokens sem necessidade de relogin.
+7. `PASS`: **Logout** invalida a sessão no banco e revoga tokens imediatamente.
+8. `PASS`: **ADMIN** acessa módulo Financeiro.
+9. `PASS`: **FINANCEIRO** acessa Financeiro (`200`), mas NÃO administra usuários (`403`).
+10. `PASS`: **MARKETING** acessa campanhas de Marketing (`200`), mas NÃO acessa Contabilidade (`403`).
+11. `PASS`: **SAC** consulta pedido de cliente (`200`), mas NÃO aprova transferências (`403`).
+12. `PASS`: **PRODUTOR A (Opus)** acessa Evento A (`200`) e é bloqueado no Evento B (`403`).
+13. `PASS`: **PRODUTOR B (Live Nation)** acessa Evento B (`200`) e é bloqueado no Evento A (`403`).
+14. `PASS`: **Chamada Direta da API** sem permissão granular específica retorna `403`.
+15. `PASS`: **SUPER ADMIN** possui acesso irrestrito universal (módulos, recursos, produtores e eventos).
+
+---
+
+## 🚀 Como Executar Localmente
 
 ### Pré-requisitos
 - Node.js >= 18.x
 - npm >= 9.x
 
-### Instalação de Dependências
-
-```bash
-# Na raiz do repositório
-npm install --prefix apps/web
-npm install --prefix backend
-```
-
-### Executando em Desenvolvimento
+### Execução em Desenvolvimento
 
 ```bash
 # Iniciar o Frontend React (Vite): http://localhost:5173
 npm run dev
 
-# Iniciar o Backend Node.js API (porta 3001)
+# Iniciar a API Central Node.js (porta 3001):
 npm run dev:api
 ```
-
-### Executando os Testes Automatizados de RBAC & Escopo
-
-O projeto inclui uma suíte automatizada rigorosa que valida 100% dos 10 critérios de segurança e isolamento de dados:
-
-```bash
-# Executar a suíte de testes a partir da raiz:
-npm run test:api
-
-# Ou diretamente no backend:
-npm test --prefix backend
-```
-
-#### Critérios Homologados nos Testes:
-1. `CRITÉRIO 1`: **Administrador Geral** tem acesso irrestrito ao painel e recursos globais.
-2. `CRITÉRIO 2`: **Financeiro Master (Maria)** cria e aprova transferências financeiras inter-eventos.
-3. `CRITÉRIO 3`: **Financeiro Operacional (Carlos)** é bloqueado com `403 ACESSO NEGADO` ao tentar aprovar transferências.
-4. `CRITÉRIO 4`: **Marketing (Lucas)** é bloqueado com `403` ao tentar consultar saldos ou módulos financeiros.
-5. `CRITÉRIO 5`: **SAC (Ana)** consulta pedidos (200), mas é bloqueada em movimentações financeiras (403).
-6. `CRITÉRIO 6`: **Produtor (Roberto - Opus)** acessa eventos e pedidos da sua produtora (`evt-101` / `prod-1`).
-7. `CRITÉRIO 7`: **Isolamento de Escopo:** Produtor Opus é bloqueado com `403` ao tentar acessar dados do concorrente (`prod-2` / `evt-102`).
-8. `CRITÉRIO 8`: Chamadas diretas de API por usuários sem permissão granular retornam `403`.
-9. `CRITÉRIO 9`: Usuário com status `blocked` é barrado no Login e nas chamadas de API (`403`).
-10. `CRITÉRIO 10`: Auditoria imutável registra alterações de permissão, repasses e tentativas de violação de escopo.
 
 ### Compilação de Produção
 
@@ -154,13 +153,13 @@ npm run build:all
 
 ---
 
-## 👤 Perfis Prontos para Teste Imediato (Demo Switcher)
+## 👤 Perfis Disponíveis para Demonstração e Teste
 
-Na barra superior (Header) ou tela de login, você pode alternar instantaneamente entre os perfis de teste para verificar a adaptação em tempo real da interface:
-
-1. **👑 Vinicius Casagrande (Admin Master):** Enxerga todos os 9 módulos, Central de Administração de Usuários, Configurações do Core e trilha imutável.
-2. **💼 Maria Oliveira (Diretora Financeira):** Acesso completo ao Financeiro e aprovação de repasses.
-3. **👤 Carlos Lima (Financeiro Júnior):** Acesso ao Painel Financeiro para visualização de saldos, porém **sem permissão para aprovar repasses** (demonstra a restrição de ação granular).
-4. **🎸 Roberto Viana (Produtor Opus):** Escopo segregado para a *Opus Entretenimento*. Módulos internos como SAC, Contabilidade e Suporte de Campo somem da sidebar, e o seletor de produtor fica bloqueado à sua organização.
-5. **🎧 Ana Paula Santos (Atendente SAC):** Central de Consulta 360°, pedidos, titulares e reenvio de vouchers.
-6. **🚫 Usuário Bloqueado:** Utilizado para teste de suspensão de acesso pela governança.
+- **👑 Super Administrador:** `admin@diskingressos.com.br` (`isSuperAdmin = true`, acesso irrestrito).
+- **💼 Financeiro Master (Maria):** `maria.financeiro@diskingressos.com.br` (com permissão de aprovação de repasses).
+- **👤 Financeiro Júnior (Carlos):** `carlos.financeiro@diskingressos.com.br` (perfil financeiro, mas sem poder de aprovação).
+- **📈 Marketing (Lucas):** `lucas.marketing@diskingressos.com.br` (acessa campanhas, bloqueado no financeiro).
+- **🎧 SAC (Ana):** `ana.sac@diskingressos.com.br` (consulta 360 de pedidos, bloqueada em operações financeiras).
+- **🎸 Produtor A (Roberto - Opus):** `roberto@opus.com.br` (escopo restrito a `prd_100` / `evt_1001`).
+- **🎤 Produtora B (Renata - Live Nation):** `renata@livenation.com.br` (escopo restrito a `prd_200` / `evt_2001`).
+- **🚫 Usuário Bloqueado:** `bloqueado@diskingressos.com.br` (conta suspensa por segurança).
