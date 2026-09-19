@@ -14,6 +14,8 @@ import sessionsRoutes from '../modules/sessions/sessions.routes';
 import securityRoutes from '../modules/security/security.routes';
 import notificationRoutes from '../modules/notifications/notification.routes';
 import searchRoutes from '../modules/search/search.routes';
+import approvalRoutes from '../modules/approvals/approval.routes';
+import { approvalRulesAdminRouter, approvalThresholdsAdminRouter } from '../modules/approvals/approval-admin.routes';
 
 const router = Router();
 
@@ -23,12 +25,15 @@ router.use('/context', contextRoutes);
 router.use('/search', searchRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/security', securityRoutes);
+router.use('/approvals', approvalRoutes);
 router.use('/admin', adminDashboardRoutes);
 router.use('/admin/notifications', notificationRoutes);
 router.use('/admin/security', securityRoutes);
 router.use('/admin/sessions', sessionsRoutes);
 router.use('/admin/users', usersRoutes);
 router.use('/admin/roles', rolesRoutes);
+router.use('/admin/approval-rules', approvalRulesAdminRouter);
+router.use('/admin/approval-thresholds', approvalThresholdsAdminRouter);
 router.use('/events', eventsRoutes);
 router.use('/finance', financeRoutes);
 router.use('/orders', ordersRoutes);

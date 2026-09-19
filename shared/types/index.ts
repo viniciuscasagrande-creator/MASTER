@@ -91,7 +91,21 @@ export type PermissionString =
   | 'admin.usuarios.gerenciar'
   | 'admin.perfis.gerenciar'
   | 'admin.auditoria.visualizar'
-  | 'admin.configuracoes.editar';
+  | 'admin.configuracoes.editar'
+  // Aprovações
+  | 'aprovacoes.caixa.visualizar'
+  | 'aprovacoes.solicitacao.visualizar'
+  | 'aprovacoes.solicitacao.criar'
+  | 'aprovacoes.solicitacao.aprovar'
+  | 'aprovacoes.solicitacao.rejeitar'
+  | 'aprovacoes.solicitacao.cancelar'
+  | 'aprovacoes.regra.visualizar'
+  | 'aprovacoes.regra.criar'
+  | 'aprovacoes.regra.editar'
+  | 'aprovacoes.alcada.visualizar'
+  | 'aprovacoes.alcada.editar'
+  | 'aprovacoes.delegacao.criar'
+  | 'aprovacoes.historico.visualizar';
 
 export interface UserAccount {
   id: string;

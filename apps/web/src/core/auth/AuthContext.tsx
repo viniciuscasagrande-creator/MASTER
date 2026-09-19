@@ -289,6 +289,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return currentUser.permissions.some(p => p.startsWith('marketing.'));
       case 'remarketing':
         return currentUser.permissions.some(p => p.startsWith('remarketing.'));
+      case 'approvals':
+        return currentUser.permissions.some(p => p.startsWith('aprovacoes.'));
       case 'admin':
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':

@@ -532,3 +532,209 @@ model SearchHistory {
 
   @@index([userId, createdAt])
 }
+
+// ------------------------------------------------------------------------------
+// 9. MOTOR CENTRAL DE APROVAÇÕES, ALÇADAS E DUPLA VALIDAÇÃO (FASE 1.1.5.7)
+// ------------------------------------------------------------------------------
+
+model ApprovalRule {
+  id                       String    @id @default(uuid())
+  code                     String    @unique // e.g. RULE_FIN_TRANSFER_TIER_1
+  name                     String
+  description              String?
+  operation                String    // FINANCE_TRANSFER, REFUND_REQUEST, ADMIN_PERMISSION_CHANGE, etc.
+  producerId               String?   // null = GLOBAL
+  eventId                  String?   // null = all events
+  minAmount                Float?    @default(0)
+  maxAmount                Float?
+  approvalsRequired        Int       @default(1)
+  isSequential             Boolean   @default(false)
+  requireDistinctApprovers Boolean   @default(true)
+  prohibitSelfApproval     Boolean   @default(true) // SOLICITANTE != APROVADOR
+  requireStepUp            Boolean   @default(false)
+  require2FA               Boolean   @default(false)
+  requireComment           Boolean   @default(false)
+  requiredDocuments        String?   // JSON array of required doc types
+  slaMinutes               Int?      @default(120)
+  escalationTimeoutMinutes Int?
+  escalationRole           String?
+  allowedRoles             String    // JSON array of role codes, e.g. ["FINANCEIRO", "ADMINISTRADOR_GERAL"]
+  version                  Int       @default(1)
+  isActive                 Boolean   @default(true)
+  createdAt                DateTime  @default(now())
+  updatedAt                DateTime  @updatedAt
+
+  requests                 ApprovalRequest[]
+
+  @@index([operation, isActive])
+  @@index([producerId])
+  @@index([eventId])
+}
+
+model ApprovalThreshold {
+  id                 String   @id @default(uuid())
+  userId             String?
+  roleId             String?
+  roleCode           String?
+  operation          String   // FINANCE_TRANSFER, REFUND_REQUEST, etc.
+  maxApprovalAmount  Float    // Upper bound amount authorized for this user/role
+  producerId         String?  // Scope restriction
+  eventId            String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  @@index([userId, operation])
+  @@index([roleCode, operation])
+}
+
+model ApprovalRequest {
+  id                 String    @id @default(uuid())
+  requestCode        String    @unique // e.g. APR-1001
+  operation          String    // FINANCE_TRANSFER, REFUND_REQUEST, etc.
+  title              String
+  description        String?
+  resourceType       String    // FINANCE_TRANSFER, REFUND, USER_PERMISSION, EVENT
+  resourceId         String
+  amount             Float?
+  producerId         String?
+  eventId            String?
+  requesterId        String
+  requesterName      String
+  requesterRole      String?
+  ruleId             String
+  ruleVersion        Int       @default(1)
+  policySnapshot     String    // JSON snapshot of the rule at creation time (immutable)
+  status             String    @default("PENDING") // DRAFT, PENDING, IN_REVIEW, CHANGES_REQUESTED, PARTIALLY_APPROVED, APPROVED, REJECTED, CANCELLED, EXECUTING, EXECUTED, FAILED
+  approvalsCount     Int       @default(0)
+  approvalsRequired  Int       @default(1)
+  currentStep        Int       @default(1)
+  executionKey       String?   @unique // Idempotency key
+  executionResult    String?   // JSON result of executed action
+  executedAt         DateTime?
+  executionError     String?
+  expiresAt          DateTime?
+  isEscalated        Boolean   @default(false)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  rule               ApprovalRule         @relation(fields: [ruleId], references: [id])
+  steps              ApprovalStep[]
+  decisions          ApprovalDecision[]
+  comments           ApprovalComment[]
+  attachments        ApprovalAttachment[]
+
+  @@index([status])
+  @@index([requesterId])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([createdAt])
+}
+
+model ApprovalStep {
+  id                 String    @id @default(uuid())
+  requestId          String
+  stepOrder          Int       @default(1)
+  roleCode           String?
+  groupId            String?
+  status             String    @default("PENDING") // PENDING, APPROVED, REJECTED, SKIPPED
+  approvedByUserId   String?
+  approvedByUserName String?
+  decision           String?   // APPROVED, REJECTED, CHANGES_REQUESTED
+  comment            String?
+  stepUpVerified     Boolean   @default(false)
+  decidedAt          DateTime?
+  createdAt          DateTime  @default(now())
+
+  request            ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId, stepOrder])
+}
+
+model ApprovalDecision {
+  id                  String   @id @default(uuid())
+  requestId           String
+  userId              String
+  userName            String
+  userRole            String?
+  decision            String   // APPROVED, REJECTED, CHANGES_REQUESTED, CANCELLED
+  comment             String?
+  reasonCategory      String?  // SALDO, DOCUMENTACAO, REGRA, OUTRO
+  isDelegated         Boolean  @default(false)
+  delegatedFromUserId String?
+  stepUpToken         String?
+  createdAt           DateTime @default(now())
+
+  request             ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+  @@index([userId])
+}
+
+model ApprovalDelegation {
+  id                  String   @id @default(uuid())
+  fromUserId          String
+  fromUserName        String?
+  toUserId            String
+  toUserName          String?
+  module              String?  // FINANCEIRO, ESTORNO, null = ALL
+  startDate           DateTime
+  endDate             DateTime
+  status              String   @default("ACTIVE") // ACTIVE, EXPIRED, REVOKED
+  createdAt           DateTime @default(now())
+
+  @@index([fromUserId, status])
+  @@index([toUserId, status])
+}
+
+model ApprovalComment {
+  id         String   @id @default(uuid())
+  requestId  String
+  userId     String
+  userName   String
+  comment    String
+  createdAt  DateTime @default(now())
+
+  request    ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+}
+
+model ApprovalAttachment {
+  id                 String   @id @default(uuid())
+  requestId          String
+  documentType       String   // NOTA_FISCAL, COMPROVANTE, AUTORIZACAO, CONTRATO
+  fileName           String
+  fileUrl            String
+  fileSize           Int?
+  mimeType           String?
+  uploadedByUserId   String
+  uploadedByUserName String
+  createdAt          DateTime @default(now())
+
+  request            ApprovalRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+}
+
+model ApprovalGroup {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  members     ApprovalGroupMember[]
+}
+
+model ApprovalGroupMember {
+  id        String   @id @default(uuid())
+  groupId   String
+  userId    String
+  createdAt DateTime @default(now())
+
+  group     ApprovalGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+  @@index([groupId])
+  @@index([userId])
+}

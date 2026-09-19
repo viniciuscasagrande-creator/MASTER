@@ -42,10 +42,18 @@ import { NotificationCenterView } from './modules/notifications/NotificationCent
 // Central de Consulta & Busca Global (Fase 1.1.5.6)
 import { QueryCenterView } from './modules/search/QueryCenterView';
 
+// Motor Central de Aprovações (Fase 1.1.5.7)
+import { ApprovalInboxView } from './modules/approvals/ApprovalInboxView';
+import { MyRequestsView } from './modules/approvals/MyRequestsView';
+import { ApprovalHistoryView } from './modules/approvals/ApprovalHistoryView';
+import { ApprovalRulesAdminView } from './modules/approvals/ApprovalRulesAdminView';
+import { ApprovalThresholdsAdminView } from './modules/approvals/ApprovalThresholdsAdminView';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
   notifications: 'Notificações',
+  approvals: 'Aprovações',
   events: 'Eventos',
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
@@ -118,6 +126,10 @@ const MainShell: React.FC = () => {
         return <SecurityCenterView />;
       case 'admin-notifications':
         return <NotificationCenterView onNavigate={handleNavigate} />;
+      case 'admin-approval-rules':
+        return <ApprovalRulesAdminView />;
+      case 'admin-approval-thresholds':
+        return <ApprovalThresholdsAdminView />;
       case 'admin-audit':
         return <AdminAuditView />;
       default:
@@ -211,6 +223,27 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="remarketing.carrinhos.visualizar" onBack={() => handleNavigate('overview')}>
             <RemarketingDashboard />
+          </ProtectedRoute>
+        );
+
+      case 'approvals':
+        return (
+          <ProtectedRoute permission="aprovacoes.solicitacao.visualizar" onBack={() => handleNavigate('overview')}>
+            {(() => {
+              switch (activeSubItem) {
+                case 'approvals-my-requests':
+                  return <MyRequestsView />;
+                case 'approvals-history':
+                  return <ApprovalHistoryView />;
+                case 'approvals-rules':
+                  return <ApprovalRulesAdminView />;
+                case 'approvals-thresholds':
+                  return <ApprovalThresholdsAdminView />;
+                case 'approvals-inbox':
+                default:
+                  return <ApprovalInboxView onNavigate={handleNavigate} />;
+              }
+            })()}
           </ProtectedRoute>
         );
 

@@ -14,6 +14,7 @@ import {
   Settings,
   ShieldCheck,
   Bell,
+  CheckSquare,
   ChevronDown,
   ChevronRight,
   PanelLeftClose,
@@ -79,6 +80,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
       label: 'Notificações',
       icon: <Bell className="h-4 w-4" />,
       badge: unreadCount > 0 ? unreadCount : undefined
+    },
+    {
+      id: 'approvals',
+      label: 'Aprovações',
+      icon: <CheckSquare className="h-4 w-4 text-emerald-400" />,
+      requiredPermission: 'aprovacoes.solicitacao.visualizar',
+      subItems: [
+        { id: 'approvals-inbox', label: 'Minha Caixa de Entrada' },
+        { id: 'approvals-my-requests', label: 'Minhas Solicitações' },
+        { id: 'approvals-history', label: 'Histórico de Decisões' },
+        { id: 'approvals-rules', label: 'Regras de Aprovação', requiredPermission: 'aprovacoes.regra.visualizar' },
+        { id: 'approvals-thresholds', label: 'Alçadas de Aprovação', requiredPermission: 'aprovacoes.alcada.visualizar' }
+      ]
     },
     {
       id: 'events',
@@ -203,6 +217,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'admin-sessions', label: 'Sessões Ativas' },
         { id: 'admin-security', label: 'Segurança & 2FA' },
         { id: 'admin-notifications', label: 'Regras de Alerta' },
+        { id: 'admin-approval-rules', label: 'Regras de Aprovação' },
+        { id: 'admin-approval-thresholds', label: 'Alçadas de Aprovação' },
         { id: 'admin-audit', label: 'Auditoria' }
       ]
     },

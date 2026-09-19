@@ -53,6 +53,7 @@ export interface EventItem {
   producerId: string;
   producerName: string;
   title: string;
+  name?: string;
   category: 'Show' | 'Festival' | 'Teatro' | 'Esporte' | 'Corporativo' | 'Congresso';
   venue: string;
   city: string;

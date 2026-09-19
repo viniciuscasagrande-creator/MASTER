@@ -5,9 +5,10 @@ export interface LogAuditParams {
   userName?: string;
   action: string;
   resource: string;
+  resourceId?: string;
   producerId?: string;
   eventId?: string;
-  details?: string;
+  details?: string | any;
   ipAddress?: string;
   result?: 'SUCCESS' | 'DENIED' | 'FAILED';
 }
@@ -15,6 +16,10 @@ export interface LogAuditParams {
 export class AuditService {
   public static async log(params: LogAuditParams) {
     try {
+      const detailsStr = typeof params.details === 'object'
+        ? JSON.stringify(params.details)
+        : params.details;
+
       return await prisma.auditLog.create({
         data: {
           userId: params.userId,
@@ -23,7 +28,7 @@ export class AuditService {
           resource: params.resource,
           producerId: params.producerId,
           eventId: params.eventId,
-          details: params.details,
+          details: detailsStr,
           ipAddress: params.ipAddress || '127.0.0.1',
           result: params.result || 'SUCCESS'
         }
@@ -39,3 +44,6 @@ export class AuditService {
     });
   }
 }
+
+export const auditService = AuditService;
+

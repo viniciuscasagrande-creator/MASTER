@@ -28,6 +28,16 @@ export class InMemoryPrismaStore {
   public supportTickets: any[] = [];
   public marketingCampaigns: any[] = [];
   public searchHistories: any[] = [];
+  public approvalRules: any[] = [];
+  public approvalThresholds: any[] = [];
+  public approvalRequests: any[] = [];
+  public approvalSteps: any[] = [];
+  public approvalDecisions: any[] = [];
+  public approvalDelegations: any[] = [];
+  public approvalComments: any[] = [];
+  public approvalAttachments: any[] = [];
+  public approvalGroups: any[] = [];
+  public approvalGroupMembers: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -59,6 +69,16 @@ export class InMemoryPrismaStore {
     this.supportTickets = [];
     this.marketingCampaigns = [];
     this.searchHistories = [];
+    this.approvalRules = [];
+    this.approvalThresholds = [];
+    this.approvalRequests = [];
+    this.approvalSteps = [];
+    this.approvalDecisions = [];
+    this.approvalDelegations = [];
+    this.approvalComments = [];
+    this.approvalAttachments = [];
+    this.approvalGroups = [];
+    this.approvalGroupMembers = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -118,7 +138,21 @@ export class InMemoryPrismaStore {
       { id: 'p-fld-2', module: 'cliente', resource: 'email', action: 'visualizar_completo', code: 'cliente.email.visualizar_completo', description: 'Visualizar email sem mascaramento' },
       { id: 'p-fld-3', module: 'cliente', resource: 'telefone', action: 'visualizar_completo', code: 'cliente.telefone.visualizar_completo', description: 'Visualizar telefone sem mascaramento' },
       { id: 'p-sch-10', module: 'busca', resource: 'historico', action: 'visualizar', code: 'busca.historico.visualizar', description: 'Visualizar histórico de buscas' },
-      { id: 'p-sch-11', module: 'busca', resource: 'exportacao', action: 'criar', code: 'busca.exportacao.criar', description: 'Exportar dados de consulta' }
+      { id: 'p-sch-11', module: 'busca', resource: 'exportacao', action: 'criar', code: 'busca.exportacao.criar', description: 'Exportar dados de consulta' },
+      // Motor Central de Aprovações e Alçadas (Fase 1.1.5.7)
+      { id: 'p-apr-1', module: 'aprovacoes', resource: 'caixa', action: 'visualizar', code: 'aprovacoes.caixa.visualizar', description: 'Visualizar caixa de aprovações' },
+      { id: 'p-apr-2', module: 'aprovacoes', resource: 'solicitacao', action: 'visualizar', code: 'aprovacoes.solicitacao.visualizar', description: 'Visualizar solicitações' },
+      { id: 'p-apr-3', module: 'aprovacoes', resource: 'solicitacao', action: 'criar', code: 'aprovacoes.solicitacao.criar', description: 'Criar solicitações de aprovação' },
+      { id: 'p-apr-4', module: 'aprovacoes', resource: 'solicitacao', action: 'aprovar', code: 'aprovacoes.solicitacao.aprovar', description: 'Aprovar solicitações' },
+      { id: 'p-apr-5', module: 'aprovacoes', resource: 'solicitacao', action: 'rejeitar', code: 'aprovacoes.solicitacao.rejeitar', description: 'Rejeitar solicitações' },
+      { id: 'p-apr-6', module: 'aprovacoes', resource: 'solicitacao', action: 'cancelar', code: 'aprovacoes.solicitacao.cancelar', description: 'Cancelar solicitações próprias' },
+      { id: 'p-apr-7', module: 'aprovacoes', resource: 'regra', action: 'visualizar', code: 'aprovacoes.regra.visualizar', description: 'Visualizar regras de aprovação' },
+      { id: 'p-apr-8', module: 'aprovacoes', resource: 'regra', action: 'criar', code: 'aprovacoes.regra.criar', description: 'Criar regras de aprovação' },
+      { id: 'p-apr-9', module: 'aprovacoes', resource: 'regra', action: 'editar', code: 'aprovacoes.regra.editar', description: 'Editar regras de aprovação' },
+      { id: 'p-apr-10', module: 'aprovacoes', resource: 'alcada', action: 'visualizar', code: 'aprovacoes.alcada.visualizar', description: 'Visualizar matriz de alçadas' },
+      { id: 'p-apr-11', module: 'aprovacoes', resource: 'alcada', action: 'editar', code: 'aprovacoes.alcada.editar', description: 'Editar alçadas de aprovação' },
+      { id: 'p-apr-12', module: 'aprovacoes', resource: 'delegacao', action: 'criar', code: 'aprovacoes.delegacao.criar', description: 'Delegar poderes de aprovação' },
+      { id: 'p-apr-13', module: 'aprovacoes', resource: 'historico', action: 'visualizar', code: 'aprovacoes.historico.visualizar', description: 'Visualizar histórico de aprovações' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -148,6 +182,14 @@ export class InMemoryPrismaStore {
     associate('FINANCEIRO', 'busca.produtor.visualizar');
     associate('FINANCEIRO', 'busca.cliente.visualizar');
     associate('FINANCEIRO', 'cliente.documento.visualizar_completo');
+    associate('FINANCEIRO', 'aprovacoes.caixa.visualizar');
+    associate('FINANCEIRO', 'aprovacoes.solicitacao.visualizar');
+    associate('FINANCEIRO', 'aprovacoes.solicitacao.criar');
+    associate('FINANCEIRO', 'aprovacoes.solicitacao.aprovar');
+    associate('FINANCEIRO', 'aprovacoes.solicitacao.rejeitar');
+    associate('FINANCEIRO', 'aprovacoes.solicitacao.cancelar');
+    associate('FINANCEIRO', 'aprovacoes.historico.visualizar');
+    associate('FINANCEIRO', 'aprovacoes.delegacao.criar');
 
     // SAC
     associate('ATENDIMENTO_SAC', 'sac.consulta.acessar');
@@ -158,7 +200,21 @@ export class InMemoryPrismaStore {
     associate('ATENDIMENTO_SAC', 'busca.ingresso.visualizar');
     associate('ATENDIMENTO_SAC', 'busca.ticket.visualizar');
     associate('ATENDIMENTO_SAC', 'busca.estorno.visualizar');
+    associate('ATENDIMENTO_SAC', 'aprovacoes.caixa.visualizar');
+    associate('ATENDIMENTO_SAC', 'aprovacoes.solicitacao.visualizar');
+    associate('ATENDIMENTO_SAC', 'aprovacoes.solicitacao.criar');
+    associate('ATENDIMENTO_SAC', 'aprovacoes.solicitacao.cancelar');
     // Note: ATENDIMENTO_SAC standard does not have cliente.documento.visualizar_completo (masked CPF)
+
+    // Estorno
+    associate('ESTORNO', 'estorno.solicitacao.visualizar');
+    associate('ESTORNO', 'estorno.solicitacao.aprovar');
+    associate('ESTORNO', 'aprovacoes.caixa.visualizar');
+    associate('ESTORNO', 'aprovacoes.solicitacao.visualizar');
+    associate('ESTORNO', 'aprovacoes.solicitacao.criar');
+    associate('ESTORNO', 'aprovacoes.solicitacao.aprovar');
+    associate('ESTORNO', 'aprovacoes.solicitacao.rejeitar');
+    associate('ESTORNO', 'aprovacoes.historico.visualizar');
 
     // Marketing
     associate('MARKETING', 'marketing.campanha.visualizar');
@@ -178,6 +234,10 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'busca.evento.visualizar');
     associate('PRODUTOR', 'busca.ingresso.visualizar');
     associate('PRODUTOR', 'busca.pedido.visualizar');
+    associate('PRODUTOR', 'aprovacoes.caixa.visualizar');
+    associate('PRODUTOR', 'aprovacoes.solicitacao.visualizar');
+    associate('PRODUTOR', 'aprovacoes.solicitacao.criar');
+    associate('PRODUTOR', 'aprovacoes.solicitacao.cancelar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -491,6 +551,283 @@ export class InMemoryPrismaStore {
         roas: 7.70,
         cpa: 48.10,
         createdAt: new Date('2026-08-01')
+      }
+    );
+
+    // 14. Regras Padrão de Aprovação e Alçadas (Fase 1.1.5.7)
+    this.approvalRules.push(
+      {
+        id: 'rule_fin_tier_1',
+        code: 'RULE_FIN_TRANSFER_TIER_1',
+        name: 'Transferência Financeira — Até R$ 10.000',
+        description: 'Alçada operacional: exige 1 aprovação de Supervisor/Gestor',
+        operation: 'FINANCE_TRANSFER',
+        producerId: null,
+        eventId: null,
+        minAmount: 0,
+        maxAmount: 10000.00,
+        approvalsRequired: 1,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: false,
+        require2FA: false,
+        requireComment: false,
+        requiredDocuments: null,
+        slaMinutes: 120,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_fin_tier_2',
+        code: 'RULE_FIN_TRANSFER_TIER_2',
+        name: 'Transferência Financeira — R$ 10.000 a R$ 50.000 (Dupla Validação)',
+        description: 'Alçada intermediária: exige 2 aprovações distintas de Gestores Financeiros',
+        operation: 'FINANCE_TRANSFER',
+        producerId: null,
+        eventId: null,
+        minAmount: 10000.01,
+        maxAmount: 50000.00,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: false,
+        require2FA: false,
+        requireComment: false,
+        requiredDocuments: null,
+        slaMinutes: 60,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_fin_tier_3',
+        code: 'RULE_FIN_TRANSFER_TIER_3',
+        name: 'Transferência Financeira — R$ 50.000 a R$ 200.000 (Dupla Aprovação)',
+        description: 'Exige 2 aprovações de gestores financeiros distintos',
+        operation: 'FINANCE_TRANSFER',
+        producerId: null,
+        eventId: null,
+        minAmount: 50000.01,
+        maxAmount: 200000.00,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: false,
+        require2FA: false,
+        requireComment: false,
+        requiredDocuments: null,
+        slaMinutes: 60,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_fin_tier_4',
+        code: 'RULE_FIN_TRANSFER_TIER_4',
+        name: 'Transferência Crítica Acima de R$ 200.000',
+        description: 'Operação de alto risco: exige 2 aprovações com Step-Up de segurança obrigatório',
+        operation: 'FINANCE_TRANSFER',
+        producerId: null,
+        eventId: null,
+        minAmount: 200000.01,
+        maxAmount: null,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: true,
+        require2FA: true,
+        requireComment: true,
+        requiredDocuments: null,
+        slaMinutes: 30,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_opus_spec',
+        code: 'RULE_OPUS_TRANSFER_SPECIAL',
+        name: 'Política Específica de Transferências — Opus Entretenimento',
+        description: 'Transferências acima de R$ 50.000 do produtor Opus exigem 2 aprovações',
+        operation: 'FINANCE_TRANSFER',
+        producerId: 'prd_100',
+        eventId: null,
+        minAmount: 50000.01,
+        maxAmount: null,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: false,
+        require2FA: false,
+        requireComment: false,
+        allowedRoles: JSON.stringify(['PRODUTOR', 'FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_ref_tier_1',
+        code: 'RULE_REFUND_TIER_1',
+        name: 'Estorno Operacional até R$ 1.000',
+        description: 'Estorno de rotina do SAC: 1 aprovação',
+        operation: 'REFUND_REQUEST',
+        producerId: null,
+        eventId: null,
+        minAmount: 0,
+        maxAmount: 1000.00,
+        approvalsRequired: 1,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        allowedRoles: JSON.stringify(['ESTORNO', 'FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_ref_tier_2',
+        code: 'RULE_REFUND_TIER_2',
+        name: 'Estorno de Alto Valor acima de R$ 1.000',
+        description: 'Exige 2 aprovações de estorno/financeiro',
+        operation: 'REFUND_REQUEST',
+        producerId: null,
+        eventId: null,
+        minAmount: 1000.01,
+        maxAmount: null,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        allowedRoles: JSON.stringify(['ESTORNO', 'FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_adm_perm',
+        code: 'RULE_ADMIN_PERMISSION_CHANGE',
+        name: 'Alteração de Permissões Críticas Administrativas',
+        description: 'Exige aprovação de 2 administradores com reautenticação Step-Up',
+        operation: 'ADMIN_PERMISSION_CHANGE',
+        producerId: null,
+        eventId: null,
+        minAmount: null,
+        maxAmount: null,
+        approvalsRequired: 2,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: true,
+        require2FA: true,
+        allowedRoles: JSON.stringify(['ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_seq_payout',
+        code: 'RULE_SEQUENTIAL_PAYOUT',
+        name: 'Repasse Financeiro Sequencial (Supervisor -> Gestor)',
+        operation: 'FINANCE_PAYOUT',
+        producerId: null,
+        eventId: null,
+        minAmount: 10000.00,
+        maxAmount: null,
+        approvalsRequired: 2,
+        isSequential: true,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_adv_docs',
+        code: 'RULE_ADVANCE_DOCS',
+        name: 'Antecipação Financeira com Documentação Obrigatória',
+        operation: 'FINANCE_ADVANCE',
+        producerId: null,
+        eventId: null,
+        minAmount: 0,
+        maxAmount: null,
+        approvalsRequired: 1,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requiredDocuments: JSON.stringify(['NOTA_FISCAL', 'CONTRATO']),
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 15. Matriz Inicial de Alçadas (Thresholds)
+    this.approvalThresholds.push(
+      {
+        id: 'thresh_maria_fin',
+        userId: 'usr_fin_maria',
+        roleId: null,
+        roleCode: 'FINANCEIRO',
+        operation: 'FINANCE_TRANSFER',
+        maxApprovalAmount: 500000.00,
+        producerId: null,
+        eventId: null,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'thresh_carlos_fin',
+        userId: 'usr_fin_carlos',
+        roleId: null,
+        roleCode: 'FINANCEIRO',
+        operation: 'FINANCE_TRANSFER',
+        maxApprovalAmount: 50000.00,
+        producerId: null,
+        eventId: null,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'thresh_roberto_prod',
+        userId: 'usr_prod_opus',
+        roleId: null,
+        roleCode: 'PRODUTOR',
+        operation: 'FINANCE_TRANSFER',
+        maxApprovalAmount: 100000.00,
+        producerId: 'prd_100',
+        eventId: null,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'thresh_role_fin',
+        userId: null,
+        roleId: null,
+        roleCode: 'FINANCEIRO',
+        operation: 'REFUND_REQUEST',
+        maxApprovalAmount: 10000.00,
+        producerId: null,
+        eventId: null,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'thresh_role_estorno',
+        userId: null,
+        roleId: null,
+        roleCode: 'ESTORNO',
+        operation: 'REFUND_REQUEST',
+        maxApprovalAmount: 50000.00,
+        producerId: null,
+        eventId: null,
+        createdAt: new Date('2026-01-01')
       }
     );
   }
@@ -1369,6 +1706,316 @@ export class InMemoryPrismaStore {
     };
   }
 
+  public get approvalRule() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalRules.find(x => x.id === args.where?.id || (args.where?.code && x.code === args.where.code)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          if (args.orderBy.minAmount === 'asc') list.sort((a, b) => a.minAmount - b.minAmount);
+          if (args.orderBy.minAmount === 'desc') list.sort((a, b) => b.minAmount - a.minAmount);
+        }
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `app_rule_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, createdAt: new Date(), updatedAt: new Date() };
+        this.approvalRules.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.approvalRules.find(x => x.id === args.where.id);
+        if (!item) throw new Error('ApprovalRule not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.approvalRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get approvalThreshold() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalThresholds.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalThresholds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalThresholds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `thresh_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, createdAt: new Date() };
+        this.approvalThresholds.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.approvalThresholds.find(x => x.id === args.where.id);
+        if (!item) throw new Error('ApprovalThreshold not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.approvalThresholds.findIndex(x => x.id === args.where.id);
+        if (idx !== -1) {
+          const removed = this.approvalThresholds.splice(idx, 1);
+          return removed[0];
+        }
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.approvalThresholds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get approvalRequest() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.approvalRequests.find(x => x.id === args.where?.id);
+        if (!item) return null;
+        return this.hydrateApprovalRequest(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalRequests];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateApprovalRequest(list[0], args.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalRequests];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        } else if (args?.orderBy?.createdAt === 'asc') {
+          list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        }
+        if (args?.skip) list = list.slice(args.skip);
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(item => this.hydrateApprovalRequest(item, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `apr_req_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.approvalRequests.push(item);
+        return this.hydrateApprovalRequest(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.approvalRequests.find(x => x.id === args.where.id);
+        if (!item) throw new Error('ApprovalRequest not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateApprovalRequest(item, args.include);
+      },
+      count: async (args?: any) => {
+        let list = [...this.approvalRequests];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get approvalStep() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalSteps.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalSteps];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalSteps];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.stepOrder - b.stepOrder);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_step_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data };
+        this.approvalSteps.push(item);
+        return item;
+      },
+      createMany: async (args: any) => {
+        const items = (args.data || []).map((d: any) => ({
+          id: d.id || `apr_step_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`,
+          ...d
+        }));
+        this.approvalSteps.push(...items);
+        return { count: items.length };
+      },
+      update: async (args: any) => {
+        const item = this.approvalSteps.find(x => x.id === args.where.id);
+        if (!item) throw new Error('ApprovalStep not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.approvalSteps.length;
+        if (args?.where?.requestId) {
+          this.approvalSteps = this.approvalSteps.filter(x => x.requestId !== args.where.requestId);
+        }
+        return { count: before - this.approvalSteps.length };
+      }
+    };
+  }
+
+  public get approvalDecision() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalDecisions.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalDecisions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalDecisions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.decidedAt).getTime() - new Date(b.decidedAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_dec_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, decidedAt: new Date() };
+        this.approvalDecisions.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get approvalDelegation() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalDelegations.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalDelegations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalDelegations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_dlg_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, createdAt: new Date() };
+        this.approvalDelegations.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.approvalDelegations.find(x => x.id === args.where.id);
+        if (!item) throw new Error('ApprovalDelegation not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get approvalComment() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalComments.find(x => x.id === args.where.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalComments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_cmt_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, createdAt: new Date() };
+        this.approvalComments.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get approvalAttachment() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalAttachments.find(x => x.id === args.where.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalAttachments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_att_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, uploadedAt: new Date() };
+        this.approvalAttachments.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get approvalGroup() {
+    return {
+      findUnique: async (args: any) => {
+        return this.approvalGroups.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.approvalGroups];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.approvalGroups];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_grp_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data, createdAt: new Date() };
+        this.approvalGroups.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get approvalGroupMember() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.approvalGroupMembers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `apr_gpm_${Date.now()}_${Math.random().toString(36).substr(2, 4)}`, ...args.data };
+        this.approvalGroupMembers.push(item);
+        return item;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.approvalGroupMembers.length;
+        if (args?.where?.groupId) {
+          this.approvalGroupMembers = this.approvalGroupMembers.filter(x => x.groupId !== args.where.groupId);
+        }
+        return { count: before - this.approvalGroupMembers.length };
+      }
+    };
+  }
+
   // Filter helper for Prisma-like conditions
   private filterEntities(list: any[], where: any): any[] {
     return list.filter(item => {
@@ -1394,8 +2041,22 @@ export class InMemoryPrismaStore {
               if (!itemVal.includes(searchVal)) return false;
             } else if (targetVal.in !== undefined && Array.isArray(targetVal.in)) {
               if (!targetVal.in.includes(item[key])) return false;
+            } else if (targetVal.notIn !== undefined && Array.isArray(targetVal.notIn)) {
+              if (targetVal.notIn.includes(item[key])) return false;
             } else if (targetVal.equals !== undefined) {
               if (item[key] !== targetVal.equals) return false;
+            } else if (targetVal.not !== undefined) {
+              if (item[key] === targetVal.not) return false;
+            } else if (targetVal.gte !== undefined && targetVal.lte !== undefined) {
+              if (item[key] < targetVal.gte || item[key] > targetVal.lte) return false;
+            } else if (targetVal.gte !== undefined) {
+              if (item[key] < targetVal.gte) return false;
+            } else if (targetVal.lte !== undefined) {
+              if (item[key] > targetVal.lte) return false;
+            } else if (targetVal.gt !== undefined) {
+              if (item[key] <= targetVal.gt) return false;
+            } else if (targetVal.lt !== undefined) {
+              if (item[key] >= targetVal.lt) return false;
             }
           } else {
             if (item[key] !== targetVal) return false;
@@ -1404,6 +2065,50 @@ export class InMemoryPrismaStore {
       }
       return true;
     });
+  }
+
+  private hydrateApprovalRequest(req: any, include?: any): any {
+    if (!req) return null;
+    const copy = { ...req };
+    if (include?.rule) {
+      copy.rule = this.approvalRules.find(r => r.id === req.ruleId) || null;
+    }
+    if (include?.requester) {
+      copy.requester = this.users.find(u => u.id === req.requesterId) || null;
+    }
+    if (include?.steps) {
+      copy.steps = this.approvalSteps
+        .filter(s => s.requestId === req.id)
+        .sort((a, b) => a.stepOrder - b.stepOrder)
+        .map(s => {
+          const stepCopy = { ...s };
+          if (include.steps.include?.decisions) {
+            stepCopy.decisions = this.approvalDecisions.filter(d => d.stepId === s.id);
+          }
+          return stepCopy;
+        });
+    }
+    if (include?.decisions) {
+      copy.decisions = this.approvalDecisions
+        .filter(d => d.requestId === req.id)
+        .sort((a, b) => new Date(a.decidedAt).getTime() - new Date(b.decidedAt).getTime());
+    }
+    if (include?.comments) {
+      copy.comments = this.approvalComments
+        .filter(c => c.requestId === req.id)
+        .sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    }
+    if (include?.attachments) {
+      copy.attachments = this.approvalAttachments
+        .filter(a => a.requestId === req.id);
+    }
+    if (include?.producer) {
+      copy.producer = this.producers.find(p => p.id === req.producerId) || null;
+    }
+    if (include?.event) {
+      copy.event = this.events.find(e => e.id === req.eventId) || null;
+    }
+    return copy;
   }
 
   private hydrateCustomer(customer: any, include?: any): any {

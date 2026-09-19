@@ -14,7 +14,8 @@ export type BadgeVariant =
   | 'danger'
   | 'info'
   | 'primary'
-  | 'default';
+  | 'default'
+  | 'neutral';
 
 export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
   variant?: BadgeVariant;
@@ -42,6 +43,7 @@ export const Badge: React.FC<BadgeProps> = ({
     cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
     info: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
     slate: 'bg-slate-800/80 text-slate-300 border-slate-700/80',
+    neutral: 'bg-slate-800/80 text-slate-300 border-slate-700/80',
     default: 'bg-slate-800/80 text-slate-300 border-slate-700/80',
     purple: 'bg-purple-500/10 text-purple-400 border-purple-500/30',
   };
@@ -58,6 +60,7 @@ export const Badge: React.FC<BadgeProps> = ({
     cyan: 'bg-cyan-400',
     info: 'bg-cyan-400',
     slate: 'bg-slate-400',
+    neutral: 'bg-slate-400',
     default: 'bg-slate-400',
     purple: 'bg-purple-400',
   };

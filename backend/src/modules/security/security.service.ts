@@ -165,6 +165,13 @@ export class SecurityService {
   }
 
   /**
+   * Helper alias for createStepUpToken
+   */
+  public static issueStepUpToken(userId: string, minutes: number = 5): string {
+    return this.createStepUpToken(userId);
+  }
+
+  /**
    * Manually block an IP address
    */
   public static blockIp(ip: string, reason: string): void {
