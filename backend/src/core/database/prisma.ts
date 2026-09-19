@@ -15,6 +15,11 @@ export class InMemoryPrismaStore {
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
   public auditLogs: any[] = [];
+  public notifications: any[] = [];
+  public notificationRecipients: any[] = [];
+  public notificationPreferences: any[] = [];
+  public notificationRules: any[] = [];
+  public outboxRecords: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -33,6 +38,11 @@ export class InMemoryPrismaStore {
     this.userEventAccesses = [];
     this.sessions = [];
     this.auditLogs = [];
+    this.notifications = [];
+    this.notificationRecipients = [];
+    this.notificationPreferences = [];
+    this.notificationRules = [];
+    this.outboxRecords = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -121,6 +131,16 @@ export class InMemoryPrismaStore {
       { id: 'evt_1001', producerId: 'prd_100', title: 'Festival de Inverno Curitiba 2026', venue: 'Pedreira Paulo Leminski', status: 'PUBLISHED' },
       { id: 'evt_1002', producerId: 'prd_100', title: 'Teatro Musical Broadway Curitiba', venue: 'Teatro Positivo', status: 'PUBLISHED' },
       { id: 'evt_2001', producerId: 'prd_200', title: 'Coldplay Experience World Tour', venue: 'Estádio Couto Pereira', status: 'PUBLISHED' }
+    );
+
+    // 6. Regras Padrão de Notificação (Fase 1.1.5.5)
+    this.notificationRules.push(
+      { id: 'rule_1', eventType: 'FINANCE_TRANSFER_CREATED', requiredPerm: 'financeiro.transferencia.aprovar', defaultPriority: 'HIGH', type: 'ACTION_REQUIRED', isMandatory: false, createdAt: new Date() },
+      { id: 'rule_2', eventType: 'FINANCE_TRANSFER_APPROVED', requiredPerm: 'financeiro.saldo.visualizar', defaultPriority: 'NORMAL', type: 'SUCCESS', isMandatory: false, createdAt: new Date() },
+      { id: 'rule_3', eventType: 'SAC_SLA_WARNING', requiredPerm: 'sac.consulta.acessar', defaultPriority: 'HIGH', type: 'WARNING', isMandatory: false, createdAt: new Date() },
+      { id: 'rule_4', eventType: 'SECURITY_BRUTE_FORCE', requiredPerm: 'admin.usuarios.visualizar', defaultPriority: 'CRITICAL', type: 'CRITICAL', isMandatory: true, createdAt: new Date() },
+      { id: 'rule_5', eventType: 'SECURITY_CONTEXT_TAMPERING', requiredPerm: 'admin.usuarios.visualizar', defaultPriority: 'CRITICAL', type: 'CRITICAL', isMandatory: true, createdAt: new Date() },
+      { id: 'rule_6', eventType: 'ORDER_PAID', requiredPerm: 'eventos.evento.visualizar', defaultPriority: 'LOW', type: 'SUCCESS', isMandatory: false, createdAt: new Date() }
     );
   }
 
@@ -472,6 +492,257 @@ export class InMemoryPrismaStore {
         return list;
       },
       count: async () => this.auditLogs.length
+    };
+  }
+
+  public get notification() {
+    return {
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `notif_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          type: args.data.type || 'INFO',
+          priority: args.data.priority || 'NORMAL',
+          module: args.data.module,
+          title: args.data.title,
+          description: args.data.description,
+          groupKey: args.data.groupKey || null,
+          resourceType: args.data.resourceType || null,
+          resourceId: args.data.resourceId || null,
+          actionUrl: args.data.actionUrl || null,
+          producerId: args.data.producerId || null,
+          eventId: args.data.eventId || null,
+          metadata: args.data.metadata || null,
+          createdAt: new Date()
+        };
+        this.notifications.unshift(item);
+        return item;
+      },
+      findUnique: async (args: any) => {
+        return this.notifications.find(n => n.id === args.where.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.notifications];
+        if (args?.where?.module) list = list.filter(n => n.module === args.where.module);
+        if (args?.where?.priority) list = list.filter(n => n.priority === args.where.priority);
+        if (args?.where?.groupKey) list = list.filter(n => n.groupKey === args.where.groupKey);
+        if (args?.where?.producerId) list = list.filter(n => n.producerId === args.where.producerId);
+        if (args?.where?.eventId) list = list.filter(n => n.eventId === args.where.eventId);
+        return list;
+      },
+      update: async (args: any) => {
+        const item = this.notifications.find(n => n.id === args.where.id);
+        if (!item) throw new Error('Notification not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async () => this.notifications.length
+    };
+  }
+
+  public get notificationRecipient() {
+    return {
+      create: async (args: any) => {
+        const record = {
+          id: `nr_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          notificationId: args.data.notificationId,
+          userId: args.data.userId,
+          status: args.data.status || 'UNREAD',
+          readAt: null,
+          archivedAt: null,
+          createdAt: new Date()
+        };
+        this.notificationRecipients.unshift(record);
+        return record;
+      },
+      findUnique: async (args: any) => {
+        return this.notificationRecipients.find(nr =>
+          nr.id === args.where.id ||
+          (nr.notificationId === args.where.notificationId_userId?.notificationId && nr.userId === args.where.notificationId_userId?.userId)
+        ) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.notificationRecipients];
+        if (args?.where?.OR) {
+          list = list.filter(nr => {
+            return args.where.OR.some((condition: any) => {
+              let match = true;
+              if (condition.id && nr.id !== condition.id) match = false;
+              if (condition.notificationId && nr.notificationId !== condition.notificationId) match = false;
+              if (condition.userId && nr.userId !== condition.userId) match = false;
+              if (condition.status && nr.status !== condition.status) match = false;
+              return match;
+            });
+          });
+        }
+        if (args?.where?.userId) list = list.filter(nr => nr.userId === args.where.userId);
+        if (args?.where?.notificationId) list = list.filter(nr => nr.notificationId === args.where.notificationId);
+        if (args?.where?.id) list = list.filter(nr => nr.id === args.where.id);
+        const item = list[0] || null;
+        if (item && args?.include?.notification) {
+          return {
+            ...item,
+            notification: this.notifications.find(n => n.id === item.notificationId) || null
+          };
+        }
+        return item;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.notificationRecipients];
+        if (args?.where?.userId) list = list.filter(nr => nr.userId === args.where.userId);
+        if (args?.where?.status) {
+          if (typeof args.where.status === 'string') {
+            list = list.filter(nr => nr.status === args.where.status);
+          } else if (args.where.status.in) {
+            list = list.filter(nr => args.where.status.in.includes(nr.status));
+          }
+        }
+        return list.map(nr => {
+          if (args?.include?.notification) {
+            return {
+              ...nr,
+              notification: this.notifications.find(n => n.id === nr.notificationId) || null
+            };
+          }
+          return nr;
+        });
+      },
+      update: async (args: any) => {
+        const nr = this.notificationRecipients.find(x =>
+          x.id === args.where.id ||
+          (x.notificationId === args.where.notificationId_userId?.notificationId && x.userId === args.where.notificationId_userId?.userId)
+        );
+        if (!nr) throw new Error('NotificationRecipient not found');
+        Object.assign(nr, args.data);
+        return nr;
+      },
+      updateMany: async (args: any) => {
+        let count = 0;
+        this.notificationRecipients.forEach(nr => {
+          let match = true;
+          if (args.where?.userId && nr.userId !== args.where.userId) match = false;
+          if (args.where?.status && nr.status !== args.where.status) match = false;
+          if (match) {
+            Object.assign(nr, args.data);
+            count++;
+          }
+        });
+        return { count };
+      },
+      count: async (args?: any) => {
+        let list = [...this.notificationRecipients];
+        if (args?.where?.userId) list = list.filter(nr => nr.userId === args.where.userId);
+        if (args?.where?.status) list = list.filter(nr => nr.status === args.where.status);
+        return list.length;
+      }
+    };
+  }
+
+  public get notificationPreference() {
+    return {
+      findUnique: async (args: any) => {
+        return this.notificationPreferences.find(np =>
+          np.id === args.where.id ||
+          (np.userId === args.where.userId_module_channel?.userId &&
+           np.module === args.where.userId_module_channel?.module &&
+           np.channel === args.where.userId_module_channel?.channel)
+        ) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.notificationPreferences];
+        if (args?.where?.userId) list = list.filter(np => np.userId === args.where.userId);
+        return list;
+      },
+      upsert: async (args: any) => {
+        const existing = this.notificationPreferences.find(np =>
+          np.userId === args.where.userId_module_channel?.userId &&
+          np.module === args.where.userId_module_channel?.module &&
+          np.channel === args.where.userId_module_channel?.channel
+        );
+        if (existing) {
+          Object.assign(existing, args.update, { updatedAt: new Date() });
+          return existing;
+        }
+        const newPref = {
+          id: `np_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          ...args.create,
+          updatedAt: new Date()
+        };
+        this.notificationPreferences.push(newPref);
+        return newPref;
+      }
+    };
+  }
+
+  public get notificationRule() {
+    return {
+      create: async (args: any) => {
+        const rule = {
+          id: args.data.id || `nr_${Date.now()}`,
+          eventType: args.data.eventType,
+          requiredPerm: args.data.requiredPerm || null,
+          defaultPriority: args.data.defaultPriority || 'NORMAL',
+          type: args.data.type || 'INFO',
+          isMandatory: args.data.isMandatory ?? false,
+          createdAt: new Date()
+        };
+        this.notificationRules.push(rule);
+        return rule;
+      },
+      findUnique: async (args: any) => {
+        return this.notificationRules.find(r => r.id === args.where.id || r.eventType === args.where.eventType) || null;
+      },
+      findMany: async () => [...this.notificationRules],
+      upsert: async (args: any) => {
+        const r = this.notificationRules.find(x => x.eventType === args.where.eventType);
+        if (r) {
+          Object.assign(r, args.update);
+          return r;
+        }
+        const created = {
+          id: `rule_${Date.now()}`,
+          ...args.create,
+          createdAt: new Date()
+        };
+        this.notificationRules.push(created);
+        return created;
+      }
+    };
+  }
+
+  public get eventOutbox() {
+    return {
+      create: async (args: any) => {
+        const outboxItem = {
+          id: args.data.id || `outbox_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          eventId: args.data.eventId,
+          eventType: args.data.eventType,
+          producerId: args.data.producerId || null,
+          eventIdRef: args.data.eventIdRef || null,
+          resourceType: args.data.resourceType || null,
+          resourceId: args.data.resourceId || null,
+          actorUserId: args.data.actorUserId || null,
+          payload: typeof args.data.payload === 'string' ? args.data.payload : JSON.stringify(args.data.payload),
+          status: args.data.status || 'PENDING',
+          processedAt: null,
+          createdAt: new Date()
+        };
+        this.outboxRecords.push(outboxItem);
+        return outboxItem;
+      },
+      findUnique: async (args: any) => {
+        return this.outboxRecords.find(o => o.id === args.where.id || o.eventId === args.where.eventId) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.outboxRecords];
+        if (args?.where?.status) list = list.filter(o => o.status === args.where.status);
+        return list;
+      },
+      update: async (args: any) => {
+        const item = this.outboxRecords.find(o => o.id === args.where.id || o.eventId === args.where.eventId);
+        if (!item) throw new Error('Outbox item not found');
+        Object.assign(item, args.data);
+        return item;
+      }
     };
   }
 

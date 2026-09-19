@@ -50,6 +50,8 @@ model User {
   eventAccesses     UserEventAccess[]
   sessions          Session[]
   auditLogs         AuditLog[]
+  notifications     NotificationRecipient[]
+  preferences       NotificationPreference[]
 
   @@index([email])
   @@index([status])
@@ -244,5 +246,90 @@ model AuditLog {
   @@index([userId])
   @@index([action])
   @@index([resource])
+  @@index([createdAt])
+}
+
+// ------------------------------------------------------------------------------
+// 7. NOTIFICAÇÕES, OUTBOX & REAL-TIME (FASE 1.1.5.5)
+// ------------------------------------------------------------------------------
+
+model Notification {
+  id           String    @id @default(uuid())
+  type         String    // INFO, SUCCESS, WARNING, CRITICAL, ACTION_REQUIRED
+  priority     String    @default("NORMAL") // LOW, NORMAL, HIGH, CRITICAL
+  module       String    // FINANCE, EVENTS, SAC, REFUNDS, MARKETING, SECURITY, etc.
+  title        String
+  description  String
+  groupKey     String?   // For anti-noise deduplication & grouping (e.g. sales:evt_1001)
+  resourceType String?   // TRANSFER, ORDER, TICKET, INCIDENT, EVENT, etc.
+  resourceId   String?
+  actionUrl    String?   // e.g. /finance/transfers/trf_123
+  producerId   String?
+  eventId      String?
+  metadata     String?   // JSON stringified extra payload
+  createdAt    DateTime  @default(now())
+
+  recipients   NotificationRecipient[]
+
+  @@index([module])
+  @@index([groupKey])
+  @@index([createdAt])
+}
+
+model NotificationRecipient {
+  id             String       @id @default(uuid())
+  notificationId String
+  userId         String
+  status         String       @default("UNREAD") // UNREAD, READ, ARCHIVED, DISMISSED
+  readAt         DateTime?
+  archivedAt     DateTime?
+  createdAt      DateTime     @default(now())
+
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId, status])
+}
+
+model NotificationPreference {
+  id             String   @id @default(uuid())
+  userId         String
+  module         String
+  channel        String   @default("IN_APP") // IN_APP, EMAIL, WHATSAPP
+  isEnabled      Boolean  @default(true)
+  updatedAt      DateTime @updatedAt
+
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, module, channel])
+  @@index([userId])
+}
+
+model NotificationRule {
+  id              String   @id @default(uuid())
+  eventType       String   @unique // e.g. FINANCE_TRANSFER_CREATED
+  requiredPerm    String?  // e.g. financeiro.transferencia.aprovar
+  defaultPriority String   @default("NORMAL")
+  type            String   @default("INFO")
+  isMandatory     Boolean  @default(false) // If true, cannot be disabled by user preferences (e.g. security)
+  createdAt       DateTime @default(now())
+}
+
+model EventOutbox {
+  id           String    @id @default(uuid())
+  eventId      String    @unique // Unique event ID for idempotency
+  eventType    String
+  producerId   String?
+  eventIdRef   String?
+  resourceType String?
+  resourceId   String?
+  actorUserId  String?
+  payload      String    // JSON stringified payload
+  status       String    @default("PENDING") // PENDING, PROCESSED, FAILED
+  processedAt  DateTime?
+  createdAt    DateTime  @default(now())
+
+  @@index([status])
   @@index([createdAt])
 }

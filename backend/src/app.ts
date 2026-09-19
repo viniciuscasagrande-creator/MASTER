@@ -2,6 +2,11 @@ import express, { Request, Response } from 'express';
 import cors from 'cors';
 import apiV1Routes from './routes/index';
 import { errorHandler } from './core/middleware/errorHandler';
+import { EventBus } from './events/event-bus';
+import { NotificationService } from './modules/notifications/notification.service';
+
+// Connect notification engine to event bus
+EventBus.subscribeAll(NotificationService.processDomainEvent);
 
 const app = express();
 

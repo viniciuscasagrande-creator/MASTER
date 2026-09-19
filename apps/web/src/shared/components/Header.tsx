@@ -22,6 +22,7 @@ import {
 import { useAuth } from '../../core/auth/AuthContext';
 import { useDiskContext } from '../../core/context/DiskContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
+import { useNotifications } from '../../core/context/NotificationContext';
 import { Button } from './Button';
 import { Badge } from './Badge';
 
@@ -59,7 +60,8 @@ export const Header: React.FC<HeaderProps> = ({
     resetScope
   } = useDiskContext();
 
-  const { notifications, auditLogs } = useCoreData();
+  const { auditLogs } = useCoreData();
+  const { unreadCount, connectionStatus, toastNotification, dismissToast } = useNotifications();
 
   // Dropdown popover states
   const [isProducerPopoverOpen, setIsProducerPopoverOpen] = useState(false);
@@ -91,7 +93,6 @@ export const Header: React.FC<HeaderProps> = ({
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, []);
 
-  const unreadCount = notifications.filter(n => !n.read).length;
   const isFiltered = selectedProducerId !== 'all' || selectedEventId !== 'all';
 
   const filteredProducers = availableProducers.filter(p =>
@@ -122,8 +123,14 @@ export const Header: React.FC<HeaderProps> = ({
                 </span>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
-                <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Node Core Real • v1.1.5</span>
+                <span className={`h-1.5 w-1.5 rounded-full ${
+                  connectionStatus === 'CONNECTED'
+                    ? 'bg-emerald-400 animate-pulse'
+                    : connectionStatus === 'CONNECTING' || connectionStatus === 'RECONNECTING'
+                    ? 'bg-amber-400 animate-pulse'
+                    : 'bg-slate-500'
+                }`} />
+                <span>{connectionStatus === 'CONNECTED' ? 'Realtime Ativo' : 'Node Core Real'} • v1.1.5</span>
               </div>
             </div>
           </div>
@@ -450,6 +457,35 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
         </div>
       </div>
+
+      {/* Real-time Alert Toast Banner */}
+      {toastNotification && (
+        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-orange-950/90 via-slate-900/95 to-slate-950 border-t border-b border-orange-500/40 text-xs text-white animate-in slide-in-from-top duration-200">
+          <div className="flex items-center gap-2 overflow-hidden">
+            <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-ping shrink-0" />
+            <span className="font-bold text-orange-400 shrink-0">[{toastNotification.module}]</span>
+            <span className="font-semibold text-white truncate">{toastNotification.title}:</span>
+            <span className="text-slate-300 truncate max-w-lg hidden sm:inline">{toastNotification.description}</span>
+          </div>
+          <div className="flex items-center gap-2 shrink-0 ml-3">
+            <button
+              onClick={() => {
+                dismissToast();
+                onOpenNotifications();
+              }}
+              className="px-2.5 py-0.5 rounded-lg bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 text-[11px] font-semibold border border-orange-500/30 transition-colors"
+            >
+              Ver Alerta
+            </button>
+            <button
+              onClick={dismissToast}
+              className="text-slate-400 hover:text-white text-xs px-1"
+            >
+              ✕
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Operational Breadcrumb Bar */}
       <div className="flex items-center justify-between px-4 py-1.5 bg-slate-950/90 border-t border-slate-800/40 text-[11px] text-slate-400 overflow-x-auto select-none">

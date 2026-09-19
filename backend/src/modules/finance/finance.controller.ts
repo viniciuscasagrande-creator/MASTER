@@ -3,6 +3,7 @@ import { prisma } from '../../core/database/prisma';
 import { NotFoundError, ForbiddenError } from '../../core/errors/AppError';
 import { AuditService } from '../audit/audit.service';
 import { SecurityService } from '../security/security.service';
+import { EventBus } from '../../events/event-bus';
 
 // In-memory transfers store for Phase 1.1.5.1 demonstration
 const transfersDB: any[] = [];
@@ -66,6 +67,18 @@ export class FinanceRealController {
         result: 'SUCCESS'
       });
 
+      await EventBus.publish({
+        id: `evt_trf_${transfer.id}`,
+        type: 'FINANCE_TRANSFER_CREATED',
+        producerId: String(producerId),
+        eventId: fromEventId,
+        resourceType: 'TRANSFER',
+        resourceId: transfer.id,
+        actorUserId: req.user?.id,
+        data: transfer,
+        timestamp: new Date()
+      }).catch(err => console.error('[EventBus publish error]:', err));
+
       res.status(201).json({ success: true, transfer });
     } catch (err) {
       next(err);
@@ -109,6 +122,18 @@ export class FinanceRealController {
         details: `Transferência ${transfer.id} no valor de R$ ${transfer.amount} aprovada por ${req.user?.name}.`,
         result: 'SUCCESS'
       });
+
+      await EventBus.publish({
+        id: `evt_trf_appr_${transfer.id}`,
+        type: 'FINANCE_TRANSFER_APPROVED',
+        producerId: transfer.producerId,
+        eventId: transfer.fromEventId,
+        resourceType: 'TRANSFER',
+        resourceId: transfer.id,
+        actorUserId: req.user?.id,
+        data: transfer,
+        timestamp: new Date()
+      }).catch(err => console.error('[EventBus publish error]:', err));
 
       res.status(200).json({ success: true, message: 'Transferência aprovada com sucesso.', transfer });
     } catch (err) {

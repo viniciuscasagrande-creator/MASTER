@@ -269,6 +269,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     switch (moduleId) {
       case 'overview':
+      case 'notifications':
         return true;
       case 'events':
         return currentUser.permissions.some(p => p.startsWith('eventos.'));

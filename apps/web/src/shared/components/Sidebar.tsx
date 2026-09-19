@@ -12,6 +12,7 @@ import {
   TrendingUp,
   Settings,
   ShieldCheck,
+  Bell,
   ChevronDown,
   ChevronRight,
   PanelLeftClose,
@@ -19,6 +20,7 @@ import {
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
+import { useNotifications } from '../../core/context/NotificationContext';
 import { PermissionString } from '@shared/types/index';
 
 export interface NavigationItem {
@@ -47,6 +49,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 }) => {
   const { canAccessModule, currentUser, hasPermission } = useAuth();
   const { refunds, incidents, sacTickets } = useCoreData();
+  const { unreadCount } = useNotifications();
 
   // Accordion state
   const [openAccordions, setOpenAccordions] = useState<Record<string, boolean>>({
@@ -64,6 +67,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'overview',
       label: 'Visão Geral',
       icon: <LayoutDashboard className="h-4 w-4" />
+    },
+    {
+      id: 'notifications',
+      label: 'Notificações',
+      icon: <Bell className="h-4 w-4" />,
+      badge: unreadCount > 0 ? unreadCount : undefined
     },
     {
       id: 'events',
@@ -187,6 +196,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'admin-permissions', label: 'Permissões' },
         { id: 'admin-sessions', label: 'Sessões Ativas' },
         { id: 'admin-security', label: 'Segurança & 2FA' },
+        { id: 'admin-notifications', label: 'Regras de Alerta' },
         { id: 'admin-audit', label: 'Auditoria' }
       ]
     },

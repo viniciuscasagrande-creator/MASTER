@@ -35,8 +35,13 @@ import { AdminSessionsView } from './modules/admin/AdminSessionsView';
 import { AdminAuditView } from './modules/admin/AdminAuditView';
 import { SecurityCenterView } from './modules/admin/SecurityCenterView';
 
+// Central de Notificações & Realtime (Fase 1.1.5.5)
+import { NotificationProvider } from './core/context/NotificationContext';
+import { NotificationCenterView } from './modules/notifications/NotificationCenterView';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
+  notifications: 'Notificações',
   events: 'Eventos',
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
@@ -103,6 +108,8 @@ const MainShell: React.FC = () => {
         return <AdminSessionsView />;
       case 'admin-security':
         return <SecurityCenterView />;
+      case 'admin-notifications':
+        return <NotificationCenterView onNavigate={handleNavigate} />;
       case 'admin-audit':
         return <AdminAuditView />;
       default:
@@ -124,6 +131,9 @@ const MainShell: React.FC = () => {
             onOpenNewSale={() => setIsNewSaleModalOpen(true)}
           />
         );
+
+      case 'notifications':
+        return <NotificationCenterView onNavigate={handleNavigate} />;
 
       case 'events':
         return (
@@ -256,6 +266,7 @@ const MainShell: React.FC = () => {
         isOpen={isNotificationsOpen}
         onClose={() => setIsNotificationsOpen(false)}
         onNavigate={handleNavigate}
+        onOpenFullCenter={() => handleNavigate('notifications')}
       />
 
       {/* Immutable Core Audit Trail Slide-Over */}
@@ -278,9 +289,11 @@ export default function App() {
     <AuthProvider>
       <DiskContextProvider>
         <ScopeProvider>
-          <CoreDataProvider>
-            <MainShell />
-          </CoreDataProvider>
+          <NotificationProvider>
+            <CoreDataProvider>
+              <MainShell />
+            </CoreDataProvider>
+          </NotificationProvider>
         </ScopeProvider>
       </DiskContextProvider>
     </AuthProvider>
