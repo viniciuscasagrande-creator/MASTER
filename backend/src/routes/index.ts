@@ -20,6 +20,7 @@ import documentRoutes, { resourceDocumentsRouter } from '../modules/documents/do
 import { taskRoutes } from '../modules/tasks/task.routes';
 import { configurationRoutes } from '../modules/configuration/configuration.routes';
 import { observabilityRoutes } from '../modules/observability/observability.routes';
+import { analyticsRoutes, reportRoutes } from '../modules/analytics/analytics.routes';
 
 const router = Router();
 
@@ -51,5 +52,7 @@ router.use('/orders', ordersRoutes);
 router.use('/audit', auditRoutes);
 router.use('/marketing', marketingRoutes);
 router.use('/accounting', accountingRoutes);
+router.use('/analytics', analyticsRoutes);
+router.use('/reports', reportRoutes);
 
 export default router;

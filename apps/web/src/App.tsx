@@ -61,6 +61,9 @@ import { ConfigurationCenterView } from './modules/configuration';
 // Central de Auditoria, Observabilidade e Rastreabilidade Operacional (Fase 1.1.5.12)
 import { ObservabilityCenterView } from './modules/observability';
 
+// Motor Central de Relatórios, Exportações e BI Operacional (Fase 1.1.5.13)
+import { AnalyticsCenterView } from './modules/analytics';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
@@ -68,6 +71,10 @@ const MODULE_NAMES: Record<string, string> = {
   approvals: 'Aprovações',
   documents: 'Documentos',
   tasks: 'Central de Trabalho',
+  configurations: 'Regras & Políticas',
+  observability: 'Auditoria & Observabilidade',
+  analytics: 'Relatórios & BI',
+  reports: 'Relatórios & BI',
   events: 'Eventos',
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
@@ -77,8 +84,6 @@ const MODULE_NAMES: Record<string, string> = {
   accounting: 'Contabilidade',
   marketing: 'Marketing',
   remarketing: 'Remarketing',
-  configurations: 'Regras & Políticas',
-  observability: 'Auditoria & Monitoramento',
   admin: 'Administração',
   settings: 'Configurações'
 };
@@ -288,6 +293,14 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="observabilidade.dashboard.visualizar" onBack={() => handleNavigate('overview')}>
             <ObservabilityCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'analytics':
+      case 'reports':
+        return (
+          <ProtectedRoute permission="relatorios.central.visualizar" onBack={() => handleNavigate('overview')}>
+            <AnalyticsCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

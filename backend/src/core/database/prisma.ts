@@ -92,6 +92,13 @@ export class InMemoryPrismaStore {
   public systemAlerts: any[] = [];
   public metricSnapshots: any[] = [];
   public observabilityAnnotations: any[] = [];
+  // Relatórios, Exportações e BI Operacional (Fase 1.1.5.13)
+  public metricDefinitionModels: any[] = [];
+  public savedReportModels: any[] = [];
+  public reportExportJobModels: any[] = [];
+  public reportScheduleModels: any[] = [];
+  public reportSnapshotModels: any[] = [];
+  public analyticsGoalModels: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -186,6 +193,13 @@ export class InMemoryPrismaStore {
     this.systemAlerts = [];
     this.metricSnapshots = [];
     this.observabilityAnnotations = [];
+    // Relatórios, Exportações e BI Operacional (Fase 1.1.5.13)
+    this.metricDefinitionModels = [];
+    this.savedReportModels = [];
+    this.reportExportJobModels = [];
+    this.reportScheduleModels = [];
+    this.reportSnapshotModels = [];
+    this.analyticsGoalModels = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -318,7 +332,24 @@ export class InMemoryPrismaStore {
       { id: 'p-obs-11', module: 'observabilidade', resource: 'worker', action: 'visualizar', code: 'observabilidade.worker.visualizar', description: 'Visualizar status dos workers' },
       { id: 'p-obs-12', module: 'observabilidade', resource: 'integracao', action: 'visualizar', code: 'observabilidade.integracao.visualizar', description: 'Visualizar telemetria de integrações' },
       { id: 'p-obs-13', module: 'observabilidade', resource: 'seguranca', action: 'visualizar', code: 'observabilidade.seguranca.visualizar', description: 'Visualizar eventos de segurança' },
-      { id: 'p-obs-14', module: 'observabilidade', resource: 'saude', action: 'visualizar', code: 'observabilidade.saude.visualizar', description: 'Visualizar saúde do sistema e componentes' }
+      { id: 'p-obs-14', module: 'observabilidade', resource: 'saude', action: 'visualizar', code: 'observabilidade.saude.visualizar', description: 'Visualizar saúde do sistema e componentes' },
+      // Relatórios & BI (Fase 1.1.5.13)
+      { id: 'p-rel-1', module: 'relatorios', resource: 'central', action: 'visualizar', code: 'relatorios.central.visualizar', description: 'Acessar Central de Relatórios e BI' },
+      { id: 'p-rel-2', module: 'relatorios', resource: 'relatorio', action: 'visualizar', code: 'relatorios.relatorio.visualizar', description: 'Visualizar relatórios' },
+      { id: 'p-rel-3', module: 'relatorios', resource: 'relatorio', action: 'criar', code: 'relatorios.relatorio.criar', description: 'Criar relatórios personalizados' },
+      { id: 'p-rel-4', module: 'relatorios', resource: 'relatorio', action: 'editar', code: 'relatorios.relatorio.editar', description: 'Editar relatórios salvos' },
+      { id: 'p-rel-5', module: 'relatorios', resource: 'relatorio', action: 'compartilhar', code: 'relatorios.relatorio.compartilhar', description: 'Compartilhar relatórios' },
+      { id: 'p-rel-6', module: 'relatorios', resource: 'exportacao', action: 'criar', code: 'relatorios.exportacao.criar', description: 'Exportar relatórios (XLSX, CSV, PDF)' },
+      { id: 'p-rel-7', module: 'relatorios', resource: 'exportacao', action: 'baixar', code: 'relatorios.exportacao.baixar', description: 'Baixar arquivos exportados' },
+      { id: 'p-rel-8', module: 'relatorios', resource: 'agendamento', action: 'criar', code: 'relatorios.agendamento.criar', description: 'Criar agendamentos periódicos' },
+      { id: 'p-rel-9', module: 'relatorios', resource: 'indicador', action: 'visualizar', code: 'relatorios.indicador.visualizar', description: 'Visualizar dicionário e catálogo de indicadores' },
+      { id: 'p-rel-10', module: 'relatorios', resource: 'dados_sensiveis', action: 'visualizar', code: 'relatorios.dados_sensiveis.visualizar', description: 'Visualizar colunas e campos sensíveis em relatórios' },
+      { id: 'p-rel-11', module: 'relatorios', resource: 'vendas', action: 'visualizar', code: 'relatorios.vendas.visualizar', description: 'Visualizar indicadores e relatórios de vendas' },
+      { id: 'p-rel-12', module: 'relatorios', resource: 'financeiro', action: 'visualizar', code: 'relatorios.financeiro.visualizar', description: 'Visualizar indicadores e relatórios financeiros' },
+      { id: 'p-rel-13', module: 'relatorios', resource: 'marketing', action: 'visualizar', code: 'relatorios.marketing.visualizar', description: 'Visualizar indicadores e relatórios de marketing' },
+      { id: 'p-rel-14', module: 'relatorios', resource: 'sac', action: 'visualizar', code: 'relatorios.sac.visualizar', description: 'Visualizar indicadores e relatórios de SAC' },
+      { id: 'p-rel-15', module: 'relatorios', resource: 'eventos', action: 'visualizar', code: 'relatorios.eventos.visualizar', description: 'Visualizar indicadores e relatórios de eventos' },
+      { id: 'p-rel-16', module: 'relatorios', resource: 'contabilidade', action: 'visualizar', code: 'relatorios.contabilidade.visualizar', description: 'Visualizar indicadores contábeis' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -535,6 +566,32 @@ export class InMemoryPrismaStore {
     associate('SUPORTE_EVENTOS', 'observabilidade.trace.visualizar');
     associate('SUPORTE_EVENTOS', 'observabilidade.erro.visualizar');
     associate('SUPORTE_EVENTOS', 'observabilidade.saude.visualizar');
+
+    // Relatórios & BI (Fase 1.1.5.13)
+    this.permissions.filter(p => p.code.startsWith('relatorios.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+    associate('FINANCEIRO', 'relatorios.central.visualizar');
+    associate('FINANCEIRO', 'relatorios.financeiro.visualizar');
+    associate('FINANCEIRO', 'relatorios.relatorio.visualizar');
+    associate('FINANCEIRO', 'relatorios.exportacao.criar');
+    associate('FINANCEIRO', 'relatorios.exportacao.baixar');
+    associate('FINANCEIRO', 'relatorios.indicador.visualizar');
+
+    associate('MARKETING', 'relatorios.central.visualizar');
+    associate('MARKETING', 'relatorios.marketing.visualizar');
+    associate('MARKETING', 'relatorios.relatorio.visualizar');
+    associate('MARKETING', 'relatorios.exportacao.criar');
+
+    associate('ATENDIMENTO_SAC', 'relatorios.central.visualizar');
+    associate('ATENDIMENTO_SAC', 'relatorios.sac.visualizar');
+
+    associate('PRODUTOR', 'relatorios.central.visualizar');
+    associate('PRODUTOR', 'relatorios.eventos.visualizar');
+    associate('PRODUTOR', 'relatorios.vendas.visualizar');
+    associate('PRODUTOR', 'relatorios.relatorio.visualizar');
+    associate('PRODUTOR', 'relatorios.exportacao.criar');
+    associate('PRODUTOR', 'relatorios.exportacao.baixar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -5261,6 +5318,298 @@ export class InMemoryPrismaStore {
       },
       count: async (args?: any) => {
         let list = [...this.observabilityAnnotations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  // --- FASE 1.1.5.13: ANALYTICS & BI DELEGATES ---
+  public get metricDefinitionModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.metricDefinitionModels.find(x => x.id === args.where?.id || (args.where?.code && x.code === args.where.code)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.metricDefinitionModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.metricDefinitionModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          list.sort((a, b) => (a.code || '').localeCompare(b.code || ''));
+        }
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `met_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          version: args.data.version || 1,
+          ...args.data
+        };
+        this.metricDefinitionModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.metricDefinitionModels.findIndex(x => x.id === args.where?.id || (args.where?.code && x.code === args.where.code));
+        if (idx >= 0) {
+          this.metricDefinitionModels[idx] = {
+            ...this.metricDefinitionModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.metricDefinitionModels[idx];
+        }
+        throw new Error(`MetricDefinition not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.metricDefinitionModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.metricDefinitionModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`MetricDefinition not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.metricDefinitionModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get savedReportModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.savedReportModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.savedReportModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.savedReportModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.updatedAt || b.createdAt).getTime() - new Date(a.updatedAt || a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `rep_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.savedReportModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.savedReportModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.savedReportModels[idx] = {
+            ...this.savedReportModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.savedReportModels[idx];
+        }
+        throw new Error(`SavedReport not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.savedReportModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.savedReportModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`SavedReport not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.savedReportModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get reportExportJobModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.reportExportJobModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.reportExportJobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.reportExportJobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `exp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'PENDING',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.reportExportJobModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.reportExportJobModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.reportExportJobModels[idx] = {
+            ...this.reportExportJobModels[idx],
+            ...args.data
+          };
+          return this.reportExportJobModels[idx];
+        }
+        throw new Error(`ReportExportJob not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.reportExportJobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get reportScheduleModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.reportScheduleModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.reportScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.reportScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `sch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          active: args.data.active !== undefined ? args.data.active : true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.reportScheduleModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.reportScheduleModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.reportScheduleModels[idx] = {
+            ...this.reportScheduleModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.reportScheduleModels[idx];
+        }
+        throw new Error(`ReportSchedule not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.reportScheduleModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.reportScheduleModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`ReportSchedule not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.reportScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get reportSnapshotModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.reportSnapshotModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.reportSnapshotModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.reportSnapshotModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.snapshotDate).getTime() - new Date(a.snapshotDate).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `snp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.reportSnapshotModels.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.reportSnapshotModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get analyticsGoalModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.analyticsGoalModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.analyticsGoalModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.analyticsGoalModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `goal_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.analyticsGoalModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.analyticsGoalModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.analyticsGoalModels[idx] = {
+            ...this.analyticsGoalModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.analyticsGoalModels[idx];
+        }
+        throw new Error(`AnalyticsGoal not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.analyticsGoalModels];
         if (args?.where) list = this.filterEntities(list, args.where);
         return list.length;
       }

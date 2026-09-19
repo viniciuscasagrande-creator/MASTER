@@ -165,7 +165,29 @@ export type PermissionString =
   | 'observabilidade.worker.visualizar'
   | 'observabilidade.integracao.visualizar'
   | 'observabilidade.seguranca.visualizar'
-  | 'observabilidade.saude.visualizar';
+  | 'observabilidade.saude.visualizar'
+  // Relatórios, Exportações e BI Operacional (Fase 1.1.5.13)
+  | 'relatorios.central.visualizar'
+  | 'relatorios.relatorio.visualizar'
+  | 'relatorios.relatorio.criar'
+  | 'relatorios.relatorio.editar'
+  | 'relatorios.relatorio.excluir'
+  | 'relatorios.relatorio.compartilhar'
+  | 'relatorios.exportacao.criar'
+  | 'relatorios.exportacao.baixar'
+  | 'relatorios.agendamento.criar'
+  | 'relatorios.agendamento.editar'
+  | 'relatorios.agendamento.excluir'
+  | 'relatorios.indicador.visualizar'
+  | 'relatorios.dashboard.personalizar'
+  | 'relatorios.dados_sensiveis.visualizar'
+  | 'relatorios.administracao.gerenciar'
+  | 'relatorios.vendas.visualizar'
+  | 'relatorios.financeiro.visualizar'
+  | 'relatorios.contabilidade.visualizar'
+  | 'relatorios.marketing.visualizar'
+  | 'relatorios.sac.visualizar'
+  | 'relatorios.eventos.visualizar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -985,6 +1007,282 @@ export interface AuditExportParams {
   result?: string;
   format: 'JSON' | 'CSV';
 }
+
+// ============================================================================
+// 16. MOTOR CENTRAL DE RELATÓRIOS, EXPORTAÇÕES E BI OPERACIONAL (FASE 1.1.5.13)
+// ============================================================================
+
+export type MetricDomain =
+  | 'COMERCIAL'
+  | 'FINANCEIRO'
+  | 'EVENTOS'
+  | 'SAC'
+  | 'ESTORNO'
+  | 'CONTABILIDADE'
+  | 'MARKETING'
+  | 'REMARKETING';
+
+export type MetricFormat =
+  | 'CURRENCY'
+  | 'NUMBER'
+  | 'PERCENTAGE'
+  | 'DURATION'
+  | 'RATING';
+
+export type MetricUpdateFrequency =
+  | 'REAL_TIME'
+  | 'NEAR_REAL_TIME'
+  | 'PERIODIC'
+  | 'DAILY_CLOSE'
+  | 'SNAPSHOT';
+
+export type PeriodType =
+  | 'TODAY'
+  | 'YESTERDAY'
+  | 'LAST_7_DAYS'
+  | 'LAST_30_DAYS'
+  | 'THIS_MONTH'
+  | 'LAST_MONTH'
+  | 'THIS_YEAR'
+  | 'CUSTOM';
+
+export type ComparisonType =
+  | 'NONE'
+  | 'PREVIOUS_PERIOD'
+  | 'SAME_PERIOD_LAST_YEAR'
+  | 'GOAL';
+
+export type ChartType =
+  | 'TABLE'
+  | 'LINE'
+  | 'BAR'
+  | 'AREA'
+  | 'DONUT'
+  | 'KPI';
+
+export type ReportVisibility =
+  | 'PRIVATE'
+  | 'TEAM'
+  | 'ROLE'
+  | 'PRODUCER'
+  | 'SPECIFIC_USERS';
+
+export type ExportFormat =
+  | 'XLSX'
+  | 'CSV'
+  | 'PDF';
+
+export type ExportJobStatus =
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'EXPIRED';
+
+export type ScheduleFrequency =
+  | 'DAILY'
+  | 'WEEKLY'
+  | 'MONTHLY';
+
+export type FilterOperator =
+  | 'EQUALS'
+  | 'NOT_EQUALS'
+  | 'IN'
+  | 'NOT_IN'
+  | 'GREATER_THAN'
+  | 'LESS_THAN'
+  | 'BETWEEN';
+
+export interface MetricLineageStep {
+  step: string;
+  source: string;
+  details: string;
+}
+
+export interface MetricDefinition {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  domain: MetricDomain;
+  format: MetricFormat;
+  formula: string;
+  source: string;
+  updateFrequency: MetricUpdateFrequency;
+  responsible: string;
+  version: number;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  requiredPermission?: PermissionString | null;
+  isSensitive?: boolean;
+  lineage?: MetricLineageStep[];
+  supportedDimensions: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DimensionDefinition {
+  id: string;
+  code: string;
+  name: string;
+  type: 'STRING' | 'DATE' | 'ENUM' | 'ENTITY';
+  description?: string;
+  options?: string[];
+}
+
+export interface FilterDefinition {
+  field: string;
+  operator: FilterOperator;
+  value: any;
+}
+
+export interface AnalyticsPeriod {
+  type: PeriodType;
+  startDate?: string;
+  endDate?: string;
+  timezone?: string;
+  comparison?: ComparisonType;
+}
+
+export interface AnalyticsQuery {
+  metrics: string[];
+  dimensions: string[];
+  filters?: FilterDefinition[];
+  period: AnalyticsPeriod;
+  producerId?: string;
+  eventId?: string;
+  limit?: number;
+  offset?: number;
+  sortBy?: string;
+  sortDirection?: 'ASC' | 'DESC';
+}
+
+export interface AnalyticsResultMetricHeader {
+  code: string;
+  name: string;
+  format: MetricFormat;
+  total?: number;
+  formattedTotal?: string;
+}
+
+export interface AnalyticsFreshness {
+  status: 'REAL_TIME' | 'UP_TO_DATE' | 'DELAYED' | 'UNAVAILABLE';
+  updatedAt: string;
+  message?: string;
+}
+
+export interface AnalyticsResult {
+  metrics: AnalyticsResultMetricHeader[];
+  dimensions: string[];
+  rows: Array<Record<string, any>>;
+  comparisonRows?: Array<Record<string, any>>;
+  summary: Record<string, any>;
+  freshness: AnalyticsFreshness;
+  cached: boolean;
+  executionTimeMs: number;
+}
+
+export interface SavedReport {
+  id: string;
+  title: string;
+  description?: string | null;
+  domain: MetricDomain;
+  queryDefinition: AnalyticsQuery;
+  chartType: ChartType;
+  visibility: ReportVisibility;
+  sharedWithUserIds?: string[];
+  sharedWithRoleCodes?: string[];
+  creatorUserId: string;
+  creatorUserName: string;
+  producerId?: string | null;
+  eventId?: string | null;
+  isFavorite?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReportExportJob {
+  id: string;
+  reportId?: string | null;
+  reportTitle: string;
+  format: ExportFormat;
+  status: ExportJobStatus;
+  userId: string;
+  userName: string;
+  recordCount: number;
+  fileSizeBytes?: number | null;
+  downloadUrl?: string | null;
+  documentId?: string | null;
+  expiresAt: string;
+  errorMessage?: string | null;
+  watermark?: string | null;
+  createdAt: string;
+  completedAt?: string | null;
+}
+
+export interface ReportScheduleRecipient {
+  type: 'USER' | 'EMAIL' | 'ROLE';
+  target: string;
+}
+
+export interface ReportSchedule {
+  id: string;
+  reportId: string;
+  reportTitle: string;
+  frequency: ScheduleFrequency;
+  dayOfWeek?: number | null;
+  dayOfMonth?: number | null;
+  timeOfDay: string;
+  format: ExportFormat;
+  recipients: ReportScheduleRecipient[];
+  active: boolean;
+  creatorUserId: string;
+  lastRunAt?: string | null;
+  lastRunStatus?: 'SUCCESS' | 'FAILED' | null;
+  nextRunAt: string;
+  createdAt: string;
+}
+
+export interface ReportSnapshot {
+  id: string;
+  reportId: string;
+  title: string;
+  snapshotDate: string;
+  frozenData: any;
+  creatorUserId: string;
+  creatorUserName: string;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export interface AnalyticsGoal {
+  id: string;
+  metricCode: string;
+  name: string;
+  targetValue: number;
+  currentValue: number;
+  progressPercent: number;
+  projectionValue?: number;
+  unit: string;
+  period: string;
+  producerId?: string | null;
+  eventId?: string | null;
+  channel?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DashboardWidget {
+  id: string;
+  code: string;
+  name: string;
+  category: MetricDomain;
+  metricCodes: string[];
+  chartType: ChartType;
+  size: 'SMALL' | 'MEDIUM' | 'LARGE' | 'FULL';
+  requiredPermission?: PermissionString | null;
+}
+
 
 
 

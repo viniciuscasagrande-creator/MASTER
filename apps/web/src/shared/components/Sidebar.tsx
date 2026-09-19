@@ -22,7 +22,8 @@ import {
   FileText,
   ListTodo,
   Sliders,
-  Activity
+  Activity,
+  BarChart3
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -280,6 +281,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'obs-integrations', label: 'Integrações Externas', requiredPermission: 'observabilidade.integracao.visualizar' },
         { id: 'obs-security', label: 'Segurança & Tentativas', requiredPermission: 'observabilidade.seguranca.visualizar' },
         { id: 'obs-health', label: 'Saúde & Eventos ao Vivo', requiredPermission: 'observabilidade.saude.visualizar' }
+      ]
+    },
+    {
+      id: 'analytics',
+      label: 'Relatórios & BI',
+      icon: <BarChart3 className="h-4 w-4 text-orange-400" />,
+      requiredPermission: 'relatorios.central.visualizar',
+      subItems: [
+        { id: 'analytics-overview', label: 'Visão Geral Executiva' },
+        { id: 'analytics-builder', label: 'Criar Relatório', requiredPermission: 'relatorios.relatorio.criar' },
+        { id: 'analytics-reports', label: 'Relatórios Salvos' },
+        { id: 'analytics-exports', label: 'Central de Exportações', requiredPermission: 'relatorios.exportacao.criar' },
+        { id: 'analytics-schedules', label: 'Agendamentos', requiredPermission: 'relatorios.agendamento.criar' },
+        { id: 'analytics-dictionary', label: 'Dicionário de Indicadores' },
+        { id: 'analytics-goals', label: 'Metas (Realizado x Meta)' },
+        { id: 'analytics-snapshots', label: 'Fechamentos & Snapshots' },
+        { id: 'analytics-domains', label: 'BI por Domínio' }
       ]
     },
     {

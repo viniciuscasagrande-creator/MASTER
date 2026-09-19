@@ -62,7 +62,8 @@ export const INITIAL_USERS: UserAccount[] = [
       'financeiro.pagamento.aprovar', 'financeiro.conciliacao.executar', 'financeiro.relatorio.exportar',
       'estorno.solicitacao.visualizar', 'estorno.solicitacao.aprovar',
       'contabilidade.diario.visualizar', 'contabilidade.dre.visualizar',
-      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar', 'documentos.versao.criar'
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar', 'documentos.versao.criar',
+      'relatorios.central.visualizar', 'relatorios.relatorio.visualizar', 'relatorios.relatorio.criar', 'relatorios.exportacao.criar', 'relatorios.financeiro.visualizar'
     ],
     lastLoginAt: '2026-09-18T15:10:00Z',
     lastIpAddress: '177.102.18.4',
@@ -120,7 +121,8 @@ export const INITIAL_USERS: UserAccount[] = [
       'financeiro.saldo.visualizar', 'financeiro.repasses.visualizar', 'financeiro.relatorio.exportar',
       'marketing.campanha.visualizar', 'marketing.campanha.criar', 'marketing.pixel.configurar',
       'remarketing.carrinhos.visualizar',
-      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar'
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar',
+      'relatorios.central.visualizar', 'relatorios.relatorio.visualizar', 'relatorios.vendas.visualizar', 'relatorios.eventos.visualizar'
     ],
     lastLoginAt: '2026-09-18T11:20:00Z',
     lastIpAddress: '200.180.44.12',
@@ -308,6 +310,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return currentUser.permissions.some(p => p.startsWith('configuracoes.'));
       case 'observability':
         return currentUser.permissions.some(p => p.startsWith('observabilidade.') || p.startsWith('auditoria.'));
+      case 'analytics':
+      case 'reports':
+        return currentUser.permissions.some(p => p.startsWith('relatorios.'));
       case 'admin':
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':

@@ -1755,5 +1755,147 @@ model ObservabilityAnnotation {
   @@index([createdAt])
 }
 
+// ==============================================================================
+// 16. MOTOR CENTRAL DE RELATÓRIOS, EXPORTAÇÕES E BI OPERACIONAL (FASE 1.1.5.13)
+// ==============================================================================
+
+model MetricDefinitionModel {
+  id                  String    @id @default(uuid())
+  code                String    @unique
+  name                String
+  description         String
+  domain              String    // COMERCIAL, FINANCEIRO, EVENTOS, SAC, ESTORNO, CONTABILIDADE, MARKETING, REMARKETING
+  format              String    // CURRENCY, NUMBER, PERCENTAGE, DURATION, RATING
+  formula             String
+  source              String
+  updateFrequency     String    // REAL_TIME, NEAR_REAL_TIME, PERIODIC, DAILY_CLOSE, SNAPSHOT
+  responsible         String
+  version             Int       @default(1)
+  effectiveFrom       DateTime?
+  effectiveUntil      DateTime?
+  requiredPermission  String?
+  isSensitive         Boolean   @default(false)
+  lineage             String?   // JSON stringified steps
+  supportedDimensions String?   // JSON stringified dimensions array
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([code])
+  @@index([domain])
+  @@index([version])
+}
+
+model SavedReportModel {
+  id                  String    @id @default(uuid())
+  title               String
+  description         String?
+  domain              String
+  queryDefinition     String    // JSON stringified AnalyticsQuery
+  chartType           String    @default("TABLE")
+  visibility          String    @default("PRIVATE") // PRIVATE, TEAM, ROLE, PRODUCER, SPECIFIC_USERS
+  sharedWithUserIds   String?   // JSON array
+  sharedWithRoleCodes String?   // JSON array
+  creatorUserId       String
+  creatorUserName     String
+  producerId          String?
+  eventId             String?
+  isFavorite          Boolean   @default(false)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([creatorUserId])
+  @@index([domain])
+  @@index([visibility])
+  @@index([producerId])
+  @@index([eventId])
+}
+
+model ReportExportJobModel {
+  id             String    @id @default(uuid())
+  reportId       String?
+  reportTitle    String
+  format         String    // XLSX, CSV, PDF
+  status         String    @default("PENDING") // PENDING, PROCESSING, COMPLETED, FAILED, EXPIRED
+  userId         String
+  userName       String
+  recordCount    Int       @default(0)
+  fileSizeBytes  Int?
+  downloadUrl    String?
+  documentId     String?
+  expiresAt      DateTime
+  errorMessage   String?
+  watermark      String?
+  createdAt      DateTime  @default(now())
+  completedAt    DateTime?
+
+  @@index([userId])
+  @@index([status])
+  @@index([reportId])
+  @@index([expiresAt])
+}
+
+model ReportScheduleModel {
+  id             String    @id @default(uuid())
+  reportId       String
+  reportTitle    String
+  frequency      String    // DAILY, WEEKLY, MONTHLY
+  dayOfWeek      Int?
+  dayOfMonth     Int?
+  timeOfDay      String    @default("08:00")
+  format         String    @default("XLSX")
+  recipients     String    // JSON stringified recipients array
+  active         Boolean   @default(true)
+  creatorUserId  String
+  lastRunAt      DateTime?
+  lastRunStatus  String?
+  nextRunAt      DateTime
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([creatorUserId])
+  @@index([reportId])
+  @@index([active])
+  @@index([nextRunAt])
+}
+
+model ReportSnapshotModel {
+  id              String   @id @default(uuid())
+  reportId        String
+  title           String
+  snapshotDate    DateTime
+  frozenData      String   // JSON stringified result
+  creatorUserId   String
+  creatorUserName String
+  notes           String?
+  createdAt       DateTime @default(now())
+
+  @@index([reportId])
+  @@index([snapshotDate])
+  @@index([creatorUserId])
+}
+
+model AnalyticsGoalModel {
+  id              String   @id @default(uuid())
+  metricCode      String
+  name            String
+  targetValue     Float
+  currentValue    Float    @default(0)
+  progressPercent Float    @default(0)
+  projectionValue Float?
+  unit            String   @default("BRL")
+  period          String   // e.g. "2026-09"
+  producerId      String?
+  eventId         String?
+  channel         String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([metricCode])
+  @@index([period])
+  @@index([producerId])
+  @@index([eventId])
+}
+
+
 
 
