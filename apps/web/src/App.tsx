@@ -52,12 +52,16 @@ import { ApprovalThresholdsAdminView } from './modules/approvals/ApprovalThresho
 // Central de Documentos & Anexos (Fase 1.1.5.8)
 import { DocumentCenterView } from './modules/documents/DocumentCenterView';
 
+// Motor Central de Tarefas & Pendências (Fase 1.1.5.9)
+import { WorkCenterView } from './modules/tasks';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
   notifications: 'Notificações',
   approvals: 'Aprovações',
   documents: 'Documentos',
+  tasks: 'Central de Trabalho',
   events: 'Eventos',
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
@@ -255,6 +259,13 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="documentos.central.visualizar" onBack={() => handleNavigate('overview')}>
             <DocumentCenterView onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'tasks':
+        return (
+          <ProtectedRoute permission="tarefas.central.visualizar" onBack={() => handleNavigate('overview')}>
+            <WorkCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

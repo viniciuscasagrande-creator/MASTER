@@ -49,6 +49,27 @@ export class InMemoryPrismaStore {
   public documentSecurityChecks: any[] = [];
   public documentRetentionPolicies: any[] = [];
   public documentRequirements: any[] = [];
+  // Tarefas & Fluxos de Trabalho (Fase 1.1.5.9)
+  public tasks: any[] = [];
+  public taskAssignments: any[] = [];
+  public taskChecklists: any[] = [];
+  public taskChecklistItems: any[] = [];
+  public taskComments: any[] = [];
+  public taskDependencies: any[] = [];
+  public taskHistories: any[] = [];
+  public teams: any[] = [];
+  public teamMembers: any[] = [];
+  public workflows: any[] = [];
+  public workflowVersions: any[] = [];
+  public workflowRules: any[] = [];
+  public workflowActions: any[] = [];
+  public taskTemplates: any[] = [];
+  public slaPolicies: any[] = [];
+  public slaEvents: any[] = [];
+  public escalationRules: any[] = [];
+  public escalationEvents: any[] = [];
+  public userAvailabilities: any[] = [];
+  public dutySchedules: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -101,6 +122,27 @@ export class InMemoryPrismaStore {
     this.documentSecurityChecks = [];
     this.documentRetentionPolicies = [];
     this.documentRequirements = [];
+    // Tarefas & Fluxos de Trabalho (Fase 1.1.5.9)
+    this.tasks = [];
+    this.taskAssignments = [];
+    this.taskChecklists = [];
+    this.taskChecklistItems = [];
+    this.taskComments = [];
+    this.taskDependencies = [];
+    this.taskHistories = [];
+    this.teams = [];
+    this.teamMembers = [];
+    this.workflows = [];
+    this.workflowVersions = [];
+    this.workflowRules = [];
+    this.workflowActions = [];
+    this.taskTemplates = [];
+    this.slaPolicies = [];
+    this.slaEvents = [];
+    this.escalationRules = [];
+    this.escalationEvents = [];
+    this.userAvailabilities = [];
+    this.dutySchedules = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -186,7 +228,25 @@ export class InMemoryPrismaStore {
       { id: 'p-doc-8', module: 'documentos', resource: 'arquivo', action: 'excluir', code: 'documentos.arquivo.excluir', description: 'Excluir logicamente documentos' },
       { id: 'p-doc-9', module: 'documentos', resource: 'categoria', action: 'visualizar', code: 'documentos.categoria.visualizar', description: 'Visualizar categorias de documentos' },
       { id: 'p-doc-10', module: 'documentos', resource: 'categoria', action: 'editar', code: 'documentos.categoria.editar', description: 'Gerenciar categorias documentais' },
-      { id: 'p-doc-11', module: 'documentos', resource: 'auditoria', action: 'visualizar', code: 'documentos.auditoria.visualizar', description: 'Visualizar logs de auditoria documental' }
+      { id: 'p-doc-11', module: 'documentos', resource: 'auditoria', action: 'visualizar', code: 'documentos.auditoria.visualizar', description: 'Visualizar logs de auditoria documental' },
+      // Tarefas & Fluxos de Trabalho (Fase 1.1.5.9)
+      { id: 'p-tsk-1', module: 'tarefas', resource: 'central', action: 'visualizar', code: 'tarefas.central.visualizar', description: 'Visualizar Central de Trabalho' },
+      { id: 'p-tsk-2', module: 'tarefas', resource: 'tarefa', action: 'visualizar', code: 'tarefas.tarefa.visualizar', description: 'Visualizar tarefas' },
+      { id: 'p-tsk-3', module: 'tarefas', resource: 'tarefa', action: 'criar', code: 'tarefas.tarefa.criar', description: 'Criar novas tarefas' },
+      { id: 'p-tsk-4', module: 'tarefas', resource: 'tarefa', action: 'editar', code: 'tarefas.tarefa.editar', description: 'Editar tarefas' },
+      { id: 'p-tsk-5', module: 'tarefas', resource: 'tarefa', action: 'assumir', code: 'tarefas.tarefa.assumir', description: 'Assumir tarefas de equipes' },
+      { id: 'p-tsk-6', module: 'tarefas', resource: 'tarefa', action: 'reatribuir', code: 'tarefas.tarefa.reatribuir', description: 'Reatribuir tarefas a outros operadores' },
+      { id: 'p-tsk-7', module: 'tarefas', resource: 'tarefa', action: 'concluir', code: 'tarefas.tarefa.concluir', description: 'Concluir tarefas' },
+      { id: 'p-tsk-8', module: 'tarefas', resource: 'tarefa', action: 'cancelar', code: 'tarefas.tarefa.cancelar', description: 'Cancelar tarefas' },
+      { id: 'p-tsk-9', module: 'tarefas', resource: 'tarefa', action: 'reabrir', code: 'tarefas.tarefa.reabrir', description: 'Reabrir tarefas encerradas' },
+      { id: 'p-tsk-10', module: 'tarefas', resource: 'equipe', action: 'visualizar', code: 'tarefas.equipe.visualizar', description: 'Visualizar equipes operacionais' },
+      { id: 'p-tsk-11', module: 'tarefas', resource: 'equipe', action: 'gerenciar', code: 'tarefas.equipe.gerenciar', description: 'Gerenciar equipes e membros' },
+      { id: 'p-tsk-12', module: 'tarefas', resource: 'workflow', action: 'visualizar', code: 'tarefas.workflow.visualizar', description: 'Visualizar fluxos de trabalho' },
+      { id: 'p-tsk-13', module: 'tarefas', resource: 'workflow', action: 'criar', code: 'tarefas.workflow.criar', description: 'Criar fluxos de trabalho' },
+      { id: 'p-tsk-14', module: 'tarefas', resource: 'workflow', action: 'editar', code: 'tarefas.workflow.editar', description: 'Editar fluxos de trabalho' },
+      { id: 'p-tsk-15', module: 'tarefas', resource: 'sla', action: 'visualizar', code: 'tarefas.sla.visualizar', description: 'Visualizar políticas de SLA' },
+      { id: 'p-tsk-16', module: 'tarefas', resource: 'sla', action: 'configurar', code: 'tarefas.sla.configurar', description: 'Configurar políticas e prazos de SLA' },
+      { id: 'p-tsk-17', module: 'tarefas', resource: 'dashboard', action: 'visualizar', code: 'tarefas.dashboard.visualizar', description: 'Visualizar dashboard de produtividade' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -310,6 +370,61 @@ export class InMemoryPrismaStore {
     associate('AUDITOR', 'documentos.versao.visualizar');
     associate('AUDITOR', 'documentos.auditoria.visualizar');
     associate('AUDITOR', 'documentos.categoria.visualizar');
+
+    // Tarefas & Fluxos de Trabalho (Fase 1.1.5.9)
+    // Administrador Geral
+    this.permissions.filter(p => p.code.startsWith('tarefas.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+
+    // Financeiro
+    associate('FINANCEIRO', 'tarefas.central.visualizar');
+    associate('FINANCEIRO', 'tarefas.tarefa.visualizar');
+    associate('FINANCEIRO', 'tarefas.tarefa.criar');
+    associate('FINANCEIRO', 'tarefas.tarefa.editar');
+    associate('FINANCEIRO', 'tarefas.tarefa.assumir');
+    associate('FINANCEIRO', 'tarefas.tarefa.concluir');
+    associate('FINANCEIRO', 'tarefas.tarefa.reatribuir');
+    associate('FINANCEIRO', 'tarefas.tarefa.reabrir');
+    associate('FINANCEIRO', 'tarefas.equipe.visualizar');
+
+    // SAC
+    associate('ATENDIMENTO_SAC', 'tarefas.central.visualizar');
+    associate('ATENDIMENTO_SAC', 'tarefas.tarefa.visualizar');
+    associate('ATENDIMENTO_SAC', 'tarefas.tarefa.criar');
+    associate('ATENDIMENTO_SAC', 'tarefas.tarefa.assumir');
+    associate('ATENDIMENTO_SAC', 'tarefas.tarefa.concluir');
+    associate('ATENDIMENTO_SAC', 'tarefas.tarefa.reatribuir');
+    associate('ATENDIMENTO_SAC', 'tarefas.equipe.visualizar');
+
+    // Estorno
+    associate('ESTORNO', 'tarefas.central.visualizar');
+    associate('ESTORNO', 'tarefas.tarefa.visualizar');
+    associate('ESTORNO', 'tarefas.tarefa.criar');
+    associate('ESTORNO', 'tarefas.tarefa.assumir');
+    associate('ESTORNO', 'tarefas.tarefa.concluir');
+    associate('ESTORNO', 'tarefas.tarefa.reatribuir');
+    associate('ESTORNO', 'tarefas.equipe.visualizar');
+
+    // Suporte Eventos
+    associate('SUPORTE_EVENTOS', 'tarefas.central.visualizar');
+    associate('SUPORTE_EVENTOS', 'tarefas.tarefa.visualizar');
+    associate('SUPORTE_EVENTOS', 'tarefas.tarefa.criar');
+    associate('SUPORTE_EVENTOS', 'tarefas.tarefa.assumir');
+    associate('SUPORTE_EVENTOS', 'tarefas.tarefa.concluir');
+    associate('SUPORTE_EVENTOS', 'tarefas.tarefa.reatribuir');
+    associate('SUPORTE_EVENTOS', 'tarefas.equipe.visualizar');
+
+    // Produtor
+    associate('PRODUTOR', 'tarefas.central.visualizar');
+    associate('PRODUTOR', 'tarefas.tarefa.visualizar');
+
+    // Auditor
+    associate('AUDITOR', 'tarefas.central.visualizar');
+    associate('AUDITOR', 'tarefas.tarefa.visualizar');
+    associate('AUDITOR', 'tarefas.dashboard.visualizar');
+    associate('AUDITOR', 'tarefas.workflow.visualizar');
+    associate('AUDITOR', 'tarefas.sla.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -960,6 +1075,371 @@ export class InMemoryPrismaStore {
         minAmount: 500.00,
         maxAmount: null,
         requiredCategories: JSON.stringify(['EVIDENCIA']),
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 17. Equipes Iniciais (Fase 1.1.5.9)
+    this.teams.push(
+      { id: 'team_fin', name: 'Financeiro', code: 'FINANCEIRO', description: 'Conciliação, repasses e fechamentos', leaderUserId: 'usr-fin-maria', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_sac', name: 'Atendimento SAC', code: 'SAC', description: 'Atendimento ao cliente e suporte a ingressos', leaderUserId: 'usr-sac-ana', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_estorno', name: 'Estorno & Chargeback', code: 'ESTORNO', description: 'Análise de cancelamentos e chargebacks', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_evt_sul', name: 'Suporte Eventos Sul', code: 'SUPORTE_EVENTOS_SUL', description: 'Operação presencial e portaria no Sul', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_mkt', name: 'Marketing & Tráfego', code: 'MARKETING', description: 'Monitoramento de pixels e campanhas', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_contab', name: 'Contabilidade', code: 'CONTABILIDADE', description: 'Livro diário e fechamento contábil', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'team_sec', name: 'Segurança da Informação', code: 'SEGURANCA', description: 'Auditoria e incidentes de segurança', isActive: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+    );
+
+    // 18. Membros das Equipes
+    this.teamMembers.push(
+      { id: 'tm_maria_fin', teamId: 'team_fin', userId: 'usr_fin_maria', role: 'LEADER', createdAt: new Date('2026-01-01') },
+      { id: 'tm_carlos_fin', teamId: 'team_fin', userId: 'usr_fin_carlos', role: 'ANALYST', createdAt: new Date('2026-01-01') },
+      { id: 'tm_ana_sac', teamId: 'team_sac', userId: 'usr_sac_ana', role: 'LEADER', createdAt: new Date('2026-01-01') }
+    );
+
+    // 19. Modelos de Tarefa (Task Templates)
+    this.taskTemplates.push(
+      {
+        id: 'tmpl_concil',
+        code: 'INVESTIGAR_DIVERGENCIA',
+        title: 'Investigar Divergência de Conciliação',
+        description: 'Investigar divergência entre extrato bancário e gateway',
+        module: 'FINANCEIRO',
+        priority: 'HIGH',
+        defaultEstimatedMinutes: 120,
+        targetTeamCode: 'FINANCEIRO',
+        checklistTemplate: JSON.stringify([
+          { text: 'Conferir arquivo bancário', isRequired: true },
+          { text: 'Conferir transações no gateway', isRequired: true },
+          { text: 'Identificar divergência', isRequired: true },
+          { text: 'Registrar correção', isRequired: false },
+          { text: 'Validar resultado', isRequired: true }
+        ]),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'tmpl_refund',
+        code: 'VALIDAR_ESTORNO',
+        title: 'Validar Solicitação de Estorno',
+        description: 'Validar documentação e elegibilidade de estorno',
+        module: 'ESTORNO',
+        priority: 'NORMAL',
+        defaultEstimatedMinutes: 60,
+        targetTeamCode: 'ESTORNO',
+        checklistTemplate: JSON.stringify([
+          { text: 'Conferir pedido', isRequired: true },
+          { text: 'Conferir pagamento', isRequired: true },
+          { text: 'Conferir ingresso', isRequired: true },
+          { text: 'Validar justificativa e documentos', isRequired: true },
+          { text: 'Encaminhar para aprovação', isRequired: false }
+        ]),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'tmpl_checkin',
+        code: 'INVESTIGAR_FALHAS_CHECKIN',
+        title: 'Investigar Falhas de Check-in na Portaria',
+        description: 'Queda na taxa de leitura ou erro de chave criptográfica',
+        module: 'EVENTOS',
+        priority: 'CRITICAL',
+        defaultEstimatedMinutes: 30,
+        targetTeamCode: 'SUPORTE_EVENTOS_SUL',
+        checklistTemplate: JSON.stringify([
+          { text: 'Verificar conexão dos leitores de catraca', isRequired: true },
+          { text: 'Validar integridade da chave de criptografia', isRequired: true },
+          { text: 'Sincronizar base offline de ingressos', isRequired: true }
+        ]),
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 20. Políticas de SLA
+    this.slaPolicies.push(
+      {
+        id: 'sla_fin_high',
+        name: 'SLA Financeiro Divergência',
+        module: 'FINANCEIRO',
+        priority: 'HIGH',
+        durationMinutes: 120,
+        warningThresholdPercent: 80,
+        criticalThresholdPercent: 95,
+        allowPause: true,
+        allowedPauseReasons: JSON.stringify(['BANCO', 'GATEWAY', 'PRODUTOR', 'OUTRO_DEPARTAMENTO']),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'sla_sac_normal',
+        name: 'SLA Atendimento SAC',
+        module: 'SAC',
+        priority: 'NORMAL',
+        durationMinutes: 240,
+        warningThresholdPercent: 80,
+        criticalThresholdPercent: 95,
+        allowPause: true,
+        allowedPauseReasons: JSON.stringify(['CLIENTE', 'PRODUTOR']),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'sla_evt_crit',
+        name: 'SLA Crítico Operação Portaria',
+        module: 'EVENTOS',
+        priority: 'CRITICAL',
+        durationMinutes: 30,
+        warningThresholdPercent: 70,
+        criticalThresholdPercent: 90,
+        allowPause: false,
+        allowedPauseReasons: JSON.stringify([]),
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 21. Regras de Escalonamento
+    this.escalationRules.push(
+      {
+        id: 'esc_rule_1',
+        slaPolicyId: 'sla_fin_high',
+        module: 'FINANCEIRO',
+        level: 1,
+        triggerMinutesAfterBreach: 30,
+        escalateToRole: 'SUPERVISOR',
+        escalateToTeamId: 'team_fin',
+        notifyChannels: JSON.stringify(['WEBSOCKET', 'NOTIFICATION']),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'esc_rule_2',
+        slaPolicyId: 'sla_fin_high',
+        module: 'FINANCEIRO',
+        level: 2,
+        triggerMinutesAfterBreach: 60,
+        escalateToRole: 'MANAGER',
+        escalateToTeamId: 'team_fin',
+        notifyChannels: JSON.stringify(['WEBSOCKET', 'NOTIFICATION']),
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 22. Workflows e Regras
+    this.workflows.push(
+      {
+        id: 'wf_reconcil',
+        name: 'Tratamento de Divergência Financeira',
+        description: 'Dispara tarefa quando divergência de conciliação ultrapassa limite',
+        module: 'FINANCEIRO',
+        triggerEvent: 'RECONCILIATION_DIVERGENCE_DETECTED',
+        isActive: true,
+        currentVersion: 1,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'wf_refund',
+        name: 'Fluxo Operacional de Estorno',
+        description: 'Cria tarefa de validação para a equipe de estorno',
+        module: 'ESTORNO',
+        triggerEvent: 'REFUND_REQUESTED',
+        isActive: true,
+        currentVersion: 1,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'wf_checkin',
+        name: 'Tratamento de Falhas de Check-in na Portaria',
+        description: 'Dispara tarefa crítica quando taxa de leitura falha ultrapassa 15%',
+        module: 'EVENTOS',
+        triggerEvent: 'CHECKIN_FAILURE_RATE_HIGH',
+        isActive: true,
+        currentVersion: 1,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'wf_tracking',
+        name: 'Saúde de Tracking e Pixels de Conversão',
+        description: 'Dispara tarefa de marketing se houver 3 ou mais falhas consecutivas',
+        module: 'MARKETING',
+        triggerEvent: 'TRACKING_HEALTH_FAILED',
+        isActive: true,
+        currentVersion: 1,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'wf_accounting',
+        name: 'Divergência Contábil no Fechamento',
+        description: 'Dispara tarefa quando divergência contábil excede R$ 50',
+        module: 'CONTABILIDADE',
+        triggerEvent: 'ACCOUNTING_DIVERGENCE',
+        isActive: true,
+        currentVersion: 1,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      }
+    );
+
+    this.workflowRules.push(
+      {
+        id: 'wfr_reconcil_1',
+        workflowId: 'wf_reconcil',
+        version: 1,
+        name: 'Divergência > R$ 100',
+        conditionJson: JSON.stringify({ divergenceAmount: { gt: 100 } }),
+        actionJson: JSON.stringify({
+          createTasks: [
+            {
+              templateCode: 'INVESTIGAR_DIVERGENCIA',
+              title: 'Investigar divergência de conciliação bancária',
+              priority: 'HIGH',
+              slaMinutes: 120,
+              targetTeamCode: 'FINANCEIRO'
+            }
+          ]
+        }),
+        priority: 'HIGH',
+        slaMinutes: 120,
+        targetTeamId: 'team_fin',
+        orderIndex: 1
+      },
+      {
+        id: 'wfr_refund_1',
+        workflowId: 'wf_refund',
+        version: 1,
+        name: 'Validação de Estorno Geral',
+        conditionJson: JSON.stringify({}),
+        actionJson: JSON.stringify({
+          createTasks: [
+            {
+              templateCode: 'VALIDAR_ESTORNO',
+              title: 'Validar solicitação de estorno',
+              priority: 'NORMAL',
+              slaMinutes: 60,
+              targetTeamCode: 'ESTORNO'
+            }
+          ]
+        }),
+        priority: 'NORMAL',
+        slaMinutes: 60,
+        targetTeamId: 'team_estorno',
+        orderIndex: 1
+      },
+      {
+        id: 'wfr_checkin_1',
+        workflowId: 'wf_checkin',
+        version: 1,
+        name: 'Taxa de falhas > 15%',
+        conditionJson: JSON.stringify({ failureRate: { gt: 15 } }),
+        actionJson: JSON.stringify({
+          createTasks: [
+            {
+              templateCode: 'INVESTIGAR_FALHAS_CHECKIN',
+              title: 'Investigar taxa alta de falhas de check-in na portaria',
+              priority: 'CRITICAL',
+              slaMinutes: 30,
+              targetTeamCode: 'SUPORTE_EVENTOS_SUL'
+            }
+          ]
+        }),
+        priority: 'CRITICAL',
+        slaMinutes: 30,
+        targetTeamId: 'team_evt_sul',
+        orderIndex: 1
+      },
+      {
+        id: 'wfr_tracking_1',
+        workflowId: 'wf_tracking',
+        version: 1,
+        name: 'Erros de Pixel >= 3',
+        conditionJson: JSON.stringify({ consecutiveErrors: { gte: 3 } }),
+        actionJson: JSON.stringify({
+          createTasks: [
+            {
+              title: 'Restabelecer disparo do pixel de conversão',
+              priority: 'HIGH',
+              slaMinutes: 60,
+              targetTeamCode: 'MARKETING'
+            }
+          ]
+        }),
+        priority: 'HIGH',
+        slaMinutes: 60,
+        targetTeamId: 'team_mkt',
+        orderIndex: 1
+      },
+      {
+        id: 'wfr_accounting_1',
+        workflowId: 'wf_accounting',
+        version: 1,
+        name: 'Divergência Contábil > R$ 50',
+        conditionJson: JSON.stringify({ divergenceAmount: { gt: 50 } }),
+        actionJson: JSON.stringify({
+          createTasks: [
+            {
+              title: 'Ajuste de lançamento no livro diário',
+              priority: 'NORMAL',
+              slaMinutes: 180,
+              targetTeamCode: 'CONTABILIDADE'
+            }
+          ]
+        }),
+        priority: 'NORMAL',
+        slaMinutes: 180,
+        targetTeamId: 'team_contab',
+        orderIndex: 1
+      }
+    );
+
+    this.workflowVersions.push(
+      {
+        id: 'wfv_reconcil_1',
+        workflowId: 'wf_reconcil',
+        version: 1,
+        rulesSnapshot: JSON.stringify([
+          {
+            id: 'wfr_reconcil_1',
+            conditionJson: { divergenceAmount: { gt: 100 } },
+            actionJson: {
+              createTasks: [
+                {
+                  templateCode: 'INVESTIGAR_DIVERGENCIA',
+                  title: 'Investigar divergência de conciliação bancária',
+                  priority: 'HIGH',
+                  slaMinutes: 120,
+                  targetTeamCode: 'FINANCEIRO'
+                }
+              ]
+            },
+            priority: 'HIGH',
+            slaMinutes: 120
+          }
+        ]),
+        changeReason: 'Versão inicial do fluxo de reconciliação',
+        createdByUserId: 'usr-admin-1',
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 23. Disponibilidade Inicial de Usuários
+    this.userAvailabilities.push(
+      { id: 'uav_maria', userId: 'usr-fin-maria', status: 'AVAILABLE', currentWorkloadScore: 2, lastAssignedAt: new Date('2026-09-18T10:00:00Z'), updatedAt: new Date() },
+      { id: 'uav_carlos', userId: 'usr-fin-carlos', status: 'AVAILABLE', currentWorkloadScore: 1, lastAssignedAt: new Date('2026-09-18T11:00:00Z'), updatedAt: new Date() },
+      { id: 'uav_ana', userId: 'usr-sac-ana', status: 'AVAILABLE', currentWorkloadScore: 0, lastAssignedAt: null, updatedAt: new Date() },
+      { id: 'uav_maria_2', userId: 'usr_fin_maria', status: 'AVAILABLE', currentWorkloadScore: 2, lastAssignedAt: new Date('2026-09-18T10:00:00Z'), updatedAt: new Date() },
+      { id: 'uav_carlos_2', userId: 'usr_fin_carlos', status: 'AVAILABLE', currentWorkloadScore: 1, lastAssignedAt: new Date('2026-09-18T11:00:00Z'), updatedAt: new Date() },
+      { id: 'uav_ana_2', userId: 'usr_sac_ana', status: 'AVAILABLE', currentWorkloadScore: 0, lastAssignedAt: null, updatedAt: new Date() }
+    );
+
+    // 24. Escalas de Plantão (Duty Schedules)
+    this.dutySchedules.push(
+      {
+        id: 'duty_1',
+        teamId: 'team_evt_sul',
+        producerId: 'prd_100',
+        eventId: 'evt_1001',
+        shiftStart: '00:00',
+        shiftEnd: '23:59',
+        activeUserIds: JSON.stringify(['usr_superadmin', 'usr-admin-1']),
+        isActive: true,
         createdAt: new Date('2026-01-01')
       }
     );
@@ -2566,6 +3046,733 @@ export class InMemoryPrismaStore {
           ...tl,
           tag: this.documentTags.find(t => t.id === tl.tagId)
         }));
+    }
+    return copy;
+  }
+
+  // ============================================================================
+  // TAREFAS & WORKFLOW GETTERS (Fase 1.1.5.9)
+  // ============================================================================
+
+  public get task() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.tasks.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.taskNumber) return x.taskNumber === args.where.taskNumber;
+          return false;
+        });
+        if (!item) return null;
+        return this.hydrateTask(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.tasks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0] || null;
+        return item ? this.hydrateTask(item, args?.include) : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.tasks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          if (args.orderBy.createdAt === 'desc') {
+            list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+          } else if (args.orderBy.createdAt === 'asc') {
+            list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+          } else if (args.orderBy.dueAt === 'asc') {
+            list.sort((a, b) => {
+              if (!a.dueAt) return 1;
+              if (!b.dueAt) return -1;
+              return new Date(a.dueAt).getTime() - new Date(b.dueAt).getTime();
+            });
+          }
+        } else {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        if (args?.skip) list = list.slice(args.skip);
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(item => this.hydrateTask(item, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tsk_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          taskNumber: args.data.taskNumber || `TSK-${1000 + this.tasks.length + 1}`,
+          priority: 'NORMAL',
+          status: 'OPEN',
+          escalationLevel: 0,
+          slaStatus: 'WITHIN_SLA',
+          totalPausedDurationMs: 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.tasks.push(item);
+        return this.hydrateTask(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.tasks.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.taskNumber) return x.taskNumber === args.where.taskNumber;
+          return false;
+        });
+        if (!item) throw new Error('Task not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateTask(item, args.include);
+      },
+      delete: async (args: any) => {
+        const idx = this.tasks.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('Task not found');
+        const [removed] = this.tasks.splice(idx, 1);
+        return removed;
+      },
+      count: async (args?: any) => {
+        let list = [...this.tasks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get taskAssignment() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.taskAssignments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tasg_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.taskAssignments.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get taskChecklist() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.taskChecklists];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tck_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.taskChecklists.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get taskChecklistItem() {
+    return {
+      findUnique: async (args: any) => {
+        return this.taskChecklistItems.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.taskChecklistItems];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.taskChecklistItems];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tcki_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isRequired: false,
+          isCompleted: false,
+          orderIndex: 0,
+          ...args.data
+        };
+        this.taskChecklistItems.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.taskChecklistItems.find(x => x.id === args.where.id);
+        if (!item) throw new Error('TaskChecklistItem not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.taskChecklistItems.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('TaskChecklistItem not found');
+        const [removed] = this.taskChecklistItems.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get taskComment() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.taskComments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tcm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.taskComments.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.taskComments.find(x => x.id === args.where.id);
+        if (!item) throw new Error('TaskComment not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.taskComments.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('TaskComment not found');
+        const [removed] = this.taskComments.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get taskDependency() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.taskDependencies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tdep_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.taskDependencies.push(item);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.taskDependencies.findIndex(x => x.id === args.where.id);
+        if (idx !== -1) {
+          const [removed] = this.taskDependencies.splice(idx, 1);
+          return removed;
+        }
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.taskDependencies.length;
+        if (args?.where) {
+          const toRemove = this.filterEntities(this.taskDependencies, args.where);
+          this.taskDependencies = this.taskDependencies.filter(x => !toRemove.includes(x));
+        }
+        return { count: before - this.taskDependencies.length };
+      }
+    };
+  }
+
+  public get taskHistory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.taskHistories];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `thist_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.taskHistories.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get team() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.teams.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        });
+        if (!item) return null;
+        if (args.include?.members) {
+          return {
+            ...item,
+            members: this.teamMembers.filter(m => m.teamId === item.id)
+          };
+        }
+        return item;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.teams];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.teams];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.include?.members) {
+          list = list.map(t => ({
+            ...t,
+            members: this.teamMembers.filter(m => m.teamId === t.id)
+          }));
+        }
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `team_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.teams.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.teams.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        });
+        if (!item) throw new Error('Team not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.teams.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('Team not found');
+        const [removed] = this.teams.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get teamMember() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.teamMembers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          role: 'ANALYST',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.teamMembers.push(item);
+        return item;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.teamMembers.length;
+        if (args?.where) {
+          const toRemove = this.filterEntities(this.teamMembers, args.where);
+          this.teamMembers = this.teamMembers.filter(x => !toRemove.includes(x));
+        }
+        return { count: before - this.teamMembers.length };
+      }
+    };
+  }
+
+  public get workflow() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.workflows.find(x => x.id === args.where.id) || null;
+        if (!item) return null;
+        if (args.include?.rules) {
+          return {
+            ...item,
+            rules: this.workflowRules.filter(r => r.workflowId === item.id).sort((a, b) => a.orderIndex - b.orderIndex)
+          };
+        }
+        return item;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.workflows];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0] || null;
+        if (item && args?.include?.rules) {
+          return {
+            ...item,
+            rules: this.workflowRules.filter(r => r.workflowId === item.id).sort((a, b) => a.orderIndex - b.orderIndex)
+          };
+        }
+        return item;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.workflows];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.include?.rules) {
+          list = list.map(w => ({
+            ...w,
+            rules: this.workflowRules.filter(r => r.workflowId === w.id).sort((a, b) => a.orderIndex - b.orderIndex)
+          }));
+        }
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `wf_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          currentVersion: 1,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.workflows.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.workflows.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Workflow not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      }
+    };
+  }
+
+  public get workflowVersion() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.workflowVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => b.version - a.version);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `wfv_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.workflowVersions.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get workflowRule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.workflowRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `wfr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          version: 1,
+          orderIndex: 0,
+          ...args.data
+        };
+        this.workflowRules.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.workflowRules.find(x => x.id === args.where.id);
+        if (!item) throw new Error('WorkflowRule not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get workflowAction() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.workflowActions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `wfa_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          ...args.data
+        };
+        this.workflowActions.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get taskTemplate() {
+    return {
+      findUnique: async (args: any) => {
+        return this.taskTemplates.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        }) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.taskTemplates];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.taskTemplates];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tmpl_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          priority: 'NORMAL',
+          defaultEstimatedMinutes: 120,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.taskTemplates.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get slaPolicy() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.slaPolicies.find(x => x.id === args.where.id) || null;
+        if (!item) return null;
+        if (args.include?.escalationRules) {
+          return {
+            ...item,
+            escalationRules: this.escalationRules.filter(r => r.slaPolicyId === item.id)
+          };
+        }
+        return item;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.slaPolicies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.slaPolicies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.include?.escalationRules) {
+          list = list.map(p => ({
+            ...p,
+            escalationRules: this.escalationRules.filter(r => r.slaPolicyId === p.id)
+          }));
+        }
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `sla_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          priority: 'NORMAL',
+          durationMinutes: 120,
+          warningThresholdPercent: 80,
+          criticalThresholdPercent: 95,
+          allowPause: true,
+          allowedPauseReasons: JSON.stringify(['CLIENTE', 'PRODUTOR']),
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.slaPolicies.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.slaPolicies.find(x => x.id === args.where.id);
+        if (!item) throw new Error('SlaPolicy not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get slaEvent() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.slaEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `slae_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.slaEvents.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get escalationRule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.escalationRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.level - b.level);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `esc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          level: 1,
+          triggerMinutesAfterBreach: 30,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.escalationRules.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get escalationEvent() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.escalationEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `esce_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.escalationEvents.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get userAvailability() {
+    return {
+      findUnique: async (args: any) => {
+        return this.userAvailabilities.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.userId) return x.userId === args.where.userId;
+          return false;
+        }) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.userAvailabilities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.userAvailabilities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `uav_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: 'AVAILABLE',
+          currentWorkloadScore: 0,
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.userAvailabilities.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.userAvailabilities.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.userId) return x.userId === args.where.userId;
+          return false;
+        });
+        if (!item) throw new Error('UserAvailability not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      upsert: async (args: any) => {
+        const existing = this.userAvailabilities.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.userId) return x.userId === args.where.userId;
+          return false;
+        });
+        if (existing) {
+          Object.assign(existing, args.update, { updatedAt: new Date() });
+          return existing;
+        } else {
+          const item = {
+            id: args.create.id || `uav_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+            status: 'AVAILABLE',
+            currentWorkloadScore: 0,
+            updatedAt: new Date(),
+            ...args.create
+          };
+          this.userAvailabilities.push(item);
+          return item;
+        }
+      }
+    };
+  }
+
+  public get dutySchedule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.dutySchedules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `duty_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isActive: true,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.dutySchedules.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.dutySchedules.find(x => x.id === args.where.id);
+        if (!item) throw new Error('DutySchedule not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  private hydrateTask(task: any, include?: any): any {
+    if (!task) return null;
+    const copy = { ...task };
+    if (include?.assignments || include?.history || include?.comments || include?.checklistItems || include?.dependencies) {
+      // populate standard includes
+    }
+    copy.assignments = this.taskAssignments.filter(a => a.taskId === task.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    copy.checklistItems = this.taskChecklistItems.filter(i => i.taskId === task.id).sort((a, b) => (a.orderIndex || 0) - (b.orderIndex || 0));
+    copy.checklist = copy.checklistItems; // alias
+    copy.comments = this.taskComments.filter(c => c.taskId === task.id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    copy.history = this.taskHistories.filter(h => h.taskId === task.id).sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    copy.dependencies = this.taskDependencies.filter(d => d.taskId === task.id);
+    copy.dependentOnMe = this.taskDependencies.filter(d => d.dependsOnTaskId === task.id);
+    copy.slaEvents = this.slaEvents.filter(e => e.taskId === task.id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+    copy.escalationEvents = this.escalationEvents.filter(e => e.taskId === task.id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+
+    if (include?.assignedUser || copy.assignedUserId) {
+      copy.assignedUser = this.users.find(u => u.id === task.assignedUserId) || null;
+    }
+    if (include?.assignedTeam || copy.assignedTeamId) {
+      copy.assignedTeam = this.teams.find(t => t.id === task.assignedTeamId) || null;
     }
     return copy;
   }

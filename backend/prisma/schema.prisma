@@ -911,3 +911,373 @@ model DocumentRequirement {
   @@index([eventId])
 }
 
+// ============================================================================
+// SEÇÃO 11: MOTOR CENTRAL DE TAREFAS, PENDÊNCIAS E FLUXOS (Fase 1.1.5.9)
+// ============================================================================
+
+model Task {
+  id                    String    @id @default(uuid())
+  taskNumber            String    @unique // e.g. TSK-8821
+  title                 String
+  description           String?
+  module                String    // FINANCEIRO, SAC, EVENTOS, ESTORNO, CONTABILIDADE, MARKETING, COMERCIAL, OPERACOES, SEGURANCA, GERAL
+  type                  String    // INVESTIGATE_DIVERGENCE, REVIEW_REFUND_DOCS, VALIDATE_INVOICE, etc.
+  priority              String    @default("NORMAL") // LOW, NORMAL, HIGH, CRITICAL
+  status                String    @default("OPEN") // OPEN, ASSIGNED, IN_PROGRESS, WAITING, BLOCKED, COMPLETED, CANCELLED
+  waitingReason         String?   // CLIENTE, PRODUTOR, FORNECEDOR, BANCO, GATEWAY, OUTRO_DEPARTAMENTO
+  blockedReason         String?
+  assignedUserId        String?
+  assignedUserName      String?
+  assignedTeamId        String?
+  assignedTeamName      String?
+  organizationId        String?
+  producerId            String?
+  producerName          String?
+  eventId               String?
+  eventName             String?
+  resourceType          String?   // ORDER, CUSTOMER, EVENT, PAYMENT, TRANSFER, REFUND, SUPPORT_TICKET, CAMPAIGN, DOCUMENT
+  resourceId            String?
+  workflowId            String?
+  workflowRuleId        String?
+  templateId            String?
+  slaPolicyId           String?
+  dueAt                 DateTime?
+  slaStartedAt          DateTime?
+  slaPausedAt           DateTime?
+  slaResumedAt          DateTime?
+  slaDeadline           DateTime?
+  slaStatus             String    @default("WITHIN_SLA") // WITHIN_SLA, NEARING_BREACH, BREACHED, PAUSED
+  totalPausedDurationMs Int       @default(0)
+  estimatedMinutes      Int?
+  startedAt             DateTime?
+  completedAt           DateTime?
+  completedByUserId     String?
+  cancelledAt           DateTime?
+  cancelledByUserId     String?
+  cancelReason          String?
+  reopenedAt            DateTime?
+  reopenedByUserId      String?
+  reopenReason          String?
+  escalationLevel       Int       @default(0)
+  createdBy             String
+  creatorName           String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  assignments           TaskAssignment[]
+  checklists            TaskChecklist[]
+  checklistItems        TaskChecklistItem[]
+  comments              TaskComment[]
+  history               TaskHistory[]
+  dependencies          TaskDependency[]      @relation("TaskDependencies")
+  dependentOnMe         TaskDependency[]      @relation("TaskDependentOnMe")
+  slaEvents             SlaEvent[]
+  escalationEvents      EscalationEvent[]
+
+  @@index([status])
+  @@index([priority])
+  @@index([module])
+  @@index([assignedUserId])
+  @@index([assignedTeamId])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([resourceType, resourceId])
+  @@index([dueAt])
+  @@index([slaStatus])
+  @@index([createdAt])
+}
+
+model TaskAssignment {
+  id               String   @id @default(uuid())
+  taskId           String
+  fromUserId       String?
+  toUserId         String?
+  fromTeamId       String?
+  toTeamId         String?
+  assignmentType   String   @default("MANUAL") // MANUAL, ROUTER_AUTO, ROUTER_ROUND_ROBIN, ROUTER_WORKLOAD, ROUTER_DUTY, CLAIMED
+  reason           String?
+  comment          String?
+  assignedByUserId String?
+  createdAt        DateTime @default(now())
+
+  task             Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([toUserId])
+  @@index([toTeamId])
+}
+
+model TaskChecklist {
+  id        String   @id @default(uuid())
+  taskId    String
+  title     String
+  createdAt DateTime @default(now())
+
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+model TaskChecklistItem {
+  id                String    @id @default(uuid())
+  taskId            String
+  text              String
+  isRequired        Boolean   @default(false)
+  isCompleted       Boolean   @default(false)
+  completedByUserId String?
+  completedAt       DateTime?
+  orderIndex        Int       @default(0)
+
+  task              Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+model TaskComment {
+  id         String   @id @default(uuid())
+  taskId     String
+  userId     String
+  userName   String?
+  userAvatar String?
+  content    String
+  mentions   String?  // JSON array: '["usr-carlos", "team-financeiro"]'
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  task       Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+}
+
+model TaskDependency {
+  id              String   @id @default(uuid())
+  taskId          String
+  dependsOnTaskId String
+  createdAt       DateTime @default(now())
+
+  task            Task     @relation("TaskDependencies", fields: [taskId], references: [id], onDelete: Cascade)
+  dependsOnTask   Task     @relation("TaskDependentOnMe", fields: [dependsOnTaskId], references: [id], onDelete: Cascade)
+
+  @@unique([taskId, dependsOnTaskId])
+  @@index([taskId])
+  @@index([dependsOnTaskId])
+}
+
+model TaskHistory {
+  id        String   @id @default(uuid())
+  taskId    String
+  userId    String?
+  userName  String?
+  action    String   // CREATED, ASSIGNED, CLAIMED, STARTED, WAITING, RESUMED, CHECKLIST_ITEM_COMPLETED, COMMENT_ADDED, DOCUMENT_LINKED, REASSIGNED, ESCALATED, COMPLETED, REOPENED, CANCELLED
+  details   String?  // JSON string
+  createdAt DateTime @default(now())
+
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Team {
+  id             String       @id @default(uuid())
+  name           String
+  code           String       @unique // FINANCEIRO, SAC, ESTORNO, SUPORTE_EVENTOS, CONTABILIDADE, MARKETING, OPERACOES, SEGURANCA
+  description    String?
+  leaderUserId   String?
+  isActive       Boolean      @default(true)
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  members        TeamMember[]
+  dutySchedules  DutySchedule[]
+
+  @@index([code])
+  @@index([isActive])
+}
+
+model TeamMember {
+  id        String   @id @default(uuid())
+  teamId    String
+  userId    String
+  role      String   @default("ANALYST") // LEADER, SUPERVISOR, ANALYST, MEMBER
+  createdAt DateTime @default(now())
+
+  team      Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, userId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model Workflow {
+  id             String            @id @default(uuid())
+  name           String
+  description    String?
+  module         String            // FINANCEIRO, SAC, EVENTOS, ESTORNO, CONTABILIDADE, MARKETING, SEGURANCA
+  triggerEvent   String            // RECONCILIATION_DIVERGENCE_DETECTED, REFUND_REQUESTED, TICKET_CREATED, etc.
+  isActive       Boolean           @default(true)
+  currentVersion Int               @default(1)
+  createdAt      DateTime          @default(now())
+  updatedAt      DateTime          @updatedAt
+
+  versions       WorkflowVersion[]
+  rules          WorkflowRule[]
+
+  @@index([module])
+  @@index([triggerEvent])
+  @@index([isActive])
+}
+
+model WorkflowVersion {
+  id              String   @id @default(uuid())
+  workflowId      String
+  version         Int
+  rulesSnapshot   String   // JSON array of rules
+  changeReason    String?
+  createdByUserId String
+  createdAt       DateTime @default(now())
+
+  workflow        Workflow @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+
+  @@unique([workflowId, version])
+  @@index([workflowId])
+}
+
+model WorkflowRule {
+  id            String           @id @default(uuid())
+  workflowId    String
+  version       Int              @default(1)
+  name          String?
+  conditionJson String           // JSON rules
+  actionJson    String           // JSON action specs
+  priority      String           @default("NORMAL")
+  slaMinutes    Int              @default(120)
+  targetTeamId  String?
+  orderIndex    Int              @default(0)
+
+  workflow      Workflow         @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  actions       WorkflowAction[]
+
+  @@index([workflowId])
+}
+
+model WorkflowAction {
+  id             String       @id @default(uuid())
+  workflowRuleId String
+  actionType     String       // CREATE_TASK, NOTIFY, ROUTE_TEAM, FORWARD_APPROVAL
+  payload        String       // JSON payload
+
+  rule           WorkflowRule @relation(fields: [workflowRuleId], references: [id], onDelete: Cascade)
+
+  @@index([workflowRuleId])
+}
+
+model TaskTemplate {
+  id                      String   @id @default(uuid())
+  code                    String   @unique
+  title                   String
+  description             String?
+  module                  String
+  priority                String   @default("NORMAL")
+  defaultEstimatedMinutes Int      @default(120)
+  targetTeamCode          String?
+  checklistTemplate       String?  // JSON array of items: '[{"text": "Conferir pedido", "isRequired": true}]'
+  createdAt               DateTime @default(now())
+
+  @@index([code])
+  @@index([module])
+}
+
+model SlaPolicy {
+  id                      String   @id @default(uuid())
+  name                    String
+  module                  String
+  priority                String   @default("NORMAL")
+  durationMinutes         Int      @default(120)
+  warningThresholdPercent Int      @default(80)
+  criticalThresholdPercent Int     @default(95)
+  allowPause              Boolean  @default(true)
+  allowedPauseReasons     String   // JSON array: '["CLIENTE", "PRODUTOR", "FORNECEDOR", "BANCO", "GATEWAY", "OUTRO_DEPARTAMENTO"]'
+  createdAt               DateTime @default(now())
+
+  escalationRules         EscalationRule[]
+
+  @@index([module, priority])
+}
+
+model SlaEvent {
+  id        String   @id @default(uuid())
+  taskId    String
+  eventType String   // STARTED, PAUSED, RESUMED, WARNING_80, CRITICAL_95, BREACHED
+  details   String?
+  createdAt DateTime @default(now())
+
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+  @@index([eventType])
+}
+
+model EscalationRule {
+  id                       String     @id @default(uuid())
+  slaPolicyId              String?
+  module                   String?
+  level                    Int        @default(1)
+  triggerMinutesAfterBreach Int       @default(30)
+  escalateToRole           String     // SUPERVISOR, MANAGER, ADMIN
+  escalateToTeamId         String?
+  notifyChannels           String     // JSON array: '["WEBSOCKET", "EMAIL", "NOTIFICATION"]'
+  createdAt                DateTime   @default(now())
+
+  slaPolicy                SlaPolicy? @relation(fields: [slaPolicyId], references: [id], onDelete: Cascade)
+
+  @@index([slaPolicyId])
+  @@index([module])
+}
+
+model EscalationEvent {
+  id                String   @id @default(uuid())
+  taskId            String
+  fromLevel         Int
+  toLevel           Int
+  escalatedToUserId String?
+  reason            String
+  createdAt         DateTime @default(now())
+
+  task              Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@index([taskId])
+}
+
+model UserAvailability {
+  id                   String    @id @default(uuid())
+  userId               String    @unique
+  status               String    @default("AVAILABLE") // AVAILABLE, BUSY, AWAY, VACATION, INACTIVE
+  currentWorkloadScore Int       @default(0)
+  lastAssignedAt       DateTime?
+  updatedAt            DateTime  @updatedAt
+
+  @@index([userId])
+  @@index([status])
+}
+
+model DutySchedule {
+  id            String   @id @default(uuid())
+  teamId        String
+  producerId    String?
+  eventId       String?
+  shiftStart    String   // e.g. "18:00"
+  shiftEnd      String   // e.g. "00:00"
+  activeUserIds String   // JSON array of user IDs
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  team          Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+
+  @@index([teamId])
+  @@index([eventId])
+  @@index([isActive])
+}
+

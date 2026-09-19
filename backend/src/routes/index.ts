@@ -17,6 +17,7 @@ import searchRoutes from '../modules/search/search.routes';
 import approvalRoutes from '../modules/approvals/approval.routes';
 import { approvalRulesAdminRouter, approvalThresholdsAdminRouter } from '../modules/approvals/approval-admin.routes';
 import documentRoutes, { resourceDocumentsRouter } from '../modules/documents/document.routes';
+import { taskRoutes } from '../modules/tasks/task.routes';
 
 const router = Router();
 
@@ -29,6 +30,8 @@ router.use('/security', securityRoutes);
 router.use('/approvals', approvalRoutes);
 router.use('/documents', documentRoutes);
 router.use('/resources', resourceDocumentsRouter);
+router.use('/tasks', taskRoutes);
+router.use('/admin/tasks', taskRoutes);
 router.use('/admin', adminDashboardRoutes);
 router.use('/admin/notifications', notificationRoutes);
 router.use('/admin/security', securityRoutes);

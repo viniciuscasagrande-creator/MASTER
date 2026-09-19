@@ -117,7 +117,26 @@ export type PermissionString =
   | 'documentos.arquivo.excluir'
   | 'documentos.categoria.visualizar'
   | 'documentos.categoria.editar'
-  | 'documentos.auditoria.visualizar';
+  | 'documentos.auditoria.visualizar'
+  // Tarefas & Fluxos de Trabalho (Fase 1.1.5.9)
+  | 'tarefas.central.visualizar'
+  | 'tarefas.tarefa.visualizar'
+  | 'tarefas.tarefa.criar'
+  | 'tarefas.tarefa.editar'
+  | 'tarefas.tarefa.assumir'
+  | 'tarefas.tarefa.reatribuir'
+  | 'tarefas.tarefa.concluir'
+  | 'tarefas.tarefa.cancelar'
+  | 'tarefas.tarefa.reabrir'
+  | 'tarefas.equipe.visualizar'
+  | 'tarefas.equipe.gerenciar'
+  | 'tarefas.workflow.visualizar'
+  | 'tarefas.workflow.criar'
+  | 'tarefas.workflow.editar'
+  | 'tarefas.workflow.gerenciar'
+  | 'tarefas.sla.visualizar'
+  | 'tarefas.sla.configurar'
+  | 'tarefas.dashboard.visualizar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -140,7 +159,8 @@ export type DocumentResourceType =
   | 'SUPPLIER'
   | 'CONTRACT'
   | 'CAMPAIGN'
-  | 'APPROVAL_REQUEST';
+  | 'APPROVAL_REQUEST'
+  | 'TASK';
 
 export interface DocumentCategoryItem {
   id: string;
@@ -234,3 +254,203 @@ export interface RoleDefinition {
   defaultPermissions: PermissionString[];
   requiresTwoFactor: boolean;
 }
+
+// ============================================================================
+// FASE 1.1.5.9 — MOTOR CENTRAL DE TAREFAS, PENDÊNCIAS E FLUXOS DE TRABALHO
+// ============================================================================
+
+export type TaskStatus =
+  | 'OPEN'
+  | 'ASSIGNED'
+  | 'IN_PROGRESS'
+  | 'WAITING'
+  | 'BLOCKED'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+export type TaskPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
+
+export type TaskModule =
+  | 'FINANCEIRO'
+  | 'SAC'
+  | 'EVENTOS'
+  | 'ESTORNO'
+  | 'CONTABILIDADE'
+  | 'MARKETING'
+  | 'COMERCIAL'
+  | 'OPERACOES'
+  | 'SEGURANCA'
+  | 'GERAL';
+
+export type TaskWaitingReason =
+  | 'CLIENTE'
+  | 'PRODUTOR'
+  | 'FORNECEDOR'
+  | 'BANCO'
+  | 'GATEWAY'
+  | 'OUTRO_DEPARTAMENTO';
+
+export type SlaStatus =
+  | 'WITHIN_SLA'
+  | 'NEARING_BREACH'
+  | 'BREACHED'
+  | 'PAUSED';
+
+export type UserAvailabilityStatus =
+  | 'AVAILABLE'
+  | 'BUSY'
+  | 'AWAY'
+  | 'VACATION'
+  | 'INACTIVE';
+
+export interface TaskChecklistItem {
+  id: string;
+  taskId: string;
+  text: string;
+  isRequired: boolean;
+  isCompleted: boolean;
+  completedByUserId?: string;
+  completedAt?: string;
+  orderIndex: number;
+}
+
+export interface TaskCommentItem {
+  id: string;
+  taskId: string;
+  userId: string;
+  userName?: string;
+  userAvatar?: string;
+  content: string;
+  mentions?: string[];
+  createdAt: string;
+  updatedAt?: string;
+}
+
+export interface TaskHistoryItem {
+  id: string;
+  taskId: string;
+  userId?: string;
+  userName?: string;
+  action: string;
+  details?: Record<string, any> | string;
+  createdAt: string;
+}
+
+export interface TaskItem {
+  id: string;
+  taskNumber: string;
+  title: string;
+  description?: string | null;
+  module: TaskModule;
+  type: string;
+  priority: TaskPriority;
+  status: TaskStatus;
+  waitingReason?: TaskWaitingReason | null;
+  blockedReason?: string | null;
+  assignedUserId?: string | null;
+  assignedUserName?: string | null;
+  assignedTeamId?: string | null;
+  assignedTeamName?: string | null;
+  organizationId?: string | null;
+  producerId?: string | null;
+  producerName?: string | null;
+  eventId?: string | null;
+  eventName?: string | null;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  workflowId?: string | null;
+  workflowRuleId?: string | null;
+  templateId?: string | null;
+  slaPolicyId?: string | null;
+  dueAt?: string | null;
+  slaStartedAt?: string | null;
+  slaPausedAt?: string | null;
+  slaResumedAt?: string | null;
+  slaDeadline?: string | null;
+  slaStatus: SlaStatus;
+  totalPausedDurationMs?: number;
+  estimatedMinutes?: number | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  completedByUserId?: string | null;
+  cancelledAt?: string | null;
+  cancelledByUserId?: string | null;
+  cancelReason?: string | null;
+  reopenedAt?: string | null;
+  reopenedByUserId?: string | null;
+  reopenReason?: string | null;
+  escalationLevel: number;
+  createdBy: string;
+  creatorName?: string;
+  createdAt: string;
+  updatedAt: string;
+  checklist?: TaskChecklistItem[];
+  comments?: TaskCommentItem[];
+  history?: TaskHistoryItem[];
+  dependsOnTaskIds?: string[];
+  blockingTaskIds?: string[];
+}
+
+export interface TeamMemberItem {
+  id: string;
+  teamId: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  role: 'LEADER' | 'SUPERVISOR' | 'ANALYST' | 'MEMBER';
+  createdAt: string;
+}
+
+export interface TeamItem {
+  id: string;
+  name: string;
+  code: string;
+  description?: string;
+  leaderUserId?: string;
+  isActive: boolean;
+  members?: TeamMemberItem[];
+  memberCount?: number;
+  openTasksCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface WorkflowRuleItem {
+  id: string;
+  workflowId: string;
+  version: number;
+  name?: string;
+  conditionJson: any;
+  actionJson: any;
+  priority: TaskPriority;
+  slaMinutes: number;
+  targetTeamId?: string;
+  orderIndex: number;
+}
+
+export interface WorkflowItem {
+  id: string;
+  name: string;
+  description?: string;
+  module: TaskModule;
+  triggerEvent: string;
+  isActive: boolean;
+  currentVersion: number;
+  rules?: WorkflowRuleItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SlaPolicyItem {
+  id: string;
+  name: string;
+  module: TaskModule;
+  priority: TaskPriority;
+  durationMinutes: number;
+  warningThresholdPercent: number;
+  criticalThresholdPercent: number;
+  allowPause: boolean;
+  allowedPauseReasons: string[];
+  createdAt: string;
+}
+

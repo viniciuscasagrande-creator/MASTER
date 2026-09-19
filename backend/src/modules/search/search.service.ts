@@ -23,6 +23,7 @@ import { RefundSearchProvider } from './providers/refund.search';
 import { SupportSearchProvider } from './providers/support.search';
 import { CampaignSearchProvider } from './providers/campaign.search';
 import { DocumentSearchProvider } from './providers/document.search';
+import { TaskSearchProvider } from './providers/task.search';
 
 export class SearchService {
   /**
@@ -61,7 +62,8 @@ export class SearchService {
       refunds,
       supportTickets,
       campaigns,
-      documents
+      documents,
+      tasks
     ] = await Promise.all([
       CustomerSearchProvider.search(parsed, scope, user),
       OrderSearchProvider.search(parsed, scope, user),
@@ -72,7 +74,8 @@ export class SearchService {
       RefundSearchProvider.search(parsed, scope, user),
       SupportSearchProvider.search(parsed, scope, user),
       CampaignSearchProvider.search(parsed, scope, user),
-      DocumentSearchProvider.search(parsed, scope, user)
+      DocumentSearchProvider.search(parsed, scope, user),
+      TaskSearchProvider.search(parsed, scope, user)
     ]);
 
     const totalMatches =
@@ -85,7 +88,8 @@ export class SearchService {
       refunds.length +
       supportTickets.length +
       campaigns.length +
-      documents.length;
+      documents.length +
+      tasks.length;
 
     // Record recent search history (if non-empty)
     if (rawQuery && rawQuery.trim().length >= 2) {
@@ -116,7 +120,8 @@ export class SearchService {
         refunds: { count: refunds.length, items: refunds },
         supportTickets: { count: supportTickets.length, items: supportTickets },
         campaigns: { count: campaigns.length, items: campaigns },
-        documents: { count: documents.length, items: documents }
+        documents: { count: documents.length, items: documents },
+        tasks: { count: tasks.length, items: tasks }
       }
     };
   }

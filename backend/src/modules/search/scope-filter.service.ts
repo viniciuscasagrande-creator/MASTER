@@ -15,6 +15,7 @@ export interface EffectiveSearchScope {
     support: boolean;
     campaigns: boolean;
     documents: boolean;
+    tasks: boolean;
   };
 }
 
@@ -84,7 +85,8 @@ export class ScopeFilterService {
       refunds: hasPerm('busca.estorno.visualizar') || hasPerm('estorno.solicitacao.visualizar') || isSuperAdmin,
       support: hasPerm('busca.ticket.visualizar') || hasPerm('sac.consulta.acessar') || isSuperAdmin,
       campaigns: hasPerm('busca.campanha.visualizar') || hasPerm('marketing.campanha.visualizar') || isSuperAdmin,
-      documents: hasPerm('documentos.arquivo.visualizar') || hasPerm('documentos.central.visualizar') || isSuperAdmin
+      documents: hasPerm('documentos.arquivo.visualizar') || hasPerm('documentos.central.visualizar') || isSuperAdmin,
+      tasks: hasPerm('tarefas.tarefa.visualizar') || hasPerm('tarefas.central.visualizar') || isProducerRole || isSuperAdmin
     };
 
     return {

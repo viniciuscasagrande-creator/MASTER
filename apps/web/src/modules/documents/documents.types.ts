@@ -19,7 +19,8 @@ export type DocumentResourceType =
   | 'SUPPLIER'
   | 'CONTRACT'
   | 'CAMPAIGN'
-  | 'APPROVAL_REQUEST';
+  | 'APPROVAL_REQUEST'
+  | 'TASK';
 
 export interface DocumentCategoryItem {
   id: string;

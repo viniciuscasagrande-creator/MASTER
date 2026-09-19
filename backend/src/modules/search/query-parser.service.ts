@@ -125,7 +125,21 @@ export class QueryParserService {
       };
     }
 
-    // 9. Default: Keyword / Text query
+    // 9. Check for Task Code (TSK-..., TAR-...)
+    if (/^(TSK-|TAR-|#TSK-)/i.test(raw)) {
+      const code = raw.replace(/^(#)/, '').toUpperCase();
+      const digitsOnly = code.replace(/\D/g, '');
+      return {
+        raw,
+        normalized: cleanLower,
+        detectedType: 'TASK_CODE',
+        confidence: 0.95,
+        extractedCode: code,
+        extractedDigits: digitsOnly
+      };
+    }
+
+    // 10. Default: Keyword / Text query
     return {
       raw,
       normalized: cleanLower,

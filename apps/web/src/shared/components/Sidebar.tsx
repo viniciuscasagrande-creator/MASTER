@@ -19,7 +19,8 @@ import {
   ChevronRight,
   PanelLeftClose,
   PanelLeftOpen,
-  FileText
+  FileText,
+  ListTodo
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -103,6 +104,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
       subItems: [
         { id: 'documents-all', label: 'Central de Documentos' },
         { id: 'documents-upload', label: 'Enviar Arquivo', requiredPermission: 'documentos.arquivo.enviar' }
+      ]
+    },
+    {
+      id: 'tasks',
+      label: 'Central de Trabalho',
+      icon: <ListTodo className="h-4 w-4 text-amber-400" />,
+      requiredPermission: 'tarefas.central.visualizar',
+      subItems: [
+        { id: 'tasks-inbox', label: 'Minha Caixa de Entrada' },
+        { id: 'tasks-all', label: 'Todas as Tarefas' },
+        { id: 'tasks-kanban', label: 'Quadro Kanban' },
+        { id: 'tasks-dashboard', label: 'Produtividade & SLAs' },
+        { id: 'tasks-workflows', label: 'Workflows & Regras', requiredPermission: 'tarefas.workflow.gerenciar' },
+        { id: 'tasks-teams', label: 'Equipes & Plantões', requiredPermission: 'tarefas.equipe.gerenciar' }
       ]
     },
     {

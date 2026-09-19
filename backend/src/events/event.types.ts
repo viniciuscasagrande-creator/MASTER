@@ -41,7 +41,23 @@ export type DomainEventType =
   | 'DOCUMENT_UPLOADED'
   | 'DOCUMENT_EXPIRING'
   | 'DOCUMENT_QUARANTINED'
-  | 'DOCUMENT_DELETED';
+  | 'DOCUMENT_DELETED'
+  // Tarefas & Workflow Engine (Fase 1.1.5.9)
+  | 'TASK_CREATED'
+  | 'TASK_ASSIGNED'
+  | 'TASK_CLAIMED'
+  | 'TASK_UPDATED'
+  | 'TASK_COMMENT_CREATED'
+  | 'TASK_SLA_WARNING'
+  | 'TASK_ESCALATED'
+  | 'TASK_COMPLETED'
+  | 'TASK_CANCELLED'
+  | 'TASK_REOPENED'
+  // Operational Triggers for Workflows
+  | 'RECONCILIATION_DIVERGENCE_DETECTED'
+  | 'CHECKIN_FAILURE_RATE_HIGH'
+  | 'TRACKING_HEALTH_FAILED'
+  | 'ACCOUNTING_DIVERGENCE';
 
 export interface DomainEvent<T = any> {
   id: string; // Unique event ID for Idempotency
