@@ -306,6 +306,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return currentUser.permissions.some(p => p.startsWith('tarefas.'));
       case 'configurations':
         return currentUser.permissions.some(p => p.startsWith('configuracoes.'));
+      case 'observability':
+        return currentUser.permissions.some(p => p.startsWith('observabilidade.') || p.startsWith('auditoria.'));
       case 'admin':
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':

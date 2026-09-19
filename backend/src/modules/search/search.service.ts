@@ -25,6 +25,7 @@ import { CampaignSearchProvider } from './providers/campaign.search';
 import { DocumentSearchProvider } from './providers/document.search';
 import { TaskSearchProvider } from './providers/task.search';
 import { PolicySearchProvider } from './providers/policy.search';
+import { ObservabilitySearchProvider } from './providers/observability.search';
 
 export class SearchService {
   /**
@@ -65,7 +66,8 @@ export class SearchService {
       campaigns,
       documents,
       tasks,
-      policies
+      policies,
+      observabilityItems
     ] = await Promise.all([
       CustomerSearchProvider.search(parsed, scope, user),
       OrderSearchProvider.search(parsed, scope, user),
@@ -78,8 +80,12 @@ export class SearchService {
       CampaignSearchProvider.search(parsed, scope, user),
       DocumentSearchProvider.search(parsed, scope, user),
       TaskSearchProvider.search(parsed, scope, user),
-      PolicySearchProvider.search(parsed, scope, user)
+      PolicySearchProvider.search(parsed, scope, user),
+      ObservabilitySearchProvider.search(parsed, scope, user)
     ]);
+
+    const traces = observabilityItems.filter(i => i.entityType === 'TRACE');
+    const errors = observabilityItems.filter(i => i.entityType === 'ERROR_GROUP');
 
     const totalMatches =
       customers.length +
@@ -93,7 +99,9 @@ export class SearchService {
       campaigns.length +
       documents.length +
       tasks.length +
-      policies.length;
+      policies.length +
+      traces.length +
+      errors.length;
 
     // Record recent search history (if non-empty)
     if (rawQuery && rawQuery.trim().length >= 2) {
@@ -126,7 +134,9 @@ export class SearchService {
         campaigns: { count: campaigns.length, items: campaigns },
         documents: { count: documents.length, items: documents },
         tasks: { count: tasks.length, items: tasks },
-        policies: { count: policies.length, items: policies }
+        policies: { count: policies.length, items: policies },
+        traces: { count: traces.length, items: traces },
+        errors: { count: errors.length, items: errors }
       }
     };
   }

@@ -10,7 +10,10 @@ export type EntityType =
   | 'CAMPAIGN'
   | 'DOCUMENT'
   | 'TASK'
-  | 'POLICY';
+  | 'POLICY'
+  | 'TRACE'
+  | 'ERROR_GROUP'
+  | 'AUDIT_LOG';
 
 export type DetectedQueryType =
   | 'CPF'
@@ -21,6 +24,9 @@ export type DetectedQueryType =
   | 'SUPPORT_CODE'
   | 'TASK_CODE'
   | 'POLICY_CODE'
+  | 'CORRELATION_ID'
+  | 'REQUEST_ID'
+  | 'ERROR_CODE'
   | 'EMAIL'
   | 'PHONE'
   | 'TEXT';
@@ -72,6 +78,8 @@ export interface CategorizedSearchResults {
     documents?: CategoryResult;
     tasks?: CategoryResult;
     policies?: CategoryResult;
+    traces?: CategoryResult;
+    errors?: CategoryResult;
   };
 }
 

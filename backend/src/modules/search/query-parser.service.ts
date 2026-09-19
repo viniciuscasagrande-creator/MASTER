@@ -151,7 +151,43 @@ export class QueryParserService {
       };
     }
 
-    // 11. Default: Keyword / Text query
+    // 11. Check for Correlation ID (COR-...)
+    if (/^(COR-|#COR-)/i.test(raw)) {
+      const code = raw.replace(/^(#)/, '').toUpperCase();
+      return {
+        raw,
+        normalized: cleanLower,
+        detectedType: 'CORRELATION_ID',
+        confidence: 1.0,
+        extractedCode: code
+      };
+    }
+
+    // 12. Check for Request ID (REQ-...)
+    if (/^(REQ-|#REQ-)/i.test(raw)) {
+      const code = raw.replace(/^(#)/, '').toUpperCase();
+      return {
+        raw,
+        normalized: cleanLower,
+        detectedType: 'REQUEST_ID',
+        confidence: 1.0,
+        extractedCode: code
+      };
+    }
+
+    // 13. Check for Error Code / Fingerprint (ERR-...)
+    if (/^(ERR-|#ERR-)/i.test(raw)) {
+      const code = raw.replace(/^(#)/, '').toUpperCase();
+      return {
+        raw,
+        normalized: cleanLower,
+        detectedType: 'ERROR_CODE',
+        confidence: 1.0,
+        extractedCode: code
+      };
+    }
+
+    // 14. Default: Keyword / Text query
     return {
       raw,
       normalized: cleanLower,

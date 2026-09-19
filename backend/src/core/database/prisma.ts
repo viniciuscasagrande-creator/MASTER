@@ -81,6 +81,17 @@ export class InMemoryPrismaStore {
   public featureFlags: any[] = [];
   public configurationAudits: any[] = [];
   public policyEvaluations: any[] = [];
+  // Auditoria & Observabilidade (Fase 1.1.5.12)
+  public integrationInboxes: any[] = [];
+  public businessEvents: any[] = [];
+  public operationTraces: any[] = [];
+  public traceSpans: any[] = [];
+  public errorGroups: any[] = [];
+  public errorOccurrences: any[] = [];
+  public healthChecks: any[] = [];
+  public systemAlerts: any[] = [];
+  public metricSnapshots: any[] = [];
+  public observabilityAnnotations: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -164,6 +175,17 @@ export class InMemoryPrismaStore {
     this.escalationEvents = [];
     this.userAvailabilities = [];
     this.dutySchedules = [];
+    // Auditoria & Observabilidade (Fase 1.1.5.12)
+    this.integrationInboxes = [];
+    this.businessEvents = [];
+    this.operationTraces = [];
+    this.traceSpans = [];
+    this.errorGroups = [];
+    this.errorOccurrences = [];
+    this.healthChecks = [];
+    this.systemAlerts = [];
+    this.metricSnapshots = [];
+    this.observabilityAnnotations = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -281,7 +303,22 @@ export class InMemoryPrismaStore {
       { id: 'p-cfg-10', module: 'configuracoes', resource: 'rollback', action: 'executar', code: 'configuracoes.rollback.executar', description: 'Executar rollback de versão' },
       { id: 'p-cfg-11', module: 'configuracoes', resource: 'feature_flag', action: 'visualizar', code: 'configuracoes.feature_flag.visualizar', description: 'Visualizar feature flags' },
       { id: 'p-cfg-12', module: 'configuracoes', resource: 'feature_flag', action: 'editar', code: 'configuracoes.feature_flag.editar', description: 'Gerenciar feature flags e kill switches' },
-      { id: 'p-cfg-13', module: 'configuracoes', resource: 'historico', action: 'visualizar', code: 'configuracoes.historico.visualizar', description: 'Visualizar auditoria de configurações' }
+      { id: 'p-cfg-13', module: 'configuracoes', resource: 'historico', action: 'visualizar', code: 'configuracoes.historico.visualizar', description: 'Visualizar auditoria de configurações' },
+      // Auditoria & Observabilidade (Fase 1.1.5.12)
+      { id: 'p-obs-1', module: 'auditoria', resource: 'central', action: 'visualizar', code: 'auditoria.central.visualizar', description: 'Acessar Central de Auditoria' },
+      { id: 'p-obs-2', module: 'auditoria', resource: 'registro', action: 'visualizar', code: 'auditoria.registro.visualizar', description: 'Visualizar registros de auditoria' },
+      { id: 'p-obs-3', module: 'auditoria', resource: 'detalhe', action: 'visualizar', code: 'auditoria.detalhe.visualizar', description: 'Visualizar detalhes e diffs de auditoria' },
+      { id: 'p-obs-4', module: 'auditoria', resource: 'exportacao', action: 'criar', code: 'auditoria.exportacao.criar', description: 'Exportar trilha de auditoria' },
+      { id: 'p-obs-5', module: 'observabilidade', resource: 'dashboard', action: 'visualizar', code: 'observabilidade.dashboard.visualizar', description: 'Visualizar dashboard de observabilidade' },
+      { id: 'p-obs-6', module: 'observabilidade', resource: 'trace', action: 'visualizar', code: 'observabilidade.trace.visualizar', description: 'Visualizar rastreamento e traces operacionais' },
+      { id: 'p-obs-7', module: 'observabilidade', resource: 'erro', action: 'visualizar', code: 'observabilidade.erro.visualizar', description: 'Visualizar erros e exceções' },
+      { id: 'p-obs-8', module: 'observabilidade', resource: 'erro', action: 'detalhe_tecnico', code: 'observabilidade.erro.detalhe_tecnico', description: 'Visualizar detalhes técnicos e stack trace de erros' },
+      { id: 'p-obs-9', module: 'observabilidade', resource: 'performance', action: 'visualizar', code: 'observabilidade.performance.visualizar', description: 'Visualizar métricas de performance e latência' },
+      { id: 'p-obs-10', module: 'observabilidade', resource: 'fila', action: 'visualizar', code: 'observabilidade.fila.visualizar', description: 'Visualizar filas de processamento' },
+      { id: 'p-obs-11', module: 'observabilidade', resource: 'worker', action: 'visualizar', code: 'observabilidade.worker.visualizar', description: 'Visualizar status dos workers' },
+      { id: 'p-obs-12', module: 'observabilidade', resource: 'integracao', action: 'visualizar', code: 'observabilidade.integracao.visualizar', description: 'Visualizar telemetria de integrações' },
+      { id: 'p-obs-13', module: 'observabilidade', resource: 'seguranca', action: 'visualizar', code: 'observabilidade.seguranca.visualizar', description: 'Visualizar eventos de segurança' },
+      { id: 'p-obs-14', module: 'observabilidade', resource: 'saude', action: 'visualizar', code: 'observabilidade.saude.visualizar', description: 'Visualizar saúde do sistema e componentes' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -481,6 +518,23 @@ export class InMemoryPrismaStore {
     associate('FINANCEIRO', 'configuracoes.parametro.visualizar');
     associate('FINANCEIRO', 'configuracoes.politica.visualizar');
     associate('FINANCEIRO', 'configuracoes.simulador.utilizar');
+
+    // Auditoria & Observabilidade (Fase 1.1.5.12)
+    this.permissions.filter(p => p.code.startsWith('auditoria.') || p.code.startsWith('observabilidade.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+    associate('AUDITOR', 'auditoria.central.visualizar');
+    associate('AUDITOR', 'auditoria.registro.visualizar');
+    associate('AUDITOR', 'auditoria.detalhe.visualizar');
+    associate('AUDITOR', 'auditoria.exportacao.criar');
+    associate('AUDITOR', 'observabilidade.dashboard.visualizar');
+    associate('AUDITOR', 'observabilidade.trace.visualizar');
+    associate('AUDITOR', 'observabilidade.erro.visualizar');
+
+    associate('SUPORTE_EVENTOS', 'observabilidade.dashboard.visualizar');
+    associate('SUPORTE_EVENTOS', 'observabilidade.trace.visualizar');
+    associate('SUPORTE_EVENTOS', 'observabilidade.erro.visualizar');
+    associate('SUPORTE_EVENTOS', 'observabilidade.saude.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -2340,27 +2394,50 @@ export class InMemoryPrismaStore {
       create: async (args: any) => {
         const log = {
           id: args.data.id || `aud_${Date.now()}_${Math.floor(Math.random() * 1000)}`,
+          correlationId: args.data.correlationId || null,
+          requestId: args.data.requestId || null,
+          sessionId: args.data.sessionId || null,
           userId: args.data.userId || null,
           userName: args.data.userName || null,
+          module: args.data.module || 'SYSTEM',
           action: args.data.action,
-          resource: args.data.resource,
+          resource: args.data.resource || args.data.resourceType || 'SYSTEM',
+          resourceType: args.data.resourceType || null,
+          resourceId: args.data.resourceId || null,
           producerId: args.data.producerId || null,
           eventId: args.data.eventId || null,
+          beforeData: typeof args.data.beforeData === 'object' ? JSON.stringify(args.data.beforeData) : (args.data.beforeData || null),
+          afterData: typeof args.data.afterData === 'object' ? JSON.stringify(args.data.afterData) : (args.data.afterData || null),
           details: args.data.details || null,
           ipAddress: args.data.ipAddress || null,
+          ipHash: args.data.ipHash || null,
+          userAgent: args.data.userAgent || null,
           result: args.data.result || 'SUCCESS',
           createdAt: new Date()
         };
         this.auditLogs.unshift(log);
         return log;
       },
+      findUnique: async (args: any) => {
+        return this.auditLogs.find(l => l.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.auditLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
       findMany: async (args?: any) => {
         let list = [...this.auditLogs];
-        if (args?.where?.userId) list = list.filter(l => l.userId === args.where.userId);
-        if (args?.where?.action) list = list.filter(l => l.action === args.where.action);
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
         return list;
       },
-      count: async () => this.auditLogs.length
+      count: async (args?: any) => {
+        let list = [...this.auditLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
     };
   }
 
@@ -4784,6 +4861,432 @@ export class InMemoryPrismaStore {
         return list.length;
       }
     };
+  }
+
+  // Auditoria & Observabilidade (Fase 1.1.5.12)
+  public get integrationInbox() {
+    return {
+      findUnique: async (args: any) => {
+        return this.integrationInboxes.find(x => x.id === args.where?.id || x.externalEventId === args.where?.externalEventId) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.integrationInboxes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.integrationInboxes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `inbox_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'PROCESSED',
+          signatureValid: args.data.signatureValid ?? true,
+          isIdempotent: args.data.isIdempotent ?? true,
+          payload: typeof args.data.payload === 'object' ? JSON.stringify(args.data.payload) : (args.data.payload || '{}'),
+          processedAt: args.data.processedAt || new Date(),
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.integrationInboxes.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.integrationInboxes.find(x => x.id === args.where?.id || x.externalEventId === args.where?.externalEventId);
+        if (!item) throw new Error('Inbox item not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.integrationInboxes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get businessEvent() {
+    return {
+      findUnique: async (args: any) => {
+        return this.businessEvents.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.businessEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.businessEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `be_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          payload: typeof args.data.payload === 'object' ? JSON.stringify(args.data.payload) : (args.data.payload || '{}'),
+          consumers: typeof args.data.consumers === 'object' ? JSON.stringify(args.data.consumers) : (args.data.consumers || '[]'),
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.businessEvents.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.businessEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get operationTrace() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.operationTraces.find(x => x.id === args.where?.id || x.correlationId === args.where?.correlationId);
+        return item ? this.hydrateOperationTrace(item, args.include) : null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.operationTraces];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0];
+        return item ? this.hydrateOperationTrace(item, args?.include) : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.operationTraces];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.startedAt).getTime() - new Date(a.startedAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(item => this.hydrateOperationTrace(item, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `trc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'IN_PROGRESS',
+          startedAt: args.data.startedAt || new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.operationTraces.unshift(item);
+        return this.hydrateOperationTrace(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.operationTraces.find(x => x.id === args.where?.id || x.correlationId === args.where?.correlationId);
+        if (!item) throw new Error('Trace not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateOperationTrace(item, args.include);
+      },
+      count: async (args?: any) => {
+        let list = [...this.operationTraces];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get traceSpan() {
+    return {
+      findUnique: async (args: any) => {
+        return this.traceSpans.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.traceSpans];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.traceSpans];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `span_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'SUCCESS',
+          startedAt: args.data.startedAt || new Date(),
+          metadata: typeof args.data.metadata === 'object' ? JSON.stringify(args.data.metadata) : (args.data.metadata || null),
+          ...args.data
+        };
+        this.traceSpans.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.traceSpans.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('Span not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.traceSpans];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get errorGroup() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.errorGroups.find(x => x.id === args.where?.id || x.fingerprint === args.where?.fingerprint);
+        return item ? this.hydrateErrorGroup(item, args.include) : null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.errorGroups];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0];
+        return item ? this.hydrateErrorGroup(item, args?.include) : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.errorGroups];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.lastSeenAt).getTime() - new Date(a.lastSeenAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(item => this.hydrateErrorGroup(item, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `err_grp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'UNRESOLVED',
+          severity: args.data.severity || 'HIGH',
+          occurrencesCount: args.data.occurrencesCount || 1,
+          affectedEventsCount: args.data.affectedEventsCount || 0,
+          affectedUsersCount: args.data.affectedUsersCount || 0,
+          firstSeenAt: args.data.firstSeenAt || new Date(),
+          lastSeenAt: args.data.lastSeenAt || new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.errorGroups.unshift(item);
+        return this.hydrateErrorGroup(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.errorGroups.find(x => x.id === args.where?.id || x.fingerprint === args.where?.fingerprint);
+        if (!item) throw new Error('ErrorGroup not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateErrorGroup(item, args.include);
+      },
+      count: async (args?: any) => {
+        let list = [...this.errorGroups];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get errorOccurrence() {
+    return {
+      findUnique: async (args: any) => {
+        return this.errorOccurrences.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.errorOccurrences];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.errorOccurrences];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `err_occ_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          contextData: typeof args.data.contextData === 'object' ? JSON.stringify(args.data.contextData) : (args.data.contextData || null),
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.errorOccurrences.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.errorOccurrences];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get healthCheck() {
+    return {
+      findUnique: async (args: any) => {
+        return this.healthChecks.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.healthChecks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.healthChecks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.checkedAt).getTime() - new Date(a.checkedAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `hc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'OPERATIONAL',
+          metadata: typeof args.data.metadata === 'object' ? JSON.stringify(args.data.metadata) : (args.data.metadata || null),
+          checkedAt: new Date(),
+          ...args.data
+        };
+        this.healthChecks.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.healthChecks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get systemAlert() {
+    return {
+      findUnique: async (args: any) => {
+        return this.systemAlerts.find(x => x.id === args.where?.id || x.deduplicationKey === args.where?.deduplicationKey) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.systemAlerts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.systemAlerts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.lastTriggeredAt).getTime() - new Date(a.lastTriggeredAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `alt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'ACTIVE',
+          severity: args.data.severity || 'WARNING',
+          occurrencesCount: args.data.occurrencesCount || 1,
+          firstTriggeredAt: args.data.firstTriggeredAt || new Date(),
+          lastTriggeredAt: args.data.lastTriggeredAt || new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.systemAlerts.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.systemAlerts.find(x => x.id === args.where?.id || x.deduplicationKey === args.where?.deduplicationKey);
+        if (!item) throw new Error('Alert not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.systemAlerts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get metricSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        return this.metricSnapshots.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.metricSnapshots];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.metricSnapshots];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ms_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          labels: typeof args.data.labels === 'object' ? JSON.stringify(args.data.labels) : (args.data.labels || null),
+          timestamp: new Date(),
+          ...args.data
+        };
+        this.metricSnapshots.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.metricSnapshots];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get observabilityAnnotation() {
+    return {
+      findUnique: async (args: any) => {
+        return this.observabilityAnnotations.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.observabilityAnnotations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.observabilityAnnotations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ann_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.observabilityAnnotations.unshift(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.observabilityAnnotations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  private hydrateOperationTrace(trace: any, include?: any): any {
+    if (!trace) return null;
+    const copy = { ...trace };
+    if (include?.spans || true) {
+      copy.spans = this.traceSpans
+        .filter(s => s.traceId === trace.id || s.correlationId === trace.correlationId)
+        .sort((a, b) => new Date(a.startedAt).getTime() - new Date(b.startedAt).getTime());
+    }
+    return copy;
+  }
+
+  private hydrateErrorGroup(group: any, include?: any): any {
+    if (!group) return null;
+    const copy = { ...group };
+    if (include?.occurrences || true) {
+      copy.occurrences = this.errorOccurrences
+        .filter(o => o.errorGroupId === group.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+    return copy;
   }
 
   private hydratePolicy(policy: any, include?: any): any {

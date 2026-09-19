@@ -21,7 +21,8 @@ import {
   PanelLeftOpen,
   FileText,
   ListTodo,
-  Sliders
+  Sliders,
+  Activity
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -261,6 +262,24 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'config-tree', label: 'Árvore de Herança' },
         { id: 'config-features', label: 'Feature Flags & Rollout' },
         { id: 'config-audit', label: 'Histórico & Auditoria' }
+      ]
+    },
+    {
+      id: 'observability',
+      label: 'Auditoria & Monitoramento',
+      icon: <Activity className="h-4 w-4 text-emerald-400" />,
+      requiredPermission: 'observabilidade.dashboard.visualizar',
+      subItems: [
+        { id: 'obs-overview', label: 'Visão Geral & Métricas' },
+        { id: 'obs-audit', label: 'Auditoria de Negócio', requiredPermission: 'auditoria.registro.visualizar' },
+        { id: 'obs-traces', label: 'Rastreabilidade & Traces', requiredPermission: 'observabilidade.trace.visualizar' },
+        { id: 'obs-events', label: 'Eventos & Outbox' },
+        { id: 'obs-errors', label: 'Central de Falhas', requiredPermission: 'observabilidade.erro.visualizar' },
+        { id: 'obs-performance', label: 'Performance & Latência', requiredPermission: 'observabilidade.performance.visualizar' },
+        { id: 'obs-queues', label: 'Filas & Workers', requiredPermission: 'observabilidade.fila.visualizar' },
+        { id: 'obs-integrations', label: 'Integrações Externas', requiredPermission: 'observabilidade.integracao.visualizar' },
+        { id: 'obs-security', label: 'Segurança & Tentativas', requiredPermission: 'observabilidade.seguranca.visualizar' },
+        { id: 'obs-health', label: 'Saúde & Eventos ao Vivo', requiredPermission: 'observabilidade.saude.visualizar' }
       ]
     },
     {

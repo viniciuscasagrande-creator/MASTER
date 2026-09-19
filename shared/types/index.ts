@@ -150,7 +150,22 @@ export type PermissionString =
   | 'configuracoes.rollback.executar'
   | 'configuracoes.feature_flag.visualizar'
   | 'configuracoes.feature_flag.editar'
-  | 'configuracoes.historico.visualizar';
+  | 'configuracoes.historico.visualizar'
+  // Auditoria & Observabilidade (Fase 1.1.5.12)
+  | 'auditoria.central.visualizar'
+  | 'auditoria.registro.visualizar'
+  | 'auditoria.detalhe.visualizar'
+  | 'auditoria.exportacao.criar'
+  | 'observabilidade.dashboard.visualizar'
+  | 'observabilidade.trace.visualizar'
+  | 'observabilidade.erro.visualizar'
+  | 'observabilidade.erro.detalhe_tecnico'
+  | 'observabilidade.performance.visualizar'
+  | 'observabilidade.fila.visualizar'
+  | 'observabilidade.worker.visualizar'
+  | 'observabilidade.integracao.visualizar'
+  | 'observabilidade.seguranca.visualizar'
+  | 'observabilidade.saude.visualizar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -729,5 +744,247 @@ export interface ConfigAuditItem {
   ipAddress?: string | null;
   createdAt: string;
 }
+
+// ============================================================================
+// 15. AUDITORIA, OBSERVABILIDADE E RASTREABILIDADE OPERACIONAL (FASE 1.1.5.12)
+// ============================================================================
+
+export type ObservabilitySeverity = 'LOW' | 'MEDIUM' | 'HIGH' | 'CRITICAL';
+export type ObservabilityStatus = 'OPERATIONAL' | 'DEGRADED' | 'DOWN' | 'MAINTENANCE';
+export type TraceStatus = 'IN_PROGRESS' | 'COMPLETED' | 'FAILED' | 'CANCELLED';
+export type SpanStatus = 'SUCCESS' | 'ERROR' | 'WARNING';
+export type ErrorGroupStatus = 'UNRESOLVED' | 'INVESTIGATING' | 'RESOLVED' | 'IGNORED';
+export type SystemAlertStatus = 'ACTIVE' | 'ACKNOWLEDGED' | 'RESOLVED';
+export type LogLevel = 'TRACE' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR' | 'FATAL';
+
+export interface AuditLogRecord {
+  id: string;
+  correlationId?: string | null;
+  requestId?: string | null;
+  userId?: string | null;
+  userName?: string | null;
+  sessionId?: string | null;
+  module: string;
+  action: string;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  producerId?: string | null;
+  eventId?: string | null;
+  beforeData?: any;
+  afterData?: any;
+  result: 'SUCCESS' | 'DENIED' | 'FAILED';
+  ipHash?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  details?: string | null;
+  createdAt: string;
+}
+
+export interface AuditDiffField {
+  field: string;
+  oldValue: any;
+  newValue: any;
+}
+
+export interface BusinessEventRecord {
+  id: string;
+  eventType: string;
+  correlationId: string;
+  requestId?: string | null;
+  sourceService: string;
+  producerId?: string | null;
+  eventId?: string | null;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  payload: any;
+  consumers: Array<{
+    service: string;
+    status: 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+    processedAt?: string | null;
+    error?: string | null;
+  }>;
+  createdAt: string;
+}
+
+export interface TraceSpanRecord {
+  id: string;
+  traceId: string;
+  correlationId: string;
+  spanId: string;
+  parentSpanId?: string | null;
+  serviceName: string;
+  operation: string;
+  status: SpanStatus;
+  startedAt: string;
+  endedAt?: string | null;
+  durationMs?: number | null;
+  metadata?: Record<string, any>;
+  errorMessage?: string | null;
+  errorCode?: string | null;
+}
+
+export interface OperationTraceRecord {
+  id: string;
+  correlationId: string;
+  operationName: string;
+  rootResourceType?: string | null;
+  rootResourceId?: string | null;
+  userId?: string | null;
+  userName?: string | null;
+  producerId?: string | null;
+  eventId?: string | null;
+  status: TraceStatus;
+  startedAt: string;
+  endedAt?: string | null;
+  durationMs?: number | null;
+  policyKey?: string | null;
+  policyVersion?: number | null;
+  policyDecision?: any;
+  policyExplanation?: string | null;
+  approvalRequestId?: string | null;
+  taskId?: string | null;
+  errorMessage?: string | null;
+  spans?: TraceSpanRecord[];
+}
+
+export interface ErrorOccurrenceRecord {
+  id: string;
+  errorGroupId: string;
+  correlationId?: string | null;
+  requestId?: string | null;
+  userId?: string | null;
+  producerId?: string | null;
+  eventId?: string | null;
+  errorMessage: string;
+  userFriendlyMessage: string;
+  stackTrace?: string | null;
+  contextData?: Record<string, any>;
+  createdAt: string;
+}
+
+export interface ErrorGroupRecord {
+  id: string;
+  fingerprint: string;
+  errorCode: string;
+  title: string;
+  service: string;
+  operation: string;
+  severity: ObservabilitySeverity;
+  status: ErrorGroupStatus;
+  firstSeenAt: string;
+  lastSeenAt: string;
+  occurrencesCount: number;
+  affectedEventsCount: number;
+  affectedUsersCount: number;
+  relatedTaskId?: string | null;
+  occurrences?: ErrorOccurrenceRecord[];
+}
+
+export interface ComponentHealthRecord {
+  id: string;
+  component: 'API' | 'POSTGRESQL' | 'REDIS' | 'WORKERS' | 'WEBSOCKET' | 'QUEUES' | 'INTEGRATIONS';
+  status: ObservabilityStatus;
+  latencyMs?: number | null;
+  message?: string | null;
+  metadata?: Record<string, any>;
+  checkedAt: string;
+}
+
+export interface SystemAlertRecord {
+  id: string;
+  alertCode: string;
+  title: string;
+  severity: 'INFO' | 'WARNING' | 'CRITICAL';
+  component: string;
+  occurrencesCount: number;
+  deduplicationKey: string;
+  status: SystemAlertStatus;
+  firstTriggeredAt: string;
+  lastTriggeredAt: string;
+  resolvedAt?: string | null;
+  resolvedBy?: string | null;
+  thresholdRule?: string | null;
+}
+
+export interface MetricSnapshotRecord {
+  id: string;
+  metricName: string;
+  value: number;
+  unit?: string | null;
+  labels?: Record<string, string>;
+  timestamp: string;
+}
+
+export interface OutboxEventRecord {
+  id: string;
+  eventId: string;
+  eventType: string;
+  correlationId?: string | null;
+  producerId?: string | null;
+  eventIdRef?: string | null;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  actorUserId?: string | null;
+  payload: any;
+  status: 'PENDING' | 'PROCESSED' | 'FAILED';
+  retryCount: number;
+  errorMessage?: string | null;
+  processedAt?: string | null;
+  createdAt: string;
+}
+
+export interface InboxWebhookRecord {
+  id: string;
+  source: string;
+  externalEventId: string;
+  eventType: string;
+  correlationId?: string | null;
+  signatureValid: boolean;
+  isIdempotent: boolean;
+  payload: any;
+  status: 'RECEIVED' | 'PROCESSING' | 'PROCESSED' | 'FAILED';
+  errorMessage?: string | null;
+  processedAt?: string | null;
+  createdAt: string;
+}
+
+export interface ModuleHealthStatus {
+  module: string;
+  name: string;
+  status: 'NORMAL' | 'WARNING' | 'CRITICAL';
+  latencyP95: number;
+  errorRate: number;
+  activeJobs: number;
+  lastIncident?: string | null;
+}
+
+export interface ObservabilityOverviewStats {
+  systemStatus: ObservabilityStatus;
+  requestsTotal15m: number;
+  successRate: number;
+  errorRate: number;
+  latencyP50: number;
+  latencyP95: number;
+  latencyP99: number;
+  pendingJobs: number;
+  failedJobs: number;
+  activeAlerts: number;
+  unresolvedErrors: number;
+  componentHealth: ComponentHealthRecord[];
+  modulesHealth: ModuleHealthStatus[];
+}
+
+export interface AuditExportParams {
+  startDate?: string;
+  endDate?: string;
+  module?: string;
+  userId?: string;
+  producerId?: string;
+  eventId?: string;
+  action?: string;
+  result?: string;
+  format: 'JSON' | 'CSV';
+}
+
 
 

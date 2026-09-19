@@ -19,10 +19,12 @@ import { approvalRulesAdminRouter, approvalThresholdsAdminRouter } from '../modu
 import documentRoutes, { resourceDocumentsRouter } from '../modules/documents/document.routes';
 import { taskRoutes } from '../modules/tasks/task.routes';
 import { configurationRoutes } from '../modules/configuration/configuration.routes';
+import { observabilityRoutes } from '../modules/observability/observability.routes';
 
 const router = Router();
 
 // Primary v1 endpoints
+router.use('/', observabilityRoutes);
 router.use('/auth', authRoutes);
 router.use('/context', contextRoutes);
 router.use('/search', searchRoutes);

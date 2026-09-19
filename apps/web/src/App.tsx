@@ -58,6 +58,9 @@ import { WorkCenterView } from './modules/tasks';
 // Motor Central de Regras, Configurações e Políticas (Fase 1.1.5.11)
 import { ConfigurationCenterView } from './modules/configuration';
 
+// Central de Auditoria, Observabilidade e Rastreabilidade Operacional (Fase 1.1.5.12)
+import { ObservabilityCenterView } from './modules/observability';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
@@ -75,6 +78,7 @@ const MODULE_NAMES: Record<string, string> = {
   marketing: 'Marketing',
   remarketing: 'Remarketing',
   configurations: 'Regras & Políticas',
+  observability: 'Auditoria & Monitoramento',
   admin: 'Administração',
   settings: 'Configurações'
 };
@@ -277,6 +281,13 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="configuracoes.central.visualizar" onBack={() => handleNavigate('overview')}>
             <ConfigurationCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'observability':
+        return (
+          <ProtectedRoute permission="observabilidade.dashboard.visualizar" onBack={() => handleNavigate('overview')}>
+            <ObservabilityCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

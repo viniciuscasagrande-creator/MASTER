@@ -229,23 +229,38 @@ model Session {
 // ------------------------------------------------------------------------------
 
 model AuditLog {
-  id         String   @id @default(uuid())
-  userId     String?
-  userName   String?
-  action     String
-  resource   String
-  producerId String?
-  eventId    String?
-  details    String?
-  ipAddress  String?
-  result     String   @default("SUCCESS") // SUCCESS, DENIED, FAILED
-  createdAt  DateTime @default(now())
+  id            String   @id @default(uuid())
+  correlationId String?
+  requestId     String?
+  userId        String?
+  userName      String?
+  sessionId     String?
+  module        String?  // FINANCE, EVENTS, SAC, REFUNDS, MARKETING, SECURITY, etc.
+  action        String
+  resource      String
+  resourceType  String?
+  resourceId    String?
+  producerId    String?
+  eventId       String?
+  beforeData    String?  // JSON stringified
+  afterData     String?  // JSON stringified
+  details       String?
+  ipAddress     String?
+  ipHash        String?
+  userAgent     String?
+  result        String   @default("SUCCESS") // SUCCESS, DENIED, FAILED
+  createdAt     DateTime @default(now())
 
-  user       User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  user          User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
 
+  @@index([correlationId])
+  @@index([requestId])
   @@index([userId])
   @@index([action])
+  @@index([module])
   @@index([resource])
+  @@index([producerId])
+  @@index([eventId])
   @@index([createdAt])
 }
 
@@ -317,20 +332,24 @@ model NotificationRule {
 }
 
 model EventOutbox {
-  id           String    @id @default(uuid())
-  eventId      String    @unique // Unique event ID for idempotency
-  eventType    String
-  producerId   String?
-  eventIdRef   String?
-  resourceType String?
-  resourceId   String?
-  actorUserId  String?
-  payload      String    // JSON stringified payload
-  status       String    @default("PENDING") // PENDING, PROCESSED, FAILED
-  processedAt  DateTime?
-  createdAt    DateTime  @default(now())
+  id            String    @id @default(uuid())
+  eventId       String    @unique // Unique event ID for idempotency
+  eventType     String
+  correlationId String?
+  producerId    String?
+  eventIdRef    String?
+  resourceType  String?
+  resourceId    String?
+  actorUserId   String?
+  payload       String    // JSON stringified payload
+  status        String    @default("PENDING") // PENDING, PROCESSED, FAILED
+  retryCount    Int       @default(0)
+  errorMessage  String?
+  processedAt   DateTime?
+  createdAt     DateTime  @default(now())
 
   @@index([status])
+  @@index([correlationId])
   @@index([createdAt])
 }
 
@@ -1512,5 +1531,229 @@ model PolicyEvaluation {
   @@index([effectiveSource])
   @@index([createdAt])
 }
+
+// ============================================================================
+// 15. AUDITORIA, OBSERVABILIDADE E RASTREABILIDADE OPERACIONAL (FASE 1.1.5.12)
+// ============================================================================
+
+model IntegrationInbox {
+  id              String    @id @default(uuid())
+  source          String    // Gateway, Banco, Meta Ads, TikTok Ads, WhatsApp, etc.
+  externalEventId String    @unique
+  eventType       String
+  correlationId   String?
+  signatureValid  Boolean   @default(true)
+  isIdempotent    Boolean   @default(true)
+  payload         String    // JSON stringified payload
+  status          String    @default("PROCESSED") // RECEIVED, PROCESSING, PROCESSED, FAILED
+  processedAt     DateTime?
+  errorMessage    String?
+  createdAt       DateTime  @default(now())
+
+  @@index([source])
+  @@index([eventType])
+  @@index([status])
+  @@index([correlationId])
+  @@index([createdAt])
+}
+
+model BusinessEvent {
+  id            String   @id @default(uuid())
+  eventType     String   // ORDER_CREATED, ORDER_PAID, TICKET_ISSUED, REFUND_REQUESTED, FINANCE_TRANSFER_CREATED, TASK_CREATED, DOCUMENT_UPLOADED, INTEGRATION_FAILED, etc.
+  correlationId String
+  requestId     String?
+  sourceService String
+  producerId    String?
+  eventId       String?
+  resourceType  String?
+  resourceId    String?
+  payload       String   // JSON stringified payload
+  consumers     String   // JSON stringified consumers array
+  createdAt     DateTime @default(now())
+
+  @@index([eventType])
+  @@index([correlationId])
+  @@index([sourceService])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([createdAt])
+}
+
+model OperationTrace {
+  id                String      @id @default(uuid())
+  correlationId     String      @unique // e.g. "COR-20260919-8F72A1"
+  operationName     String      // e.g. "Venda de Ingressos #984521", "Transferência Bancária #TRF-8821"
+  rootResourceType  String?
+  rootResourceId    String?
+  userId            String?
+  userName          String?
+  producerId        String?
+  eventId           String?
+  status            String      @default("IN_PROGRESS") // IN_PROGRESS, COMPLETED, FAILED, CANCELLED
+  startedAt         DateTime    @default(now())
+  endedAt           DateTime?
+  durationMs        Int?
+  policyKey         String?
+  policyVersion     Int?
+  policyDecision    String?     // JSON snapshot of decision
+  policyExplanation String?
+  approvalRequestId String?
+  taskId            String?
+  errorMessage      String?
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  spans             TraceSpan[]
+
+  @@index([correlationId])
+  @@index([operationName])
+  @@index([rootResourceType, rootResourceId])
+  @@index([userId])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model TraceSpan {
+  id            String         @id @default(uuid())
+  traceId       String
+  correlationId String
+  spanId        String         // e.g. "SPAN-001"
+  parentSpanId  String?
+  serviceName   String         // PaymentService, BankAdapter, PolicyEngine, ApprovalService, Prisma, etc.
+  operation     String         // authenticate, policyEngine, approvalService, prisma.transaction, etc.
+  status        String         @default("SUCCESS") // SUCCESS, ERROR, WARNING
+  startedAt     DateTime       @default(now())
+  endedAt       DateTime?
+  durationMs    Int?
+  metadata      String?        // JSON stringified metadata
+  errorMessage  String?
+  errorCode     String?
+
+  trace         OperationTrace @relation(fields: [traceId], references: [id], onDelete: Cascade)
+
+  @@index([traceId])
+  @@index([correlationId])
+  @@index([serviceName])
+  @@index([status])
+  @@index([startedAt])
+}
+
+model ErrorGroup {
+  id                  String            @id @default(uuid())
+  fingerprint         String            @unique // SHA256(errorCode + service + operation)
+  errorCode           String            // INTEGRATION_TIMEOUT, BANK_TIMEOUT, AUTH_PERMISSION_DENIED, etc.
+  title               String
+  service             String
+  operation           String
+  severity            String            @default("HIGH") // LOW, MEDIUM, HIGH, CRITICAL
+  status              String            @default("UNRESOLVED") // UNRESOLVED, INVESTIGATING, RESOLVED, IGNORED
+  firstSeenAt         DateTime          @default(now())
+  lastSeenAt          DateTime          @default(now())
+  occurrencesCount    Int               @default(1)
+  affectedEventsCount Int               @default(0)
+  affectedUsersCount  Int               @default(0)
+  relatedTaskId       String?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  occurrences         ErrorOccurrence[]
+
+  @@index([errorCode])
+  @@index([service])
+  @@index([severity])
+  @@index([status])
+  @@index([lastSeenAt])
+}
+
+model ErrorOccurrence {
+  id                  String     @id @default(uuid())
+  errorGroupId        String
+  correlationId       String?
+  requestId           String?
+  userId              String?
+  producerId          String?
+  eventId             String?
+  errorMessage        String
+  userFriendlyMessage String
+  stackTrace          String?    // Restricted to technical detail permission
+  contextData         String?    // JSON stringified context
+  createdAt           DateTime   @default(now())
+
+  errorGroup          ErrorGroup @relation(fields: [errorGroupId], references: [id], onDelete: Cascade)
+
+  @@index([errorGroupId])
+  @@index([correlationId])
+  @@index([userId])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([createdAt])
+}
+
+model HealthCheck {
+  id         String   @id @default(uuid())
+  component  String   // API, POSTGRESQL, REDIS, WORKERS, WEBSOCKET, QUEUES, INTEGRATIONS
+  status     String   @default("OPERATIONAL") // OPERATIONAL, DEGRADED, DOWN, MAINTENANCE
+  latencyMs  Float?
+  message    String?
+  metadata   String?  // JSON stringified metadata
+  checkedAt  DateTime @default(now())
+
+  @@index([component])
+  @@index([status])
+  @@index([checkedAt])
+}
+
+model SystemAlert {
+  id               String    @id @default(uuid())
+  alertCode        String
+  title            String
+  severity         String    @default("WARNING") // INFO, WARNING, CRITICAL
+  component        String
+  occurrencesCount Int       @default(1)
+  deduplicationKey String
+  status           String    @default("ACTIVE") // ACTIVE, ACKNOWLEDGED, RESOLVED
+  firstTriggeredAt DateTime  @default(now())
+  lastTriggeredAt  DateTime  @default(now())
+  resolvedAt       DateTime?
+  resolvedBy       String?
+  thresholdRule    String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@index([alertCode])
+  @@index([severity])
+  @@index([component])
+  @@index([status])
+  @@index([deduplicationKey])
+}
+
+model MetricSnapshot {
+  id         String   @id @default(uuid())
+  metricName String
+  value      Float
+  unit       String?
+  labels     String?  // JSON stringified labels
+  timestamp  DateTime @default(now())
+
+  @@index([metricName])
+  @@index([timestamp])
+}
+
+model ObservabilityAnnotation {
+  id            String   @id @default(uuid())
+  correlationId String?
+  category      String   // DEPLOYMENT, INCIDENT, CONFIG_CHANGE, MAINTENANCE
+  title         String
+  description   String?
+  authorUserId  String
+  createdAt     DateTime @default(now())
+
+  @@index([correlationId])
+  @@index([category])
+  @@index([createdAt])
+}
+
 
 
