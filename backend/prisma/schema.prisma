@@ -333,3 +333,202 @@ model EventOutbox {
   @@index([status])
   @@index([createdAt])
 }
+
+// ------------------------------------------------------------------------------
+// 8. CENTRAL DE CONSULTA & DOMÍNIOS OPERACIONAIS (FASE 1.1.5.6)
+// ------------------------------------------------------------------------------
+
+model Customer {
+  id              String          @id @default(uuid())
+  name            String
+  cpf             String          @unique
+  cpfNormalized   String          @unique
+  email           String
+  emailNormalized String
+  phone           String
+  phoneNormalized String
+  city            String?
+  state           String?
+  totalOrders     Int             @default(0)
+  totalSpent      Float           @default(0)
+  createdAt       DateTime        @default(now())
+
+  orders          Order[]
+  supportTickets  SupportTicket[]
+  refunds         Refund[]
+
+  @@index([cpfNormalized])
+  @@index([emailNormalized])
+  @@index([phoneNormalized])
+  @@index([name])
+}
+
+model Order {
+  id                    String          @id @default(uuid())
+  orderNumber           String          @unique // e.g. PED-984521 or DK-98421
+  orderNumberNormalized String          @unique
+  producerId            String
+  eventId               String
+  eventName             String
+  customerId            String
+  customerName          String
+  customerCpf           String
+  itemsCount            Int             @default(1)
+  grossAmount           Float
+  serviceFee            Float           @default(0)
+  totalAmount           Float
+  status                String          @default("PAID") // PAID, PENDING, CANCELLED, REFUNDED
+  paymentMethod         String          @default("PIX")  // PIX, CREDIT_CARD, BOLETO
+  createdAt             DateTime        @default(now())
+
+  customer              Customer        @relation(fields: [customerId], references: [id])
+  producer              Producer        @relation(fields: [producerId], references: [id])
+  event                 Event           @relation(fields: [eventId], references: [id])
+  tickets               Ticket[]
+  payments              Payment[]
+  refunds               Refund[]
+  supportTickets        SupportTicket[]
+
+  @@index([orderNumberNormalized])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([customerId])
+}
+
+model Ticket {
+  id                  String   @id @default(uuid())
+  ticketCode          String   @unique // e.g. ING-88211 or TKT-98421-01
+  ticketCodeNormalized String  @unique
+  orderId             String
+  eventId             String
+  eventName           String
+  producerId          String
+  sectorName          String
+  price               Float
+  customerName        String
+  customerCpf         String
+  nominalAttendee     String
+  status              String   @default("VALID") // VALID, USED, CANCELLED
+  qrCode              String?
+  checkInAt           DateTime?
+  createdAt           DateTime @default(now())
+
+  order               Order    @relation(fields: [orderId], references: [id])
+  event               Event    @relation(fields: [eventId], references: [id])
+  producer            Producer @relation(fields: [producerId], references: [id])
+
+  @@index([ticketCodeNormalized])
+  @@index([orderId])
+  @@index([eventId])
+  @@index([producerId])
+}
+
+model Payment {
+  id                        String   @id @default(uuid())
+  transactionCode           String   @unique // e.g. TRX-552811
+  transactionCodeNormalized String   @unique
+  orderId                   String
+  eventId                   String
+  producerId                String
+  gateway                   String   @default("PIX_BancoCentral")
+  method                    String   @default("PIX")
+  amount                    Float
+  netAmount                 Float
+  status                    String   @default("APPROVED") // APPROVED, PENDING, REFUNDED
+  isReconciled              Boolean  @default(true)
+  createdAt                 DateTime @default(now())
+
+  order                     Order    @relation(fields: [orderId], references: [id])
+  event                     Event    @relation(fields: [eventId], references: [id])
+  producer                  Producer @relation(fields: [producerId], references: [id])
+
+  @@index([transactionCodeNormalized])
+  @@index([orderId])
+  @@index([producerId])
+}
+
+model Refund {
+  id                   String    @id @default(uuid())
+  refundCode           String    @unique // e.g. EST-882
+  refundCodeNormalized String    @unique
+  orderId              String
+  customerId           String
+  customerName         String
+  eventId              String
+  producerId           String
+  amount               Float
+  reason               String
+  status               String    @default("PENDING_APPROVAL") // PENDING_APPROVAL, APPROVED, REJECTED
+  approvedAt           DateTime?
+  createdAt            DateTime  @default(now())
+
+  order                Order     @relation(fields: [orderId], references: [id])
+  customer             Customer  @relation(fields: [customerId], references: [id])
+  event                Event     @relation(fields: [eventId], references: [id])
+  producer             Producer  @relation(fields: [producerId], references: [id])
+
+  @@index([refundCodeNormalized])
+  @@index([orderId])
+  @@index([producerId])
+}
+
+model SupportTicket {
+  id                   String    @id @default(uuid())
+  ticketCode           String    @unique // e.g. ATD-5521
+  ticketCodeNormalized String    @unique
+  customerId           String
+  customerName         String
+  orderId              String?
+  eventId              String?
+  producerId           String?
+  channel              String    @default("WHATSAPP") // WHATSAPP, EMAIL, PHONE
+  subject              String
+  status               String    @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED
+  priority             String    @default("NORMAL")
+  agentName            String?
+  slaMinutes           Int       @default(30)
+  createdAt            DateTime  @default(now())
+
+  customer             Customer  @relation(fields: [customerId], references: [id])
+  order                Order?    @relation(fields: [orderId], references: [id])
+
+  @@index([ticketCodeNormalized])
+  @@index([customerId])
+  @@index([orderId])
+}
+
+model MarketingCampaign {
+  id                 String   @id @default(uuid())
+  name               String
+  nameNormalized     String
+  platform           String   // META, GOOGLE, TIKTOK
+  eventId            String
+  eventName          String
+  producerId         String
+  status             String   @default("ACTIVE") // ACTIVE, PAUSED, ENDED
+  spend              Float    @default(0)
+  attributedRevenue  Float    @default(0)
+  roas               Float    @default(0)
+  cpa                Float    @default(0)
+  createdAt          DateTime @default(now())
+
+  event              Event    @relation(fields: [eventId], references: [id])
+  producer           Producer @relation(fields: [producerId], references: [id])
+
+  @@index([nameNormalized])
+  @@index([eventId])
+  @@index([producerId])
+}
+
+model SearchHistory {
+  id         String   @id @default(uuid())
+  userId     String
+  query      String
+  entityType String?
+  entityId   String?
+  createdAt  DateTime @default(now())
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+}

@@ -20,6 +20,14 @@ export class InMemoryPrismaStore {
   public notificationPreferences: any[] = [];
   public notificationRules: any[] = [];
   public outboxRecords: any[] = [];
+  public customers: any[] = [];
+  public orders: any[] = [];
+  public tickets: any[] = [];
+  public payments: any[] = [];
+  public refunds: any[] = [];
+  public supportTickets: any[] = [];
+  public marketingCampaigns: any[] = [];
+  public searchHistories: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -43,6 +51,14 @@ export class InMemoryPrismaStore {
     this.notificationPreferences = [];
     this.notificationRules = [];
     this.outboxRecords = [];
+    this.customers = [];
+    this.orders = [];
+    this.tickets = [];
+    this.payments = [];
+    this.refunds = [];
+    this.supportTickets = [];
+    this.marketingCampaigns = [];
+    this.searchHistories = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -85,7 +101,24 @@ export class InMemoryPrismaStore {
       // Admin
       { id: 'p-adm-1', module: 'admin', resource: 'usuarios', action: 'visualizar', code: 'admin.usuarios.visualizar', description: 'Visualizar usuários' },
       { id: 'p-adm-2', module: 'admin', resource: 'usuarios', action: 'gerenciar', code: 'admin.usuarios.gerenciar', description: 'Administrar usuários e perfis' },
-      { id: 'p-adm-3', module: 'admin', resource: 'auditoria', action: 'visualizar', code: 'admin.auditoria.visualizar', description: 'Visualizar trilha de auditoria' }
+      { id: 'p-adm-3', module: 'admin', resource: 'auditoria', action: 'visualizar', code: 'admin.auditoria.visualizar', description: 'Visualizar trilha de auditoria' },
+      // Busca Global & Central de Consulta (Fase 1.1.5.6)
+      { id: 'p-sch-0', module: 'busca', resource: 'global', action: 'utilizar', code: 'busca.global.utilizar', description: 'Utilizar busca global e atalhos' },
+      { id: 'p-sch-1', module: 'busca', resource: 'cliente', action: 'visualizar', code: 'busca.cliente.visualizar', description: 'Consultar clientes' },
+      { id: 'p-sch-2', module: 'busca', resource: 'pedido', action: 'visualizar', code: 'busca.pedido.visualizar', description: 'Consultar pedidos' },
+      { id: 'p-sch-3', module: 'busca', resource: 'ingresso', action: 'visualizar', code: 'busca.ingresso.visualizar', description: 'Consultar ingressos' },
+      { id: 'p-sch-4', module: 'busca', resource: 'evento', action: 'visualizar', code: 'busca.evento.visualizar', description: 'Consultar eventos' },
+      { id: 'p-sch-5', module: 'busca', resource: 'produtor', action: 'visualizar', code: 'busca.produtor.visualizar', description: 'Consultar produtores' },
+      { id: 'p-sch-6', module: 'busca', resource: 'pagamento', action: 'visualizar', code: 'busca.pagamento.visualizar', description: 'Consultar pagamentos e transações' },
+      { id: 'p-sch-7', module: 'busca', resource: 'estorno', action: 'visualizar', code: 'busca.estorno.visualizar', description: 'Consultar estornos' },
+      { id: 'p-sch-8', module: 'busca', resource: 'ticket', action: 'visualizar', code: 'busca.ticket.visualizar', description: 'Consultar tickets de atendimento' },
+      { id: 'p-sch-9', module: 'busca', resource: 'campanha', action: 'visualizar', code: 'busca.campanha.visualizar', description: 'Consultar campanhas' },
+      // Permissões de Campo (Data Masking)
+      { id: 'p-fld-1', module: 'cliente', resource: 'documento', action: 'visualizar_completo', code: 'cliente.documento.visualizar_completo', description: 'Visualizar CPF sem mascaramento' },
+      { id: 'p-fld-2', module: 'cliente', resource: 'email', action: 'visualizar_completo', code: 'cliente.email.visualizar_completo', description: 'Visualizar email sem mascaramento' },
+      { id: 'p-fld-3', module: 'cliente', resource: 'telefone', action: 'visualizar_completo', code: 'cliente.telefone.visualizar_completo', description: 'Visualizar telefone sem mascaramento' },
+      { id: 'p-sch-10', module: 'busca', resource: 'historico', action: 'visualizar', code: 'busca.historico.visualizar', description: 'Visualizar histórico de buscas' },
+      { id: 'p-sch-11', module: 'busca', resource: 'exportacao', action: 'criar', code: 'busca.exportacao.criar', description: 'Exportar dados de consulta' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -107,23 +140,50 @@ export class InMemoryPrismaStore {
     associate('FINANCEIRO', 'financeiro.saldo.visualizar');
     associate('FINANCEIRO', 'financeiro.transferencia.criar');
     associate('FINANCEIRO', 'financeiro.repasses.visualizar');
+    associate('FINANCEIRO', 'busca.global.utilizar');
+    associate('FINANCEIRO', 'busca.pedido.visualizar');
+    associate('FINANCEIRO', 'busca.pagamento.visualizar');
+    associate('FINANCEIRO', 'busca.estorno.visualizar');
+    associate('FINANCEIRO', 'busca.evento.visualizar');
+    associate('FINANCEIRO', 'busca.produtor.visualizar');
+    associate('FINANCEIRO', 'busca.cliente.visualizar');
+    associate('FINANCEIRO', 'cliente.documento.visualizar_completo');
+
     // SAC
     associate('ATENDIMENTO_SAC', 'sac.consulta.acessar');
     associate('ATENDIMENTO_SAC', 'sac.pedido.visualizar');
+    associate('ATENDIMENTO_SAC', 'busca.global.utilizar');
+    associate('ATENDIMENTO_SAC', 'busca.cliente.visualizar');
+    associate('ATENDIMENTO_SAC', 'busca.pedido.visualizar');
+    associate('ATENDIMENTO_SAC', 'busca.ingresso.visualizar');
+    associate('ATENDIMENTO_SAC', 'busca.ticket.visualizar');
+    associate('ATENDIMENTO_SAC', 'busca.estorno.visualizar');
+    // Note: ATENDIMENTO_SAC standard does not have cliente.documento.visualizar_completo (masked CPF)
+
     // Marketing
     associate('MARKETING', 'marketing.campanha.visualizar');
     associate('MARKETING', 'marketing.campanha.criar');
+    associate('MARKETING', 'busca.global.utilizar');
+    associate('MARKETING', 'busca.campanha.visualizar');
+    associate('MARKETING', 'busca.evento.visualizar');
+
     // Contabilidade
     associate('CONTABILIDADE', 'contabilidade.dre.visualizar');
+
     // Produtor
     associate('PRODUTOR', 'eventos.evento.visualizar');
     associate('PRODUTOR', 'eventos.evento.criar');
     associate('PRODUTOR', 'eventos.evento.editar');
+    associate('PRODUTOR', 'busca.global.utilizar');
+    associate('PRODUTOR', 'busca.evento.visualizar');
+    associate('PRODUTOR', 'busca.ingresso.visualizar');
+    associate('PRODUTOR', 'busca.pedido.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
       { id: 'prd_100', name: 'Opus Entretenimento', cnpj: '12.345.678/0001-90', status: 'ACTIVE' },
-      { id: 'prd_200', name: 'Live Nation Brasil', cnpj: '98.765.432/0001-11', status: 'ACTIVE' }
+      { id: 'prd_200', name: 'Live Nation Brasil', cnpj: '98.765.432/0001-11', status: 'ACTIVE' },
+      { id: 'prd_300', name: 'CWB Brasil Produções', cnpj: '45.123.890/0001-55', status: 'ACTIVE' }
     );
 
     // 5. Eventos Iniciais
@@ -141,6 +201,297 @@ export class InMemoryPrismaStore {
       { id: 'rule_4', eventType: 'SECURITY_BRUTE_FORCE', requiredPerm: 'admin.usuarios.visualizar', defaultPriority: 'CRITICAL', type: 'CRITICAL', isMandatory: true, createdAt: new Date() },
       { id: 'rule_5', eventType: 'SECURITY_CONTEXT_TAMPERING', requiredPerm: 'admin.usuarios.visualizar', defaultPriority: 'CRITICAL', type: 'CRITICAL', isMandatory: true, createdAt: new Date() },
       { id: 'rule_6', eventType: 'ORDER_PAID', requiredPerm: 'eventos.evento.visualizar', defaultPriority: 'LOW', type: 'SUCCESS', isMandatory: false, createdAt: new Date() }
+    );
+
+    // 7. Base de Clientes (Fase 1.1.5.6)
+    this.customers.push(
+      {
+        id: 'cust-maria',
+        name: 'Maria Oliveira',
+        cpf: '123.456.789-00',
+        cpfNormalized: '12345678900',
+        email: 'maria.oliveira@email.com',
+        emailNormalized: 'maria.oliveira@email.com',
+        phone: '(41) 99999-9999',
+        phoneNormalized: '41999999999',
+        city: 'Curitiba',
+        state: 'PR',
+        totalOrders: 14,
+        totalSpent: 4821.00,
+        createdAt: new Date('2024-01-10')
+      },
+      {
+        id: 'cust-1',
+        name: 'Carolina Mendes de Albuquerque',
+        cpf: '042.889.319-45',
+        cpfNormalized: '04288931945',
+        email: 'carolina.mendes@gmail.com',
+        emailNormalized: 'carolina.mendes@gmail.com',
+        phone: '(41) 99871-4422',
+        phoneNormalized: '41998714422',
+        city: 'Curitiba',
+        state: 'PR',
+        totalOrders: 6,
+        totalSpent: 3420.00,
+        createdAt: new Date('2024-02-11')
+      },
+      {
+        id: 'cust-2',
+        name: 'Rodrigo Silveira Ramos',
+        cpf: '812.304.779-88',
+        cpfNormalized: '81230477988',
+        email: 'rodrigo.ramos@outlook.com',
+        emailNormalized: 'rodrigo.ramos@outlook.com',
+        phone: '(41) 98845-1290',
+        phoneNormalized: '41988451290',
+        city: 'São José dos Pinhais',
+        state: 'PR',
+        totalOrders: 3,
+        totalSpent: 1280.00,
+        createdAt: new Date('2024-08-19')
+      }
+    );
+
+    // 8. Base de Pedidos (Fase 1.1.5.6)
+    this.orders.push(
+      {
+        id: 'ord-984521',
+        orderNumber: 'PED-984521',
+        orderNumberNormalized: '984521',
+        producerId: 'prd_100',
+        eventId: 'evt_1001',
+        eventName: 'Festival Curitiba 2026',
+        customerId: 'cust-maria',
+        customerName: 'Maria Oliveira',
+        customerCpf: '123.456.789-00',
+        itemsCount: 2,
+        grossAmount: 600.00,
+        serviceFee: 42.00,
+        totalAmount: 642.00,
+        status: 'PAID',
+        paymentMethod: 'PIX',
+        createdAt: new Date('2026-09-18T14:32:00Z')
+      },
+      {
+        id: 'ord-952114',
+        orderNumber: 'PED-952114',
+        orderNumberNormalized: '952114',
+        producerId: 'prd_200',
+        eventId: 'evt_2001',
+        eventName: 'Coldplay Experience World Tour',
+        customerId: 'cust-maria',
+        customerName: 'Maria Oliveira',
+        customerCpf: '123.456.789-00',
+        itemsCount: 4,
+        grossAmount: 1040.00,
+        serviceFee: 80.00,
+        totalAmount: 1120.00,
+        status: 'PAID',
+        paymentMethod: 'CREDIT_CARD',
+        createdAt: new Date('2026-07-12T10:15:00Z')
+      },
+      {
+        id: 'ord-921885',
+        orderNumber: 'PED-921885',
+        orderNumberNormalized: '921885',
+        producerId: 'prd_100',
+        eventId: 'evt_1002',
+        eventName: 'Teatro Musical Broadway Curitiba',
+        customerId: 'cust-maria',
+        customerName: 'Maria Oliveira',
+        customerCpf: '123.456.789-00',
+        itemsCount: 1,
+        grossAmount: 250.00,
+        serviceFee: 30.00,
+        totalAmount: 280.00,
+        status: 'CANCELLED',
+        paymentMethod: 'PIX',
+        createdAt: new Date('2026-05-20T16:00:00Z')
+      },
+      {
+        id: 'ord-rodrigo',
+        orderNumber: 'DK-98422',
+        orderNumberNormalized: '98422',
+        producerId: 'prd_200',
+        eventId: 'evt_2001',
+        eventName: 'Coldplay Experience World Tour',
+        customerId: 'cust-2',
+        customerName: 'Rodrigo Silveira Ramos',
+        customerCpf: '812.304.779-88',
+        itemsCount: 1,
+        grossAmount: 420.00,
+        serviceFee: 42.00,
+        totalAmount: 462.00,
+        status: 'PAID',
+        paymentMethod: 'PIX',
+        createdAt: new Date('2026-09-18T15:10:40Z')
+      }
+    );
+
+    // 9. Base de Ingressos (Fase 1.1.5.6)
+    this.tickets.push(
+      {
+        id: 'tkt-88211',
+        ticketCode: 'ING-88211',
+        ticketCodeNormalized: '88211',
+        orderId: 'ord-984521',
+        eventId: 'evt_1001',
+        eventName: 'Festival Curitiba 2026',
+        producerId: 'prd_100',
+        sectorName: 'Pista',
+        price: 300.00,
+        customerName: 'Maria Oliveira',
+        customerCpf: '123.456.789-00',
+        nominalAttendee: 'Maria Oliveira',
+        status: 'VALID',
+        qrCode: 'QR-ING-88211',
+        checkInAt: null,
+        createdAt: new Date('2026-09-18T14:32:00Z')
+      },
+      {
+        id: 'tkt-88212',
+        ticketCode: 'ING-88212',
+        ticketCodeNormalized: '88212',
+        orderId: 'ord-984521',
+        eventId: 'evt_1001',
+        eventName: 'Festival Curitiba 2026',
+        producerId: 'prd_100',
+        sectorName: 'Pista',
+        price: 300.00,
+        customerName: 'Maria Oliveira',
+        customerCpf: '123.456.789-00',
+        nominalAttendee: 'Beatriz Oliveira',
+        status: 'VALID',
+        qrCode: 'QR-ING-88212',
+        checkInAt: null,
+        createdAt: new Date('2026-09-18T14:32:00Z')
+      },
+      {
+        id: 'tkt-rodrigo',
+        ticketCode: 'ING-77190',
+        ticketCodeNormalized: '77190',
+        orderId: 'ord-rodrigo',
+        eventId: 'evt_2001',
+        eventName: 'Coldplay Experience World Tour',
+        producerId: 'prd_200',
+        sectorName: 'Pista Premium A',
+        price: 420.00,
+        customerName: 'Rodrigo Silveira Ramos',
+        customerCpf: '812.304.779-88',
+        nominalAttendee: 'Rodrigo Silveira Ramos',
+        status: 'VALID',
+        qrCode: 'QR-ING-77190',
+        checkInAt: null,
+        createdAt: new Date('2026-09-18T15:10:40Z')
+      }
+    );
+
+    // 10. Base de Pagamentos / Transações (Fase 1.1.5.6)
+    this.payments.push(
+      {
+        id: 'pay-552811',
+        transactionCode: 'TRX-552811',
+        transactionCodeNormalized: '552811',
+        orderId: 'ord-984521',
+        eventId: 'evt_1001',
+        producerId: 'prd_100',
+        gateway: 'PIX_BancoCentral',
+        method: 'PIX',
+        amount: 642.00,
+        netAmount: 640.05,
+        status: 'APPROVED',
+        isReconciled: true,
+        createdAt: new Date('2026-09-18T14:32:05Z')
+      },
+      {
+        id: 'pay-998412',
+        transactionCode: 'TRX-998412',
+        transactionCodeNormalized: '998412',
+        orderId: 'ord-952114',
+        eventId: 'evt_2001',
+        producerId: 'prd_200',
+        gateway: 'Cielo',
+        method: 'CREDIT_CARD',
+        amount: 1120.00,
+        netAmount: 1085.20,
+        status: 'APPROVED',
+        isReconciled: true,
+        createdAt: new Date('2026-07-12T10:15:20Z')
+      }
+    );
+
+    // 11. Base de Estornos (Fase 1.1.5.6)
+    this.refunds.push(
+      {
+        id: 'ref-882',
+        refundCode: 'EST-882',
+        refundCodeNormalized: '882',
+        orderId: 'ord-984521',
+        customerId: 'cust-maria',
+        customerName: 'Maria Oliveira',
+        eventId: 'evt_1001',
+        producerId: 'prd_100',
+        amount: 642.00,
+        reason: 'Solicitação do cliente por impossibilidade médica',
+        status: 'PENDING_APPROVAL',
+        approvedAt: null,
+        createdAt: new Date('2026-09-18T16:45:00Z')
+      }
+    );
+
+    // 12. Base de Tickets de Atendimento SAC (Fase 1.1.5.6)
+    this.supportTickets.push(
+      {
+        id: 'sup-5521',
+        ticketCode: 'ATD-5521',
+        ticketCodeNormalized: '5521',
+        customerId: 'cust-maria',
+        customerName: 'Maria Oliveira',
+        orderId: 'ord-984521',
+        eventId: 'evt_1001',
+        producerId: 'prd_100',
+        channel: 'WHATSAPP',
+        subject: 'Divergência na emissão de voucher PIX',
+        status: 'IN_PROGRESS',
+        priority: 'NORMAL',
+        agentName: 'Carlos Lima',
+        slaMinutes: 30,
+        createdAt: new Date('2026-09-18T15:20:00Z')
+      }
+    );
+
+    // 13. Base de Campanhas de Marketing (Fase 1.1.5.6)
+    this.marketingCampaigns.push(
+      {
+        id: 'cmp-1',
+        name: 'Festival Curitiba 2026 — Meta Ads',
+        nameNormalized: 'festival curitiba 2026 meta ads',
+        platform: 'META',
+        eventId: 'evt_1001',
+        eventName: 'Festival Curitiba 2026',
+        producerId: 'prd_100',
+        status: 'ACTIVE',
+        spend: 12450.00,
+        attributedRevenue: 68900.00,
+        roas: 5.53,
+        cpa: 34.20,
+        createdAt: new Date('2026-06-01')
+      },
+      {
+        id: 'cmp-2',
+        name: 'Coldplay Curitiba — Google Search',
+        nameNormalized: 'coldplay curitiba google search',
+        platform: 'GOOGLE',
+        eventId: 'evt_2001',
+        eventName: 'Coldplay Experience World Tour',
+        producerId: 'prd_200',
+        status: 'ACTIVE',
+        spend: 24000.00,
+        attributedRevenue: 185000.00,
+        roas: 7.70,
+        cpa: 48.10,
+        createdAt: new Date('2026-08-01')
+      }
     );
   }
 
@@ -744,6 +1095,349 @@ export class InMemoryPrismaStore {
         return item;
       }
     };
+  }
+
+  public get customer() {
+    return {
+      findUnique: async (args: any) => {
+        const c = this.customers.find(x => x.id === args.where.id || x.cpf === args.where.cpf || x.cpfNormalized === args.where.cpfNormalized);
+        if (!c) return null;
+        return this.hydrateCustomer(c, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.customers];
+        if (args?.where) {
+          list = this.filterEntities(list, args.where);
+        }
+        const c = list[0] || null;
+        return c ? this.hydrateCustomer(c, args?.include) : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.customers];
+        if (args?.where) {
+          list = this.filterEntities(list, args.where);
+        }
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(c => this.hydrateCustomer(c, args?.include));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cust_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.customers.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.customers.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Customer not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.customers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get order() {
+    return {
+      findUnique: async (args: any) => {
+        const o = this.orders.find(x => x.id === args.where.id || x.orderNumber === args.where.orderNumber || x.orderNumberNormalized === args.where.orderNumberNormalized);
+        if (!o) return null;
+        return this.hydrateOrder(o, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.orders];
+        if (args?.where) {
+          list = this.filterEntities(list, args.where);
+        }
+        const o = list[0] || null;
+        return o ? this.hydrateOrder(o, args?.include) : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.orders];
+        if (args?.where) {
+          list = this.filterEntities(list, args.where);
+        }
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(o => this.hydrateOrder(o, args?.include));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `ord_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.orders.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.orders.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Order not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.orders];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get ticket() {
+    return {
+      findUnique: async (args: any) => {
+        return this.tickets.find(x => x.id === args.where.id || x.ticketCode === args.where.ticketCode || x.ticketCodeNormalized === args.where.ticketCodeNormalized) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.tickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.tickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `tkt_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.tickets.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.tickets.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Ticket not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.tickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get payment() {
+    return {
+      findUnique: async (args: any) => {
+        return this.payments.find(x => x.id === args.where.id || x.transactionCode === args.where.transactionCode || x.transactionCodeNormalized === args.where.transactionCodeNormalized) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.payments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.payments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pay_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.payments.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.payments.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Payment not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.payments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get refund() {
+    return {
+      findUnique: async (args: any) => {
+        return this.refunds.find(x => x.id === args.where.id || x.refundCode === args.where.refundCode || x.refundCodeNormalized === args.where.refundCodeNormalized) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.refunds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.refunds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `ref_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.refunds.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.refunds.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Refund not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.refunds];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get supportTicket() {
+    return {
+      findUnique: async (args: any) => {
+        return this.supportTickets.find(x => x.id === args.where.id || x.ticketCode === args.where.ticketCode || x.ticketCodeNormalized === args.where.ticketCodeNormalized) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.supportTickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.supportTickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `sup_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.supportTickets.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.supportTickets.find(x => x.id === args.where.id);
+        if (!item) throw new Error('SupportTicket not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.supportTickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get marketingCampaign() {
+    return {
+      findUnique: async (args: any) => {
+        return this.marketingCampaigns.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.marketingCampaigns];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.marketingCampaigns];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cmp_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.marketingCampaigns.push(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.marketingCampaigns];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get searchHistory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.searchHistories];
+        if (args?.where?.userId) list = list.filter(x => x.userId === args.where.userId);
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: `sh_${Date.now()}`, ...args.data, createdAt: new Date() };
+        this.searchHistories.unshift(item);
+        return item;
+      }
+    };
+  }
+
+  // Filter helper for Prisma-like conditions
+  private filterEntities(list: any[], where: any): any[] {
+    return list.filter(item => {
+      for (const key of Object.keys(where)) {
+        if (key === 'OR' && Array.isArray(where.OR)) {
+          const matchAny = where.OR.some((clause: any) => {
+            return this.filterEntities([item], clause).length > 0;
+          });
+          if (!matchAny) return false;
+        } else if (key === 'AND' && Array.isArray(where.AND)) {
+          const matchAll = where.AND.every((clause: any) => {
+            return this.filterEntities([item], clause).length > 0;
+          });
+          if (!matchAll) return false;
+        } else {
+          const targetVal = where[key];
+          if (targetVal === undefined) continue;
+
+          if (typeof targetVal === 'object' && targetVal !== null) {
+            if (targetVal.contains !== undefined) {
+              const itemVal = String(item[key] || '').toLowerCase();
+              const searchVal = String(targetVal.contains).toLowerCase();
+              if (!itemVal.includes(searchVal)) return false;
+            } else if (targetVal.in !== undefined && Array.isArray(targetVal.in)) {
+              if (!targetVal.in.includes(item[key])) return false;
+            } else if (targetVal.equals !== undefined) {
+              if (item[key] !== targetVal.equals) return false;
+            }
+          } else {
+            if (item[key] !== targetVal) return false;
+          }
+        }
+      }
+      return true;
+    });
+  }
+
+  private hydrateCustomer(customer: any, include?: any): any {
+    const copy = { ...customer };
+    if (include?.orders) {
+      copy.orders = this.orders.filter(o => o.customerId === customer.id);
+    }
+    if (include?.supportTickets) {
+      copy.supportTickets = this.supportTickets.filter(s => s.customerId === customer.id);
+    }
+    if (include?.refunds) {
+      copy.refunds = this.refunds.filter(r => r.customerId === customer.id);
+    }
+    return copy;
+  }
+
+  private hydrateOrder(order: any, include?: any): any {
+    const copy = { ...order };
+    if (include?.customer) {
+      copy.customer = this.customers.find(c => c.id === order.customerId) || null;
+    }
+    if (include?.tickets) {
+      copy.tickets = this.tickets.filter(t => t.orderId === order.id);
+    }
+    if (include?.payments) {
+      copy.payments = this.payments.filter(p => p.orderId === order.id);
+    }
+    if (include?.refunds) {
+      copy.refunds = this.refunds.filter(r => r.orderId === order.id);
+    }
+    if (include?.supportTickets) {
+      copy.supportTickets = this.supportTickets.filter(s => s.orderId === order.id);
+    }
+    return copy;
   }
 
   // Hydration helpers

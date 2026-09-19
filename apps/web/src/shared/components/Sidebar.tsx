@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import {
   LayoutDashboard,
+  Search,
   Calendar,
   Briefcase,
   Headphones,
@@ -67,6 +68,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'overview',
       label: 'Visão Geral',
       icon: <LayoutDashboard className="h-4 w-4" />
+    },
+    {
+      id: 'search',
+      label: 'Central de Consulta',
+      icon: <Search className="h-4 w-4 text-orange-400" />
     },
     {
       id: 'notifications',

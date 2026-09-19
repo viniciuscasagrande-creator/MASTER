@@ -313,6 +313,7 @@ export const Header: React.FC<HeaderProps> = ({
         <div className="flex-1 max-w-md mx-4">
           <button
             onClick={onOpenCommandPalette}
+            title="Buscar no Disk Interno • Central de Consulta (Ctrl + K)"
             className="flex h-9 w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-900/60 px-3 text-xs text-slate-400 transition-all hover:border-slate-700 hover:bg-slate-900/90"
           >
             <div className="flex items-center gap-2">

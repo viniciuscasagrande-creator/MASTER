@@ -13,12 +13,14 @@ import adminDashboardRoutes from '../modules/admin/admin.dashboard.routes';
 import sessionsRoutes from '../modules/sessions/sessions.routes';
 import securityRoutes from '../modules/security/security.routes';
 import notificationRoutes from '../modules/notifications/notification.routes';
+import searchRoutes from '../modules/search/search.routes';
 
 const router = Router();
 
 // Primary v1 endpoints
 router.use('/auth', authRoutes);
 router.use('/context', contextRoutes);
+router.use('/search', searchRoutes);
 router.use('/notifications', notificationRoutes);
 router.use('/security', securityRoutes);
 router.use('/admin', adminDashboardRoutes);

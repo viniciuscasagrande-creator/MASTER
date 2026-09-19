@@ -39,8 +39,12 @@ import { SecurityCenterView } from './modules/admin/SecurityCenterView';
 import { NotificationProvider } from './core/context/NotificationContext';
 import { NotificationCenterView } from './modules/notifications/NotificationCenterView';
 
+// Central de Consulta & Busca Global (Fase 1.1.5.6)
+import { QueryCenterView } from './modules/search/QueryCenterView';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
+  search: 'Central de Consulta',
   notifications: 'Notificações',
   events: 'Eventos',
   commercial: 'Comercial',
@@ -62,6 +66,7 @@ const MainShell: React.FC = () => {
   const [activeModule, setActiveModule] = useState<string>(defaultDashboard);
   const [activeSubItem, setActiveSubItem] = useState<string | undefined>('overview-main');
   const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
+  const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
 
   // Modals & Drawers
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -82,6 +87,9 @@ const MainShell: React.FC = () => {
   const handleNavigate = (moduleId: string, subItemId?: string) => {
     setActiveModule(moduleId);
     setActiveSubItem(subItemId);
+    if (moduleId === 'search') {
+      setSearchInitialQuery(subItemId || '');
+    }
   };
 
   // If user is logged out, present the central login screen
@@ -129,6 +137,14 @@ const MainShell: React.FC = () => {
           <OverviewDashboard
             onNavigate={handleNavigate}
             onOpenNewSale={() => setIsNewSaleModalOpen(true)}
+          />
+        );
+
+      case 'search':
+        return (
+          <QueryCenterView
+            initialQuery={searchInitialQuery}
+            onNavigate={handleNavigate}
           />
         );
 

@@ -27,6 +27,8 @@ declare global {
   }
 }
 
+export type AuthenticatedRequest = Request;
+
 /**
  * Middleware authenticate:
  * Validates JWT Bearer Token, checks user existence, active status, and active session in database.
