@@ -55,6 +55,9 @@ import { DocumentCenterView } from './modules/documents/DocumentCenterView';
 // Motor Central de Tarefas & Pendências (Fase 1.1.5.9)
 import { WorkCenterView } from './modules/tasks';
 
+// Motor Central de Regras, Configurações e Políticas (Fase 1.1.5.11)
+import { ConfigurationCenterView } from './modules/configuration';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
@@ -71,6 +74,7 @@ const MODULE_NAMES: Record<string, string> = {
   accounting: 'Contabilidade',
   marketing: 'Marketing',
   remarketing: 'Remarketing',
+  configurations: 'Regras & Políticas',
   admin: 'Administração',
   settings: 'Configurações'
 };
@@ -266,6 +270,13 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="tarefas.central.visualizar" onBack={() => handleNavigate('overview')}>
             <WorkCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'configurations':
+        return (
+          <ProtectedRoute permission="configuracoes.central.visualizar" onBack={() => handleNavigate('overview')}>
+            <ConfigurationCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

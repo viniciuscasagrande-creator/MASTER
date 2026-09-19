@@ -9,7 +9,8 @@ export type EntityType =
   | 'SUPPORT'
   | 'CAMPAIGN'
   | 'DOCUMENT'
-  | 'TASK';
+  | 'TASK'
+  | 'POLICY';
 
 export type DetectedQueryType =
   | 'CPF'
@@ -19,6 +20,7 @@ export type DetectedQueryType =
   | 'REFUND_CODE'
   | 'SUPPORT_CODE'
   | 'TASK_CODE'
+  | 'POLICY_CODE'
   | 'EMAIL'
   | 'PHONE'
   | 'TEXT';
@@ -69,6 +71,7 @@ export interface CategorizedSearchResults {
     campaigns: CategoryResult;
     documents?: CategoryResult;
     tasks?: CategoryResult;
+    policies?: CategoryResult;
   };
 }
 

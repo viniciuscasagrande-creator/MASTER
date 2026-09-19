@@ -136,7 +136,21 @@ export type PermissionString =
   | 'tarefas.workflow.gerenciar'
   | 'tarefas.sla.visualizar'
   | 'tarefas.sla.configurar'
-  | 'tarefas.dashboard.visualizar';
+  | 'tarefas.dashboard.visualizar'
+  // Configurações & Políticas (Fase 1.1.5.11)
+  | 'configuracoes.central.visualizar'
+  | 'configuracoes.parametro.visualizar'
+  | 'configuracoes.parametro.editar'
+  | 'configuracoes.politica.visualizar'
+  | 'configuracoes.politica.criar'
+  | 'configuracoes.politica.editar'
+  | 'configuracoes.politica.ativar'
+  | 'configuracoes.simulador.utilizar'
+  | 'configuracoes.versao.visualizar'
+  | 'configuracoes.rollback.executar'
+  | 'configuracoes.feature_flag.visualizar'
+  | 'configuracoes.feature_flag.editar'
+  | 'configuracoes.historico.visualizar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -453,4 +467,267 @@ export interface SlaPolicyItem {
   allowedPauseReasons: string[];
   createdAt: string;
 }
+
+// ==========================================
+// 12. CONFIGURAÇÕES & POLÍTICAS (FASE 1.1.5.11)
+// ==========================================
+
+export type ConfigValueType =
+  | 'BOOLEAN'
+  | 'INTEGER'
+  | 'DECIMAL'
+  | 'STRING'
+  | 'ENUM'
+  | 'DATE'
+  | 'DATETIME'
+  | 'DURATION'
+  | 'PERCENTAGE'
+  | 'CURRENCY'
+  | 'JSON_SCHEMA'
+  | 'REFERENCE';
+
+export type ConfigSensitivity = 'PUBLIC' | 'INTERNAL' | 'SENSITIVE' | 'SECRET_REFERENCE';
+
+export type ConfigScopeType = 'GLOBAL' | 'PRODUCER' | 'EVENT';
+
+export type PolicyStatus =
+  | 'DRAFT'
+  | 'IN_REVIEW'
+  | 'APPROVED'
+  | 'SCHEDULED'
+  | 'ACTIVE'
+  | 'SUPERSEDED'
+  | 'ARCHIVED';
+
+export type RuleOperator =
+  | 'EQUAL'
+  | 'NOT_EQUAL'
+  | 'GREATER_THAN'
+  | 'GREATER_OR_EQUAL'
+  | 'LESS_THAN'
+  | 'LESS_OR_EQUAL'
+  | 'CONTAINS'
+  | 'IN'
+  | 'NOT_IN'
+  | 'BETWEEN';
+
+export type PolicyConflictStatus = 'DETECTED' | 'REVIEWED' | 'RESOLVED' | 'IGNORED';
+
+export interface ConfigurationDefinitionItem {
+  id: string;
+  key: string;
+  domain: string;
+  name: string;
+  description?: string | null;
+  type: ConfigValueType;
+  unit?: string | null;
+  defaultValue: any;
+  allowedValues?: any[] | null;
+  validationSchema?: any;
+  sensitivity: ConfigSensitivity;
+  allowedScopes: ConfigScopeType[];
+  requiresApproval: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConfigurationValueItem {
+  id: string;
+  definitionId: string;
+  key?: string;
+  scopeType: ConfigScopeType;
+  producerId?: string | null;
+  producerName?: string | null;
+  eventId?: string | null;
+  eventName?: string | null;
+  value: any;
+  version: number;
+  isActive: boolean;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  updatedByUserId?: string | null;
+  updatedByUserName?: string | null;
+  changeReason?: string | null;
+  approvalRequestId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EffectiveConfigResult<T = any> {
+  key: string;
+  value: T;
+  type: ConfigValueType;
+  unit?: string | null;
+  source: 'EVENT' | 'PRODUCER' | 'GLOBAL' | 'DEFAULT';
+  sourceId?: string | null;
+  sourceName?: string | null;
+  policyVersion?: number;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  explanation: string;
+}
+
+export interface PolicyRuleCondition {
+  field: string;
+  operator: RuleOperator;
+  value: any;
+}
+
+export interface PolicyRuleAction {
+  decision: boolean;
+  approvalsRequired?: number;
+  requiredDocuments?: string[];
+  stepUpRequired?: boolean;
+  allowExecution?: boolean;
+  slaMinutes?: number;
+  message?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface PolicyRuleItem {
+  id: string;
+  policyId: string;
+  version: number;
+  name: string;
+  description?: string | null;
+  priority: number;
+  conditions: PolicyRuleCondition[];
+  action: PolicyRuleAction;
+  orderIndex: number;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface PolicyVersionItem {
+  id: string;
+  policyId: string;
+  versionNumber: number;
+  status: PolicyStatus;
+  rulesSnapshot: PolicyRuleItem[];
+  changeReason: string;
+  createdBy: string;
+  creatorName?: string | null;
+  approvedBy?: string | null;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  createdAt: string;
+}
+
+export interface PolicyItem {
+  id: string;
+  code: string;
+  name: string;
+  domain: string;
+  description?: string | null;
+  scopeType: ConfigScopeType;
+  producerId?: string | null;
+  producerName?: string | null;
+  eventId?: string | null;
+  eventName?: string | null;
+  status: PolicyStatus;
+  currentVersion: number;
+  priority: number;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  requiresApproval: boolean;
+  createdBy: string;
+  creatorName?: string | null;
+  rules?: PolicyRuleItem[];
+  versions?: PolicyVersionItem[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PolicyConflictItem {
+  id: string;
+  policyAId: string;
+  policyAName?: string;
+  policyBId: string;
+  policyBName?: string;
+  domain: string;
+  conflictType: 'OVERLAPPING_CONDITIONS' | 'AMBIGUOUS_PRIORITY' | 'CONFLICTING_ACTIONS';
+  description: string;
+  status: PolicyConflictStatus;
+  detectedAt: string;
+  resolvedAt?: string | null;
+  resolvedByUserId?: string | null;
+  resolutionNotes?: string | null;
+}
+
+export interface FeatureFlagItem {
+  id: string;
+  key: string;
+  name: string;
+  description?: string | null;
+  isEnabled: boolean;
+  rolloutPercentage: number;
+  allowedRoles?: string[];
+  allowedProducers?: string[];
+  allowedEvents?: string[];
+  isKillSwitch: boolean;
+  killSwitchTriggeredAt?: string | null;
+  killSwitchTriggeredBy?: string | null;
+  killSwitchReason?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PolicySimulateInput {
+  domain: string;
+  operation: string;
+  producerId?: string | null;
+  eventId?: string | null;
+  input: Record<string, any>;
+}
+
+export interface PolicySimulateTraceStep {
+  level: 'EVENT' | 'PRODUCER' | 'GLOBAL' | 'DEFAULT';
+  targetName?: string;
+  policyFound: boolean;
+  policyCode?: string;
+  version?: number;
+  ruleMatched?: string;
+  decision?: any;
+  notes: string;
+}
+
+export interface PolicySimulateResult {
+  decision: boolean;
+  effectivePolicy?: {
+    id: string;
+    code: string;
+    name: string;
+    version: number;
+    ruleId?: string;
+    ruleName?: string;
+  } | null;
+  scope: 'EVENT' | 'PRODUCER' | 'GLOBAL' | 'DEFAULT';
+  requirements: {
+    approvalsRequired: number;
+    stepUpRequired: boolean;
+    requiredDocuments: string[];
+    slaMinutes?: number;
+  };
+  explanation: string;
+  trace: PolicySimulateTraceStep[];
+}
+
+export interface ConfigAuditItem {
+  id: string;
+  entityType: 'CONFIGURATION' | 'POLICY' | 'FEATURE_FLAG' | 'KILL_SWITCH';
+  entityId: string;
+  entityKey?: string | null;
+  action: string;
+  scopeType: ConfigScopeType;
+  producerId?: string | null;
+  eventId?: string | null;
+  previousValue?: any;
+  newValue?: any;
+  changeReason?: string | null;
+  userId: string;
+  userName?: string | null;
+  ipAddress?: string | null;
+  createdAt: string;
+}
+
 

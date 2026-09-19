@@ -19,6 +19,10 @@ import {
 } from '../approval.types';
 
 export class ApprovalEngineService {
+  public static async createRequest(requester: any, dto: CreateApprovalRequestDto): Promise<any> {
+    return new ApprovalEngineService().createRequest(requester, dto);
+  }
+
   /**
    * Creates a new approval request, binds an immutable rule snapshot, and instantiates approval steps.
    */

@@ -20,7 +20,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   FileText,
-  ListTodo
+  ListTodo,
+  Sliders
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -246,6 +247,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'admin-approval-rules', label: 'Regras de Aprovação' },
         { id: 'admin-approval-thresholds', label: 'Alçadas de Aprovação' },
         { id: 'admin-audit', label: 'Auditoria' }
+      ]
+    },
+    {
+      id: 'configurations',
+      label: 'Regras & Políticas',
+      icon: <Sliders className="h-4 w-4 text-purple-400" />,
+      requiredPermission: 'configuracoes.central.visualizar',
+      subItems: [
+        { id: 'config-parameters', label: 'Parâmetros do Sistema' },
+        { id: 'config-policies', label: 'Políticas de Negócio' },
+        { id: 'config-simulator', label: 'Simulador de Regras' },
+        { id: 'config-tree', label: 'Árvore de Herança' },
+        { id: 'config-features', label: 'Feature Flags & Rollout' },
+        { id: 'config-audit', label: 'Histórico & Auditoria' }
       ]
     },
     {

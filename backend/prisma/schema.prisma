@@ -1281,3 +1281,236 @@ model DutySchedule {
   @@index([isActive])
 }
 
+// ==========================================
+// 12. MOTOR CENTRAL DE REGRAS, CONFIGURAÇÕES E POLÍTICAS (FASE 1.1.5.11)
+// ==========================================
+
+model ConfigurationDefinition {
+  id               String   @id @default(uuid())
+  key              String   @unique // e.g. "finance.transfer.minimum_balance"
+  domain           String   // FINANCE, EVENTS, REFUNDS, SAC, MARKETING, SECURITY, etc.
+  name             String
+  description      String?
+  type             String   // BOOLEAN, INTEGER, DECIMAL, STRING, ENUM, DURATION, PERCENTAGE, CURRENCY, JSON_SCHEMA, REFERENCE
+  unit             String?  // BRL, MINUTES, HOURS, DAYS, %
+  defaultValue     String   // stringified or JSON
+  allowedValues    String?  // JSON array
+  validationSchema String?  // JSON schema
+  sensitivity      String   @default("INTERNAL") // PUBLIC, INTERNAL, SENSITIVE, SECRET_REFERENCE
+  allowedScopes    String   @default("[\"GLOBAL\",\"PRODUCER\",\"EVENT\"]") // JSON array
+  requiresApproval Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  values           ConfigurationValue[]
+
+  @@index([domain])
+  @@index([sensitivity])
+}
+
+model ConfigurationValue {
+  id                String   @id @default(uuid())
+  definitionId      String
+  scopeType         String   // GLOBAL, PRODUCER, EVENT
+  producerId        String?
+  eventId           String?
+  value             String   // JSON stringified value
+  version           Int      @default(1)
+  isActive          Boolean  @default(true)
+  effectiveFrom     DateTime?
+  effectiveUntil    DateTime?
+  updatedByUserId   String?
+  updatedByUserName String?
+  changeReason      String?
+  approvalRequestId String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  definition        ConfigurationDefinition @relation(fields: [definitionId], references: [id], onDelete: Cascade)
+  versions          ConfigurationVersion[]
+
+  @@index([definitionId])
+  @@index([scopeType])
+  @@index([producerId])
+  @@index([eventId])
+}
+
+model ConfigurationVersion {
+  id                String   @id @default(uuid())
+  valueId           String
+  versionNumber     Int
+  previousValue     String?
+  newValue          String
+  scopeType         String
+  producerId        String?
+  eventId           String?
+  changeReason      String
+  changedByUserId   String
+  changedByUserName String?
+  approvedByUserId  String?
+  approvalRequestId String?
+  effectiveFrom     DateTime?
+  effectiveUntil    DateTime?
+  createdAt         DateTime @default(now())
+
+  configValue       ConfigurationValue @relation(fields: [valueId], references: [id], onDelete: Cascade)
+
+  @@index([valueId])
+  @@index([versionNumber])
+}
+
+model Policy {
+  id               String   @id @default(uuid())
+  code             String   @unique // e.g. "POL-FIN-TRANSFER"
+  name             String
+  domain           String   // FINANCE, EVENTS, REFUNDS, SAC, etc.
+  description      String?
+  scopeType        String   // GLOBAL, PRODUCER, EVENT
+  producerId       String?
+  eventId          String?
+  status           String   @default("ACTIVE") // DRAFT, IN_REVIEW, APPROVED, SCHEDULED, ACTIVE, SUPERSEDED, ARCHIVED
+  currentVersion   Int      @default(1)
+  priority         Int      @default(100)
+  effectiveFrom    DateTime?
+  effectiveUntil   DateTime?
+  requiresApproval Boolean  @default(false)
+  createdBy        String
+  creatorName      String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  rules            PolicyRule[]
+  versions         PolicyVersion[]
+
+  @@index([domain])
+  @@index([scopeType])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([status])
+}
+
+model PolicyVersion {
+  id             String   @id @default(uuid())
+  policyId       String
+  versionNumber  Int
+  status         String
+  rulesSnapshot  String   // JSON stringified rules
+  changeReason   String
+  createdBy      String
+  creatorName    String?
+  approvedBy     String?
+  effectiveFrom  DateTime?
+  effectiveUntil DateTime?
+  createdAt      DateTime @default(now())
+
+  policy         Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([policyId])
+  @@index([versionNumber])
+}
+
+model PolicyRule {
+  id            String   @id @default(uuid())
+  policyId      String
+  version       Int      @default(1)
+  name          String
+  description   String?
+  priority      Int      @default(10)
+  conditionJson String   // JSON array of conditions
+  actionJson    String   // JSON object of action
+  orderIndex    Int      @default(1)
+  isActive      Boolean  @default(true)
+  createdAt     DateTime @default(now())
+
+  policy        Policy   @relation(fields: [policyId], references: [id], onDelete: Cascade)
+
+  @@index([policyId])
+  @@index([version])
+  @@index([priority])
+}
+
+model PolicyConflict {
+  id               String    @id @default(uuid())
+  policyAId        String
+  policyBId        String
+  domain           String
+  conflictType     String    // OVERLAPPING_CONDITIONS, AMBIGUOUS_PRIORITY, CONFLICTING_ACTIONS
+  description      String
+  status           String    @default("DETECTED") // DETECTED, REVIEWED, RESOLVED, IGNORED
+  detectedAt       DateTime  @default(now())
+  resolvedAt       DateTime?
+  resolvedByUserId String?
+  resolutionNotes  String?
+
+  @@index([domain])
+  @@index([status])
+}
+
+model FeatureFlag {
+  id                    String    @id @default(uuid())
+  key                   String    @unique // e.g. "feature.new_reconciliation"
+  name                  String
+  description           String?
+  isEnabled             Boolean   @default(false)
+  rolloutPercentage     Int       @default(0) // 0 to 100
+  allowedRoles          String?   // JSON array
+  allowedProducers      String?   // JSON array
+  allowedEvents         String?   // JSON array
+  isKillSwitch          Boolean   @default(false)
+  killSwitchTriggeredAt DateTime?
+  killSwitchTriggeredBy String?
+  killSwitchReason      String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([key])
+  @@index([isEnabled])
+  @@index([isKillSwitch])
+}
+
+model ConfigurationAudit {
+  id            String   @id @default(uuid())
+  entityType    String   // CONFIGURATION, POLICY, FEATURE_FLAG, KILL_SWITCH
+  entityId      String
+  entityKey     String?
+  action        String   // CREATE, UPDATE, ACTIVATE, SCHEDULE, ROLLBACK, OVERRIDE, REMOVE_OVERRIDE, KILL_SWITCH_TRIGGER, KILL_SWITCH_RESET
+  scopeType     String
+  producerId    String?
+  eventId       String?
+  previousValue String?
+  newValue      String?
+  changeReason  String?
+  userId        String
+  userName      String?
+  ipAddress     String?
+  createdAt     DateTime @default(now())
+
+  @@index([entityType])
+  @@index([entityId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model PolicyEvaluation {
+  id                String   @id @default(uuid())
+  operation         String
+  domain            String
+  producerId        String?
+  eventId           String?
+  inputJson         String
+  decisionJson      String
+  effectiveSource   String   // EVENT, PRODUCER, GLOBAL, DEFAULT
+  policyId          String?
+  policyVersion     Int?
+  ruleId            String?
+  isSimulated       Boolean  @default(false)
+  evaluatedByUserId String
+  createdAt         DateTime @default(now())
+
+  @@index([domain])
+  @@index([operation])
+  @@index([effectiveSource])
+  @@index([createdAt])
+}
+
+

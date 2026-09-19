@@ -139,7 +139,19 @@ export class QueryParserService {
       };
     }
 
-    // 10. Default: Keyword / Text query
+    // 10. Check for Policy Code (POL-...)
+    if (/^(POL-|#POL-)/i.test(raw)) {
+      const code = raw.replace(/^(#)/, '').toUpperCase();
+      return {
+        raw,
+        normalized: cleanLower,
+        detectedType: 'POLICY_CODE',
+        confidence: 1.0,
+        extractedCode: code
+      };
+    }
+
+    // 11. Default: Keyword / Text query
     return {
       raw,
       normalized: cleanLower,

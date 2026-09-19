@@ -70,6 +70,17 @@ export class InMemoryPrismaStore {
   public escalationEvents: any[] = [];
   public userAvailabilities: any[] = [];
   public dutySchedules: any[] = [];
+  // Configurações & Políticas (Fase 1.1.5.11)
+  public configurationDefinitions: any[] = [];
+  public configurationValues: any[] = [];
+  public configurationVersions: any[] = [];
+  public policies: any[] = [];
+  public policyVersions: any[] = [];
+  public policyRules: any[] = [];
+  public policyConflicts: any[] = [];
+  public featureFlags: any[] = [];
+  public configurationAudits: any[] = [];
+  public policyEvaluations: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -84,6 +95,16 @@ export class InMemoryPrismaStore {
     this.userPermissions = [];
     this.producers = [];
     this.events = [];
+    this.configurationDefinitions = [];
+    this.configurationValues = [];
+    this.configurationVersions = [];
+    this.policies = [];
+    this.policyVersions = [];
+    this.policyRules = [];
+    this.policyConflicts = [];
+    this.featureFlags = [];
+    this.configurationAudits = [];
+    this.policyEvaluations = [];
     this.userProducerAccesses = [];
     this.userEventAccesses = [];
     this.sessions = [];
@@ -246,7 +267,21 @@ export class InMemoryPrismaStore {
       { id: 'p-tsk-14', module: 'tarefas', resource: 'workflow', action: 'editar', code: 'tarefas.workflow.editar', description: 'Editar fluxos de trabalho' },
       { id: 'p-tsk-15', module: 'tarefas', resource: 'sla', action: 'visualizar', code: 'tarefas.sla.visualizar', description: 'Visualizar políticas de SLA' },
       { id: 'p-tsk-16', module: 'tarefas', resource: 'sla', action: 'configurar', code: 'tarefas.sla.configurar', description: 'Configurar políticas e prazos de SLA' },
-      { id: 'p-tsk-17', module: 'tarefas', resource: 'dashboard', action: 'visualizar', code: 'tarefas.dashboard.visualizar', description: 'Visualizar dashboard de produtividade' }
+      { id: 'p-tsk-17', module: 'tarefas', resource: 'dashboard', action: 'visualizar', code: 'tarefas.dashboard.visualizar', description: 'Visualizar dashboard de produtividade' },
+      // Configurações & Políticas (Fase 1.1.5.11)
+      { id: 'p-cfg-1', module: 'configuracoes', resource: 'central', action: 'visualizar', code: 'configuracoes.central.visualizar', description: 'Acessar Central de Configurações e Políticas' },
+      { id: 'p-cfg-2', module: 'configuracoes', resource: 'parametro', action: 'visualizar', code: 'configuracoes.parametro.visualizar', description: 'Visualizar parâmetros e configurações' },
+      { id: 'p-cfg-3', module: 'configuracoes', resource: 'parametro', action: 'editar', code: 'configuracoes.parametro.editar', description: 'Editar parâmetros e overrides' },
+      { id: 'p-cfg-4', module: 'configuracoes', resource: 'politica', action: 'visualizar', code: 'configuracoes.politica.visualizar', description: 'Visualizar políticas e regras de negócio' },
+      { id: 'p-cfg-5', module: 'configuracoes', resource: 'politica', action: 'criar', code: 'configuracoes.politica.criar', description: 'Criar novas políticas' },
+      { id: 'p-cfg-6', module: 'configuracoes', resource: 'politica', action: 'editar', code: 'configuracoes.politica.editar', description: 'Editar políticas e regras' },
+      { id: 'p-cfg-7', module: 'configuracoes', resource: 'politica', action: 'ativar', code: 'configuracoes.politica.ativar', description: 'Ativar e agendar políticas' },
+      { id: 'p-cfg-8', module: 'configuracoes', resource: 'simulador', action: 'utilizar', code: 'configuracoes.simulador.utilizar', description: 'Utilizar simulador de políticas' },
+      { id: 'p-cfg-9', module: 'configuracoes', resource: 'versao', action: 'visualizar', code: 'configuracoes.versao.visualizar', description: 'Visualizar histórico de versões' },
+      { id: 'p-cfg-10', module: 'configuracoes', resource: 'rollback', action: 'executar', code: 'configuracoes.rollback.executar', description: 'Executar rollback de versão' },
+      { id: 'p-cfg-11', module: 'configuracoes', resource: 'feature_flag', action: 'visualizar', code: 'configuracoes.feature_flag.visualizar', description: 'Visualizar feature flags' },
+      { id: 'p-cfg-12', module: 'configuracoes', resource: 'feature_flag', action: 'editar', code: 'configuracoes.feature_flag.editar', description: 'Gerenciar feature flags e kill switches' },
+      { id: 'p-cfg-13', module: 'configuracoes', resource: 'historico', action: 'visualizar', code: 'configuracoes.historico.visualizar', description: 'Visualizar auditoria de configurações' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -425,6 +460,27 @@ export class InMemoryPrismaStore {
     associate('AUDITOR', 'tarefas.dashboard.visualizar');
     associate('AUDITOR', 'tarefas.workflow.visualizar');
     associate('AUDITOR', 'tarefas.sla.visualizar');
+
+    // Configurações & Políticas (Fase 1.1.5.11)
+    this.permissions.filter(p => p.code.startsWith('configuracoes.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+    associate('AUDITOR', 'configuracoes.central.visualizar');
+    associate('AUDITOR', 'configuracoes.parametro.visualizar');
+    associate('AUDITOR', 'configuracoes.politica.visualizar');
+    associate('AUDITOR', 'configuracoes.versao.visualizar');
+    associate('AUDITOR', 'configuracoes.historico.visualizar');
+
+    associate('PRODUTOR', 'configuracoes.central.visualizar');
+    associate('PRODUTOR', 'configuracoes.parametro.visualizar');
+    associate('PRODUTOR', 'configuracoes.parametro.editar');
+    associate('PRODUTOR', 'configuracoes.politica.visualizar');
+    associate('PRODUTOR', 'configuracoes.simulador.utilizar');
+
+    associate('FINANCEIRO', 'configuracoes.central.visualizar');
+    associate('FINANCEIRO', 'configuracoes.parametro.visualizar');
+    associate('FINANCEIRO', 'configuracoes.politica.visualizar');
+    associate('FINANCEIRO', 'configuracoes.simulador.utilizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -956,6 +1012,25 @@ export class InMemoryPrismaStore {
         version: 1,
         isActive: true,
         createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_cfg_override',
+        code: 'RULE_CONFIGURATION_OVERRIDE',
+        name: 'Aprovação de Alteração Crítica de Configuração',
+        description: 'Exige aprovação para alteração de parâmetros sensíveis da plataforma',
+        operation: 'CONFIGURATION_OVERRIDE',
+        producerId: null,
+        eventId: null,
+        minAmount: null,
+        maxAmount: null,
+        approvalsRequired: 1,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: false,
+        allowedRoles: JSON.stringify(['ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
       }
     );
 
@@ -1441,6 +1516,499 @@ export class InMemoryPrismaStore {
         activeUserIds: JSON.stringify(['usr_superadmin', 'usr-admin-1']),
         isActive: true,
         createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 25. Definições e Configurações Iniciais (Fase 1.1.5.11)
+    const initialDefinitions = [
+      {
+        id: 'cfg_def_1',
+        key: 'finance.transfer.enabled',
+        domain: 'FINANCE',
+        name: 'Habilitar Transferências entre Eventos',
+        description: 'Permite operações de transferência de saldo entre contas de eventos',
+        type: 'BOOLEAN',
+        unit: null,
+        defaultValue: 'true',
+        allowedValues: null,
+        validationSchema: null,
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_2',
+        key: 'finance.transfer.minimum_balance',
+        domain: 'FINANCE',
+        name: 'Saldo Mínimo de Segurança',
+        description: 'Saldo de reserva obrigatório retido no evento de origem',
+        type: 'CURRENCY',
+        unit: 'BRL',
+        defaultValue: '5000',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 0 }),
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_3',
+        key: 'finance.transfer.approval.threshold',
+        domain: 'FINANCE',
+        name: 'Limite para Dupla Aprovação de Transferência',
+        description: 'Valores acima deste patamar exigem duas validações financeiras',
+        type: 'CURRENCY',
+        unit: 'BRL',
+        defaultValue: '50000',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 0 }),
+        sensitivity: 'SENSITIVE',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_4',
+        key: 'finance.transfer.requires_approval',
+        domain: 'FINANCE',
+        name: 'Exigir Aprovação para Transferência',
+        description: 'Determina se toda transferência deve passar pelo Motor de Aprovações',
+        type: 'BOOLEAN',
+        unit: null,
+        defaultValue: 'true',
+        allowedValues: null,
+        validationSchema: null,
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_5',
+        key: 'refund.approval.required',
+        domain: 'REFUNDS',
+        name: 'Exigir Aprovação para Estorno',
+        description: 'Determina se estornos requerem validação manual da equipe',
+        type: 'BOOLEAN',
+        unit: null,
+        defaultValue: 'true',
+        allowedValues: null,
+        validationSchema: null,
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_6',
+        key: 'refund.max_days_allowed',
+        domain: 'REFUNDS',
+        name: 'Prazo Máximo para Solicitação de Estorno',
+        description: 'Dias corridos após a compra permitidos para solicitação de estorno',
+        type: 'INTEGER',
+        unit: 'DAYS',
+        defaultValue: '7',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 1, max: 90 }),
+        sensitivity: 'PUBLIC',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_7',
+        key: 'sac.first_response.sla',
+        domain: 'SAC',
+        name: 'SLA de Primeira Resposta no SAC',
+        description: 'Tempo máximo para o primeiro contato ao cliente',
+        type: 'DURATION',
+        unit: 'MINUTES',
+        defaultValue: '60',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 5, max: 1440 }),
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_8',
+        key: 'task.auto_assignment.strategy',
+        domain: 'TASKS',
+        name: 'Estratégia de Atribuição Automática de Tarefas',
+        description: 'Algoritmo utilizado para roteamento operacional de tarefas',
+        type: 'ENUM',
+        unit: null,
+        defaultValue: 'WORKLOAD',
+        allowedValues: JSON.stringify(['WORKLOAD', 'DUTY', 'ROUND_ROBIN']),
+        validationSchema: null,
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_9',
+        key: 'security.two_factor.required',
+        domain: 'SECURITY',
+        name: 'Exigir Autenticação em 2 Etapas (2FA)',
+        description: 'Obriga 2FA para operadores do sistema',
+        type: 'BOOLEAN',
+        unit: null,
+        defaultValue: 'false',
+        allowedValues: null,
+        validationSchema: null,
+        sensitivity: 'SENSITIVE',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+        requiresApproval: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_10',
+        key: 'security.session.duration_minutes',
+        domain: 'SECURITY',
+        name: 'Duração Máxima da Sessão',
+        description: 'Tempo de expiração de token JWT de sessão',
+        type: 'DURATION',
+        unit: 'MINUTES',
+        defaultValue: '1440',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 15, max: 10080 }),
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_11',
+        key: 'document.upload.max_size_mb',
+        domain: 'DOCUMENTS',
+        name: 'Tamanho Máximo de Upload',
+        description: 'Limite global de arquivo para envio à Central de Documentos',
+        type: 'INTEGER',
+        unit: 'MB',
+        defaultValue: '25',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 1, max: 500 }),
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_def_12',
+        key: 'integration.retry.max_attempts',
+        domain: 'INTEGRATIONS',
+        name: 'Tentativas Máximas de Retry em Integrações',
+        description: 'Número de tentativas automáticas em caso de falha externa',
+        type: 'INTEGER',
+        unit: null,
+        defaultValue: '3',
+        allowedValues: null,
+        validationSchema: JSON.stringify({ min: 0, max: 10 }),
+        sensitivity: 'INTERNAL',
+        allowedScopes: JSON.stringify(['GLOBAL']),
+        requiresApproval: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      }
+    ];
+    this.configurationDefinitions.push(...initialDefinitions);
+
+    // Valores Globais e Overrides Iniciais
+    this.configurationValues.push(
+      {
+        id: 'cfg_val_glob_1',
+        definitionId: 'cfg_def_1',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        value: JSON.stringify(true),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_val_glob_2',
+        definitionId: 'cfg_def_2',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        value: JSON.stringify(5000),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      // Override Produtor Opus (prd_100): saldo mínimo = R$ 10.000
+      {
+        id: 'cfg_val_prod_opus_2',
+        definitionId: 'cfg_def_2',
+        scopeType: 'PRODUCER',
+        producerId: 'prd_100',
+        eventId: null,
+        value: JSON.stringify(10000),
+        version: 1,
+        isActive: true,
+        changeReason: 'Adequação contratual Produtora Opus',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      // Override Evento Festival Curitiba (evt_1001): saldo mínimo = R$ 15.000
+      {
+        id: 'cfg_val_evt_fest_2',
+        definitionId: 'cfg_def_2',
+        scopeType: 'EVENT',
+        producerId: 'prd_100',
+        eventId: 'evt_1001',
+        value: JSON.stringify(15000),
+        version: 1,
+        isActive: true,
+        changeReason: 'Reserva especial para festival de grande porte',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_val_glob_3',
+        definitionId: 'cfg_def_3',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        value: JSON.stringify(50000),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'cfg_val_glob_6',
+        definitionId: 'cfg_def_6',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        value: JSON.stringify(7),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      }
+    );
+
+    // Políticas Iniciais
+    this.policies.push(
+      {
+        id: 'pol_fin_transfer',
+        code: 'POL-FIN-TRANSFER',
+        name: 'Política Global de Transferências Financeiras',
+        domain: 'FINANCE',
+        description: 'Controla alçadas e aprovações para movimentações financeiras',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        status: 'ACTIVE',
+        currentVersion: 1,
+        priority: 100,
+        effectiveFrom: new Date('2026-01-01'),
+        effectiveUntil: null,
+        requiresApproval: true,
+        createdBy: 'usr_superadmin',
+        creatorName: 'Super Administrador',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'pol_refund',
+        code: 'POL-REFUND',
+        name: 'Política de Estornos e Reembolsos',
+        domain: 'REFUNDS',
+        description: 'Regras de validação e aprovação de pedidos de estorno',
+        scopeType: 'GLOBAL',
+        producerId: null,
+        eventId: null,
+        status: 'ACTIVE',
+        currentVersion: 1,
+        priority: 100,
+        effectiveFrom: new Date('2026-01-01'),
+        effectiveUntil: null,
+        requiresApproval: false,
+        createdBy: 'usr_superadmin',
+        creatorName: 'Super Administrador',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      }
+    );
+
+    // Regras das Políticas
+    this.policyRules.push(
+      {
+        id: 'rule_fin_tier1',
+        policyId: 'pol_fin_transfer',
+        version: 1,
+        name: 'Transferência Baixo Valor (<= 30k)',
+        description: '1 aprovação obrigatória sem Step-Up',
+        priority: 10,
+        conditionJson: JSON.stringify([{ field: 'amount', operator: 'LESS_OR_EQUAL', value: 30000 }]),
+        actionJson: JSON.stringify({
+          decision: true,
+          approvalsRequired: 1,
+          stepUpRequired: false,
+          requiredDocuments: []
+        }),
+        orderIndex: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_fin_tier2',
+        policyId: 'pol_fin_transfer',
+        version: 1,
+        name: 'Transferência Médio Valor (> 30k e <= 100k)',
+        description: '2 aprovações obrigatórias e comprovante',
+        priority: 20,
+        conditionJson: JSON.stringify([
+          { field: 'amount', operator: 'GREATER_THAN', value: 30000 },
+          { field: 'amount', operator: 'LESS_OR_EQUAL', value: 100000 }
+        ]),
+        actionJson: JSON.stringify({
+          decision: true,
+          approvalsRequired: 2,
+          stepUpRequired: false,
+          requiredDocuments: ['COMPROVANTE']
+        }),
+        orderIndex: 2,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_fin_tier3',
+        policyId: 'pol_fin_transfer',
+        version: 1,
+        name: 'Transferência Alto Valor (> 100k)',
+        description: '2 aprovações obrigatórias, Step-Up e autorização documental',
+        priority: 30,
+        conditionJson: JSON.stringify([{ field: 'amount', operator: 'GREATER_THAN', value: 100000 }]),
+        actionJson: JSON.stringify({
+          decision: true,
+          approvalsRequired: 2,
+          stepUpRequired: true,
+          requiredDocuments: ['COMPROVANTE', 'AUTORIZACAO']
+        }),
+        orderIndex: 3,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_ref_1',
+        policyId: 'pol_refund',
+        version: 1,
+        name: 'Estorno até R$ 500',
+        description: 'Aprovação simples',
+        priority: 10,
+        conditionJson: JSON.stringify([{ field: 'amount', operator: 'LESS_OR_EQUAL', value: 500 }]),
+        actionJson: JSON.stringify({
+          decision: true,
+          approvalsRequired: 1,
+          stepUpRequired: false,
+          requiredDocuments: []
+        }),
+        orderIndex: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_ref_2',
+        policyId: 'pol_refund',
+        version: 1,
+        name: 'Estorno acima de R$ 500',
+        description: 'Dupla aprovação e comprovação de evidência',
+        priority: 20,
+        conditionJson: JSON.stringify([{ field: 'amount', operator: 'GREATER_THAN', value: 500 }]),
+        actionJson: JSON.stringify({
+          decision: true,
+          approvalsRequired: 2,
+          stepUpRequired: false,
+          requiredDocuments: ['EVIDENCIA']
+        }),
+        orderIndex: 2,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    this.policyVersions.push(
+      {
+        id: 'pol_ver_fin_1',
+        policyId: 'pol_fin_transfer',
+        versionNumber: 1,
+        status: 'ACTIVE',
+        rulesSnapshot: JSON.stringify(this.policyRules.filter(r => r.policyId === 'pol_fin_transfer')),
+        changeReason: 'Versão inicial homologada',
+        createdBy: 'usr_superadmin',
+        creatorName: 'Super Administrador',
+        approvedBy: 'usr_superadmin',
+        effectiveFrom: new Date('2026-01-01'),
+        effectiveUntil: null,
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'pol_ver_ref_1',
+        policyId: 'pol_refund',
+        versionNumber: 1,
+        status: 'ACTIVE',
+        rulesSnapshot: JSON.stringify(this.policyRules.filter(r => r.policyId === 'pol_refund')),
+        changeReason: 'Versão inicial de estornos',
+        createdBy: 'usr_superadmin',
+        creatorName: 'Super Administrador',
+        approvedBy: 'usr_superadmin',
+        effectiveFrom: new Date('2026-01-01'),
+        effectiveUntil: null,
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // Feature Flags & Kill Switches
+    this.featureFlags.push(
+      {
+        id: 'ff_1',
+        key: 'feature.new_reconciliation',
+        name: 'Nova Conciliação Bancária',
+        description: 'Algoritmo unificado de reconciliação de recebíveis',
+        isEnabled: true,
+        rolloutPercentage: 50,
+        allowedRoles: JSON.stringify(['FINANCEIRO', 'ADMINISTRADOR_GERAL']),
+        allowedProducers: JSON.stringify(['prd_100']),
+        allowedEvents: JSON.stringify([]),
+        isKillSwitch: false,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      },
+      {
+        id: 'ff_kill_transfers',
+        key: 'killswitch.automatic_transfers',
+        name: 'Kill Switch: Transferências Automáticas',
+        description: 'Bloqueio de emergência para suspender liquidações automáticas de saldo',
+        isEnabled: true,
+        rolloutPercentage: 100,
+        allowedRoles: JSON.stringify(['ADMINISTRADOR_GERAL']),
+        allowedProducers: JSON.stringify([]),
+        allowedEvents: JSON.stringify([]),
+        isKillSwitch: true,
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
       }
     );
   }
@@ -3750,6 +4318,488 @@ export class InMemoryPrismaStore {
         return item;
       }
     };
+  }
+
+  public get configurationDefinition() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.configurationDefinitions.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.key) return x.key === args.where.key;
+          return false;
+        });
+        if (!item) return null;
+        const copy = { ...item };
+        if (args.include?.values) {
+          copy.values = this.configurationValues.filter(v => v.definitionId === item.id);
+        }
+        return copy;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.configurationDefinitions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0] || null;
+        if (!item) return null;
+        const copy = { ...item };
+        if (args?.include?.values) {
+          copy.values = this.configurationValues.filter(v => v.definitionId === item.id);
+        }
+        return copy;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.configurationDefinitions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(item => {
+          const copy = { ...item };
+          if (args?.include?.values) {
+            copy.values = this.configurationValues.filter(v => v.definitionId === item.id);
+          }
+          return copy;
+        });
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cfg_def_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          sensitivity: 'INTERNAL',
+          allowedScopes: JSON.stringify(['GLOBAL', 'PRODUCER', 'EVENT']),
+          requiresApproval: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.configurationDefinitions.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.configurationDefinitions.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.key) return x.key === args.where.key;
+          return false;
+        });
+        if (!item) throw new Error('ConfigurationDefinition not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.configurationDefinitions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get configurationValue() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.configurationValues.find(x => x.id === args.where?.id);
+        if (!item) return null;
+        const copy = { ...item };
+        if (args.include?.definition) {
+          copy.definition = this.configurationDefinitions.find(d => d.id === item.definitionId) || null;
+        }
+        if (args.include?.versions) {
+          copy.versions = this.configurationVersions.filter(v => v.valueId === item.id).sort((a, b) => b.versionNumber - a.versionNumber);
+        }
+        return copy;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.configurationValues];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const item = list[0] || null;
+        if (!item) return null;
+        const copy = { ...item };
+        if (args?.include?.definition) {
+          copy.definition = this.configurationDefinitions.find(d => d.id === item.definitionId) || null;
+        }
+        if (args?.include?.versions) {
+          copy.versions = this.configurationVersions.filter(v => v.valueId === item.id).sort((a, b) => b.versionNumber - a.versionNumber);
+        }
+        return copy;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.configurationValues];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(item => {
+          const copy = { ...item };
+          if (args?.include?.definition) {
+            copy.definition = this.configurationDefinitions.find(d => d.id === item.definitionId) || null;
+          }
+          if (args?.include?.versions) {
+            copy.versions = this.configurationVersions.filter(v => v.valueId === item.id).sort((a, b) => b.versionNumber - a.versionNumber);
+          }
+          return copy;
+        });
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cfg_val_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          version: 1,
+          isActive: true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.configurationValues.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.configurationValues.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('ConfigurationValue not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      delete: async (args: any) => {
+        const index = this.configurationValues.findIndex(x => x.id === args.where?.id);
+        if (index === -1) throw new Error('ConfigurationValue not found');
+        const removed = this.configurationValues.splice(index, 1)[0];
+        return removed;
+      },
+      count: async (args?: any) => {
+        let list = [...this.configurationValues];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get configurationVersion() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.configurationVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (b.versionNumber || 0) - (a.versionNumber || 0));
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cfg_ver_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.configurationVersions.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get policy() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.policies.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        });
+        if (!item) return null;
+        return this.hydratePolicy(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.policies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          if (args.orderBy.priority === 'asc') list.sort((a, b) => a.priority - b.priority);
+          else if (args.orderBy.priority === 'desc') list.sort((a, b) => b.priority - a.priority);
+        }
+        const item = list[0] || null;
+        if (!item) return null;
+        return this.hydratePolicy(item, args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.policies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          if (args.orderBy.priority === 'asc') list.sort((a, b) => a.priority - b.priority);
+          else if (args.orderBy.priority === 'desc') list.sort((a, b) => b.priority - a.priority);
+          else if (args.orderBy.createdAt === 'desc') list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(item => this.hydratePolicy(item, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `pol_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: 'ACTIVE',
+          currentVersion: 1,
+          priority: 100,
+          requiresApproval: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.policies.push(item);
+        return this.hydratePolicy(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.policies.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        });
+        if (!item) throw new Error('Policy not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydratePolicy(item, args.include);
+      },
+      delete: async (args: any) => {
+        const index = this.policies.findIndex(x => x.id === args.where?.id);
+        if (index === -1) throw new Error('Policy not found');
+        const removed = this.policies.splice(index, 1)[0];
+        return removed;
+      },
+      count: async (args?: any) => {
+        let list = [...this.policies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get policyVersion() {
+    return {
+      findUnique: async (args: any) => {
+        return this.policyVersions.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.policyVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.policyVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => b.versionNumber - a.versionNumber);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `pol_ver_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.policyVersions.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.policyVersions.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('PolicyVersion not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get policyRule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.policyRules];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (b.priority || 0) - (a.priority || 0) || (a.orderIndex || 0) - (b.orderIndex || 0));
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `pol_rule_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          priority: 10,
+          orderIndex: 1,
+          isActive: true,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.policyRules.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.policyRules.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('PolicyRule not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      deleteMany: async (args?: any) => {
+        if (!args?.where) {
+          const count = this.policyRules.length;
+          this.policyRules = [];
+          return { count };
+        }
+        const initial = this.policyRules.length;
+        this.policyRules = this.policyRules.filter(item => {
+          const match = this.filterEntities([item], args.where).length > 0;
+          return !match;
+        });
+        return { count: initial - this.policyRules.length };
+      }
+    };
+  }
+
+  public get policyConflict() {
+    return {
+      findUnique: async (args: any) => {
+        return this.policyConflicts.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.policyConflicts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.policyConflicts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.detectedAt).getTime() - new Date(a.detectedAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `pol_cnf_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: 'DETECTED',
+          detectedAt: new Date(),
+          ...args.data
+        };
+        this.policyConflicts.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.policyConflicts.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('PolicyConflict not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.policyConflicts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get featureFlag() {
+    return {
+      findUnique: async (args: any) => {
+        return this.featureFlags.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.key) return x.key === args.where.key;
+          return false;
+        }) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.featureFlags];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.featureFlags];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ff_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isEnabled: false,
+          rolloutPercentage: 0,
+          isKillSwitch: false,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.featureFlags.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.featureFlags.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.key) return x.key === args.where.key;
+          return false;
+        });
+        if (!item) throw new Error('FeatureFlag not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.featureFlags];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get configurationAudit() {
+    return {
+      findUnique: async (args: any) => {
+        return this.configurationAudits.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.configurationAudits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.configurationAudits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cfg_adt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.configurationAudits.push(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.configurationAudits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get policyEvaluation() {
+    return {
+      findUnique: async (args: any) => {
+        return this.policyEvaluations.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.policyEvaluations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.policyEvaluations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `pol_ev_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isSimulated: false,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.policyEvaluations.push(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.policyEvaluations];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  private hydratePolicy(policy: any, include?: any): any {
+    if (!policy) return null;
+    const copy = { ...policy };
+    if (include?.rules) {
+      copy.rules = this.policyRules
+        .filter(r => r.policyId === policy.id && r.version === policy.currentVersion)
+        .sort((a, b) => (b.priority || 0) - (a.priority || 0) || (a.orderIndex || 0) - (b.orderIndex || 0));
+    }
+    if (include?.versions) {
+      copy.versions = this.policyVersions
+        .filter(v => v.policyId === policy.id)
+        .sort((a, b) => (b.versionNumber || 0) - (a.versionNumber || 0));
+    }
+    return copy;
   }
 
   private hydrateTask(task: any, include?: any): any {
