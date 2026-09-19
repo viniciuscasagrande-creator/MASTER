@@ -18,7 +18,8 @@ import {
   ChevronDown,
   ChevronRight,
   PanelLeftClose,
-  PanelLeftOpen
+  PanelLeftOpen,
+  FileText
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -92,6 +93,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'approvals-history', label: 'Histórico de Decisões' },
         { id: 'approvals-rules', label: 'Regras de Aprovação', requiredPermission: 'aprovacoes.regra.visualizar' },
         { id: 'approvals-thresholds', label: 'Alçadas de Aprovação', requiredPermission: 'aprovacoes.alcada.visualizar' }
+      ]
+    },
+    {
+      id: 'documents',
+      label: 'Documentos',
+      icon: <FileText className="h-4 w-4 text-cyan-400" />,
+      requiredPermission: 'documentos.central.visualizar',
+      subItems: [
+        { id: 'documents-all', label: 'Central de Documentos' },
+        { id: 'documents-upload', label: 'Enviar Arquivo', requiredPermission: 'documentos.arquivo.enviar' }
       ]
     },
     {

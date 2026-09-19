@@ -36,7 +36,12 @@ export type DomainEventType =
   | 'SECURITY_STEP_UP_REAUTH'
   | 'SECURITY_UNAUTHORIZED_ACCESS'
   // Vendas & Pedidos
-  | 'ORDER_PAID';
+  | 'ORDER_PAID'
+  // Documentos & Anexos (Fase 1.1.5.8)
+  | 'DOCUMENT_UPLOADED'
+  | 'DOCUMENT_EXPIRING'
+  | 'DOCUMENT_QUARANTINED'
+  | 'DOCUMENT_DELETED';
 
 export interface DomainEvent<T = any> {
   id: string; // Unique event ID for Idempotency

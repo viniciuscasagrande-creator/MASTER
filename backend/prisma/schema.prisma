@@ -738,3 +738,176 @@ model ApprovalGroupMember {
   @@index([groupId])
   @@index([userId])
 }
+
+// ==========================================
+// 10. CENTRAL DE ARQUIVOS, DOCUMENTOS E ANEXOS (FASE 1.1.5.8)
+// ==========================================
+
+model Document {
+  id               String            @id @default(uuid())
+  organizationId   String?           @default("org-disk-ingressos")
+  producerId       String?
+  eventId          String?
+  title            String
+  description      String?
+  categoryId       String
+  status           String            @default("AVAILABLE") // PROCESSING, AVAILABLE, REJECTED, QUARANTINED, EXPIRED, ARCHIVED, DELETED
+  isConfidential   Boolean           @default(false)
+  validFrom        DateTime?
+  validUntil       DateTime?
+  createdBy        String
+  currentVersionId String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  deletedAt        DateTime?
+
+  category         DocumentCategory  @relation(fields: [categoryId], references: [id])
+  versions         DocumentVersion[]
+  links            DocumentLink[]
+  accessLogs       DocumentAccessLog[]
+  tagLinks         DocumentTagLink[]
+
+  @@index([status])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([categoryId])
+  @@index([validUntil])
+}
+
+model DocumentVersion {
+  id                String            @id @default(uuid())
+  documentId        String
+  version           Int               @default(1)
+  storageKey        String
+  originalFileName  String
+  mimeType          String
+  size              Int
+  checksumAlgorithm String            @default("SHA-256")
+  checksum          String
+  changeReason      String?
+  uploadedByUserId  String
+  createdAt         DateTime          @default(now())
+
+  document          Document          @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  securityChecks    DocumentSecurityCheck[]
+  accessLogs        DocumentAccessLog[]
+
+  @@unique([documentId, version])
+  @@index([documentId])
+  @@index([storageKey])
+}
+
+model DocumentLink {
+  id           String    @id @default(uuid())
+  documentId   String
+  resourceType String    // PRODUCER, EVENT, ORDER, TICKET, PAYMENT, TRANSFER, REFUND, SUPPORT_TICKET, SUPPLIER, CONTRACT, CAMPAIGN, APPROVAL_REQUEST
+  resourceId   String
+  producerId   String?
+  eventId      String?
+  createdAt    DateTime  @default(now())
+
+  document     Document  @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([documentId])
+  @@index([resourceType, resourceId])
+  @@index([producerId])
+  @@index([eventId])
+}
+
+model DocumentCategory {
+  id               String            @id @default(uuid())
+  code             String            @unique // CONTRATO, NOTA_FISCAL, COMPROVANTE, BOLETO, EXTRATO, AUTORIZACAO, DOCUMENTO_FISCAL, DOCUMENTO_CONTABIL, DOCUMENTO_BANCARIO, RELATORIO, EVIDENCIA, ANEXO_ATENDIMENTO, DOCUMENTO_EVENTO, CRIATIVO, OUTRO
+  name             String
+  description      String?
+  retentionDays    Int?              // null = permanent / policy based
+  isSensitive      Boolean           @default(false)
+  allowedMimeTypes String?           // JSON array or comma separated
+  maxSizeBytes     Int?              @default(52428800) // 50MB default
+  createdAt        DateTime          @default(now())
+
+  documents        Document[]
+  retentionPolicies DocumentRetentionPolicy[]
+}
+
+model DocumentTag {
+  id        String            @id @default(uuid())
+  name      String            @unique
+  createdAt DateTime          @default(now())
+
+  tagLinks  DocumentTagLink[]
+}
+
+model DocumentTagLink {
+  id         String      @id @default(uuid())
+  documentId String
+  tagId      String
+
+  document   Document    @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  tag        DocumentTag @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@unique([documentId, tagId])
+  @@index([documentId])
+  @@index([tagId])
+}
+
+model DocumentAccessLog {
+  id         String           @id @default(uuid())
+  documentId String
+  versionId  String?
+  userId     String
+  userName   String?
+  action     String           // VIEW, DOWNLOAD, PREVIEW, VERSION_CREATE, ARCHIVE, DELETE_REQUEST, DELETE, PERMISSION_DENIED, QUARANTINED, LINK_CREATE, LINK_DELETE
+  ipAddress  String?
+  userAgent  String?
+  createdAt  DateTime         @default(now())
+
+  document   Document         @relation(fields: [documentId], references: [id], onDelete: Cascade)
+  version    DocumentVersion? @relation(fields: [versionId], references: [id], onDelete: SetNull)
+
+  @@index([documentId])
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model DocumentSecurityCheck {
+  id         String          @id @default(uuid())
+  versionId  String
+  status     String          // PASSED, QUARANTINED, REJECTED
+  scanResult String?
+  threatName String?
+  scannedAt  DateTime        @default(now())
+
+  version    DocumentVersion @relation(fields: [versionId], references: [id], onDelete: Cascade)
+
+  @@index([versionId])
+  @@index([status])
+}
+
+model DocumentRetentionPolicy {
+  id            String           @id @default(uuid())
+  categoryId    String
+  producerId    String?
+  retentionDays Int
+  action        String           @default("ARCHIVE") // ARCHIVE, PERMANENT_DELETE
+  createdAt     DateTime         @default(now())
+
+  category      DocumentCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+
+  @@index([categoryId])
+}
+
+model DocumentRequirement {
+  id                 String   @id @default(uuid())
+  operation          String   // FINANCE_TRANSFER, REFUND_REQUEST, FINANCE_ADVANCE, FINANCE_PAYMENT, APPROVAL
+  producerId         String?
+  eventId            String?
+  minAmount          Float?
+  maxAmount          Float?
+  requiredCategories String   // JSON array of category codes: '["NOTA_FISCAL", "AUTORIZACAO"]'
+  createdAt          DateTime @default(now())
+
+  @@index([operation])
+  @@index([producerId])
+  @@index([eventId])
+}
+

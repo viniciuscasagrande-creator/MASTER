@@ -19,7 +19,8 @@ import {
   ArrowRight,
   RefreshCw,
   Eye,
-  CheckCircle2
+  CheckCircle2,
+  FileText
 } from 'lucide-react';
 import {
   CategorizedSearchResults,
@@ -50,7 +51,8 @@ type CategoryFilter =
   | 'producers'
   | 'supportTickets'
   | 'refunds'
-  | 'campaigns';
+  | 'campaigns'
+  | 'documents';
 
 export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
   initialQuery = '',
@@ -214,6 +216,8 @@ export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
         return <RotateCcw className="h-4 w-4 text-rose-400" />;
       case 'CAMPAIGN':
         return <Megaphone className="h-4 w-4 text-pink-400" />;
+      case 'DOCUMENT':
+        return <FileText className="h-4 w-4 text-cyan-400" />;
       default:
         return <Search className="h-4 w-4 text-slate-400" />;
     }
@@ -235,7 +239,8 @@ export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
         ...categories.producers.items,
         ...categories.supportTickets.items,
         ...categories.refunds.items,
-        ...categories.campaigns.items
+        ...categories.campaigns.items,
+        ...(categories.documents?.items || [])
       ];
     }
     return categories[activeCategory]?.items || [];
@@ -403,7 +408,8 @@ export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
             { id: 'producers', label: 'Produtores', count: categories?.producers.count || 0 },
             { id: 'supportTickets', label: 'Tickets SAC', count: categories?.supportTickets.count || 0 },
             { id: 'refunds', label: 'Estornos', count: categories?.refunds.count || 0 },
-            { id: 'campaigns', label: 'Campanhas', count: categories?.campaigns.count || 0 }
+            { id: 'campaigns', label: 'Campanhas', count: categories?.campaigns.count || 0 },
+            { id: 'documents', label: 'Documentos', count: categories?.documents?.count || 0 }
           ].map((cat) => (
             <button
               key={cat.id}
@@ -541,6 +547,17 @@ export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
                           onClick={() => onNavigate?.('marketing', 'marketing-campaigns')}
                         >
                           Ver Campanha
+                        </Button>
+                      )}
+
+                      {item.entityType === 'DOCUMENT' && (
+                        <Button
+                          size="sm"
+                          variant="secondary"
+                          icon={<Eye className="h-3 w-3" />}
+                          onClick={() => onNavigate?.('documents')}
+                        >
+                          Ver na Central
                         </Button>
                       )}
                     </div>

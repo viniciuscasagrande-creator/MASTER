@@ -105,7 +105,105 @@ export type PermissionString =
   | 'aprovacoes.alcada.visualizar'
   | 'aprovacoes.alcada.editar'
   | 'aprovacoes.delegacao.criar'
-  | 'aprovacoes.historico.visualizar';
+  | 'aprovacoes.historico.visualizar'
+  // Documentos & Anexos (Fase 1.1.5.8)
+  | 'documentos.central.visualizar'
+  | 'documentos.arquivo.visualizar'
+  | 'documentos.arquivo.enviar'
+  | 'documentos.arquivo.baixar'
+  | 'documentos.versao.criar'
+  | 'documentos.versao.visualizar'
+  | 'documentos.arquivo.arquivar'
+  | 'documentos.arquivo.excluir'
+  | 'documentos.categoria.visualizar'
+  | 'documentos.categoria.editar'
+  | 'documentos.auditoria.visualizar';
+
+export type DocumentStatus =
+  | 'PROCESSING'
+  | 'AVAILABLE'
+  | 'REJECTED'
+  | 'QUARANTINED'
+  | 'EXPIRED'
+  | 'ARCHIVED'
+  | 'DELETED';
+
+export type DocumentResourceType =
+  | 'PRODUCER'
+  | 'EVENT'
+  | 'ORDER'
+  | 'TICKET'
+  | 'PAYMENT'
+  | 'TRANSFER'
+  | 'REFUND'
+  | 'SUPPORT_TICKET'
+  | 'SUPPLIER'
+  | 'CONTRACT'
+  | 'CAMPAIGN'
+  | 'APPROVAL_REQUEST';
+
+export interface DocumentCategoryItem {
+  id: string;
+  code: string;
+  name: string;
+  description?: string;
+  retentionDays?: number;
+  isSensitive: boolean;
+  allowedMimeTypes?: string;
+  maxSizeBytes?: number;
+  createdAt: string;
+}
+
+export interface DocumentVersionItem {
+  id: string;
+  documentId: string;
+  version: number;
+  storageKey: string;
+  originalFileName: string;
+  mimeType: string;
+  size: number;
+  checksumAlgorithm: string;
+  checksum: string;
+  changeReason?: string;
+  uploadedByUserId: string;
+  uploadedByUserName?: string;
+  createdAt: string;
+}
+
+export interface DocumentLinkItem {
+  id: string;
+  documentId: string;
+  resourceType: DocumentResourceType;
+  resourceId: string;
+  producerId?: string;
+  eventId?: string;
+  createdAt: string;
+}
+
+export interface DocumentItem {
+  id: string;
+  organizationId?: string;
+  producerId?: string;
+  eventId?: string;
+  title: string;
+  description?: string;
+  categoryId: string;
+  category?: DocumentCategoryItem;
+  status: DocumentStatus;
+  isConfidential: boolean;
+  validFrom?: string;
+  validUntil?: string;
+  createdBy: string;
+  creatorName?: string;
+  currentVersionId?: string;
+  currentVersion?: DocumentVersionItem;
+  versions?: DocumentVersionItem[];
+  links?: DocumentLinkItem[];
+  tags?: string[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt?: string;
+}
 
 export interface UserAccount {
   id: string;

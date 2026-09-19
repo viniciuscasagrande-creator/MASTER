@@ -14,6 +14,7 @@ export interface EffectiveSearchScope {
     refunds: boolean;
     support: boolean;
     campaigns: boolean;
+    documents: boolean;
   };
 }
 
@@ -82,7 +83,8 @@ export class ScopeFilterService {
       payments: hasPerm('busca.pagamento.visualizar') || hasPerm('financeiro.saldo.visualizar') || isSuperAdmin,
       refunds: hasPerm('busca.estorno.visualizar') || hasPerm('estorno.solicitacao.visualizar') || isSuperAdmin,
       support: hasPerm('busca.ticket.visualizar') || hasPerm('sac.consulta.acessar') || isSuperAdmin,
-      campaigns: hasPerm('busca.campanha.visualizar') || hasPerm('marketing.campanha.visualizar') || isSuperAdmin
+      campaigns: hasPerm('busca.campanha.visualizar') || hasPerm('marketing.campanha.visualizar') || isSuperAdmin,
+      documents: hasPerm('documentos.arquivo.visualizar') || hasPerm('documentos.central.visualizar') || isSuperAdmin
     };
 
     return {

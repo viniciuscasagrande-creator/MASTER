@@ -38,6 +38,17 @@ export class InMemoryPrismaStore {
   public approvalAttachments: any[] = [];
   public approvalGroups: any[] = [];
   public approvalGroupMembers: any[] = [];
+  // Documentos & Anexos (Fase 1.1.5.8)
+  public documents: any[] = [];
+  public documentVersions: any[] = [];
+  public documentLinks: any[] = [];
+  public documentCategories: any[] = [];
+  public documentTags: any[] = [];
+  public documentTagLinks: any[] = [];
+  public documentAccessLogs: any[] = [];
+  public documentSecurityChecks: any[] = [];
+  public documentRetentionPolicies: any[] = [];
+  public documentRequirements: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -79,6 +90,17 @@ export class InMemoryPrismaStore {
     this.approvalAttachments = [];
     this.approvalGroups = [];
     this.approvalGroupMembers = [];
+    // Documentos & Anexos (Fase 1.1.5.8)
+    this.documents = [];
+    this.documentVersions = [];
+    this.documentLinks = [];
+    this.documentCategories = [];
+    this.documentTags = [];
+    this.documentTagLinks = [];
+    this.documentAccessLogs = [];
+    this.documentSecurityChecks = [];
+    this.documentRetentionPolicies = [];
+    this.documentRequirements = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -152,7 +174,19 @@ export class InMemoryPrismaStore {
       { id: 'p-apr-10', module: 'aprovacoes', resource: 'alcada', action: 'visualizar', code: 'aprovacoes.alcada.visualizar', description: 'Visualizar matriz de alçadas' },
       { id: 'p-apr-11', module: 'aprovacoes', resource: 'alcada', action: 'editar', code: 'aprovacoes.alcada.editar', description: 'Editar alçadas de aprovação' },
       { id: 'p-apr-12', module: 'aprovacoes', resource: 'delegacao', action: 'criar', code: 'aprovacoes.delegacao.criar', description: 'Delegar poderes de aprovação' },
-      { id: 'p-apr-13', module: 'aprovacoes', resource: 'historico', action: 'visualizar', code: 'aprovacoes.historico.visualizar', description: 'Visualizar histórico de aprovações' }
+      { id: 'p-apr-13', module: 'aprovacoes', resource: 'historico', action: 'visualizar', code: 'aprovacoes.historico.visualizar', description: 'Visualizar histórico de aprovações' },
+      // Documentos & Anexos (Fase 1.1.5.8)
+      { id: 'p-doc-1', module: 'documentos', resource: 'central', action: 'visualizar', code: 'documentos.central.visualizar', description: 'Acessar Central de Documentos' },
+      { id: 'p-doc-2', module: 'documentos', resource: 'arquivo', action: 'visualizar', code: 'documentos.arquivo.visualizar', description: 'Visualizar documentos e anexos' },
+      { id: 'p-doc-3', module: 'documentos', resource: 'arquivo', action: 'enviar', code: 'documentos.arquivo.enviar', description: 'Realizar upload de documentos' },
+      { id: 'p-doc-4', module: 'documentos', resource: 'arquivo', action: 'baixar', code: 'documentos.arquivo.baixar', description: 'Baixar arquivos' },
+      { id: 'p-doc-5', module: 'documentos', resource: 'versao', action: 'criar', code: 'documentos.versao.criar', description: 'Criar novas versões de documentos' },
+      { id: 'p-doc-6', module: 'documentos', resource: 'versao', action: 'visualizar', code: 'documentos.versao.visualizar', description: 'Visualizar histórico de versões' },
+      { id: 'p-doc-7', module: 'documentos', resource: 'arquivo', action: 'arquivar', code: 'documentos.arquivo.arquivar', description: 'Arquivar documentos' },
+      { id: 'p-doc-8', module: 'documentos', resource: 'arquivo', action: 'excluir', code: 'documentos.arquivo.excluir', description: 'Excluir logicamente documentos' },
+      { id: 'p-doc-9', module: 'documentos', resource: 'categoria', action: 'visualizar', code: 'documentos.categoria.visualizar', description: 'Visualizar categorias de documentos' },
+      { id: 'p-doc-10', module: 'documentos', resource: 'categoria', action: 'editar', code: 'documentos.categoria.editar', description: 'Gerenciar categorias documentais' },
+      { id: 'p-doc-11', module: 'documentos', resource: 'auditoria', action: 'visualizar', code: 'documentos.auditoria.visualizar', description: 'Visualizar logs de auditoria documental' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -238,6 +272,44 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'aprovacoes.solicitacao.visualizar');
     associate('PRODUTOR', 'aprovacoes.solicitacao.criar');
     associate('PRODUTOR', 'aprovacoes.solicitacao.cancelar');
+
+    // Documentos (Fase 1.1.5.8)
+    // Financeiro
+    associate('FINANCEIRO', 'documentos.central.visualizar');
+    associate('FINANCEIRO', 'documentos.arquivo.visualizar');
+    associate('FINANCEIRO', 'documentos.arquivo.enviar');
+    associate('FINANCEIRO', 'documentos.arquivo.baixar');
+    associate('FINANCEIRO', 'documentos.versao.criar');
+    associate('FINANCEIRO', 'documentos.versao.visualizar');
+    associate('FINANCEIRO', 'documentos.categoria.visualizar');
+
+    // SAC
+    associate('ATENDIMENTO_SAC', 'documentos.arquivo.visualizar');
+    associate('ATENDIMENTO_SAC', 'documentos.arquivo.enviar');
+    associate('ATENDIMENTO_SAC', 'documentos.arquivo.baixar');
+    associate('ATENDIMENTO_SAC', 'documentos.categoria.visualizar');
+
+    // Estorno
+    associate('ESTORNO', 'documentos.arquivo.visualizar');
+    associate('ESTORNO', 'documentos.arquivo.enviar');
+    associate('ESTORNO', 'documentos.arquivo.baixar');
+    associate('ESTORNO', 'documentos.categoria.visualizar');
+
+    // Produtor
+    associate('PRODUTOR', 'documentos.central.visualizar');
+    associate('PRODUTOR', 'documentos.arquivo.visualizar');
+    associate('PRODUTOR', 'documentos.arquivo.enviar');
+    associate('PRODUTOR', 'documentos.arquivo.baixar');
+    associate('PRODUTOR', 'documentos.versao.criar');
+    associate('PRODUTOR', 'documentos.versao.visualizar');
+
+    // Auditor
+    associate('AUDITOR', 'documentos.central.visualizar');
+    associate('AUDITOR', 'documentos.arquivo.visualizar');
+    associate('AUDITOR', 'documentos.arquivo.baixar');
+    associate('AUDITOR', 'documentos.versao.visualizar');
+    associate('AUDITOR', 'documentos.auditoria.visualizar');
+    associate('AUDITOR', 'documentos.categoria.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -827,6 +899,67 @@ export class InMemoryPrismaStore {
         maxApprovalAmount: 50000.00,
         producerId: null,
         eventId: null,
+        createdAt: new Date('2026-01-01')
+      }
+    );
+
+    // 16. Categorias Documentais Iniciais (Fase 1.1.5.8)
+    const initialCategories = [
+      { id: 'cat_contrato', code: 'CONTRATO', name: 'Contrato', description: 'Contratos com produtores, fornecedores e parceiros', retentionDays: 1825, isSensitive: true, maxSizeBytes: 52428800, createdAt: new Date('2026-01-01') },
+      { id: 'cat_nf', code: 'NOTA_FISCAL', name: 'Nota Fiscal', description: 'Notas fiscais de serviço e produtos vinculadas a transações', retentionDays: 1825, isSensitive: false, maxSizeBytes: 20971520, createdAt: new Date('2026-01-01') },
+      { id: 'cat_comprovante', code: 'COMPROVANTE', name: 'Comprovante', description: 'Comprovantes bancários de transferência, PIX e repasses', retentionDays: 730, isSensitive: false, maxSizeBytes: 10485760, createdAt: new Date('2026-01-01') },
+      { id: 'cat_boleto', code: 'BOLETO', name: 'Boleto', description: 'Boletos de cobrança e arrecadação', retentionDays: 365, isSensitive: false, maxSizeBytes: 10485760, createdAt: new Date('2026-01-01') },
+      { id: 'cat_extrato', code: 'EXTRATO', name: 'Extrato', description: 'Extratos bancários e de conciliação de adquirentes', retentionDays: 730, isSensitive: true, maxSizeBytes: 20971520, createdAt: new Date('2026-01-01') },
+      { id: 'cat_autorizacao', code: 'AUTORIZACAO', name: 'Autorização', description: 'Autorizações formais de diretores e produtores', retentionDays: 1825, isSensitive: false, maxSizeBytes: 10485760, createdAt: new Date('2026-01-01') },
+      { id: 'cat_doc_fiscal', code: 'DOCUMENTO_FISCAL', name: 'Documento Fiscal', description: 'Guias de recolhimento, impostos e certidões', retentionDays: 1825, isSensitive: false, maxSizeBytes: 20971520, createdAt: new Date('2026-01-01') },
+      { id: 'cat_doc_contabil', code: 'DOCUMENTO_CONTABIL', name: 'Documento Contábil', description: 'Balancetes, demonstrações e fechamentos', retentionDays: 1825, isSensitive: false, maxSizeBytes: 31457280, createdAt: new Date('2026-01-01') },
+      { id: 'cat_doc_bancario', code: 'DOCUMENTO_BANCARIO', name: 'Documento Bancário', description: 'Arquivos de remessa, retorno CNAB e cadastros bancários', retentionDays: 730, isSensitive: true, maxSizeBytes: 20971520, createdAt: new Date('2026-01-01') },
+      { id: 'cat_relatorio', code: 'RELATORIO', name: 'Relatório', description: 'Relatórios consolidados de auditoria e prestação de contas', retentionDays: 365, isSensitive: false, maxSizeBytes: 52428800, createdAt: new Date('2026-01-01') },
+      { id: 'cat_evidencia', code: 'EVIDENCIA', name: 'Evidência', description: 'Evidências de contestação, chargeback e fraudes', retentionDays: 1095, isSensitive: true, maxSizeBytes: 31457280, createdAt: new Date('2026-01-01') },
+      { id: 'cat_anexo_atendimento', code: 'ANEXO_ATENDIMENTO', name: 'Anexo de Atendimento', description: 'Prints e anexos de suporte e chamados do SAC', retentionDays: 365, isSensitive: false, maxSizeBytes: 20971520, createdAt: new Date('2026-01-01') },
+      { id: 'cat_doc_evento', code: 'DOCUMENTO_EVENTO', name: 'Documento de Evento', description: 'Alvarás dos bombeiros, plantas e autorizações de órgãos públicos', retentionDays: 1825, isSensitive: false, maxSizeBytes: 52428800, createdAt: new Date('2026-01-01') },
+      { id: 'cat_criativo', code: 'CRIATIVO', name: 'Criativo', description: 'Artes, banners e materiais promocionais de marketing', retentionDays: 365, isSensitive: false, maxSizeBytes: 52428800, createdAt: new Date('2026-01-01') },
+      { id: 'cat_outro', code: 'OUTRO', name: 'Outro', description: 'Outros documentos e anexos gerais', retentionDays: 365, isSensitive: false, maxSizeBytes: 52428800, createdAt: new Date('2026-01-01') }
+    ];
+    this.documentCategories.push(...initialCategories);
+
+    // 17. Políticas Padrão de Retenção
+    this.documentRetentionPolicies.push(
+      { id: 'ret_pol_contrato', categoryId: 'cat_contrato', producerId: null, retentionDays: 1825, action: 'ARCHIVE', createdAt: new Date('2026-01-01') },
+      { id: 'ret_pol_nf', categoryId: 'cat_nf', producerId: null, retentionDays: 1825, action: 'ARCHIVE', createdAt: new Date('2026-01-01') },
+      { id: 'ret_pol_comprovante', categoryId: 'cat_comprovante', producerId: null, retentionDays: 730, action: 'ARCHIVE', createdAt: new Date('2026-01-01') }
+    );
+
+    // 18. Requisitos Documentais para Operações e Aprovações
+    this.documentRequirements.push(
+      {
+        id: 'req_fin_transfer_high',
+        operation: 'FINANCE_TRANSFER',
+        producerId: null,
+        eventId: null,
+        minAmount: 50000.00,
+        maxAmount: null,
+        requiredCategories: JSON.stringify(['NOTA_FISCAL', 'AUTORIZACAO']),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'req_fin_advance',
+        operation: 'FINANCE_ADVANCE',
+        producerId: null,
+        eventId: null,
+        minAmount: null,
+        maxAmount: null,
+        requiredCategories: JSON.stringify(['CONTRATO', 'AUTORIZACAO']),
+        createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'req_refund_high',
+        operation: 'REFUND_REQUEST',
+        producerId: null,
+        eventId: null,
+        minAmount: 500.00,
+        maxAmount: null,
+        requiredCategories: JSON.stringify(['EVIDENCIA']),
         createdAt: new Date('2026-01-01')
       }
     );
@@ -2016,6 +2149,427 @@ export class InMemoryPrismaStore {
     };
   }
 
+  // ==========================================
+  // 10. CENTRAL DE ARQUIVOS, DOCUMENTOS E ANEXOS (FASE 1.1.5.8)
+  // ==========================================
+
+  public get document() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.documents.find(x => x.id === args.where.id);
+        if (!item) return null;
+        return this.hydrateDocument(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateDocument(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy) {
+          const key = Object.keys(args.orderBy)[0];
+          const dir = args.orderBy[key];
+          list.sort((a, b) => {
+            const valA = a[key] instanceof Date ? a[key].getTime() : a[key];
+            const valB = b[key] instanceof Date ? b[key].getTime() : b[key];
+            if (valA < valB) return dir === 'asc' ? -1 : 1;
+            if (valA > valB) return dir === 'asc' ? 1 : -1;
+            return 0;
+          });
+        } else {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        if (args?.skip !== undefined) list = list.slice(args.skip);
+        if (args?.take !== undefined) list = list.slice(0, args.take);
+        return list.map(item => this.hydrateDocument(item, args?.include));
+      },
+      count: async (args?: any) => {
+        let list = [...this.documents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `doc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: 'AVAILABLE',
+          isConfidential: false,
+          deletedAt: null,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.documents.push(item);
+        return this.hydrateDocument(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.documents.find(x => x.id === args.where.id);
+        if (!item) throw new Error('Document not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateDocument(item, args.include);
+      },
+      delete: async (args: any) => {
+        const idx = this.documents.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('Document not found');
+        const [removed] = this.documents.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get documentVersion() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentVersions.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => b.version - a.version);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dver_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          version: args.data.version || 1,
+          checksumAlgorithm: 'SHA-256',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentVersions.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.documentVersions.find(x => x.id === args.where.id);
+        if (!item) throw new Error('DocumentVersion not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.documentVersions.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('DocumentVersion not found');
+        const [removed] = this.documentVersions.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get documentLink() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentLinks.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentLinks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentLinks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dlink_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentLinks.push(item);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.documentLinks.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('DocumentLink not found');
+        const [removed] = this.documentLinks.splice(idx, 1);
+        return removed;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.documentLinks.length;
+        if (args?.where) {
+          const toKeep = this.documentLinks.filter(item => {
+            const matches = this.filterEntities([item], args.where);
+            return matches.length === 0;
+          });
+          this.documentLinks = toKeep;
+        }
+        return { count: before - this.documentLinks.length };
+      }
+    };
+  }
+
+  public get documentCategory() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentCategories.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        }) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentCategories];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentCategories];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cat_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          isSensitive: false,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentCategories.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.documentCategories.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.code) return x.code === args.where.code;
+          return false;
+        });
+        if (!item) throw new Error('DocumentCategory not found');
+        Object.assign(item, args.data);
+        return item;
+      },
+      delete: async (args: any) => {
+        const idx = this.documentCategories.findIndex(x => x.id === args.where.id);
+        if (idx === -1) throw new Error('DocumentCategory not found');
+        const [removed] = this.documentCategories.splice(idx, 1);
+        return removed;
+      }
+    };
+  }
+
+  public get documentTag() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentTags.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.name) return x.name.toLowerCase() === args.where.name.toLowerCase();
+          return false;
+        }) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentTags];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentTags];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tag_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentTags.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get documentTagLink() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.documentTagLinks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dtl_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          ...args.data
+        };
+        this.documentTagLinks.push(item);
+        return item;
+      },
+      deleteMany: async (args: any) => {
+        const before = this.documentTagLinks.length;
+        if (args?.where?.documentId) {
+          this.documentTagLinks = this.documentTagLinks.filter(x => x.documentId !== args.where.documentId);
+        }
+        return { count: before - this.documentTagLinks.length };
+      }
+    };
+  }
+
+  public get documentAccessLog() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentAccessLogs.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentAccessLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentAccessLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dlog_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentAccessLogs.push(item);
+        return item;
+      }
+    };
+  }
+
+  public get documentSecurityCheck() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentSecurityChecks.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentSecurityChecks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentSecurityChecks];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dsec_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          scannedAt: new Date(),
+          ...args.data
+        };
+        this.documentSecurityChecks.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.documentSecurityChecks.find(x => x.id === args.where.id);
+        if (!item) throw new Error('DocumentSecurityCheck not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get documentRetentionPolicy() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentRetentionPolicies.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentRetentionPolicies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentRetentionPolicies];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dret_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          action: 'ARCHIVE',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentRetentionPolicies.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.documentRetentionPolicies.find(x => x.id === args.where.id);
+        if (!item) throw new Error('DocumentRetentionPolicy not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  public get documentRequirement() {
+    return {
+      findUnique: async (args: any) => {
+        return this.documentRequirements.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.documentRequirements];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.documentRequirements];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dreq_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.documentRequirements.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const item = this.documentRequirements.find(x => x.id === args.where.id);
+        if (!item) throw new Error('DocumentRequirement not found');
+        Object.assign(item, args.data);
+        return item;
+      }
+    };
+  }
+
+  private hydrateDocument(doc: any, include?: any): any {
+    if (!doc) return null;
+    const copy = { ...doc };
+    if (include?.category) {
+      copy.category = this.documentCategories.find(c => c.id === doc.categoryId) || null;
+    }
+    if (include?.versions) {
+      copy.versions = this.documentVersions
+        .filter(v => v.documentId === doc.id)
+        .sort((a, b) => b.version - a.version);
+    }
+    if (include?.currentVersion || copy.currentVersionId) {
+      copy.currentVersion = this.documentVersions.find(v => v.id === doc.currentVersionId) || null;
+    }
+    if (include?.links) {
+      copy.links = this.documentLinks.filter(l => l.documentId === doc.id);
+    }
+    if (include?.accessLogs) {
+      copy.accessLogs = this.documentAccessLogs
+        .filter(al => al.documentId === doc.id)
+        .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+    }
+    if (include?.tagLinks) {
+      copy.tagLinks = this.documentTagLinks
+        .filter(tl => tl.documentId === doc.id)
+        .map(tl => ({
+          ...tl,
+          tag: this.documentTags.find(t => t.id === tl.tagId)
+        }));
+    }
+    return copy;
+  }
+
   // Filter helper for Prisma-like conditions
   private filterEntities(list: any[], where: any): any[] {
     return list.filter(item => {
@@ -2039,27 +2593,43 @@ export class InMemoryPrismaStore {
               const itemVal = String(item[key] || '').toLowerCase();
               const searchVal = String(targetVal.contains).toLowerCase();
               if (!itemVal.includes(searchVal)) return false;
-            } else if (targetVal.in !== undefined && Array.isArray(targetVal.in)) {
+            }
+            if (targetVal.in !== undefined && Array.isArray(targetVal.in)) {
               if (!targetVal.in.includes(item[key])) return false;
-            } else if (targetVal.notIn !== undefined && Array.isArray(targetVal.notIn)) {
+            }
+            if (targetVal.notIn !== undefined && Array.isArray(targetVal.notIn)) {
               if (targetVal.notIn.includes(item[key])) return false;
-            } else if (targetVal.equals !== undefined) {
+            }
+            if (targetVal.equals !== undefined) {
               if (item[key] !== targetVal.equals) return false;
-            } else if (targetVal.not !== undefined) {
+            }
+            if (targetVal.not !== undefined) {
               if (item[key] === targetVal.not) return false;
-            } else if (targetVal.gte !== undefined && targetVal.lte !== undefined) {
-              if (item[key] < targetVal.gte || item[key] > targetVal.lte) return false;
-            } else if (targetVal.gte !== undefined) {
-              if (item[key] < targetVal.gte) return false;
-            } else if (targetVal.lte !== undefined) {
-              if (item[key] > targetVal.lte) return false;
-            } else if (targetVal.gt !== undefined) {
-              if (item[key] <= targetVal.gt) return false;
-            } else if (targetVal.lt !== undefined) {
-              if (item[key] >= targetVal.lt) return false;
+            }
+            const toVal = (v: any) => {
+              if (v instanceof Date) return v.getTime();
+              if (typeof v === 'string' && !isNaN(Date.parse(v)) && isNaN(Number(v))) return new Date(v).getTime();
+              return v;
+            };
+            const itemV = toVal(item[key]);
+            if (targetVal.gt !== undefined) {
+              if (!(itemV > toVal(targetVal.gt))) return false;
+            }
+            if (targetVal.gte !== undefined) {
+              if (!(itemV >= toVal(targetVal.gte))) return false;
+            }
+            if (targetVal.lt !== undefined) {
+              if (!(itemV < toVal(targetVal.lt))) return false;
+            }
+            if (targetVal.lte !== undefined) {
+              if (!(itemV <= toVal(targetVal.lte))) return false;
             }
           } else {
-            if (item[key] !== targetVal) return false;
+            if (targetVal === null) {
+              if (item[key] !== null && item[key] !== undefined) return false;
+            } else {
+              if (item[key] !== targetVal) return false;
+            }
           }
         }
       }

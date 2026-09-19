@@ -7,7 +7,8 @@ export type EntityType =
   | 'PAYMENT'
   | 'REFUND'
   | 'SUPPORT'
-  | 'CAMPAIGN';
+  | 'CAMPAIGN'
+  | 'DOCUMENT';
 
 export type DetectedQueryType =
   | 'CPF'
@@ -64,6 +65,7 @@ export interface CategorizedSearchResults {
     refunds: CategoryResult;
     supportTickets: CategoryResult;
     campaigns: CategoryResult;
+    documents?: CategoryResult;
   };
 }
 

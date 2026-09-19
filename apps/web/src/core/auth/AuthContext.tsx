@@ -29,7 +29,10 @@ export const INITIAL_USERS: UserAccount[] = [
       'contabilidade.diario.visualizar', 'contabilidade.lancamento.criar', 'contabilidade.dre.visualizar', 'contabilidade.balancete.visualizar', 'contabilidade.fechamento.executar',
       'marketing.campanha.visualizar', 'marketing.campanha.criar', 'marketing.campanha.publicar', 'marketing.pixel.configurar',
       'remarketing.carrinhos.visualizar', 'remarketing.regua.configurar', 'remarketing.mensagem.disparar',
-      'admin.usuarios.visualizar', 'admin.usuarios.gerenciar', 'admin.perfis.gerenciar', 'admin.auditoria.visualizar', 'admin.configuracoes.editar'
+      'admin.usuarios.visualizar', 'admin.usuarios.gerenciar', 'admin.perfis.gerenciar', 'admin.auditoria.visualizar', 'admin.configuracoes.editar',
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar',
+      'documentos.versao.criar', 'documentos.versao.visualizar', 'documentos.arquivo.arquivar', 'documentos.arquivo.excluir',
+      'documentos.categoria.visualizar', 'documentos.categoria.editar', 'documentos.auditoria.visualizar'
     ],
     lastLoginAt: '2026-09-18T14:30:00Z',
     lastIpAddress: '189.44.120.19',
@@ -58,7 +61,8 @@ export const INITIAL_USERS: UserAccount[] = [
       'financeiro.repasses.visualizar', 'financeiro.repasses.aprovar', 'financeiro.pagamento.criar',
       'financeiro.pagamento.aprovar', 'financeiro.conciliacao.executar', 'financeiro.relatorio.exportar',
       'estorno.solicitacao.visualizar', 'estorno.solicitacao.aprovar',
-      'contabilidade.diario.visualizar', 'contabilidade.dre.visualizar'
+      'contabilidade.diario.visualizar', 'contabilidade.dre.visualizar',
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar', 'documentos.versao.criar'
     ],
     lastLoginAt: '2026-09-18T15:10:00Z',
     lastIpAddress: '177.102.18.4',
@@ -85,7 +89,10 @@ export const INITIAL_USERS: UserAccount[] = [
       'eventos.evento.visualizar',
       'financeiro.saldo.visualizar',
       'financeiro.repasses.visualizar',
-      'financeiro.relatorio.exportar'
+      'financeiro.relatorio.exportar',
+      'documentos.central.visualizar',
+      'documentos.arquivo.visualizar',
+      'documentos.arquivo.baixar'
     ],
     lastLoginAt: '2026-09-18T13:40:00Z',
     lastIpAddress: '189.12.80.99',
@@ -112,7 +119,8 @@ export const INITIAL_USERS: UserAccount[] = [
       'eventos.evento.visualizar', 'eventos.evento.criar', 'eventos.evento.editar', 'eventos.setores.configurar',
       'financeiro.saldo.visualizar', 'financeiro.repasses.visualizar', 'financeiro.relatorio.exportar',
       'marketing.campanha.visualizar', 'marketing.campanha.criar', 'marketing.pixel.configurar',
-      'remarketing.carrinhos.visualizar'
+      'remarketing.carrinhos.visualizar',
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar'
     ],
     lastLoginAt: '2026-09-18T11:20:00Z',
     lastIpAddress: '200.180.44.12',
@@ -137,7 +145,8 @@ export const INITIAL_USERS: UserAccount[] = [
     permissions: [
       'eventos.evento.visualizar',
       'sac.consulta.acessar', 'sac.pedido.visualizar', 'sac.cliente.visualizar', 'sac.ticket.criar', 'sac.ticket.encerrar', 'sac.voucher.reenviar',
-      'estorno.solicitacao.visualizar', 'estorno.solicitacao.criar'
+      'estorno.solicitacao.visualizar', 'estorno.solicitacao.criar',
+      'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar'
     ],
     lastLoginAt: '2026-09-18T16:00:00Z',
     lastIpAddress: '177.102.18.5',
@@ -291,6 +300,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         return currentUser.permissions.some(p => p.startsWith('remarketing.'));
       case 'approvals':
         return currentUser.permissions.some(p => p.startsWith('aprovacoes.'));
+      case 'documents':
+        return currentUser.permissions.some(p => p.startsWith('documentos.'));
       case 'admin':
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':
