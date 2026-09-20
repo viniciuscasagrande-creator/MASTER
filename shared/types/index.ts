@@ -204,8 +204,18 @@ export type PermissionString =
   | 'eventos.pos_evento.relatorio.exportar'
   | 'eventos.arquivamento.arquivar'
   | 'eventos.arquivamento.visualizar'
-  // Comercial
-
+  // Comercial — Fases 1.3.1 e 1.3.2
+  | 'comercial.dashboard.visualizar'
+  | 'comercial.pedidos.visualizar'
+  | 'comercial.pedidos.detalhes'
+  | 'comercial.pedidos.exportar'
+  | 'comercial.clientes.resumo.visualizar'
+  | 'comercial.clientes.dados_sensiveis'
+  | 'comercial.vendas.visualizar'
+  | 'comercial.vendas.valores.visualizar'
+  | 'comercial.vendas.performance.visualizar'
+  | 'comercial.vendas.exportar'
+  | 'comercial.alertas.visualizar'
   | 'comercial.produtores.visualizar'
   | 'comercial.produtores.criar'
   | 'comercial.produtores.editar'
@@ -4679,6 +4689,257 @@ export interface EventArchiveRecordDTO {
   cancellationRequestId?: string;
   readOnlyEnforced: boolean;
 }
+
+// ============================================================================
+// FASE 1.3.1 & 1.3.2 — COMERCIAL: PEDIDOS, VENDAS & PERFORMANCE
+// ============================================================================
+
+export type OrderStatus =
+  | 'DRAFT'
+  | 'PENDING'
+  | 'PROCESSING'
+  | 'CONFIRMED'
+  | 'EXPIRED'
+  | 'CANCELLED';
+
+export interface OrderBuyerSnapshotDTO {
+  id?: string;
+  orderId: string;
+  customerId?: string;
+  name: string;
+  document?: string;
+  documentMasked: string;
+  email?: string;
+  emailMasked: string;
+  phone?: string;
+  phoneMasked?: string;
+  createdAt: string;
+}
+
+export interface OrderItemDTO {
+  id: string;
+  orderId: string;
+  eventId: string;
+  sessionId?: string;
+  sessionName?: string;
+  eventSectionId?: string;
+  sectionName?: string;
+  eventTicketTypeId: string;
+  ticketTypeName: string;
+  ticketBatchId?: string;
+  batchName?: string;
+  quantity: number;
+  unitBaseAmount: number;
+  unitDiscountAmount: number;
+  unitFeeAmount: number;
+  unitFinalAmount: number;
+  subtotalAmount: number;
+  discountAmount: number;
+  feeAmount: number;
+  totalAmount: number;
+  priceSnapshotId?: string;
+  createdAt: string;
+}
+
+export interface OrderTimelineEventDTO {
+  id: string;
+  orderId: string;
+  eventType: string;
+  description: string;
+  actorName?: string;
+  actorType: 'USER' | 'SYSTEM' | 'GATEWAY' | 'SUPERVISOR';
+  metadata?: Record<string, any>;
+  createdAt: string;
+}
+
+export interface OrderDTO {
+  id: string;
+  publicCode: string;
+  producerId: string;
+  eventId?: string;
+  eventName?: string;
+  status: OrderStatus;
+  currency: string;
+  subtotalAmount: number;
+  discountAmount: number;
+  feeAmount: number;
+  totalAmount: number;
+  salesChannelId?: string;
+  salesChannelName?: string;
+  buyerCustomerId?: string;
+  buyerSnapshot?: OrderBuyerSnapshotDTO;
+  itemsCount: number;
+  totalTicketsCount: number;
+  items?: OrderItemDTO[];
+  timeline?: OrderTimelineEventDTO[];
+  version: number;
+  expiresAt?: string;
+  confirmedAt?: string;
+  cancelledAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CommercialDashboardDTO {
+  context: {
+    producerId?: string;
+    eventId?: string;
+    sessionId?: string;
+  };
+  period: {
+    from?: string;
+    to?: string;
+    label: string;
+  };
+  summary: {
+    ordersCount: number;
+    ticketsSold: number;
+    grossSales: number | null; // null if user lacks comercial.vendas.valores.visualizar
+    averageOrderValue: number | null;
+    commercialOccupancyPercentage: number;
+  };
+  trend: Array<{
+    date: string;
+    label: string;
+    orders: number;
+    tickets: number;
+    grossSales: number | null;
+  }>;
+  ordersByStatus: Array<{
+    status: OrderStatus;
+    label: string;
+    count: number;
+    percentage: number;
+  }>;
+  salesByEvent: Array<{
+    eventId: string;
+    eventName: string;
+    ordersCount: number;
+    ticketsSold: number;
+    grossSales: number | null;
+    occupancyPercentage: number;
+  }>;
+  salesByChannel: Array<{
+    channelId: string;
+    channelName: string;
+    ordersCount: number;
+    ticketsSold: number;
+    grossSales: number | null;
+    sharePercentage: number;
+  }>;
+  recentOrders: OrderDTO[];
+  opportunities: CommercialOpportunitySummaryDTO | null;
+  freshness: {
+    lastUpdatedAt: string;
+    source: string;
+  };
+}
+
+export interface CommercialPerformanceDTO {
+  context: {
+    producerId?: string;
+    eventId?: string;
+    sessionId?: string;
+  };
+  period: {
+    from?: string;
+    to?: string;
+    label: string;
+  };
+  summary: {
+    grossSales: number | null;
+    ordersCount: number;
+    ticketsSold: number;
+    averageOrderValue: number | null;
+    commercialOccupancyPercentage: number;
+  };
+  velocity: {
+    salesPerHour: number;
+    todayCount: number;
+    last24hCount: number;
+    last7dDailyAverage: number;
+  };
+  events: Array<{
+    eventId: string;
+    eventName: string;
+    status: string;
+    ordersCount: number;
+    ticketsSold: number;
+    capacity: number;
+    occupancyPercentage: number;
+    grossSales: number | null;
+  }>;
+  sessions: Array<{
+    sessionId: string;
+    sessionName: string;
+    status: string;
+    date: string;
+    ordersCount: number;
+    ticketsSold: number;
+    capacity: number;
+    occupancyPercentage: number;
+    grossSales: number | null;
+  }>;
+  sections: Array<{
+    sectionId: string;
+    sectionName: string;
+    capacity: number;
+    sold: number;
+    available: number;
+    reserved: number;
+    blocked: number;
+    occupancyPercentage: number;
+    grossSales: number | null;
+  }>;
+  ticketTypes: Array<{
+    ticketTypeId: string;
+    ticketTypeName: string;
+    sold: number;
+    grossSales: number | null;
+  }>;
+  batches: Array<{
+    batchId: string;
+    batchName: string;
+    status: string;
+    sold: number;
+    capacity: number;
+    price: number | null;
+    grossSales: number | null;
+  }>;
+  channels: Array<{
+    channelId: string;
+    channelName: string;
+    ordersCount: number;
+    ticketsSold: number;
+    grossSales: number | null;
+  }>;
+  alerts: CommercialAlertDTO[];
+  opportunities: CommercialOpportunitySummaryDTO | null;
+  freshness: {
+    lastUpdatedAt: string;
+  };
+}
+
+export interface CommercialAlertDTO {
+  id: string;
+  code: string;
+  severity: 'INFO' | 'WARNING' | 'HIGH' | 'CRITICAL';
+  title: string;
+  description: string;
+  targetType: 'EVENT' | 'SESSION' | 'BATCH' | 'ORDER';
+  targetId: string;
+  createdAt: string;
+}
+
+export interface CommercialOpportunitySummaryDTO {
+  abandonedCarts: number | null;
+  potentialValue: number | null;
+  recoveredCarts: number | null;
+  recoveredRevenue: number | null;
+  recoveryRate: number | null;
+  lastUpdatedAt: string | null;
+}
+
 
 
 

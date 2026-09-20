@@ -204,8 +204,8 @@ const MainShell: React.FC = () => {
 
       case 'commercial':
         return (
-          <ProtectedRoute permission="comercial.produtores.visualizar" onBack={() => handleNavigate('overview')}>
-            <CommercialDashboard />
+          <ProtectedRoute permission="comercial.dashboard.visualizar" onBack={() => handleNavigate('overview')}>
+            <CommercialDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

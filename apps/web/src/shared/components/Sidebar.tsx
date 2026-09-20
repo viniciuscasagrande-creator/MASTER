@@ -163,10 +163,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
       id: 'commercial',
       label: 'Comercial',
       icon: <Briefcase className="h-4 w-4" />,
-      requiredPermission: 'comercial.produtores.visualizar',
+      requiredPermission: 'comercial.dashboard.visualizar',
       subItems: [
-        { id: 'commercial-dashboard', label: 'Painel Comercial' },
-        { id: 'commercial-producers', label: 'Produtores' },
+        { id: 'commercial-dashboard', label: 'Visão Geral' },
+        { id: 'commercial-orders', label: 'Central de Pedidos', requiredPermission: 'comercial.pedidos.visualizar' },
+        { id: 'commercial-sales', label: 'Central de Vendas', requiredPermission: 'comercial.vendas.visualizar' },
+        { id: 'commercial-producers', label: 'Produtores', requiredPermission: 'comercial.produtores.visualizar' },
         { id: 'commercial-pipeline', label: 'Pipeline & Funil', requiredPermission: 'comercial.propostas.gerenciar' },
         { id: 'commercial-goals', label: 'Metas e Comissões', requiredPermission: 'comercial.metas.visualizar' }
       ]

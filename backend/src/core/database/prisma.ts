@@ -111,6 +111,9 @@ export class InMemoryPrismaStore {
   public outboxRecords: any[] = [];
   public customers: any[] = [];
   public orders: any[] = [];
+  public orderItems: any[] = [];
+  public orderBuyerSnapshots: any[] = [];
+  public orderTimelineEvents: any[] = [];
   public tickets: any[] = [];
   public payments: any[] = [];
   public refunds: any[] = [];
@@ -325,6 +328,9 @@ export class InMemoryPrismaStore {
     this.outboxRecords = [];
     this.customers = [];
     this.orders = [];
+    this.orderItems = [];
+    this.orderBuyerSnapshots = [];
+    this.orderTimelineEvents = [];
     this.tickets = [];
     this.payments = [];
     this.refunds = [];
@@ -726,6 +732,13 @@ export class InMemoryPrismaStore {
       associate('ADMINISTRADOR_GERAL', p.code);
       associate('PRODUTOR', p.code);
       associate('SUPORTE_EVENTOS', p.code);
+    });
+
+    // Comercial (Fases 1.3.1 e 1.3.2)
+    this.permissions.filter(p => p.code.startsWith('comercial.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+      associate('PRODUTOR', p.code);
+      associate('COMERCIAL', p.code);
     });
 
     // Documentos (Fase 1.1.5.8)
@@ -1592,28 +1605,37 @@ export class InMemoryPrismaStore {
       }
     );
 
-    // 8. Base de Pedidos (Fase 1.1.5.6)
+    // 8. Base de Pedidos Comerciais (Fases 1.1.5.6, 1.3.1 & 1.3.2)
     this.orders.push(
       {
         id: 'ord-984521',
+        publicCode: 'PED-2026-984521',
         orderNumber: 'PED-984521',
         orderNumberNormalized: '984521',
         producerId: 'prd_100',
         eventId: 'evt_1001',
-        eventName: 'Festival Curitiba 2026',
+        eventName: 'Festival de Inverno Curitiba 2026',
         customerId: 'cust-maria',
         customerName: 'Maria Oliveira',
         customerCpf: '123.456.789-00',
-        itemsCount: 2,
-        grossAmount: 600.00,
-        serviceFee: 42.00,
+        itemsCount: 1,
+        totalTicketsCount: 2,
+        subtotalAmount: 600.00,
+        discountAmount: 0.00,
+        feeAmount: 42.00,
         totalAmount: 642.00,
-        status: 'PAID',
-        paymentMethod: 'PIX',
-        createdAt: new Date('2026-09-18T14:32:00Z')
+        currency: 'BRL',
+        status: 'CONFIRMED',
+        salesChannelId: 'sc_online',
+        salesChannelName: 'Site Oficial Disk Ingressos',
+        version: 1,
+        confirmedAt: new Date('2026-09-18T14:32:00Z'),
+        createdAt: new Date('2026-09-18T14:30:00Z'),
+        updatedAt: new Date('2026-09-18T14:32:00Z')
       },
       {
         id: 'ord-952114',
+        publicCode: 'PED-2026-952114',
         orderNumber: 'PED-952114',
         orderNumberNormalized: '952114',
         producerId: 'prd_200',
@@ -1622,16 +1644,24 @@ export class InMemoryPrismaStore {
         customerId: 'cust-maria',
         customerName: 'Maria Oliveira',
         customerCpf: '123.456.789-00',
-        itemsCount: 4,
-        grossAmount: 1040.00,
-        serviceFee: 80.00,
+        itemsCount: 2,
+        totalTicketsCount: 4,
+        subtotalAmount: 1040.00,
+        discountAmount: 0.00,
+        feeAmount: 80.00,
         totalAmount: 1120.00,
-        status: 'PAID',
-        paymentMethod: 'CREDIT_CARD',
-        createdAt: new Date('2026-07-12T10:15:00Z')
+        currency: 'BRL',
+        status: 'CONFIRMED',
+        salesChannelId: 'sc_online',
+        salesChannelName: 'Site Oficial Disk Ingressos',
+        version: 1,
+        confirmedAt: new Date('2026-07-12T10:15:00Z'),
+        createdAt: new Date('2026-07-12T10:10:00Z'),
+        updatedAt: new Date('2026-07-12T10:15:00Z')
       },
       {
         id: 'ord-921885',
+        publicCode: 'PED-2026-921885',
         orderNumber: 'PED-921885',
         orderNumberNormalized: '921885',
         producerId: 'prd_100',
@@ -1641,15 +1671,23 @@ export class InMemoryPrismaStore {
         customerName: 'Maria Oliveira',
         customerCpf: '123.456.789-00',
         itemsCount: 1,
-        grossAmount: 250.00,
-        serviceFee: 30.00,
+        totalTicketsCount: 1,
+        subtotalAmount: 250.00,
+        discountAmount: 0.00,
+        feeAmount: 30.00,
         totalAmount: 280.00,
+        currency: 'BRL',
         status: 'CANCELLED',
-        paymentMethod: 'PIX',
-        createdAt: new Date('2026-05-20T16:00:00Z')
+        salesChannelId: 'sc_boxoffice',
+        salesChannelName: 'Bilheteria Teatro Positivo',
+        version: 2,
+        cancelledAt: new Date('2026-05-20T16:00:00Z'),
+        createdAt: new Date('2026-05-20T15:45:00Z'),
+        updatedAt: new Date('2026-05-20T16:00:00Z')
       },
       {
         id: 'ord-rodrigo',
+        publicCode: 'PED-2026-098422',
         orderNumber: 'DK-98422',
         orderNumberNormalized: '98422',
         producerId: 'prd_200',
@@ -1659,12 +1697,249 @@ export class InMemoryPrismaStore {
         customerName: 'Rodrigo Silveira Ramos',
         customerCpf: '812.304.779-88',
         itemsCount: 1,
-        grossAmount: 420.00,
-        serviceFee: 42.00,
+        totalTicketsCount: 1,
+        subtotalAmount: 420.00,
+        discountAmount: 0.00,
+        feeAmount: 42.00,
         totalAmount: 462.00,
-        status: 'PAID',
-        paymentMethod: 'PIX',
+        currency: 'BRL',
+        status: 'CONFIRMED',
+        salesChannelId: 'sc_online',
+        salesChannelName: 'Site Oficial Disk Ingressos',
+        version: 1,
+        confirmedAt: new Date('2026-09-18T15:10:40Z'),
+        createdAt: new Date('2026-09-18T15:05:00Z'),
+        updatedAt: new Date('2026-09-18T15:10:40Z')
+      },
+      {
+        id: 'ord-pending-101',
+        publicCode: 'PED-2026-101901',
+        orderNumber: 'PED-101901',
+        orderNumberNormalized: '101901',
+        producerId: 'prd_100',
+        eventId: 'evt_1001',
+        eventName: 'Festival de Inverno Curitiba 2026',
+        customerId: 'cust-carlos',
+        customerName: 'Carlos Eduardo Nogueira',
+        customerCpf: '334.556.778-90',
+        itemsCount: 1,
+        totalTicketsCount: 2,
+        subtotalAmount: 360.00,
+        discountAmount: 0.00,
+        feeAmount: 36.00,
+        totalAmount: 396.00,
+        currency: 'BRL',
+        status: 'PENDING',
+        salesChannelId: 'sc_online',
+        salesChannelName: 'Site Oficial Disk Ingressos',
+        version: 1,
+        createdAt: new Date(Date.now() - 25 * 60 * 1000),
+        updatedAt: new Date(Date.now() - 25 * 60 * 1000)
+      }
+    );
+
+    // 8.1 Itens de Pedidos Comerciais (Imutabilidade de Preços)
+    this.orderItems.push(
+      {
+        id: 'oit-984521-1',
+        orderId: 'ord-984521',
+        eventId: 'evt_1001',
+        sessionId: 'ses_1001_principal',
+        sessionName: 'Sessão Principal — Abertura',
+        eventSectionId: 'esec_1001_pista',
+        sectionName: 'Pista Geral',
+        eventTicketTypeId: 'ett_1001_inteira',
+        ticketTypeName: 'Inteira',
+        ticketBatchId: 'batch_1',
+        batchName: 'Lote 1 — Promocional',
+        quantity: 2,
+        unitBaseAmount: 300.00,
+        unitDiscountAmount: 0.00,
+        unitFeeAmount: 21.00,
+        unitFinalAmount: 321.00,
+        subtotalAmount: 600.00,
+        discountAmount: 0.00,
+        feeAmount: 42.00,
+        totalAmount: 642.00,
+        priceSnapshotId: 'snap_1001_p1',
+        createdAt: new Date('2026-09-18T14:30:00Z')
+      },
+      {
+        id: 'oit-952114-1',
+        orderId: 'ord-952114',
+        eventId: 'evt_2001',
+        sessionId: 'ses_2001_principal',
+        sessionName: 'Sessão Única',
+        eventSectionId: 'esec_2001_pista',
+        sectionName: 'Pista Comum',
+        eventTicketTypeId: 'ett_2001_inteira',
+        ticketTypeName: 'Inteira',
+        ticketBatchId: 'batch_coldplay_1',
+        batchName: 'Lote Geral',
+        quantity: 4,
+        unitBaseAmount: 260.00,
+        unitDiscountAmount: 0.00,
+        unitFeeAmount: 20.00,
+        unitFinalAmount: 280.00,
+        subtotalAmount: 1040.00,
+        discountAmount: 0.00,
+        feeAmount: 80.00,
+        totalAmount: 1120.00,
+        priceSnapshotId: 'snap_2001_p1',
+        createdAt: new Date('2026-07-12T10:10:00Z')
+      },
+      {
+        id: 'oit-rodrigo-1',
+        orderId: 'ord-rodrigo',
+        eventId: 'evt_2001',
+        sessionId: 'ses_2001_principal',
+        sessionName: 'Sessão Única',
+        eventSectionId: 'esec_2001_premium',
+        sectionName: 'Pista Premium VIP',
+        eventTicketTypeId: 'ett_2001_premium',
+        ticketTypeName: 'Premium VIP',
+        ticketBatchId: 'batch_coldplay_2',
+        batchName: 'Lote 2',
+        quantity: 1,
+        unitBaseAmount: 420.00,
+        unitDiscountAmount: 0.00,
+        unitFeeAmount: 42.00,
+        unitFinalAmount: 462.00,
+        subtotalAmount: 420.00,
+        discountAmount: 0.00,
+        feeAmount: 42.00,
+        totalAmount: 462.00,
+        priceSnapshotId: 'snap_2001_p2',
+        createdAt: new Date('2026-09-18T15:05:00Z')
+      },
+      {
+        id: 'oit-pending-1',
+        orderId: 'ord-pending-101',
+        eventId: 'evt_1001',
+        sessionId: 'ses_1001_principal',
+        sessionName: 'Sessão Principal — Abertura',
+        eventSectionId: 'esec_1001_pista',
+        sectionName: 'Pista Geral',
+        eventTicketTypeId: 'ett_1001_social',
+        ticketTypeName: 'Ingresso Social',
+        ticketBatchId: 'batch_2',
+        batchName: 'Lote 2 — Oficial',
+        quantity: 2,
+        unitBaseAmount: 180.00,
+        unitDiscountAmount: 0.00,
+        unitFeeAmount: 18.00,
+        unitFinalAmount: 198.00,
+        subtotalAmount: 360.00,
+        discountAmount: 0.00,
+        feeAmount: 36.00,
+        totalAmount: 396.00,
+        priceSnapshotId: 'snap_1001_p2',
+        createdAt: new Date(Date.now() - 25 * 60 * 1000)
+      }
+    );
+
+    // 8.2 Snapshots do Comprador (LGPD)
+    this.orderBuyerSnapshots.push(
+      {
+        id: 'obs-984521',
+        orderId: 'ord-984521',
+        customerId: 'cust-maria',
+        name: 'Maria Oliveira',
+        document: '123.456.789-00',
+        documentMasked: '***.456.789-**',
+        email: 'maria.oliveira@email.com',
+        emailMasked: 'm***a@email.com',
+        phone: '(41) 98877-6655',
+        phoneMasked: '(41) *****-6655',
+        createdAt: new Date('2026-09-18T14:30:00Z')
+      },
+      {
+        id: 'obs-952114',
+        orderId: 'ord-952114',
+        customerId: 'cust-maria',
+        name: 'Maria Oliveira',
+        document: '123.456.789-00',
+        documentMasked: '***.456.789-**',
+        email: 'maria.oliveira@email.com',
+        emailMasked: 'm***a@email.com',
+        phone: '(41) 98877-6655',
+        phoneMasked: '(41) *****-6655',
+        createdAt: new Date('2026-07-12T10:10:00Z')
+      },
+      {
+        id: 'obs-rodrigo',
+        orderId: 'ord-rodrigo',
+        customerId: 'cust-2',
+        name: 'Rodrigo Silveira Ramos',
+        document: '812.304.779-88',
+        documentMasked: '***.304.779-**',
+        email: 'rodrigo.silveira@email.com',
+        emailMasked: 'r***a@email.com',
+        phone: '(41) 99123-4567',
+        phoneMasked: '(41) *****-4567',
+        createdAt: new Date('2026-09-18T15:05:00Z')
+      },
+      {
+        id: 'obs-pending-1',
+        orderId: 'ord-pending-101',
+        customerId: 'cust-carlos',
+        name: 'Carlos Eduardo Nogueira',
+        document: '334.556.778-90',
+        documentMasked: '***.556.778-**',
+        email: 'carlos.nogueira@email.com',
+        emailMasked: 'c***a@email.com',
+        phone: '(41) 99888-7711',
+        phoneMasked: '(41) *****-7711',
+        createdAt: new Date(Date.now() - 25 * 60 * 1000)
+      }
+    );
+
+    // 8.3 Linha do Tempo dos Pedidos
+    this.orderTimelineEvents.push(
+      {
+        id: 'ote-984521-1',
+        orderId: 'ord-984521',
+        eventType: 'ORDER_CREATED',
+        description: 'Pedido gerado através do checkout web.',
+        actorName: 'Checkout Web',
+        actorType: 'SYSTEM',
+        createdAt: new Date('2026-09-18T14:30:00Z')
+      },
+      {
+        id: 'ote-984521-2',
+        orderId: 'ord-984521',
+        eventType: 'ORDER_CONFIRMED',
+        description: 'Pagamento PIX confirmado instantaneamente.',
+        actorName: 'Gateway Pagamentos',
+        actorType: 'GATEWAY',
+        createdAt: new Date('2026-09-18T14:32:00Z')
+      },
+      {
+        id: 'ote-rodrigo-1',
+        orderId: 'ord-rodrigo',
+        eventType: 'ORDER_CREATED',
+        description: 'Pedido gerado pelo aplicativo móvel.',
+        actorName: 'App Disk',
+        actorType: 'SYSTEM',
+        createdAt: new Date('2026-09-18T15:05:00Z')
+      },
+      {
+        id: 'ote-rodrigo-2',
+        orderId: 'ord-rodrigo',
+        eventType: 'ORDER_CONFIRMED',
+        description: 'Pagamento aprovado.',
+        actorName: 'Gateway Pagamentos',
+        actorType: 'GATEWAY',
         createdAt: new Date('2026-09-18T15:10:40Z')
+      },
+      {
+        id: 'ote-pending-1',
+        orderId: 'ord-pending-101',
+        eventType: 'ORDER_CREATED',
+        description: 'Aguardando pagamento via PIX.',
+        actorName: 'Checkout Web',
+        actorType: 'SYSTEM',
+        createdAt: new Date(Date.now() - 25 * 60 * 1000)
       }
     );
 
@@ -7680,7 +7955,7 @@ export class InMemoryPrismaStore {
   public get order() {
     return {
       findUnique: async (args: any) => {
-        const o = this.orders.find(x => x.id === args.where.id || x.orderNumber === args.where.orderNumber || x.orderNumberNormalized === args.where.orderNumberNormalized);
+        const o = this.orders.find(x => x.id === args.where.id || x.publicCode === args.where.publicCode || x.orderNumber === args.where.orderNumber || x.orderNumberNormalized === args.where.orderNumberNormalized);
         if (!o) return null;
         return this.hydrateOrder(o, args.include);
       },
@@ -7704,20 +7979,98 @@ export class InMemoryPrismaStore {
         return list.map(o => this.hydrateOrder(o, args?.include));
       },
       create: async (args: any) => {
-        const item = { id: args.data.id || `ord_${Date.now()}`, ...args.data, createdAt: new Date() };
+        const item = {
+          id: args.data.id || `ord_${Date.now()}`,
+          version: args.data.version || 1,
+          status: args.data.status || 'CONFIRMED',
+          currency: args.data.currency || 'BRL',
+          subtotalAmount: args.data.subtotalAmount || 0,
+          discountAmount: args.data.discountAmount || 0,
+          feeAmount: args.data.feeAmount || 0,
+          totalAmount: args.data.totalAmount || 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
         this.orders.push(item);
-        return item;
+        return { ...item };
       },
       update: async (args: any) => {
-        const item = this.orders.find(x => x.id === args.where.id);
+        const item = this.orders.find(x => x.id === args.where.id || x.publicCode === args.where.publicCode);
         if (!item) throw new Error('Order not found');
-        Object.assign(item, args.data);
-        return item;
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
       },
       count: async (args?: any) => {
         let list = [...this.orders];
         if (args?.where) list = this.filterEntities(list, args.where);
         return list.length;
+      }
+    };
+  }
+
+  public get orderItem() {
+    return {
+      findUnique: async (args: any) => {
+        return this.orderItems.find(x => x.id === args.where.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.orderItems];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.orderItems];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `oit_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.orderItems.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = (args.data || []).map((d: any) => ({
+          id: d.id || `oit_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.orderItems.push(...items);
+        return { count: items.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.orderItems];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get orderBuyerSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        return this.orderBuyerSnapshots.find(x => x.orderId === args.where?.orderId || x.id === args.where?.id) || null;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `obs_${Date.now()}`, createdAt: new Date(), ...args.data };
+        this.orderBuyerSnapshots.push(item);
+        return { ...item };
+      }
+    };
+  }
+
+  public get orderTimelineEvent() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.orderTimelineEvents];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `ote_${Date.now()}`, createdAt: new Date(), ...args.data };
+        this.orderTimelineEvents.push(item);
+        return { ...item };
       }
     };
   }
@@ -11640,6 +11993,15 @@ export class InMemoryPrismaStore {
     }
     if (include?.supportTickets) {
       copy.supportTickets = this.supportTickets.filter(s => s.orderId === order.id);
+    }
+    if (include?.items) {
+      copy.items = this.orderItems.filter(i => i.orderId === order.id);
+    }
+    if (include?.buyerSnapshot) {
+      copy.buyerSnapshot = this.orderBuyerSnapshots.find(s => s.orderId === order.id) || null;
+    }
+    if (include?.timeline) {
+      copy.timeline = this.orderTimelineEvents.filter(t => t.orderId === order.id).sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime());
     }
     return copy;
   }

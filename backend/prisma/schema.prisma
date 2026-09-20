@@ -3921,5 +3921,100 @@ model EventArchiveRecord {
   @@index([archivedAt])
 }
 
+// ------------------------------------------------------------------------------
+// FASE 1.3.1 & 1.3.2: COMERCIAL - PEDIDOS E VENDAS
+// ------------------------------------------------------------------------------
+
+model Order {
+  id              String               @id @default(uuid())
+  publicCode      String               @unique // Ex: PED-2026-000184
+  producerId      String
+  eventId         String?
+  eventName       String?
+  status          String               @default("CONFIRMED") // DRAFT, PENDING, PROCESSING, CONFIRMED, EXPIRED, CANCELLED
+  currency        String               @default("BRL")
+  subtotalAmount  Float                @default(0.0)
+  discountAmount  Float                @default(0.0)
+  feeAmount       Float                @default(0.0)
+  totalAmount     Float                @default(0.0)
+  salesChannelId  String?
+  salesChannelName String?
+  buyerCustomerId String?
+  version         Int                  @default(1)
+  expiresAt       DateTime?
+  confirmedAt     DateTime?
+  cancelledAt     DateTime?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+
+  buyerSnapshot   OrderBuyerSnapshot?
+  items           OrderItem[]
+  timeline        OrderTimelineEvent[]
+
+  @@index([producerId, createdAt])
+  @@index([eventId, createdAt])
+  @@index([status])
+  @@index([publicCode])
+}
+
+model OrderItem {
+  id                String   @id @default(uuid())
+  orderId           String
+  eventId           String
+  sessionId         String?
+  sessionName       String?
+  eventSectionId    String?
+  sectionName       String?
+  eventTicketTypeId String
+  ticketTypeName    String
+  ticketBatchId     String?
+  batchName         String?
+  quantity          Int      @default(1)
+  unitBaseAmount    Float    @default(0.0)
+  unitDiscountAmount Float   @default(0.0)
+  unitFeeAmount     Float    @default(0.0)
+  unitFinalAmount   Float    @default(0.0)
+  subtotalAmount    Float    @default(0.0)
+  discountAmount    Float    @default(0.0)
+  feeAmount         Float    @default(0.0)
+  totalAmount       Float    @default(0.0)
+  priceSnapshotId   String?
+  createdAt         DateTime @default(now())
+
+  order             Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId])
+  @@index([eventId])
+  @@index([sessionId])
+}
+
+model OrderBuyerSnapshot {
+  id             String   @id @default(uuid())
+  orderId        String   @unique
+  name           String
+  documentMasked String
+  emailMasked    String
+  phoneMasked    String?
+  createdAt      DateTime @default(now())
+
+  order          Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+}
+
+model OrderTimelineEvent {
+  id          String   @id @default(uuid())
+  orderId     String
+  eventType   String
+  description String
+  actorName   String?
+  actorType   String   @default("SYSTEM") // USER, SYSTEM, GATEWAY, SUPERVISOR
+  metadata    String?  // JSON string
+  createdAt   DateTime @default(now())
+
+  order       Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  @@index([orderId, createdAt])
+}
+
+
 
 
