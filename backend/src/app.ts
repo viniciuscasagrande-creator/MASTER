@@ -14,7 +14,19 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Health Check
+// Root & Health Check
+app.get('/', (req: Request, res: Response) => {
+  res.json({
+    status: 'online',
+    system: 'Disk Interno Core Node.js Real',
+    version: '1.1.5.1',
+    message: 'Backend API Disk Interno PDT operacional',
+    healthCheck: '/api/health',
+    endpoints: '/api/v1',
+    timestamp: new Date().toISOString()
+  });
+});
+
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'online',
