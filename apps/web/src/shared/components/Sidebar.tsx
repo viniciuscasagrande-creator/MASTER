@@ -137,7 +137,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'events-create', label: 'Criar Evento', requiredPermission: 'eventos.evento.criar' },
         { id: 'events-sessions', label: 'Sessões & Agenda', requiredPermission: 'eventos.sessoes.visualizar' },
         { id: 'events-venues', label: 'Locais & Plantas', requiredPermission: 'eventos.locais.visualizar' },
-        { id: 'events-lots', label: 'Lotes e Ingressos', requiredPermission: 'eventos.setores.configurar' },
+        { id: 'events-sections', label: 'Setores do Evento', requiredPermission: 'eventos.setor.visualizar' },
+        { id: 'events-tickets', label: 'Tipos de Ingresso', requiredPermission: 'eventos.ingresso.visualizar' },
+        { id: 'events-capacity', label: 'Inventário & Capacidade', requiredPermission: 'eventos.sessoes.capacidade.visualizar' },
+        { id: 'events-batches', label: 'Lotes de Venda', requiredPermission: 'eventos.lote.visualizar' },
+        { id: 'events-pricing', label: 'Matriz de Preços', requiredPermission: 'eventos.lote.gerenciar' },
+        { id: 'events-rules', label: 'Regras de Venda', requiredPermission: 'eventos.setores.configurar' },
         { id: 'events-checkin', label: 'Check-in e Portaria', requiredPermission: 'eventos.checkin.operar' },
         { id: 'events-realtime', label: 'Operação em Tempo Real' }
       ]

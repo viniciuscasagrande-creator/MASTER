@@ -66,21 +66,21 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
     },
     {
       id: '1.2.5',
-      title: 'Tipos de Ingresso',
-      desc: 'Inteira, meia-entrada legal, promocional e cortesias.',
-      status: 'NEXT'
+      title: 'Setores, Ingressos & Inventário',
+      desc: 'Setores operacionais, catálogo de modalidades comerciais, cotas e inventário atômico compartilhado.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.6',
-      title: 'Lotes de Venda',
-      desc: 'Viradas automáticas de lote por quantidade ou data limite.',
-      status: 'UPCOMING'
+      title: 'Lotes, Preços & Regras de Venda',
+      desc: 'Máquina de estados de lotes, matriz de preços, centavos inteiros, split de taxas e regras comerciais.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.7',
-      title: 'Regras de Venda',
-      desc: 'Limites por CPF, combos, cupons e políticas de canal.',
-      status: 'UPCOMING'
+      title: 'Combos, Cupons & Políticas Comerciais',
+      desc: 'Cupons de desconto, pacotes promocionais e canais restritos.',
+      status: 'NEXT'
     },
     {
       id: '1.2.8',
@@ -201,11 +201,25 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
               Sessões & Capacidade
             </button>
             <button
-              onClick={() => onNavigateModule('events', 'events-venues')}
+              onClick={() => onNavigateModule('events', 'events-sections')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs text-cyan-300 font-semibold transition-colors"
+            >
+              <Layers className="h-3.5 w-3.5 text-cyan-400" />
+              Setores & Inventário
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-batches')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-300 font-semibold transition-colors"
+            >
+              <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
+              Lotes & Preços
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-rules')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-xs text-purple-300 font-semibold transition-colors"
             >
-              <MapPin className="h-3.5 w-3.5 text-purple-400" />
-              Locais & Mapas
+              <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
+              Regras de Venda
             </button>
             <button
               onClick={() => onNavigateModule('documents')}
@@ -220,13 +234,6 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
             >
               <ListTodo className="h-3.5 w-3.5 text-amber-400" />
               Tarefas
-            </button>
-            <button
-              onClick={() => onNavigateModule('observability')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition-colors"
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              Auditoria
             </button>
           </div>
         )}
@@ -245,7 +252,7 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
             </p>
           </div>
           <Badge variant="emerald" size="sm">
-            3 de 6 Etapas Concluídas
+            5 de 6 Etapas Concluídas
           </Badge>
         </div>
 
@@ -278,34 +285,34 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
             <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
               <div className="text-xs font-semibold text-emerald-300">
-                3. Setores & Capacidade
+                3. Setores & Inventário
               </div>
               <div className="text-[11px] text-slate-400 mt-0.5">
-                Capacidade de <span className="font-mono text-slate-200">{formatNumber(capacity)}</span> lugares e estrutura física.
+                Capacidade de <span className="font-mono text-slate-200">{formatNumber(capacity)}</span> lugares e pool atômico.
               </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-start gap-3">
-            <Clock className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <div className="text-xs font-semibold text-slate-300">
-                4. Ingressos & Lotes
+              <div className="text-xs font-semibold text-emerald-300">
+                4. Ingressos, Lotes & Preços
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Preços, tipos de meia-entrada e lotes.
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Modalidades comerciais, lotes escalonados e matriz de preços em centavos.
               </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-start gap-3">
-            <Clock className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <div className="text-xs font-semibold text-slate-300">
+              <div className="text-xs font-semibold text-emerald-300">
                 5. Regras & Limites de Venda
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Limite por CPF, canais e combos.
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Cota de meia-entrada (40% legal) e proteção anti-cambismo por CPF.
               </div>
             </div>
           </div>
@@ -317,7 +324,7 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
                 6. Aprovação & Publicação
               </div>
               <div className="text-[11px] text-slate-500 mt-0.5">
-                Validação de alçada e liberação ao público.
+                Validação executiva de alçadas e publicação para venda pública.
               </div>
             </div>
           </div>

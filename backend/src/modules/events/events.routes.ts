@@ -9,6 +9,11 @@ import { requirePermission } from '../../core/middleware/requirePermission';
 
 import { EventVenueController } from './event-venue/event-venue.controller';
 import eventSessionRoutes from './sessions/event-session.routes';
+import eventTicketTypeRoutes from './ticket-types/ticket-type.routes';
+import eventInventoryRoutes from './inventory/inventory.routes';
+import eventBatchRoutes from './batches/ticket-batch.routes';
+import eventPricingRoutes from './pricing/pricing.routes';
+import eventSalesRuleRoutes from './sales-rules/sales-rule.routes';
 
 const router = Router();
 
@@ -46,6 +51,21 @@ router.put('/:eventId/sections/:id', requirePermission('eventos.locais.editar'),
 
 // 5.2 Datas, Sessões e Capacidade (Fase 1.2.4)
 router.use('/:eventId/sessions', eventSessionRoutes);
+
+// 5.3 Setores e Tipos de Ingresso (Fase 1.2.5)
+router.use('/:eventId/ticket-types', eventTicketTypeRoutes);
+
+// 5.4 Inventário Vendável & Cotas (Fase 1.2.5)
+router.use('/:eventId/inventory', eventInventoryRoutes);
+
+// 5.5 Lotes Comerciais (Fase 1.2.6)
+router.use('/:eventId/batches', eventBatchRoutes);
+
+// 5.6 Preços & Taxas (Fase 1.2.6)
+router.use('/:eventId/pricing', eventPricingRoutes);
+
+// 5.7 Regras de Venda (Fase 1.2.6)
+router.use('/:eventId/sales-rules', eventSalesRuleRoutes);
 
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);

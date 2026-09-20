@@ -29,6 +29,19 @@ export class InMemoryPrismaStore {
   public sessionSectionRecords: any[] = [];
   public sessionCapacityReservationRecords: any[] = [];
   public sessionRecurrenceGroupRecords: any[] = [];
+  public ticketTypeRecords: any[] = [];
+  public eventTicketTypeRecords: any[] = [];
+  public eventTicketTypeSectionRecords: any[] = [];
+  public eventTicketTypeSessionRecords: any[] = [];
+  public eventTicketTypeBenefitRecords: any[] = [];
+  public inventoryPoolRecords: any[] = [];
+  public inventoryAllocationRecords: any[] = [];
+  public inventoryBlockRecords: any[] = [];
+  public seatInventoryRecords: any[] = [];
+  public ticketBatchRecords: any[] = [];
+  public priceConfigurationRecords: any[] = [];
+  public feeComponentRecords: any[] = [];
+  public salesRuleRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -170,6 +183,19 @@ export class InMemoryPrismaStore {
     this.sessionSectionRecords = [];
     this.sessionCapacityReservationRecords = [];
     this.sessionRecurrenceGroupRecords = [];
+    this.ticketTypeRecords = [];
+    this.eventTicketTypeRecords = [];
+    this.eventTicketTypeSectionRecords = [];
+    this.eventTicketTypeSessionRecords = [];
+    this.eventTicketTypeBenefitRecords = [];
+    this.inventoryPoolRecords = [];
+    this.inventoryAllocationRecords = [];
+    this.inventoryBlockRecords = [];
+    this.seatInventoryRecords = [];
+    this.ticketBatchRecords = [];
+    this.priceConfigurationRecords = [];
+    this.feeComponentRecords = [];
+    this.salesRuleRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -1096,7 +1122,106 @@ export class InMemoryPrismaStore {
       }
     );
 
-    // 6. Regras Padrão de Notificação (Fase 1.1.5.5)
+    // 5.3 Catálogo de Tipos de Ingresso Base (Fase 1.2.5)
+    this.ticketTypeRecords.push(
+      { id: 'tt_inteira', code: 'INTEIRA', name: 'Inteira', category: 'INTEIRA', defaultDescription: 'Ingresso padrão sem desconto', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_meia', code: 'MEIA', name: 'Meia-Entrada', category: 'MEIA', defaultDescription: 'Benefício da meia-entrada legal (estudantes, idosos, PCD, professores conforme lei)', halfPriceLawCompliance: true, requiresDocument: true, documentType: 'STUDENT_OR_OFFICIAL_ID', requiresCode: false, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_social', code: 'SOCIAL', name: 'Ingresso Social / Solidário', category: 'SOCIAL', defaultDescription: 'Ingresso com desconto mediante doação de 1kg de alimento na portaria', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: true, benefitDescription: '1kg de alimento não perecível entregue na entrada', isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_vip', code: 'VIP', name: 'VIP / Área Exclusiva', category: 'VIP', defaultDescription: 'Acesso diferenciado a áreas VIPs, open bar ou áreas de visibilidade privilegiada', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_promocional', code: 'PROMOTIONAL', name: 'Promocional / Cupom', category: 'PROMOTIONAL', defaultDescription: 'Acesso liberado mediante código de cupom ou promoção específica', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: true, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_cortesia', code: 'CORTESIA', name: 'Cortesia / Patrocinador', category: 'CORTESIA', defaultDescription: 'Ingresso gratuito reservado para staff, imprensa e patrocinadores', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() },
+      { id: 'tt_combo', code: 'COMBO', name: 'Passaporte Multi-Sessão / Combo', category: 'COMBO', defaultDescription: 'Ingresso válido para mais de uma sessão ou múltiplos dias', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, isSystem: true, active: true, createdAt: new Date() }
+    );
+
+    // 5.4 Setores Operacionais do Evento evt_1001 (Festival Curitiba 2026)
+    this.eventSectionRecords.push(
+      { id: 'esec_1001_pista', eventId: 'evt_1001', venueSectionId: 'vsec_pista', name: 'Pista Geral', capacity: 15000, technicalReservation: 300, enabled: true, createdAt: new Date() },
+      { id: 'esec_1001_premium', eventId: 'evt_1001', venueSectionId: 'vsec_pista_premium', name: 'Pista Premium VIP', capacity: 7000, technicalReservation: 150, enabled: true, createdAt: new Date() },
+      { id: 'esec_1001_camarote', eventId: 'evt_1001', venueSectionId: 'vsec_camarote', name: 'Camarote Open Bar', capacity: 3000, technicalReservation: 50, enabled: true, createdAt: new Date() }
+    );
+
+    // 5.5 Setores da Sessão Principal ses_1001_1
+    this.sessionSectionRecords.push(
+      { id: 'ssec_1001_1_pista', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_pista', enabled: true, capacity: 15000, reservedCapacity: 300, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ssec_1001_1_premium', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_premium', enabled: true, capacity: 7000, reservedCapacity: 150, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ssec_1001_1_camarote', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_camarote', enabled: true, capacity: 3000, reservedCapacity: 50, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.6 Tipos de Ingresso Configurados para evt_1001
+    this.eventTicketTypeRecords.push(
+      { id: 'ett_1001_inteira', eventId: 'evt_1001', ticketTypeId: 'tt_inteira', name: 'Inteira', code: 'INTEIRA', category: 'INTEIRA', description: 'Ingresso padrão sem desconto', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, active: true, sortOrder: 1, minPerOrder: 1, maxPerOrder: 6, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ett_1001_meia', eventId: 'evt_1001', ticketTypeId: 'tt_meia', name: 'Meia-Entrada', code: 'MEIA', category: 'MEIA', description: 'Benefício da meia-entrada legal', halfPriceLawCompliance: true, requiresDocument: true, documentType: 'STUDENT_OR_OFFICIAL_ID', requiresCode: false, requiresBenefit: false, active: true, sortOrder: 2, minPerOrder: 1, maxPerOrder: 2, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ett_1001_social', eventId: 'evt_1001', ticketTypeId: 'tt_social', name: 'Ingresso Social', code: 'SOCIAL', category: 'SOCIAL', description: 'Desconto com doação de 1kg de alimento', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: true, benefitDescription: '1kg de alimento não perecível entregue na portaria', active: true, sortOrder: 3, minPerOrder: 1, maxPerOrder: 4, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ett_1001_vip', eventId: 'evt_1001', ticketTypeId: 'tt_vip', name: 'VIP Lounge Experience', code: 'VIP_EXP', category: 'VIP', description: 'Acesso VIP completo', halfPriceLawCompliance: false, requiresDocument: false, requiresCode: false, requiresBenefit: false, active: true, sortOrder: 4, minPerOrder: 1, maxPerOrder: 4, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // Vínculos Setor-Ingresso
+    this.eventTicketTypeSectionRecords.push(
+      { id: 'etts_1', eventTicketTypeId: 'ett_1001_inteira', eventSectionId: 'esec_1001_pista' },
+      { id: 'etts_2', eventTicketTypeId: 'ett_1001_meia', eventSectionId: 'esec_1001_pista' },
+      { id: 'etts_3', eventTicketTypeId: 'ett_1001_social', eventSectionId: 'esec_1001_pista' },
+      { id: 'etts_4', eventTicketTypeId: 'ett_1001_inteira', eventSectionId: 'esec_1001_premium' },
+      { id: 'etts_5', eventTicketTypeId: 'ett_1001_meia', eventSectionId: 'esec_1001_premium' },
+      { id: 'etts_6', eventTicketTypeId: 'ett_1001_vip', eventSectionId: 'esec_1001_camarote' }
+    );
+
+    // 5.7 Pools de Inventário Vendável (Fase 1.2.5)
+    this.inventoryPoolRecords.push(
+      { id: 'pool_pista', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_pista', capacity: 15000, reserved: 300, blocked: 200, held: 50, sold: 4200, version: 1, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pool_premium', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_premium', capacity: 7000, reserved: 150, blocked: 100, held: 20, sold: 1800, version: 1, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pool_camarote', sessionId: 'ses_1001_1', eventSectionId: 'esec_1001_camarote', capacity: 3000, reserved: 50, blocked: 50, held: 10, sold: 850, version: 1, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // Alocações / Cotas
+    this.inventoryAllocationRecords.push(
+      { id: 'ia_1', inventoryPoolId: 'pool_pista', eventTicketTypeId: 'ett_1001_meia', allocationType: 'PERCENTAGE', allocationValue: 40, allocatedQuantity: 6000, soldQuantity: 1800, heldQuantity: 20, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ia_2', inventoryPoolId: 'pool_pista', eventTicketTypeId: 'ett_1001_social', allocationType: 'FIXED', allocationValue: 2000, allocatedQuantity: 2000, soldQuantity: 800, heldQuantity: 10, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ia_3', inventoryPoolId: 'pool_pista', eventTicketTypeId: 'ett_1001_inteira', allocationType: 'UNLIMITED', allocationValue: 0, allocatedQuantity: 15000, soldQuantity: 1600, heldQuantity: 20, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // Bloqueios de Inventário
+    this.inventoryBlockRecords.push(
+      { id: 'ib_1', inventoryPoolId: 'pool_pista', reason: 'SECURITY_BUFFER', quantity: 200, notes: 'Reserva operacional de corredor de emergência exigida pelos Bombeiros', active: true, createdByUserId: 'usr_admin', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'ib_2', inventoryPoolId: 'pool_premium', reason: 'TECHNICAL_HOLD', quantity: 100, notes: 'Área técnica da torre de som frontal (House Mix)', active: true, createdByUserId: 'usr_admin', createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.8 Lotes Comerciais (Fase 1.2.6)
+    this.ticketBatchRecords.push(
+      { id: 'batch_1', eventId: 'evt_1001', name: 'Lote 1 — Promocional', code: 'LOTE_1', phase: 1, status: 'SOLD_OUT', activationType: 'MANUAL', totalQuantityLimit: 2000, soldCount: 2000, heldCount: 0, version: 1, createdAt: new Date('2026-02-01T10:00:00Z'), updatedAt: new Date() },
+      { id: 'batch_2', eventId: 'evt_1001', name: 'Lote 2 — Oficial', code: 'LOTE_2', phase: 2, status: 'ACTIVE', activationType: 'PREVIOUS_BATCH_SOLD_OUT', previousBatchId: 'batch_1', totalQuantityLimit: 6000, soldCount: 4850, heldCount: 80, version: 1, createdAt: new Date('2026-02-15T10:00:00Z'), updatedAt: new Date() },
+      { id: 'batch_3', eventId: 'evt_1001', name: 'Lote 3 — Final', code: 'LOTE_3', phase: 3, status: 'SCHEDULED', activationType: 'PREVIOUS_BATCH_SOLD_OUT', previousBatchId: 'batch_2', totalQuantityLimit: 8000, soldCount: 0, heldCount: 0, version: 1, createdAt: new Date('2026-03-01T10:00:00Z'), updatedAt: new Date() }
+    );
+
+    // 5.9 Configurações de Preços e Taxas (Fase 1.2.6)
+    this.priceConfigurationRecords.push(
+      { id: 'pc_1', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_pista', eventTicketTypeId: 'ett_1001_inteira', basePriceInCents: 18000, salePriceInCents: 18000, active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pc_2', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_pista', eventTicketTypeId: 'ett_1001_meia', basePriceInCents: 9000, salePriceInCents: 9000, active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pc_3', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_pista', eventTicketTypeId: 'ett_1001_social', basePriceInCents: 11000, salePriceInCents: 11000, active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pc_4', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_premium', eventTicketTypeId: 'ett_1001_inteira', basePriceInCents: 34000, salePriceInCents: 34000, active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pc_5', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_premium', eventTicketTypeId: 'ett_1001_meia', basePriceInCents: 17000, salePriceInCents: 17000, active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'pc_6', ticketBatchId: 'batch_2', eventSectionId: 'esec_1001_camarote', eventTicketTypeId: 'ett_1001_vip', basePriceInCents: 55000, salePriceInCents: 55000, active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // Taxa de conveniência padrão 10% paga pelo comprador
+    ['pc_1', 'pc_2', 'pc_3', 'pc_4', 'pc_5', 'pc_6'].forEach((pcId, idx) => {
+      this.feeComponentRecords.push({
+        id: `fee_${idx + 1}`,
+        priceConfigurationId: pcId,
+        name: 'Taxa de Conveniência (10%)',
+        type: 'PERCENTAGE',
+        value: 10,
+        payer: 'BUYER',
+        taxDeductible: false,
+        createdAt: new Date()
+      });
+    });
+
+    // 5.10 Regras de Venda (Fase 1.2.6)
+    this.salesRuleRecords.push(
+      { id: 'sr_1', eventId: 'evt_1001', type: 'MAX_PER_ORDER', scope: 'EVENT', name: 'Limite Máximo por Pedido', description: 'Máximo de 6 ingressos por transação', ruleConfig: JSON.stringify({ maxPerOrder: 6 }), active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sr_2', eventId: 'evt_1001', type: 'MAX_PER_CUSTOMER', scope: 'EVENT', name: 'Limite por CPF', description: 'Máximo de 4 ingressos por comprador (CPF)', ruleConfig: JSON.stringify({ maxPerCustomer: 4 }), active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sr_3', eventId: 'evt_1001', type: 'HALF_PRICE_LIMIT', scope: 'EVENT', name: 'Cota de Meia-Entrada 40%', description: 'Conformidade com a Lei Federal nº 12.933/2013', ruleConfig: JSON.stringify({ maxPercentage: 40 }), active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
     this.notificationRules.push(
       { id: 'rule_1', eventType: 'FINANCE_TRANSFER_CREATED', requiredPerm: 'financeiro.transferencia.aprovar', defaultPriority: 'HIGH', type: 'ACTION_REQUIRED', isMandatory: false, createdAt: new Date() },
       { id: 'rule_2', eventType: 'FINANCE_TRANSFER_APPROVED', requiredPerm: 'financeiro.saldo.visualizar', defaultPriority: 'NORMAL', type: 'SUCCESS', isMandatory: false, createdAt: new Date() },
@@ -3965,6 +4090,817 @@ export class InMemoryPrismaStore {
       delete: async (args: any) => {
         const idx = this.sessionRecurrenceGroupRecords.findIndex(rg => rg.id === args.where?.id);
         if (idx !== -1) return this.sessionRecurrenceGroupRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  // ==============================================================================
+  // 5.3 DELEGATES FASE 1.2.5 & 1.2.6 (INGRESSOS, INVENTÁRIO, LOTES, PREÇOS, REGRAS)
+  // ==============================================================================
+
+  public get ticketType() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.ticketTypeRecords];
+        if (args?.where?.category) list = list.filter(t => t.category === args.where.category);
+        if (args?.where?.active !== undefined) list = list.filter(t => t.active === args.where.active);
+        if (args?.where?.code) list = list.filter(t => t.code === args.where.code);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let t: any = null;
+        if (args.where.id) t = this.ticketTypeRecords.find(x => x.id === args.where.id);
+        if (!t && args.where.code) t = this.ticketTypeRecords.find(x => x.code === args.where.code);
+        return t ? { ...t } : null;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.ticketType.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `tt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          isSystem: false,
+          halfPriceLawCompliance: false,
+          requiresDocument: false,
+          requiresCode: false,
+          requiresBenefit: false,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.ticketTypeRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.ticketTypeRecords.findIndex(t => t.id === args.where?.id);
+        if (idx === -1) throw new Error('Tipo de ingresso não encontrado');
+        const updated = { ...this.ticketTypeRecords[idx], ...args.data, updatedAt: new Date() };
+        this.ticketTypeRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.ticketTypeRecords.findIndex(t => t.id === args.where?.id);
+        if (idx !== -1) return this.ticketTypeRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  public get eventTicketType() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTicketTypeRecords];
+        if (args?.where?.eventId) list = list.filter(ett => ett.eventId === args.where.eventId);
+        if (args?.where?.active !== undefined) list = list.filter(ett => ett.active === args.where.active);
+        if (args?.where?.category) list = list.filter(ett => ett.category === args.where.category);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+
+        if (args?.include) {
+          list = list.map(ett => {
+            const copy: any = { ...ett };
+            if (args.include.sections) {
+              const sections = this.eventTicketTypeSectionRecords
+                .filter(s => s.eventTicketTypeId === ett.id)
+                .map(s => {
+                  const es = this.eventSectionRecords.find(x => x.id === s.eventSectionId);
+                  return {
+                    ...s,
+                    eventSection: es ? { ...es } : undefined
+                  };
+                });
+              copy.sections = sections;
+            }
+            if (args.include.sessions) {
+              const sessions = this.eventTicketTypeSessionRecords
+                .filter(s => s.eventTicketTypeId === ett.id)
+                .map(s => {
+                  const ses = this.eventSessionRecords.find(x => x.id === s.sessionId);
+                  return {
+                    ...s,
+                    session: ses ? { ...ses } : undefined
+                  };
+                });
+              copy.sessions = sessions;
+            }
+            if (args.include.benefits) {
+              copy.benefits = this.eventTicketTypeBenefitRecords.filter(b => b.eventTicketTypeId === ett.id);
+            }
+            if (args.include.allocations) {
+              copy.allocations = this.inventoryAllocationRecords.filter(a => a.eventTicketTypeId === ett.id);
+            }
+            return copy;
+          });
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let ett: any = null;
+        if (args.where.id) ett = this.eventTicketTypeRecords.find(x => x.id === args.where.id);
+        if (!ett && args.where.eventId_code) {
+          ett = this.eventTicketTypeRecords.find(x => x.eventId === args.where.eventId_code.eventId && x.code === args.where.eventId_code.code);
+        }
+        if (!ett) return null;
+        const copy: any = { ...ett };
+        if (args?.include?.sections) {
+          copy.sections = this.eventTicketTypeSectionRecords
+            .filter(s => s.eventTicketTypeId === ett.id)
+            .map(s => ({
+              ...s,
+              eventSection: this.eventSectionRecords.find(x => x.id === s.eventSectionId)
+            }));
+        }
+        if (args?.include?.sessions) {
+          copy.sessions = this.eventTicketTypeSessionRecords
+            .filter(s => s.eventTicketTypeId === ett.id)
+            .map(s => ({
+              ...s,
+              session: this.eventSessionRecords.find(x => x.id === s.sessionId)
+            }));
+        }
+        if (args?.include?.benefits) {
+          copy.benefits = this.eventTicketTypeBenefitRecords.filter(b => b.eventTicketTypeId === ett.id);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.eventTicketType.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ett_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          sortOrder: 0,
+          minPerOrder: 1,
+          maxPerOrder: 6,
+          halfPriceLawCompliance: false,
+          requiresDocument: false,
+          requiresCode: false,
+          requiresBenefit: false,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventTicketTypeRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventTicketTypeRecords.findIndex(ett => ett.id === args.where?.id);
+        if (idx === -1) throw new Error('Tipo de ingresso do evento não encontrado');
+        const updated = { ...this.eventTicketTypeRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventTicketTypeRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.eventTicketTypeRecords.findIndex(ett => ett.id === args.where?.id);
+        if (idx !== -1) {
+          const deleted = this.eventTicketTypeRecords.splice(idx, 1)[0];
+          this.eventTicketTypeSectionRecords = this.eventTicketTypeSectionRecords.filter(s => s.eventTicketTypeId !== deleted.id);
+          this.eventTicketTypeSessionRecords = this.eventTicketTypeSessionRecords.filter(s => s.eventTicketTypeId !== deleted.id);
+          this.eventTicketTypeBenefitRecords = this.eventTicketTypeBenefitRecords.filter(b => b.eventTicketTypeId !== deleted.id);
+          return deleted;
+        }
+        return null;
+      },
+      count: async (args?: any) => {
+        const matches = await this.eventTicketType.findMany(args);
+        return matches.length;
+      }
+    };
+  }
+
+  public get eventTicketTypeSection() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTicketTypeSectionRecords];
+        if (args?.where?.eventTicketTypeId) list = list.filter(s => s.eventTicketTypeId === args.where.eventTicketTypeId);
+        if (args?.where?.eventSectionId) list = list.filter(s => s.eventSectionId === args.where.eventSectionId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `etts_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data
+        };
+        this.eventTicketTypeSectionRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.eventTicketTypeSection.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventTicketTypeSectionRecords.length;
+        if (args?.where?.eventTicketTypeId) {
+          this.eventTicketTypeSectionRecords = this.eventTicketTypeSectionRecords.filter(s => s.eventTicketTypeId !== args.where.eventTicketTypeId);
+        }
+        if (args?.where?.eventSectionId) {
+          this.eventTicketTypeSectionRecords = this.eventTicketTypeSectionRecords.filter(s => s.eventSectionId !== args.where.eventSectionId);
+        }
+        return { count: initial - this.eventTicketTypeSectionRecords.length };
+      }
+    };
+  }
+
+  public get eventTicketTypeSession() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTicketTypeSessionRecords];
+        if (args?.where?.eventTicketTypeId) list = list.filter(s => s.eventTicketTypeId === args.where.eventTicketTypeId);
+        if (args?.where?.sessionId) list = list.filter(s => s.sessionId === args.where.sessionId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ettses_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data
+        };
+        this.eventTicketTypeSessionRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.eventTicketTypeSession.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventTicketTypeSessionRecords.length;
+        if (args?.where?.eventTicketTypeId) {
+          this.eventTicketTypeSessionRecords = this.eventTicketTypeSessionRecords.filter(s => s.eventTicketTypeId !== args.where.eventTicketTypeId);
+        }
+        if (args?.where?.sessionId) {
+          this.eventTicketTypeSessionRecords = this.eventTicketTypeSessionRecords.filter(s => s.sessionId !== args.where.sessionId);
+        }
+        return { count: initial - this.eventTicketTypeSessionRecords.length };
+      }
+    };
+  }
+
+  public get eventTicketTypeBenefit() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTicketTypeBenefitRecords];
+        if (args?.where?.eventTicketTypeId) list = list.filter(b => b.eventTicketTypeId === args.where.eventTicketTypeId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ettb_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.eventTicketTypeBenefitRecords.push(record);
+        return { ...record };
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventTicketTypeBenefitRecords.length;
+        if (args?.where?.eventTicketTypeId) {
+          this.eventTicketTypeBenefitRecords = this.eventTicketTypeBenefitRecords.filter(b => b.eventTicketTypeId !== args.where.eventTicketTypeId);
+        }
+        return { count: initial - this.eventTicketTypeBenefitRecords.length };
+      }
+    };
+  }
+
+  public get inventoryPool() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.inventoryPoolRecords];
+        if (args?.where?.sessionId) {
+          if (typeof args.where.sessionId === 'string') {
+            list = list.filter(p => p.sessionId === args.where.sessionId);
+          } else if (args.where.sessionId.in && Array.isArray(args.where.sessionId.in)) {
+            list = list.filter(p => args.where.sessionId.in.includes(p.sessionId));
+          }
+        }
+        if (args?.where?.eventSectionId) list = list.filter(p => p.eventSectionId === args.where.eventSectionId);
+        if (args?.include) {
+          list = list.map(p => {
+            const copy: any = { ...p };
+            if (args.include.allocations) {
+              copy.allocations = this.inventoryAllocationRecords
+                .filter(a => a.inventoryPoolId === p.id)
+                .map(a => ({
+                  ...a,
+                  eventTicketType: this.eventTicketTypeRecords.find(x => x.id === a.eventTicketTypeId)
+                }));
+            }
+            if (args.include.blocks) {
+              copy.blocks = this.inventoryBlockRecords.filter(b => b.inventoryPoolId === p.id && b.active !== false);
+            }
+            if (args.include.session) {
+              copy.session = this.eventSessionRecords.find(s => s.id === p.sessionId);
+            }
+            if (args.include.eventSection) {
+              copy.eventSection = this.eventSectionRecords.find(es => es.id === p.eventSectionId);
+            }
+            return copy;
+          });
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let p: any = null;
+        if (args.where.id) p = this.inventoryPoolRecords.find(x => x.id === args.where.id);
+        if (!p && args.where.sessionId_eventSectionId) {
+          p = this.inventoryPoolRecords.find(x => x.sessionId === args.where.sessionId_eventSectionId.sessionId && x.eventSectionId === args.where.sessionId_eventSectionId.eventSectionId);
+        }
+        if (!p) return null;
+        const copy: any = { ...p };
+        if (args?.include?.allocations) {
+          copy.allocations = this.inventoryAllocationRecords
+            .filter(a => a.inventoryPoolId === p.id)
+            .map(a => ({
+              ...a,
+              eventTicketType: this.eventTicketTypeRecords.find(x => x.id === a.eventTicketTypeId)
+            }));
+        }
+        if (args?.include?.blocks) {
+          copy.blocks = this.inventoryBlockRecords.filter(b => b.inventoryPoolId === p.id && b.active !== false);
+        }
+        if (args?.include?.session) {
+          copy.session = this.eventSessionRecords.find(s => s.id === p.sessionId);
+        }
+        if (args?.include?.eventSection) {
+          copy.eventSection = this.eventSectionRecords.find(es => es.id === p.eventSectionId);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.inventoryPool.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `pool_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          reserved: 0,
+          blocked: 0,
+          held: 0,
+          sold: 0,
+          version: 1,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.inventoryPoolRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.inventoryPoolRecords.findIndex(p => p.id === args.where?.id);
+        if (idx === -1) throw new Error('Pool de inventário não encontrado');
+        const current = this.inventoryPoolRecords[idx];
+        const updated = {
+          ...current,
+          ...args.data,
+          version: (current.version || 1) + 1,
+          updatedAt: new Date()
+        };
+        this.inventoryPoolRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.inventoryPoolRecords.findIndex(p => p.id === args.where?.id);
+        if (idx !== -1) return this.inventoryPoolRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.inventoryPoolRecords.length;
+        if (args?.where?.sessionId) {
+          this.inventoryPoolRecords = this.inventoryPoolRecords.filter(p => p.sessionId !== args.where.sessionId);
+        }
+        return { count: initial - this.inventoryPoolRecords.length };
+      }
+    };
+  }
+
+  public get inventoryAllocation() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.inventoryAllocationRecords];
+        if (args?.where?.inventoryPoolId) list = list.filter(a => a.inventoryPoolId === args.where.inventoryPoolId);
+        if (args?.where?.eventTicketTypeId) list = list.filter(a => a.eventTicketTypeId === args.where.eventTicketTypeId);
+        if (args?.include?.eventTicketType) {
+          list = list.map(a => ({
+            ...a,
+            eventTicketType: this.eventTicketTypeRecords.find(x => x.id === a.eventTicketTypeId)
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let a: any = null;
+        if (args.where.id) a = this.inventoryAllocationRecords.find(x => x.id === args.where.id);
+        if (!a && args.where.inventoryPoolId_eventTicketTypeId) {
+          a = this.inventoryAllocationRecords.find(x => x.inventoryPoolId === args.where.inventoryPoolId_eventTicketTypeId.inventoryPoolId && x.eventTicketTypeId === args.where.inventoryPoolId_eventTicketTypeId.eventTicketTypeId);
+        }
+        return a ? { ...a } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ia_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          soldQuantity: 0,
+          heldQuantity: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.inventoryAllocationRecords.push(record);
+        return { ...record };
+      },
+      upsert: async (args: any) => {
+        const existing = await this.inventoryAllocation.findUnique({ where: args.where });
+        if (existing) {
+          return this.inventoryAllocation.update({ where: { id: existing.id }, data: args.update });
+        } else {
+          return this.inventoryAllocation.create({ data: { ...args.create, ...(args.where.inventoryPoolId_eventTicketTypeId || {}) } });
+        }
+      },
+      update: async (args: any) => {
+        let idx = -1;
+        if (args.where?.id) idx = this.inventoryAllocationRecords.findIndex(a => a.id === args.where.id);
+        if (idx === -1 && args.where?.inventoryPoolId_eventTicketTypeId) {
+          idx = this.inventoryAllocationRecords.findIndex(a => a.inventoryPoolId === args.where.inventoryPoolId_eventTicketTypeId.inventoryPoolId && a.eventTicketTypeId === args.where.inventoryPoolId_eventTicketTypeId.eventTicketTypeId);
+        }
+        if (idx === -1) throw new Error('Alocação de inventário não encontrada');
+        const updated = { ...this.inventoryAllocationRecords[idx], ...args.data, updatedAt: new Date() };
+        this.inventoryAllocationRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.inventoryAllocationRecords.findIndex(a => a.id === args.where?.id);
+        if (idx !== -1) return this.inventoryAllocationRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.inventoryAllocationRecords.length;
+        if (args?.where?.inventoryPoolId) {
+          this.inventoryAllocationRecords = this.inventoryAllocationRecords.filter(a => a.inventoryPoolId !== args.where.inventoryPoolId);
+        }
+        return { count: initial - this.inventoryAllocationRecords.length };
+      }
+    };
+  }
+
+  public get inventoryBlock() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.inventoryBlockRecords];
+        if (args?.where?.inventoryPoolId) list = list.filter(b => b.inventoryPoolId === args.where.inventoryPoolId);
+        if (args?.where?.active !== undefined) list = list.filter(b => b.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const b = this.inventoryBlockRecords.find(x => x.id === args.where.id);
+        return b ? { ...b } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ib_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.inventoryBlockRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.inventoryBlockRecords.findIndex(b => b.id === args.where?.id);
+        if (idx === -1) throw new Error('Bloqueio não encontrado');
+        const updated = { ...this.inventoryBlockRecords[idx], ...args.data, updatedAt: new Date() };
+        this.inventoryBlockRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.inventoryBlockRecords.findIndex(b => b.id === args.where?.id);
+        if (idx !== -1) return this.inventoryBlockRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  public get seatInventory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.seatInventoryRecords];
+        if (args?.where?.inventoryPoolId) list = list.filter(s => s.inventoryPoolId === args.where.inventoryPoolId);
+        if (args?.where?.status) list = list.filter(s => s.status === args.where.status);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let s: any = null;
+        if (args.where.id) s = this.seatInventoryRecords.find(x => x.id === args.where.id);
+        if (!s && args.where.inventoryPoolId_seatCode) {
+          s = this.seatInventoryRecords.find(x => x.inventoryPoolId === args.where.inventoryPoolId_seatCode.inventoryPoolId && x.seatCode === args.where.inventoryPoolId_seatCode.seatCode);
+        }
+        return s ? { ...s } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `si_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'AVAILABLE',
+          version: 1,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.seatInventoryRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.seatInventory.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      update: async (args: any) => {
+        const idx = this.seatInventoryRecords.findIndex(s => s.id === args.where?.id);
+        if (idx === -1) throw new Error('Assento de inventário não encontrado');
+        const updated = {
+          ...this.seatInventoryRecords[idx],
+          ...args.data,
+          version: (this.seatInventoryRecords[idx].version || 1) + 1,
+          updatedAt: new Date()
+        };
+        this.seatInventoryRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get ticketBatch() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.ticketBatchRecords];
+        if (args?.where?.eventId) list = list.filter(b => b.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(b => b.status === args.where.status);
+        list.sort((a, b) => (a.phase || 0) - (b.phase || 0));
+
+        if (args?.include?.priceConfigurations) {
+          list = list.map(b => ({
+            ...b,
+            priceConfigurations: this.priceConfigurationRecords
+              .filter(pc => pc.ticketBatchId === b.id)
+              .map(pc => ({
+                ...pc,
+                feeComponents: this.feeComponentRecords.filter(fc => fc.priceConfigurationId === pc.id)
+              }))
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let b: any = null;
+        if (args.where.id) b = this.ticketBatchRecords.find(x => x.id === args.where.id);
+        if (!b && args.where.eventId_code) {
+          b = this.ticketBatchRecords.find(x => x.eventId === args.where.eventId_code.eventId && x.code === args.where.eventId_code.code);
+        }
+        if (!b) return null;
+        const copy: any = { ...b };
+        if (args?.include?.priceConfigurations) {
+          copy.priceConfigurations = this.priceConfigurationRecords
+            .filter(pc => pc.ticketBatchId === b.id)
+            .map(pc => ({
+              ...pc,
+              feeComponents: this.feeComponentRecords.filter(fc => fc.priceConfigurationId === pc.id)
+            }));
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.ticketBatch.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `batch_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'DRAFT',
+          activationType: 'MANUAL',
+          phase: 1,
+          soldCount: 0,
+          heldCount: 0,
+          version: 1,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.ticketBatchRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.ticketBatchRecords.findIndex(b => b.id === args.where?.id);
+        if (idx === -1) throw new Error('Lote não encontrado');
+        const current = this.ticketBatchRecords[idx];
+        const updated = {
+          ...current,
+          ...args.data,
+          version: (current.version || 1) + 1,
+          updatedAt: new Date()
+        };
+        this.ticketBatchRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.ticketBatchRecords.findIndex(b => b.id === args.where?.id);
+        if (idx !== -1) {
+          const deleted = this.ticketBatchRecords.splice(idx, 1)[0];
+          this.priceConfigurationRecords = this.priceConfigurationRecords.filter(pc => pc.ticketBatchId !== deleted.id);
+          return deleted;
+        }
+        return null;
+      },
+      count: async (args?: any) => {
+        const matches = await this.ticketBatch.findMany(args);
+        return matches.length;
+      }
+    };
+  }
+
+  public get priceConfiguration() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.priceConfigurationRecords];
+        if (args?.where?.ticketBatchId) list = list.filter(pc => pc.ticketBatchId === args.where.ticketBatchId);
+        if (args?.where?.eventSectionId) list = list.filter(pc => pc.eventSectionId === args.where.eventSectionId);
+        if (args?.where?.eventTicketTypeId) list = list.filter(pc => pc.eventTicketTypeId === args.where.eventTicketTypeId);
+        if (args?.where?.active !== undefined) list = list.filter(pc => pc.active === args.where.active);
+
+        if (args?.include) {
+          list = list.map(pc => {
+            const copy: any = { ...pc };
+            if (args.include.feeComponents) {
+              copy.feeComponents = this.feeComponentRecords.filter(fc => fc.priceConfigurationId === pc.id);
+            }
+            if (args.include.eventSection) {
+              copy.eventSection = this.eventSectionRecords.find(es => es.id === pc.eventSectionId);
+            }
+            if (args.include.eventTicketType) {
+              copy.eventTicketType = this.eventTicketTypeRecords.find(ett => ett.id === pc.eventTicketTypeId);
+            }
+            if (args.include.ticketBatch) {
+              copy.ticketBatch = this.ticketBatchRecords.find(tb => tb.id === pc.ticketBatchId);
+            }
+            return copy;
+          });
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let pc: any = null;
+        if (args.where.id) pc = this.priceConfigurationRecords.find(x => x.id === args.where.id);
+        if (!pc && args.where.ticketBatchId_eventSectionId_eventTicketTypeId) {
+          const w = args.where.ticketBatchId_eventSectionId_eventTicketTypeId;
+          pc = this.priceConfigurationRecords.find(x => x.ticketBatchId === w.ticketBatchId && x.eventSectionId === w.eventSectionId && x.eventTicketTypeId === w.eventTicketTypeId);
+        }
+        if (!pc) return null;
+        const copy: any = { ...pc };
+        if (args?.include?.feeComponents) {
+          copy.feeComponents = this.feeComponentRecords.filter(fc => fc.priceConfigurationId === pc.id);
+        }
+        if (args?.include?.eventSection) {
+          copy.eventSection = this.eventSectionRecords.find(es => es.id === pc.eventSectionId);
+        }
+        if (args?.include?.eventTicketType) {
+          copy.eventTicketType = this.eventTicketTypeRecords.find(ett => ett.id === pc.eventTicketTypeId);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.priceConfiguration.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `pc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          salePriceInCents: args.data.basePriceInCents,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.priceConfigurationRecords.push(record);
+        return { ...record };
+      },
+      upsert: async (args: any) => {
+        const existing = await this.priceConfiguration.findUnique({ where: args.where });
+        if (existing) {
+          return this.priceConfiguration.update({ where: { id: existing.id }, data: args.update });
+        } else {
+          return this.priceConfiguration.create({ data: { ...args.create, ...(args.where.ticketBatchId_eventSectionId_eventTicketTypeId || {}) } });
+        }
+      },
+      update: async (args: any) => {
+        let idx = -1;
+        if (args.where?.id) idx = this.priceConfigurationRecords.findIndex(pc => pc.id === args.where.id);
+        if (idx === -1 && args.where?.ticketBatchId_eventSectionId_eventTicketTypeId) {
+          const w = args.where.ticketBatchId_eventSectionId_eventTicketTypeId;
+          idx = this.priceConfigurationRecords.findIndex(pc => pc.ticketBatchId === w.ticketBatchId && pc.eventSectionId === w.eventSectionId && pc.eventTicketTypeId === w.eventTicketTypeId);
+        }
+        if (idx === -1) throw new Error('Configuração de preço não encontrada');
+        const updated = { ...this.priceConfigurationRecords[idx], ...args.data, updatedAt: new Date() };
+        this.priceConfigurationRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.priceConfigurationRecords.findIndex(pc => pc.id === args.where?.id);
+        if (idx !== -1) {
+          const deleted = this.priceConfigurationRecords.splice(idx, 1)[0];
+          this.feeComponentRecords = this.feeComponentRecords.filter(fc => fc.priceConfigurationId !== deleted.id);
+          return deleted;
+        }
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.priceConfigurationRecords.length;
+        if (args?.where?.ticketBatchId) {
+          const removed = this.priceConfigurationRecords.filter(pc => pc.ticketBatchId === args.where.ticketBatchId);
+          const removedIds = removed.map(r => r.id);
+          this.priceConfigurationRecords = this.priceConfigurationRecords.filter(pc => pc.ticketBatchId !== args.where.ticketBatchId);
+          this.feeComponentRecords = this.feeComponentRecords.filter(fc => !removedIds.includes(fc.priceConfigurationId));
+        }
+        return { count: initial - this.priceConfigurationRecords.length };
+      }
+    };
+  }
+
+  public get feeComponent() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.feeComponentRecords];
+        if (args?.where?.priceConfigurationId) list = list.filter(fc => fc.priceConfigurationId === args.where.priceConfigurationId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `fc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          payer: 'BUYER',
+          taxDeductible: false,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.feeComponentRecords.push(record);
+        return { ...record };
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.feeComponentRecords.length;
+        if (args?.where?.priceConfigurationId) {
+          this.feeComponentRecords = this.feeComponentRecords.filter(fc => fc.priceConfigurationId !== args.where.priceConfigurationId);
+        }
+        return { count: initial - this.feeComponentRecords.length };
+      }
+    };
+  }
+
+  public get salesRule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.salesRuleRecords];
+        if (args?.where?.eventId) list = list.filter(r => r.eventId === args.where.eventId);
+        if (args?.where?.scope) list = list.filter(r => r.scope === args.where.scope);
+        if (args?.where?.scopeId) list = list.filter(r => r.scopeId === args.where.scopeId);
+        if (args?.where?.active !== undefined) list = list.filter(r => r.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const r = this.salesRuleRecords.find(x => x.id === args.where.id);
+        return r ? { ...r } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `sr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.salesRuleRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.salesRuleRecords.findIndex(r => r.id === args.where?.id);
+        if (idx === -1) throw new Error('Regra de venda não encontrada');
+        const updated = { ...this.salesRuleRecords[idx], ...args.data, updatedAt: new Date() };
+        this.salesRuleRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.salesRuleRecords.findIndex(r => r.id === args.where?.id);
+        if (idx !== -1) return this.salesRuleRecords.splice(idx, 1)[0];
         return null;
       }
     };

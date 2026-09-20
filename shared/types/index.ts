@@ -2660,5 +2660,410 @@ export interface BulkSessionsPreviewResult {
   }>;
 }
 
+// ==============================================================================
+// FASE 1.2.5 — SETORES + TIPOS DE INGRESSO + INVENTÁRIO VENDÁVEL
+// ==============================================================================
 
+export type TicketTypeCategory =
+  | 'INTEIRA'
+  | 'MEIA'
+  | 'SOCIAL'
+  | 'VIP'
+  | 'CORTESIA'
+  | 'COMBO'
+  | 'PROMOTIONAL'
+  | 'OTHER';
 
+export interface TicketTypeDTO {
+  id: string;
+  code: string;
+  name: string;
+  category: TicketTypeCategory;
+  defaultDescription?: string | null;
+  halfPriceLawCompliance: boolean;
+  requiresDocument: boolean;
+  documentType?: string | null;
+  requiresCode: boolean;
+  requiresBenefit: boolean;
+  benefitDescription?: string | null;
+  isSystem: boolean;
+  active: boolean;
+}
+
+export interface EventTicketTypeBenefitDTO {
+  id: string;
+  eventTicketTypeId: string;
+  name: string;
+  description?: string | null;
+}
+
+export interface EventTicketTypeDTO {
+  id: string;
+  eventId: string;
+  ticketTypeId?: string | null;
+  name: string;
+  code: string;
+  category: TicketTypeCategory;
+  description?: string | null;
+  halfPriceLawCompliance: boolean;
+  requiresDocument: boolean;
+  documentType?: string | null;
+  requiresCode: boolean;
+  requiresBenefit: boolean;
+  benefitDescription?: string | null;
+  active: boolean;
+  sortOrder: number;
+  minPerOrder: number;
+  maxPerOrder: number;
+  sections?: Array<{ eventSectionId: string; sectionName?: string }>;
+  sessions?: Array<{ sessionId: string; sessionName?: string }>;
+  benefits?: EventTicketTypeBenefitDTO[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventTicketTypeInput {
+  ticketTypeId?: string;
+  name: string;
+  code?: string;
+  category: TicketTypeCategory;
+  description?: string;
+  halfPriceLawCompliance?: boolean;
+  requiresDocument?: boolean;
+  documentType?: string;
+  requiresCode?: boolean;
+  requiresBenefit?: boolean;
+  benefitDescription?: string;
+  minPerOrder?: number;
+  maxPerOrder?: number;
+  sectionIds?: string[];
+  sessionIds?: string[];
+  benefits?: Array<{ name: string; description?: string }>;
+}
+
+export interface UpdateEventTicketTypeInput extends Partial<CreateEventTicketTypeInput> {
+  active?: boolean;
+}
+
+export interface InventoryPoolDTO {
+  id: string;
+  sessionId: string;
+  eventSectionId: string;
+  sessionName?: string;
+  sectionName?: string;
+  capacity: number;
+  reserved: number;
+  blocked: number;
+  held: number;
+  sold: number;
+  available: number; // capacity - reserved - blocked - held - sold
+  allocations?: InventoryAllocationDTO[];
+  blocks?: InventoryBlockDTO[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type InventoryAllocationType = 'UNLIMITED' | 'FIXED' | 'PERCENTAGE';
+
+export interface InventoryAllocationDTO {
+  id: string;
+  inventoryPoolId: string;
+  eventTicketTypeId: string;
+  ticketTypeName?: string;
+  ticketTypeCategory?: TicketTypeCategory;
+  allocationType: InventoryAllocationType;
+  allocationValue: number;
+  allocatedQuantity: number;
+  soldQuantity: number;
+  heldQuantity: number;
+  availableQuantity: number;
+}
+
+export interface SaveInventoryAllocationInput {
+  eventTicketTypeId: string;
+  allocationType: InventoryAllocationType;
+  allocationValue: number;
+}
+
+export type InventoryBlockReason =
+  | 'TECHNICAL_HOLD'
+  | 'SPONSOR_HOLD'
+  | 'SECURITY_BUFFER'
+  | 'PRODUCER_HOLD'
+  | 'GOVERNMENT_HOLD'
+  | 'OTHER';
+
+export interface InventoryBlockDTO {
+  id: string;
+  inventoryPoolId: string;
+  reason: InventoryBlockReason;
+  quantity: number;
+  notes?: string | null;
+  active: boolean;
+  createdByUserId?: string | null;
+  createdByName?: string | null;
+  createdAt: string;
+}
+
+export interface CreateInventoryBlockInput {
+  reason: InventoryBlockReason;
+  quantity: number;
+  notes?: string;
+}
+
+export type SeatInventoryStatus = 'AVAILABLE' | 'HELD' | 'RESERVED' | 'SOLD' | 'BLOCKED';
+
+export interface SeatInventoryDTO {
+  id: string;
+  inventoryPoolId: string;
+  venueSeatId?: string | null;
+  seatCode: string;
+  rowCode?: string | null;
+  status: SeatInventoryStatus;
+  heldUntil?: string | null;
+  orderId?: string | null;
+  ticketTypeId?: string | null;
+  version: number;
+}
+
+export interface InventoryHoldInput {
+  sessionId: string;
+  eventSectionId: string;
+  eventTicketTypeId: string;
+  quantity: number;
+  ttlSeconds?: number;
+  seatIds?: string[];
+}
+
+export interface InventoryHoldResult {
+  success: boolean;
+  holdToken: string;
+  expiresAt: string;
+  heldQuantity: number;
+  seatIds?: string[];
+}
+
+export interface InventorySummaryDTO {
+  totalPhysicalCapacity: number;
+  totalOperationalCapacity: number;
+  totalReservedCapacity: number;
+  totalBlockedCapacity: number;
+  totalHeldCapacity: number;
+  totalSoldCapacity: number;
+  totalAvailableCommercial: number;
+  sectionsCount: number;
+  ticketTypesCount: number;
+  poolsCount: number;
+}
+
+// ==============================================================================
+// FASE 1.2.6 — LOTES + PREÇOS + TAXAS + REGRAS DE VENDA
+// ==============================================================================
+
+export type TicketBatchStatus =
+  | 'DRAFT'
+  | 'SCHEDULED'
+  | 'ACTIVE'
+  | 'PAUSED'
+  | 'SOLD_OUT'
+  | 'ENDED'
+  | 'ARCHIVED';
+
+export type BatchActivationType =
+  | 'MANUAL'
+  | 'DATE_TIME'
+  | 'PREVIOUS_BATCH_SOLD_OUT'
+  | 'PREVIOUS_BATCH_QUANTITY';
+
+export interface TicketBatchDTO {
+  id: string;
+  eventId: string;
+  name: string;
+  code: string;
+  phase: number;
+  status: TicketBatchStatus;
+  activationType: BatchActivationType;
+  activationDate?: string | null;
+  deactivationDate?: string | null;
+  previousBatchId?: string | null;
+  previousBatchName?: string | null;
+  triggerQuantity?: number | null;
+  totalQuantityLimit?: number | null;
+  soldCount: number;
+  heldCount: number;
+  pricesCount?: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateTicketBatchInput {
+  name: string;
+  code?: string;
+  phase?: number;
+  activationType: BatchActivationType;
+  activationDate?: string;
+  deactivationDate?: string;
+  previousBatchId?: string;
+  triggerQuantity?: number;
+  totalQuantityLimit?: number;
+}
+
+export interface UpdateTicketBatchInput extends Partial<CreateTicketBatchInput> {
+  status?: TicketBatchStatus;
+}
+
+export type FeePayer = 'BUYER' | 'PRODUCER' | 'SPLIT';
+export type FeeCalculationType = 'PERCENTAGE' | 'FIXED';
+
+export interface FeeComponentDTO {
+  id?: string;
+  name: string;
+  type: FeeCalculationType;
+  value: number; // e.g., 10 for 10%, or 500 for R$ 5,00
+  payer: FeePayer;
+  producerSharePercentage?: number; // When SPLIT, producer pays X%, buyer pays (100-X)%
+  minFeeInCents?: number;
+  maxFeeInCents?: number;
+  taxDeductible?: boolean;
+}
+
+export interface PriceConfigurationDTO {
+  id: string;
+  ticketBatchId: string;
+  eventSectionId: string;
+  eventTicketTypeId: string;
+  basePriceInCents: number;
+  salePriceInCents: number;
+  minPriceInCents?: number | null;
+  maxPriceInCents?: number | null;
+  active: boolean;
+  sectionName?: string;
+  ticketTypeName?: string;
+  batchName?: string;
+  feeComponents?: FeeComponentDTO[];
+  calculatedBuyerFeeInCents?: number;
+  calculatedBuyerTotalInCents?: number;
+  calculatedProducerNetInCents?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SavePriceConfigurationInput {
+  ticketBatchId: string;
+  eventSectionId: string;
+  eventTicketTypeId: string;
+  basePriceInCents: number;
+  salePriceInCents?: number;
+  active?: boolean;
+  feeComponents?: FeeComponentDTO[];
+}
+
+export interface PriceSimulationInput {
+  basePriceInCents: number;
+  salePriceInCents?: number;
+  feeComponents?: FeeComponentDTO[];
+  discountInCents?: number;
+  quantity?: number;
+}
+
+export interface PriceSimulationResult {
+  basePriceInCents: number;
+  salePriceInCents: number;
+  quantity: number;
+  subtotalInCents: number;
+  discountInCents: number;
+  buyerFeeInCents: number;
+  producerFeeInCents: number;
+  buyerTotalInCents: number;
+  producerNetInCents: number;
+  feeBreakdown: Array<{
+    name: string;
+    payer: 'BUYER' | 'PRODUCER';
+    amountInCents: number;
+    percentageApplied?: number;
+  }>;
+}
+
+export interface PricingMatrixCellDTO {
+  sectionId: string;
+  ticketTypeId: string;
+  priceConfigId?: string;
+  basePriceInCents: number;
+  salePriceInCents: number;
+  buyerTotalInCents: number;
+  producerNetInCents: number;
+  active: boolean;
+  feeComponents?: FeeComponentDTO[];
+}
+
+export interface PricingMatrixDTO {
+  batchId: string;
+  batchName: string;
+  sections: Array<{ id: string; name: string; capacity: number }>;
+  ticketTypes: Array<{ id: string; name: string; category: TicketTypeCategory }>;
+  cells: Record<string, PricingMatrixCellDTO>; // `${sectionId}_${ticketTypeId}`
+}
+
+export interface BulkPricingUpdateInput {
+  batchId: string;
+  targetSectionIds?: string[];
+  targetTicketTypeIds?: string[];
+  operation: 'SET_VALUE' | 'INCREASE_PERCENTAGE' | 'DECREASE_PERCENTAGE' | 'INCREASE_FIXED' | 'DECREASE_FIXED';
+  value: number; // e.g. 15000 (R$ 150), 10 (10%), 2000 (R$ 20)
+  roundingPolicy?: 'NONE' | 'ROUND_UP_INT' | 'ROUND_NEAREST_TEN' | 'ROUND_CENTS_99';
+  dryRun?: boolean;
+}
+
+export interface BulkPricingUpdateResult {
+  updatedCount: number;
+  preview: Array<{
+    sectionId: string;
+    sectionName: string;
+    ticketTypeId: string;
+    ticketTypeName: string;
+    oldPriceInCents: number;
+    newPriceInCents: number;
+    oldBuyerTotalInCents: number;
+    newBuyerTotalInCents: number;
+  }>;
+}
+
+export type SalesRuleType =
+  | 'MAX_PER_ORDER'
+  | 'MIN_PER_ORDER'
+  | 'MAX_PER_CUSTOMER'
+  | 'SALES_WINDOW'
+  | 'REQUIRES_CODE'
+  | 'REQUIRES_DOCUMENT'
+  | 'HALF_PRICE_LIMIT';
+
+export type SalesRuleScope = 'EVENT' | 'SESSION' | 'BATCH' | 'TICKET_TYPE';
+
+export interface SalesRuleDTO {
+  id: string;
+  eventId: string;
+  type: SalesRuleType;
+  scope: SalesRuleScope;
+  scopeId?: string | null;
+  scopeName?: string | null;
+  name: string;
+  description?: string | null;
+  ruleConfig: Record<string, any>;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSalesRuleInput {
+  type: SalesRuleType;
+  scope: SalesRuleScope;
+  scopeId?: string;
+  name: string;
+  description?: string;
+  ruleConfig: Record<string, any>;
+  active?: boolean;
+}
+
+export interface UpdateSalesRuleInput extends Partial<CreateSalesRuleInput> {}

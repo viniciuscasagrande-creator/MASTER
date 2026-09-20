@@ -8,6 +8,12 @@ import { VenueCreatePage } from '../../features/events/venues/VenueCreatePage';
 import { VenueMapEditorPage } from '../../features/events/venues/VenueMapEditorPage';
 import { EventSessionsPage } from '../../features/events/sessions/EventSessionsPage';
 import { EventSessionDetailsPage } from '../../features/events/sessions/EventSessionDetailsPage';
+import { EventSectionsPage } from '../../features/events/tickets/EventSectionsPage';
+import { EventTicketTypesPage } from '../../features/events/tickets/EventTicketTypesPage';
+import { EventCapacityPage } from '../../features/events/tickets/EventCapacityPage';
+import { EventBatchesPage } from '../../features/events/sales/EventBatchesPage';
+import { EventPricingPage } from '../../features/events/sales/EventPricingPage';
+import { EventSalesRulesPage } from '../../features/events/sales/EventSalesRulesPage';
 import { useEventSelection } from '../../features/events/hooks/useEventSelection';
 import { useEvents } from '../../features/events/hooks/useEvents';
 import { createEventDraft } from '../../features/events/api/events.api';
@@ -155,6 +161,101 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
         eventName={activeEvent.name || (activeEvent as any).title}
         onSelectSession={(id) => setSelectedSessionId(id)}
         onBackToDashboard={() => onNavigate?.('events', 'events-dashboard')}
+      />
+    );
+  }
+
+  // Helper for active event in commercial/inventory sub-routes
+  const activeEvent = selectedEvent || events[0];
+
+  const renderNoEventSelected = (actionLabel: string) => (
+    <div className="p-8 text-center text-slate-400 space-y-3 rounded-2xl border border-slate-800 bg-slate-900/40">
+      <p className="text-sm font-semibold text-slate-300">Nenhum evento selecionado para {actionLabel}.</p>
+      <p className="text-xs text-slate-500">Selecione um evento no catálogo para gerenciar sua operação comercial.</p>
+      <button
+        onClick={() => onNavigate?.('events', 'events-all')}
+        className="px-4 py-2 rounded-xl bg-orange-500 hover:bg-orange-600 text-white text-xs font-semibold shadow-md transition-all"
+      >
+        Escolher Evento no Catálogo
+      </button>
+    </div>
+  );
+
+  // --- SUB-ROTA: SETORES OPERACIONAIS (FASE 1.2.5) ---
+  if (initialSubItem === 'events-sections') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar setores operacionais');
+    return (
+      <EventSectionsPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToTickets={() => onNavigate?.('events', 'events-tickets')}
+        onNavigateToCapacity={() => onNavigate?.('events', 'events-capacity')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: TIPOS DE INGRESSO (FASE 1.2.5) ---
+  if (initialSubItem === 'events-tickets') {
+    if (!activeEvent) return renderNoEventSelected('configurar tipos de ingresso');
+    return (
+      <EventTicketTypesPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToSections={() => onNavigate?.('events', 'events-sections')}
+        onNavigateToPricing={() => onNavigate?.('events', 'events-pricing')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: INVENTÁRIO & CAPACIDADE (FASE 1.2.5) ---
+  if (initialSubItem === 'events-capacity') {
+    if (!activeEvent) return renderNoEventSelected('visualizar inventário e capacidade');
+    return (
+      <EventCapacityPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToSections={() => onNavigate?.('events', 'events-sections')}
+        onNavigateToPricing={() => onNavigate?.('events', 'events-pricing')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: LOTES COMERCIAIS (FASE 1.2.6) ---
+  if (initialSubItem === 'events-batches' || initialSubItem === 'events-lots') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar lotes comerciais');
+    return (
+      <EventBatchesPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToPricing={() => onNavigate?.('events', 'events-pricing')}
+        onNavigateToTickets={() => onNavigate?.('events', 'events-tickets')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: MATRIZ DE PREÇOS (FASE 1.2.6) ---
+  if (initialSubItem === 'events-pricing') {
+    if (!activeEvent) return renderNoEventSelected('configurar matriz de preços');
+    return (
+      <EventPricingPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToBatches={() => onNavigate?.('events', 'events-batches')}
+        onNavigateToRules={() => onNavigate?.('events', 'events-rules')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: REGRAS DE VENDA (FASE 1.2.6) ---
+  if (initialSubItem === 'events-rules') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar regras de venda');
+    return (
+      <EventSalesRulesPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onBackToDashboard={() => onNavigate?.('events', 'events-dashboard')}
+        onNavigateToBatches={() => onNavigate?.('events', 'events-batches')}
+        onNavigateToPricing={() => onNavigate?.('events', 'events-pricing')}
       />
     );
   }

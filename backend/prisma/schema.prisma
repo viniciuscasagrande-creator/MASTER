@@ -230,6 +230,9 @@ model Event {
   eventVenues                EventVenue[]
   eventSections              EventSection[]
   sessions                   EventSession[]
+  ticketTypes                EventTicketType[]
+  batches                    TicketBatch[]
+  salesRules                 SalesRule[]
 
   @@index([producerId])
   @@index([producerId, status])
@@ -522,6 +525,9 @@ model EventSection {
   event                Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
   venueSection         VenueSection       @relation(fields: [venueSectionId], references: [id], onDelete: Restrict)
   sessionSections      SessionSection[]
+  ticketTypeSections   EventTicketTypeSection[]
+  inventoryPools       InventoryPool[]
+  priceConfigurations  PriceConfiguration[]
 
   @@unique([eventId, venueSectionId])
   @@index([eventId])
@@ -560,6 +566,8 @@ model EventSession {
   mapVersion           VenueMapVersion?             @relation(fields: [venueMapVersionId], references: [id], onDelete: SetNull)
   sessionSections      SessionSection[]
   reservations         SessionCapacityReservation[]
+  ticketTypeSessions   EventTicketTypeSession[]
+  inventoryPools       InventoryPool[]
 
   @@index([eventId])
   @@index([startAt])
@@ -611,6 +619,266 @@ model SessionRecurrenceGroup {
   @@index([eventId])
 }
 
+// ==============================================================================
+// 4.3 SETORES, TIPOS DE INGRESSO E INVENTÁRIO (FASE 1.2.5)
+// 4.4 LOTES, PREÇOS, TAXAS E REGRAS DE VENDA (FASE 1.2.6)
+// ==============================================================================
+
+model TicketType {
+  id                     String            @id @default(uuid())
+  code                   String            @unique
+  name                   String
+  category               String            // INTEIRA, MEIA, SOCIAL, VIP, CORTESIA, COMBO, PROMOTIONAL, OTHER
+  defaultDescription     String?
+  halfPriceLawCompliance Boolean           @default(false)
+  requiresDocument       Boolean           @default(false)
+  documentType           String?
+  requiresCode           Boolean           @default(false)
+  requiresBenefit        Boolean           @default(false)
+  benefitDescription     String?
+  isSystem               Boolean           @default(true)
+  active                 Boolean           @default(true)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+}
+
+model EventTicketType {
+  id                     String            @id @default(uuid())
+  eventId                String
+  ticketTypeId           String?
+  name                   String
+  code                   String
+  category               String            // INTEIRA, MEIA, SOCIAL, VIP, CORTESIA, COMBO, PROMOTIONAL, OTHER
+  description            String?
+  halfPriceLawCompliance Boolean           @default(false)
+  requiresDocument       Boolean           @default(false)
+  documentType           String?
+  requiresCode           Boolean           @default(false)
+  requiresBenefit        Boolean           @default(false)
+  benefitDescription     String?
+  active                 Boolean           @default(true)
+  sortOrder              Int               @default(0)
+  minPerOrder            Int               @default(1)
+  maxPerOrder            Int               @default(6)
+  createdAt              DateTime          @default(now())
+  updatedAt              DateTime          @updatedAt
+
+  event                  Event             @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  sections               EventTicketTypeSection[]
+  sessions               EventTicketTypeSession[]
+  benefits               EventTicketTypeBenefit[]
+  priceConfigurations    PriceConfiguration[]
+  allocations            InventoryAllocation[]
+
+  @@unique([eventId, code])
+  @@index([eventId])
+}
+
+model EventTicketTypeSection {
+  id                 String          @id @default(uuid())
+  eventTicketTypeId  String
+  eventSectionId     String
+
+  eventTicketType    EventTicketType @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+  eventSection       EventSection    @relation(fields: [eventSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([eventTicketTypeId, eventSectionId])
+  @@index([eventTicketTypeId])
+  @@index([eventSectionId])
+}
+
+model EventTicketTypeSession {
+  id                 String          @id @default(uuid())
+  eventTicketTypeId  String
+  sessionId          String
+
+  eventTicketType    EventTicketType @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+  session            EventSession    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([eventTicketTypeId, sessionId])
+  @@index([eventTicketTypeId])
+  @@index([sessionId])
+}
+
+model EventTicketTypeBenefit {
+  id                 String          @id @default(uuid())
+  eventTicketTypeId  String
+  name               String
+  description        String?
+  createdAt          DateTime        @default(now())
+
+  eventTicketType    EventTicketType @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+
+  @@index([eventTicketTypeId])
+}
+
+model InventoryPool {
+  id             String                @id @default(uuid())
+  sessionId      String
+  eventSectionId String
+  capacity       Int
+  reserved       Int                   @default(0)
+  blocked        Int                   @default(0)
+  held           Int                   @default(0)
+  sold           Int                   @default(0)
+  version        Int                   @default(1)
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  session        EventSession          @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  eventSection   EventSection          @relation(fields: [eventSectionId], references: [id], onDelete: Cascade)
+  allocations    InventoryAllocation[]
+  blocks         InventoryBlock[]
+  seatInventories SeatInventory[]
+
+  @@unique([sessionId, eventSectionId])
+  @@index([sessionId])
+  @@index([eventSectionId])
+}
+
+model InventoryAllocation {
+  id                String          @id @default(uuid())
+  inventoryPoolId   String
+  eventTicketTypeId String
+  allocationType    String          // UNLIMITED, FIXED, PERCENTAGE
+  allocationValue   Float
+  allocatedQuantity Int
+  soldQuantity      Int             @default(0)
+  heldQuantity      Int             @default(0)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+
+  inventoryPool     InventoryPool   @relation(fields: [inventoryPoolId], references: [id], onDelete: Cascade)
+  eventTicketType   EventTicketType @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([inventoryPoolId, eventTicketTypeId])
+  @@index([inventoryPoolId])
+}
+
+model InventoryBlock {
+  id              String        @id @default(uuid())
+  inventoryPoolId String
+  reason          String        // TECHNICAL_HOLD, SPONSOR_HOLD, SECURITY_BUFFER, PRODUCER_HOLD, GOVERNMENT_HOLD, OTHER
+  quantity        Int
+  notes           String?
+  active          Boolean       @default(true)
+  createdByUserId String?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  inventoryPool   InventoryPool @relation(fields: [inventoryPoolId], references: [id], onDelete: Cascade)
+
+  @@index([inventoryPoolId])
+}
+
+model SeatInventory {
+  id              String        @id @default(uuid())
+  inventoryPoolId String
+  venueSeatId     String?
+  seatCode        String
+  rowCode         String?
+  status          String        @default("AVAILABLE") // AVAILABLE, HELD, RESERVED, SOLD, BLOCKED
+  heldUntil       DateTime?
+  orderId         String?
+  ticketTypeId    String?
+  version         Int           @default(1)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  inventoryPool   InventoryPool @relation(fields: [inventoryPoolId], references: [id], onDelete: Cascade)
+
+  @@unique([inventoryPoolId, seatCode])
+  @@index([inventoryPoolId])
+  @@index([status])
+}
+
+model TicketBatch {
+  id                 String               @id @default(uuid())
+  eventId            String
+  name               String
+  code               String
+  phase              Int                  @default(1)
+  status             String               @default("DRAFT") // DRAFT, SCHEDULED, ACTIVE, PAUSED, SOLD_OUT, ENDED, ARCHIVED
+  activationType     String               @default("MANUAL") // MANUAL, DATE_TIME, PREVIOUS_BATCH_SOLD_OUT, PREVIOUS_BATCH_QUANTITY
+  activationDate     DateTime?
+  deactivationDate   DateTime?
+  previousBatchId    String?
+  triggerQuantity    Int?
+  totalQuantityLimit Int?
+  soldCount          Int                  @default(0)
+  heldCount          Int                  @default(0)
+  version            Int                  @default(1)
+  createdAt          DateTime             @default(now())
+  updatedAt          DateTime             @updatedAt
+
+  event              Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  priceConfigurations PriceConfiguration[]
+
+  @@unique([eventId, code])
+  @@index([eventId])
+  @@index([status])
+}
+
+model PriceConfiguration {
+  id                 String          @id @default(uuid())
+  ticketBatchId      String
+  eventSectionId     String
+  eventTicketTypeId  String
+  basePriceInCents   Int
+  salePriceInCents   Int
+  minPriceInCents    Int?
+  maxPriceInCents    Int?
+  active             Boolean         @default(true)
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  ticketBatch        TicketBatch     @relation(fields: [ticketBatchId], references: [id], onDelete: Cascade)
+  eventSection       EventSection    @relation(fields: [eventSectionId], references: [id], onDelete: Cascade)
+  eventTicketType    EventTicketType @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+  feeComponents      FeeComponent[]
+
+  @@unique([ticketBatchId, eventSectionId, eventTicketTypeId])
+  @@index([ticketBatchId])
+  @@index([eventSectionId])
+  @@index([eventTicketTypeId])
+}
+
+model FeeComponent {
+  id                      String             @id @default(uuid())
+  priceConfigurationId    String
+  name                    String
+  type                    String             // PERCENTAGE, FIXED
+  value                   Float
+  payer                   String             @default("BUYER") // BUYER, PRODUCER, SPLIT
+  producerSharePercentage Float?
+  minFeeInCents           Int?
+  maxFeeInCents           Int?
+  taxDeductible           Boolean            @default(false)
+  createdAt               DateTime           @default(now())
+
+  priceConfiguration      PriceConfiguration @relation(fields: [priceConfigurationId], references: [id], onDelete: Cascade)
+
+  @@index([priceConfigurationId])
+}
+
+model SalesRule {
+  id          String   @id @default(uuid())
+  eventId     String
+  type        String   // MAX_PER_ORDER, MIN_PER_ORDER, MAX_PER_CUSTOMER, SALES_WINDOW, REQUIRES_CODE, REQUIRES_DOCUMENT, HALF_PRICE_LIMIT
+  scope       String   // EVENT, SESSION, BATCH, TICKET_TYPE
+  scopeId     String?
+  name        String
+  description String?
+  ruleConfig  String   // JSON string
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  event       Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([scope])
+}
 
 model UserProducerAccess {
   id         String   @id @default(uuid())
