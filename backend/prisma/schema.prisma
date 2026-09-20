@@ -880,6 +880,377 @@ model SalesRule {
   @@index([scope])
 }
 
+// ==============================================================================
+// 4.5 CANAIS DE VENDA, CORTESIAS & EQUIPE DO EVENTO (FASE 1.2.7)
+// ==============================================================================
+
+model SalesChannel {
+  id            String              @id @default(uuid())
+  code          String              @unique
+  name          String
+  type          String              // ONLINE, BOX_OFFICE, POS, INTERNAL, PARTNER, AFFILIATE, INVITATION, API
+  scope         String              @default("GLOBAL") // GLOBAL, PRODUCER
+  producerId    String?
+  active        Boolean             @default(true)
+  configuration String?             // JSON
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  eventChannels EventSalesChannel[]
+
+  @@index([type])
+  @@index([active])
+}
+
+model EventSalesChannel {
+  id             String                      @id @default(uuid())
+  eventId        String
+  salesChannelId String
+  enabled        Boolean                     @default(true)
+  salesStartAt   DateTime?
+  salesEndAt     DateTime?
+  configuration  String?                     // JSON
+  createdBy      String?
+  createdAt      DateTime                    @default(now())
+  updatedAt      DateTime                    @updatedAt
+
+  event          Event                       @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  salesChannel   SalesChannel                @relation(fields: [salesChannelId], references: [id], onDelete: Cascade)
+  sessions       EventSalesChannelSession[]
+  sections       EventSalesChannelSection[]
+  ticketTypes    EventSalesChannelTicketType[]
+  allocations    ChannelAllocation[]
+
+  @@unique([eventId, salesChannelId])
+  @@index([eventId])
+  @@index([salesChannelId])
+}
+
+model EventSalesChannelSession {
+  id                  String            @id @default(uuid())
+  eventSalesChannelId String
+  sessionId           String
+
+  eventSalesChannel   EventSalesChannel @relation(fields: [eventSalesChannelId], references: [id], onDelete: Cascade)
+  session             EventSession      @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@unique([eventSalesChannelId, sessionId])
+  @@index([eventSalesChannelId])
+  @@index([sessionId])
+}
+
+model EventSalesChannelSection {
+  id                  String            @id @default(uuid())
+  eventSalesChannelId String
+  eventSectionId      String
+
+  eventSalesChannel   EventSalesChannel @relation(fields: [eventSalesChannelId], references: [id], onDelete: Cascade)
+  eventSection        EventSection      @relation(fields: [eventSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([eventSalesChannelId, eventSectionId])
+  @@index([eventSalesChannelId])
+  @@index([eventSectionId])
+}
+
+model EventSalesChannelTicketType {
+  id                  String            @id @default(uuid())
+  eventSalesChannelId String
+  eventTicketTypeId   String
+
+  eventSalesChannel   EventSalesChannel @relation(fields: [eventSalesChannelId], references: [id], onDelete: Cascade)
+  eventTicketType     EventTicketType   @relation(fields: [eventTicketTypeId], references: [id], onDelete: Cascade)
+
+  @@unique([eventSalesChannelId, eventTicketTypeId])
+  @@index([eventSalesChannelId])
+  @@index([eventTicketTypeId])
+}
+
+model ChannelAllocation {
+  id                  String            @id @default(uuid())
+  eventSalesChannelId String
+  inventoryPoolId     String
+  quantityLimit       Int
+  quantityConsumed    Int               @default(0)
+  startsAt            DateTime?
+  endsAt              DateTime?
+  createdAt           DateTime          @default(now())
+  updatedAt           DateTime          @updatedAt
+
+  eventSalesChannel   EventSalesChannel @relation(fields: [eventSalesChannelId], references: [id], onDelete: Cascade)
+  inventoryPool       InventoryPool     @relation(fields: [inventoryPoolId], references: [id], onDelete: Cascade)
+
+  @@unique([eventSalesChannelId, inventoryPoolId])
+  @@index([eventSalesChannelId])
+  @@index([inventoryPoolId])
+}
+
+model SalesPoint {
+  id          String          @id @default(uuid())
+  producerId  String?
+  name        String
+  type        String          // BOX_OFFICE, STORE, PARTNER_POS
+  venueId     String?
+  address     String?
+  active      Boolean         @default(true)
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+
+  venue       Venue?          @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  terminals   SalesTerminal[]
+
+  @@index([producerId])
+  @@index([venueId])
+}
+
+model SalesTerminal {
+  id           String     @id @default(uuid())
+  salesPointId String
+  name         String
+  code         String     @unique
+  status       String     @default("ONLINE") // ONLINE, OFFLINE, MAINTENANCE
+  active       Boolean    @default(true)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  salesPoint   SalesPoint @relation(fields: [salesPointId], references: [id], onDelete: Cascade)
+
+  @@index([salesPointId])
+}
+
+model SalesPartner {
+  id         String   @id @default(uuid())
+  producerId String?
+  name       String
+  document   String
+  type       String   // AGENCY, PROMOTER, POS_PARTNER, SPONSOR, COMPANY
+  status     String   @default("ACTIVE") // ACTIVE, INACTIVE, PENDING
+  email      String?
+  phone      String?
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([producerId])
+  @@index([document])
+}
+
+model ComplimentaryCategory {
+  id          String   @id @default(uuid())
+  eventId     String?
+  code        String
+  name        String
+  description String?
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  @@unique([code, eventId])
+  @@index([eventId])
+}
+
+model ComplimentaryQuota {
+  id               String   @id @default(uuid())
+  eventId          String
+  sessionId        String?
+  sectionId        String?
+  quantityLimit    Int
+  quantityUsed     Int      @default(0)
+  quantityReserved Int      @default(0)
+  policyId         String?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  event            Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([sectionId])
+}
+
+model ComplimentaryRequest {
+  id                String               @id @default(uuid())
+  code              String               @unique
+  eventId           String
+  sessionId         String
+  sectionId         String
+  categoryId        String
+  quantity          Int
+  quantityIssued    Int                  @default(0)
+  reason            String
+  requesterId       String
+  requesterName     String
+  status            String               @default("SUBMITTED") // DRAFT, SUBMITTED, APPROVAL_PENDING, APPROVED, REJECTED, ISSUING, ISSUED, PARTIALLY_ISSUED, CANCELLED
+  approvalRequestId String?
+  approvedBy        String?
+  approvedAt        DateTime?
+  rejectionReason   String?
+  createdAt         DateTime             @default(now())
+  updatedAt         DateTime             @updatedAt
+
+  event             Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  session           EventSession         @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  section           EventSection         @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  guests            ComplimentaryGuest[]
+
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([status])
+}
+
+model ComplimentaryGuest {
+  id         String               @id @default(uuid())
+  requestId  String
+  name       String
+  email      String?
+  document   String?
+  phone      String?
+  notes      String?
+  ticketId   String?
+  issued     Boolean              @default(false)
+  issuedAt   DateTime?
+  createdAt  DateTime             @default(now())
+
+  request    ComplimentaryRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+
+  @@index([requestId])
+  @@index([document])
+}
+
+model EventTeam {
+  id             String              @id @default(uuid())
+  eventId        String
+  name           String
+  description    String?
+  leaderMemberId String?
+  active         Boolean             @default(true)
+  createdAt      DateTime            @default(now())
+  updatedAt      DateTime            @updatedAt
+
+  event          Event               @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  members        EventTeamMember[]
+  shifts         EventTeamShift[]
+
+  @@index([eventId])
+}
+
+model EventTeamMember {
+  id               String               @id @default(uuid())
+  eventId          String
+  teamId           String?
+  userId           String?
+  externalPersonId String?
+  name             String
+  email            String
+  phone            String?
+  roleName         String
+  emergencyContact String?
+  active           Boolean              @default(true)
+  createdAt        DateTime             @default(now())
+  updatedAt        DateTime             @updatedAt
+
+  event            Event                @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  team             EventTeam?           @relation(fields: [teamId], references: [id], onDelete: SetNull)
+  shiftAssignments EventShiftAssignment[]
+
+  @@index([eventId])
+  @@index([teamId])
+  @@index([userId])
+}
+
+model EventTeamShift {
+  id          String                 @id @default(uuid())
+  eventId     String
+  teamId      String
+  sessionId   String?
+  name        String
+  startAt     DateTime
+  endAt       DateTime
+  active      Boolean                @default(true)
+  createdAt   DateTime               @default(now())
+  updatedAt   DateTime               @updatedAt
+
+  team        EventTeam              @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  session     EventSession?          @relation(fields: [sessionId], references: [id], onDelete: SetNull)
+  assignments EventShiftAssignment[]
+
+  @@index([eventId])
+  @@index([teamId])
+  @@index([sessionId])
+}
+
+model EventShiftAssignment {
+  id        String          @id @default(uuid())
+  shiftId   String
+  memberId  String
+  createdAt DateTime        @default(now())
+
+  shift     EventTeamShift  @relation(fields: [shiftId], references: [id], onDelete: Cascade)
+  member    EventTeamMember @relation(fields: [memberId], references: [id], onDelete: Cascade)
+
+  @@unique([shiftId, memberId])
+  @@index([shiftId])
+  @@index([memberId])
+}
+
+// ==============================================================================
+// 4.6 DOCUMENTOS, PENDÊNCIAS & READINESS DO EVENTO (FASE 1.2.8)
+// ==============================================================================
+
+model EventDocumentRequirement {
+  id              String    @id @default(uuid())
+  eventId         String
+  categoryCode    String
+  categoryName    String
+  required        Boolean   @default(true)
+  blocking        Boolean   @default(true)
+  validFrom       DateTime?
+  validUntil      DateTime?
+  status          String    @default("MISSING") // MISSING, UPLOADED, UNDER_REVIEW, VALID, REJECTED, EXPIRED, EXPIRING
+  linkedDocumentId String?
+  linkedDocumentName String?
+  linkedDocumentUrl String?
+  fileSize        String?
+  rejectionReason String?
+  notes           String?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  event           Event     @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([categoryCode])
+  @@index([status])
+}
+
+model ReadinessCheckDefinition {
+  id          String   @id @default(uuid())
+  code        String   @unique
+  category    String   // INFO, VENUE, SESSIONS, CAPACITY, INVENTORY, PRICING, CHANNELS, DOCUMENTS, TEAM
+  name        String
+  description String
+  severity    String   // INFO, WARNING, BLOCKING, CRITICAL
+  target      String   // REVIEW, PUBLICATION, SALES, OPERATION, CLOSURE
+  actionCode  String?
+  active      Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+}
+
+model ReadinessSnapshot {
+  id             String   @id @default(uuid())
+  eventId        String   @unique
+  status         String   // READY, WARNING, BLOCKED, NOT_APPLICABLE, PENDING
+  score          Int      @default(0)
+  targetsJson    String   // JSON map of targets to statuses
+  summaryJson    String   // JSON counts
+  categoriesJson String   // JSON categories status
+  issuesJson     String   // JSON array of issues
+  evaluatedAt    DateTime @default(now())
+
+  event          Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([status])
+}
+
 model UserProducerAccess {
   id         String   @id @default(uuid())
   userId     String

@@ -53,3 +53,20 @@ export * from './sales/CreateBatchModal';
 export * from './sales/PriceSimulatorModal';
 export * from './sales/BulkPricingModal';
 
+// Pages & Components - Sales Channels, Complimentary & Team (Fase 1.2.7)
+export * from './sales-channels/EventSalesChannelsPage';
+export * from './sales-channels/ConfigureSalesChannelModal';
+export * from './complimentary/ComplimentaryPage';
+export * from './complimentary/ComplimentaryRequestModal';
+export * from './complimentary/ComplimentaryDetailsModal';
+export * from './team/EventTeamPage';
+export * from './team/AddTeamMemberModal';
+export * from './team/AddShiftModal';
+export * from './team/AssignResponsibilityModal';
+
+// Pages & Components - Documents, Tasks & Readiness (Fase 1.2.8)
+export * from './documents/EventDocumentsPage';
+export * from './documents/UploadDocumentModal';
+export * from './tasks/EventTasksPage';
+export * from './tasks/CreateTaskModal';
+export * from './readiness/EventReadinessPage';

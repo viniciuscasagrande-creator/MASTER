@@ -14,6 +14,12 @@ import eventInventoryRoutes from './inventory/inventory.routes';
 import eventBatchRoutes from './batches/ticket-batch.routes';
 import eventPricingRoutes from './pricing/pricing.routes';
 import eventSalesRuleRoutes from './sales-rules/sales-rule.routes';
+import eventSalesChannelRoutes from './sales-channels/sales-channel.routes';
+import eventComplimentaryRoutes from './complimentary/complimentary.routes';
+import eventTeamRoutes from './team/event-team.routes';
+import eventDocumentRoutes from './documents/event-document.routes';
+import eventTaskRoutes from './tasks/event-task.routes';
+import eventReadinessRoutes from './readiness/event-readiness.routes';
 
 const router = Router();
 
@@ -66,6 +72,24 @@ router.use('/:eventId/pricing', eventPricingRoutes);
 
 // 5.7 Regras de Venda (Fase 1.2.6)
 router.use('/:eventId/sales-rules', eventSalesRuleRoutes);
+
+// 5.8 Canais de Venda e Distribuição (Fase 1.2.7)
+router.use('/:eventId/sales-channels', eventSalesChannelRoutes);
+
+// 5.9 Cortesias e Convites (Fase 1.2.7)
+router.use('/:eventId/complimentary', eventComplimentaryRoutes);
+
+// 5.10 Equipe do Evento e Escala (Fase 1.2.7)
+router.use('/:eventId/team', eventTeamRoutes);
+
+// 5.11 Documentos e Conformidade Legal (Fase 1.2.8)
+router.use('/:eventId/documents', eventDocumentRoutes);
+
+// 5.12 Pendências e Tarefas Operacionais (Fase 1.2.8)
+router.use('/:eventId/tasks', eventTaskRoutes);
+
+// 5.13 Central de Preparação & Readiness Engine (Fase 1.2.8)
+router.use('/:eventId/readiness', eventReadinessRoutes);
 
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);

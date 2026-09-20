@@ -19,6 +19,7 @@ Produtor ──> Evento ──> Cliente ──> Pedido ──> Ingresso ──> 
 Esta etapa estabelece a **fundação real de infraestrutura do backend** que sustenta todos os módulos operacionais da DiskIngressos.
 
 ### Stack Tecnológica
+
 - **Linguagem & Runtime:** Node.js + TypeScript
 - **Framework Web:** Express
 - **Banco de Dados & ORM:** PostgreSQL + Prisma ORM
@@ -109,7 +110,8 @@ npm run test:api
 npm test --prefix backend
 ```
 
-### Casos de Teste Homologados:
+### Casos de Teste Homologados
+
 1. `PASS`: **Login Válido** com e-mail, senha e geração de Access Token + Refresh Token.
 2. `PASS`: **Senha Inválida** rejeitada com `401 Unauthorized`.
 3. `PASS`: **Usuário Bloqueado** barrado no login com `403 Forbidden`.
@@ -131,6 +133,7 @@ npm test --prefix backend
 ## 🚀 Como Executar Localmente
 
 ### Pré-requisitos
+
 - Node.js >= 18.x
 - npm >= 9.x
 
@@ -150,6 +153,31 @@ npm run dev:api
 # Compila frontend e backend simultaneamente com TypeScript
 npm run build:all
 ```
+
+---
+
+## 🎟️ Fase 1.2.7 — Canais de Venda + Cortesias + Equipe do Evento
+
+- **Canais de Venda Omnichannel:** Distribuição unificada (Site DiskIngressos, Bilheteria Presencial, Totens/PDV, Venda Interna/SAC e Parceiros Comerciais).
+  - *Invariante Arquitetural:* Nenhum canal cria estoque paralelo ou desvinculado. Todos consomem diretamente do inventário atômico compartilhado (`InventoryPool`), com controle de cota por canal (`ChannelAllocation`) e proteção contra overbooking.
+- **Cortesias & Convites:** Gestão de cotas institucionais e comerciais por categoria (Imprensa, Patrocinador, Artista, Produção).
+  - *Fluxo Completo:* Solicitação com nominalização de convidados &rarr; Aprovação com alçadas &rarr; Emissão consumindo o Pool &rarr; Cancelamento com estorno imediato no estoque oficial.
+- **Equipe do Evento & Escalas:** Dimensionamento de equipes operacionais (Bilheteria, Controle de Acesso, Credenciamento, Produção Geral).
+  - *Detecção de Conflitos:* Motor de validação de sobreposição temporal de turnos por colaborador (`TeamSchedulingService`).
+  - *Desacoplamento de RBAC:* O papel de equipe e responsabilidade formal não confere permissões sistêmicas de segurança.
+
+---
+
+## 📋 Fase 1.2.8 — Documentos + Pendências + Central de Prontidão (Readiness Engine)
+
+- **Central de Prontidão Operacional:** Motor algorítmico (`EventReadinessService`) que audita continuamente o estado de preparação do evento em 5 alvos:
+  1. *REVISÃO:* Dados cadastrais, vínculos com locais e setores operacionais.
+  2. *PUBLICAÇÃO:* Lotes comerciais ativos, precificação e regras anti-cambismo.
+  3. *VENDAS:* Canais de venda configurados e inventário disponível.
+  4. *OPERAÇÃO:* Alvarás, vistorias de bombeiros, seguro e escala de equipe homologada.
+  5. *ENCERRAMENTO:* Balanço contábil e conciliação de bilheteria.
+- **Documentos Regulamentares do Evento:** Validação de vigência de alvarás da prefeitura, AVCB, termo de cessão do local e apólice de seguro com alerta de expiração.
+- **Pendências Operacionais:** Sincronização automática dos apontamentos de prontidão com a Central de Tarefas corporativa, com chaves de deduplicação e encerramento automático após saneamento.
 
 ---
 

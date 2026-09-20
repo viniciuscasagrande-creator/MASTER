@@ -14,6 +14,12 @@ import { EventCapacityPage } from '../../features/events/tickets/EventCapacityPa
 import { EventBatchesPage } from '../../features/events/sales/EventBatchesPage';
 import { EventPricingPage } from '../../features/events/sales/EventPricingPage';
 import { EventSalesRulesPage } from '../../features/events/sales/EventSalesRulesPage';
+import { EventSalesChannelsPage } from '../../features/events/sales-channels/EventSalesChannelsPage';
+import { ComplimentaryPage } from '../../features/events/complimentary/ComplimentaryPage';
+import { EventTeamPage } from '../../features/events/team/EventTeamPage';
+import { EventDocumentsPage } from '../../features/events/documents/EventDocumentsPage';
+import { EventTasksPage } from '../../features/events/tasks/EventTasksPage';
+import { EventReadinessPage } from '../../features/events/readiness/EventReadinessPage';
 import { useEventSelection } from '../../features/events/hooks/useEventSelection';
 import { useEvents } from '../../features/events/hooks/useEvents';
 import { createEventDraft } from '../../features/events/api/events.api';
@@ -256,6 +262,77 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
         onBackToDashboard={() => onNavigate?.('events', 'events-dashboard')}
         onNavigateToBatches={() => onNavigate?.('events', 'events-batches')}
         onNavigateToPricing={() => onNavigate?.('events', 'events-pricing')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CANAIS DE VENDA (FASE 1.2.7) ---
+  if (initialSubItem === 'events-channels') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar canais de venda');
+    return (
+      <EventSalesChannelsPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToInventory={() => onNavigate?.('events', 'events-capacity')}
+        onNavigateToSessions={() => onNavigate?.('events', 'events-sessions')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CORTESIAS & CONVITES (FASE 1.2.7) ---
+  if (initialSubItem === 'events-complimentary') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar cortesias e convites');
+    return (
+      <ComplimentaryPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToInventory={() => onNavigate?.('events', 'events-capacity')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: EQUIPE DO EVENTO & ESCALAS (FASE 1.2.7) ---
+  if (initialSubItem === 'events-team') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar equipe e escalas');
+    return (
+      <EventTeamPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: DOCUMENTOS DO EVENTO (FASE 1.2.8) ---
+  if (initialSubItem === 'events-documents') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar documentos do evento');
+    return (
+      <EventDocumentsPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: PENDÊNCIAS DO EVENTO (FASE 1.2.8) ---
+  if (initialSubItem === 'events-tasks') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar pendências do evento');
+    return (
+      <EventTasksPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToReadiness={() => onNavigate?.('events', 'events-readiness')}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CENTRAL DE PRONTIDÃO (FASE 1.2.8) ---
+  if (initialSubItem === 'events-readiness') {
+    if (!activeEvent) return renderNoEventSelected('avaliar prontidão do evento');
+    return (
+      <EventReadinessPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigateToTab={(tabId) => onNavigate?.('events', tabId)}
       />
     );
   }

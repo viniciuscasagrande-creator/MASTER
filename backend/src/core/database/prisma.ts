@@ -42,6 +42,29 @@ export class InMemoryPrismaStore {
   public priceConfigurationRecords: any[] = [];
   public feeComponentRecords: any[] = [];
   public salesRuleRecords: any[] = [];
+  // Fase 1.2.7 — Canais de Venda, Cortesias e Equipe
+  public salesChannelRecords: any[] = [];
+  public eventSalesChannelRecords: any[] = [];
+  public eventSalesChannelSessionRecords: any[] = [];
+  public eventSalesChannelSectionRecords: any[] = [];
+  public eventSalesChannelTicketTypeRecords: any[] = [];
+  public channelAllocationRecords: any[] = [];
+  public salesPointRecords: any[] = [];
+  public salesTerminalRecords: any[] = [];
+  public salesPartnerRecords: any[] = [];
+  public complimentaryCategoryRecords: any[] = [];
+  public complimentaryQuotaRecords: any[] = [];
+  public complimentaryRequestRecords: any[] = [];
+  public complimentaryGuestRecords: any[] = [];
+  public eventTeamRecords: any[] = [];
+  public eventTeamMemberRecords: any[] = [];
+  public eventTeamShiftRecords: any[] = [];
+  public eventShiftAssignmentRecords: any[] = [];
+  // Fase 1.2.8 — Documentos, Pendências e Readiness
+  public eventDocumentRequirementRecords: any[] = [];
+  public readinessCheckDefinitionRecords: any[] = [];
+  public readinessSnapshotRecords: any[] = [];
+  public eventTaskRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -196,6 +219,27 @@ export class InMemoryPrismaStore {
     this.priceConfigurationRecords = [];
     this.feeComponentRecords = [];
     this.salesRuleRecords = [];
+    this.salesChannelRecords = [];
+    this.eventSalesChannelRecords = [];
+    this.eventSalesChannelSessionRecords = [];
+    this.eventSalesChannelSectionRecords = [];
+    this.eventSalesChannelTicketTypeRecords = [];
+    this.channelAllocationRecords = [];
+    this.salesPointRecords = [];
+    this.salesTerminalRecords = [];
+    this.salesPartnerRecords = [];
+    this.complimentaryCategoryRecords = [];
+    this.complimentaryQuotaRecords = [];
+    this.complimentaryRequestRecords = [];
+    this.complimentaryGuestRecords = [];
+    this.eventTeamRecords = [];
+    this.eventTeamMemberRecords = [];
+    this.eventTeamShiftRecords = [];
+    this.eventShiftAssignmentRecords = [];
+    this.eventDocumentRequirementRecords = [];
+    this.readinessCheckDefinitionRecords = [];
+    this.readinessSnapshotRecords = [];
+    this.eventTaskRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -1221,6 +1265,177 @@ export class InMemoryPrismaStore {
       { id: 'sr_1', eventId: 'evt_1001', type: 'MAX_PER_ORDER', scope: 'EVENT', name: 'Limite Máximo por Pedido', description: 'Máximo de 6 ingressos por transação', ruleConfig: JSON.stringify({ maxPerOrder: 6 }), active: true, createdAt: new Date(), updatedAt: new Date() },
       { id: 'sr_2', eventId: 'evt_1001', type: 'MAX_PER_CUSTOMER', scope: 'EVENT', name: 'Limite por CPF', description: 'Máximo de 4 ingressos por comprador (CPF)', ruleConfig: JSON.stringify({ maxPerCustomer: 4 }), active: true, createdAt: new Date(), updatedAt: new Date() },
       { id: 'sr_3', eventId: 'evt_1001', type: 'HALF_PRICE_LIMIT', scope: 'EVENT', name: 'Cota de Meia-Entrada 40%', description: 'Conformidade com a Lei Federal nº 12.933/2013', ruleConfig: JSON.stringify({ maxPercentage: 40 }), active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.11 Canais de Venda (Fase 1.2.7)
+    this.salesChannelRecords.push(
+      { id: 'sc_online', code: 'SITE_ONLINE', name: 'Site DiskIngressos', type: 'ONLINE', scope: 'GLOBAL', active: true, configuration: JSON.stringify({ isDefault: true }), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sc_boxoffice', code: 'BILHETERIA', name: 'Bilheteria Presencial', type: 'BOX_OFFICE', scope: 'GLOBAL', active: true, configuration: JSON.stringify({ requiresOperator: true }), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sc_pos', code: 'PDV_OFICIAL', name: 'PDV Curitiba (Shoppings)', type: 'POS', scope: 'GLOBAL', active: true, configuration: JSON.stringify({}), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sc_internal', code: 'VENDA_INTERNA', name: 'Venda Interna / SAC', type: 'INTERNAL', scope: 'GLOBAL', active: true, configuration: JSON.stringify({ requiresAuditReason: true }), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sc_partner', code: 'PARCEIROS', name: 'Rede de Parceiros', type: 'PARTNER', scope: 'GLOBAL', active: false, configuration: JSON.stringify({}), createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sc_affiliate', code: 'AFILIADOS', name: 'Programa de Afiliados', type: 'AFFILIATE', scope: 'GLOBAL', active: false, configuration: JSON.stringify({}), createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.eventSalesChannelRecords.push(
+      { id: 'esc_1', eventId: 'evt_1001', salesChannelId: 'sc_online', enabled: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'esc_2', eventId: 'evt_1001', salesChannelId: 'sc_boxoffice', enabled: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'esc_3', eventId: 'evt_1001', salesChannelId: 'sc_pos', enabled: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'esc_4', eventId: 'evt_1001', salesChannelId: 'sc_internal', enabled: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.channelAllocationRecords.push(
+      { id: 'ca_1', eventSalesChannelId: 'esc_2', inventoryPoolId: 'pool_pista', quantityLimit: 500, quantityConsumed: 40, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.salesPointRecords.push(
+      { id: 'sp_1', name: 'Bilheteria Central Arena', type: 'BOX_OFFICE', venueId: 'ven_arena_curitiba', address: 'Rua Engenheiros Rebouças, 123', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'sp_2', name: 'Loja DiskIngressos Shopping Mueller', type: 'STORE', address: 'Av. Cândido de Abreu, 127', active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.salesTerminalRecords.push(
+      { id: 'st_1', salesPointId: 'sp_1', name: 'Caixa 01 - Principal', code: 'CX_01', status: 'ONLINE', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'st_2', salesPointId: 'sp_1', name: 'Caixa 02 - Portão B', code: 'CX_02', status: 'ONLINE', active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.salesPartnerRecords.push(
+      { id: 'spart_1', name: 'Agência Curitiba Live', document: '12.345.678/0001-90', type: 'AGENCY', status: 'ACTIVE', email: 'contato@curitibalive.com.br', createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.12 Cortesias (Fase 1.2.7)
+    this.complimentaryCategoryRecords.push(
+      { id: 'cc_1', code: 'ARTISTA', name: 'Convidados do Artista', description: 'Cotas diretas do camarim e banda', active: true, createdAt: new Date() },
+      { id: 'cc_2', code: 'PRODUCAO', name: 'Produção e Staff', description: 'Equipe executiva e técnica', active: true, createdAt: new Date() },
+      { id: 'cc_3', code: 'PATROCINADOR', name: 'Cotas de Patrocinador', description: 'Contratos corporativos de marca', active: true, createdAt: new Date() },
+      { id: 'cc_4', code: 'IMPRENSA', name: 'Imprensa e Mídia', description: 'Jornalistas e fotógrafos credenciados', active: true, createdAt: new Date() },
+      { id: 'cc_5', code: 'RELACIONAMENTO', name: 'Relacionamento Comercial', description: 'Parceiros e autoridades convidadas', active: true, createdAt: new Date() }
+    );
+
+    this.complimentaryQuotaRecords.push(
+      { id: 'cq_1', eventId: 'evt_1001', sectionId: 'esec_1001_pista', quantityLimit: 300, quantityUsed: 120, quantityReserved: 30, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'cq_2', eventId: 'evt_1001', sectionId: 'esec_1001_premium', quantityLimit: 200, quantityUsed: 63, quantityReserved: 12, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.complimentaryRequestRecords.push(
+      {
+        id: 'cr_1',
+        code: 'SOL-002843',
+        eventId: 'evt_1001',
+        sessionId: 'ses_1001_principal',
+        sectionId: 'esec_1001_premium',
+        categoryId: 'cc_1',
+        quantity: 20,
+        quantityIssued: 0,
+        reason: 'Convidados VIP da banda principal',
+        requesterId: 'usr_producer_1',
+        requesterName: 'Carlos Silva (Produção)',
+        status: 'APPROVAL_PENDING',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'cr_2',
+        code: 'SOL-002840',
+        eventId: 'evt_1001',
+        sessionId: 'ses_1001_principal',
+        sectionId: 'esec_1001_pista',
+        categoryId: 'cc_4',
+        quantity: 15,
+        quantityIssued: 15,
+        reason: 'Equipe de cobertura Gazeta do Povo e RPC TV',
+        requesterId: 'usr_producer_1',
+        requesterName: 'Mariana Costa (Imprensa)',
+        status: 'ISSUED',
+        approvedBy: 'Diretoria DiskIngressos',
+        approvedAt: new Date(),
+        createdAt: new Date('2026-03-01T14:32:00Z'),
+        updatedAt: new Date()
+      }
+    );
+
+    this.complimentaryGuestRecords.push(
+      { id: 'cg_1', requestId: 'cr_1', name: 'Lucas Ferreira', email: 'lucas@artist.com', document: '123.456.789-00', issued: false, createdAt: new Date() },
+      { id: 'cg_2', requestId: 'cr_1', name: 'Beatriz Almeida', email: 'beatriz@artist.com', document: '234.567.890-11', issued: false, createdAt: new Date() }
+    );
+
+    // 5.13 Equipe do Evento (Fase 1.2.7)
+    this.eventTeamRecords.push(
+      { id: 'team_prod', eventId: 'evt_1001', name: 'Produção Geral', description: 'Coordenação técnica e operacional de palco', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'team_box', eventId: 'evt_1001', name: 'Bilheteria & Atendimento', description: 'Operação de guichês presenciais e suporte', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'team_cred', eventId: 'evt_1001', name: 'Credenciamento & Convidados', description: 'Entrega de credenciais VIP/Imprensa', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'team_access', eventId: 'evt_1001', name: 'Controle de Acesso & Portões', description: 'Catracas e controle de fluxo', active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.eventTeamMemberRecords.push(
+      { id: 'tm_1', eventId: 'evt_1001', name: 'Carlos Silva', email: 'carlos.producao@diskingressos.com.br', phone: '(41) 99881-1234', roleName: 'Coordenador Geral de Produção', teamId: 'team_prod', active: true, emergencyContact: '(41) 99999-0001', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'tm_2', eventId: 'evt_1001', name: 'Ana Souza', email: 'ana.bilheteria@diskingressos.com.br', phone: '(41) 98772-2345', roleName: 'Supervisora de Bilheteria', teamId: 'team_box', active: true, emergencyContact: '(41) 99999-0002', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'tm_3', eventId: 'evt_1001', name: 'Roberto Lima', email: 'roberto.acesso@diskingressos.com.br', phone: '(41) 99663-3456', roleName: 'Coordenador de Acesso', teamId: 'team_access', active: true, emergencyContact: '(41) 99999-0003', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'tm_4', eventId: 'evt_1001', name: 'Juliana Mendes', email: 'juliana.cred@diskingressos.com.br', phone: '(41) 99554-4567', roleName: 'Líder de Credenciamento', teamId: 'team_cred', active: true, emergencyContact: '(41) 99999-0004', createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.eventTeamShiftRecords.push(
+      { id: 'shift_1', eventId: 'evt_1001', teamId: 'team_prod', sessionId: 'ses_1001_principal', name: 'Turno 1 — Alinhamento & Passagem de Som', startAt: new Date('2026-10-19T10:00:00Z'), endAt: new Date('2026-10-19T18:00:00Z'), active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'shift_2', eventId: 'evt_1001', teamId: 'team_box', sessionId: 'ses_1001_principal', name: 'Turno 2 — Operação de Bilheteria', startAt: new Date('2026-10-19T14:00:00Z'), endAt: new Date('2026-10-19T22:00:00Z'), active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'shift_3', eventId: 'evt_1001', teamId: 'team_access', sessionId: 'ses_1001_principal', name: 'Turno 3 — Portões & Entrada de Público', startAt: new Date('2026-10-19T16:00:00Z'), endAt: new Date('2026-10-20T01:00:00Z'), active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    this.eventShiftAssignmentRecords.push(
+      { id: 'sa_1', shiftId: 'shift_1', memberId: 'tm_1', createdAt: new Date() },
+      { id: 'sa_2', shiftId: 'shift_2', memberId: 'tm_2', createdAt: new Date() },
+      { id: 'sa_3', shiftId: 'shift_3', memberId: 'tm_3', createdAt: new Date() }
+    );
+
+    // Responsabilidades Estruturadas
+    this.eventResponsibilityRecords.push(
+      { id: 'resp_1', eventId: 'evt_1001', memberId: 'tm_2', responsibilityType: 'BOX_OFFICE_LEAD', title: 'Responsável pela Bilheteria', scope: 'EVENT', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'resp_2', eventId: 'evt_1001', memberId: 'tm_3', responsibilityType: 'ACCESS_COORDINATOR', title: 'Responsável pela Abertura dos Portões', scope: 'EVENT', active: true, createdAt: new Date(), updatedAt: new Date() },
+      { id: 'resp_3', eventId: 'evt_1001', memberId: 'tm_1', responsibilityType: 'PRODUCTION_COORDINATOR', title: 'Responsável Técnico e Produção', scope: 'EVENT', active: true, createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.14 Documentos e Requisitos (Fase 1.2.8)
+    this.eventDocumentRequirementRecords.push(
+      { id: 'edr_1', eventId: 'evt_1001', categoryCode: 'CONTRATO_LOCAL', categoryName: 'Contrato de Locação da Arena', required: true, blocking: true, status: 'VALID', linkedDocumentName: 'contrato_locacao_arena_disk_2026.pdf', validUntil: new Date('2026-12-31T23:59:59Z'), fileSize: '2.4 MB', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'edr_2', eventId: 'evt_1001', categoryCode: 'ALVARA', categoryName: 'Alvará Municipal de Funcionamento', required: true, blocking: true, status: 'EXPIRING', linkedDocumentName: 'alvara_prefeitura_curitiba_v1.pdf', validUntil: new Date('2026-10-05T23:59:59Z'), fileSize: '1.1 MB', notes: 'Alvará provisório vence antes da data final do evento. Requer renovação.', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'edr_3', eventId: 'evt_1001', categoryCode: 'BOMBEIROS', categoryName: 'Laudo de Vistoria dos Bombeiros (AVCB)', required: true, blocking: true, status: 'VALID', linkedDocumentName: 'avcb_bombeiros_pr_2026.pdf', validUntil: new Date('2026-11-20T23:59:59Z'), fileSize: '3.8 MB', createdAt: new Date(), updatedAt: new Date() },
+      { id: 'edr_4', eventId: 'evt_1001', categoryCode: 'SEGURO', categoryName: 'Apólice de Seguro de Responsabilidade Civil', required: true, blocking: true, status: 'MISSING', notes: 'Apólice obrigatória para eventos acima de 5.000 pessoas.', createdAt: new Date(), updatedAt: new Date() }
+    );
+
+    // 5.15 Tarefas e Pendências do Evento (Fase 1.2.8)
+    this.eventTaskRecords.push(
+      {
+        id: 'tsk_1',
+        eventId: 'evt_1001',
+        title: 'Enviar Apólice de Seguro de Responsabilidade Civil',
+        description: 'Bloqueador de publicação: evento acima de 5.000 pessoas necessita de apólice de seguro com cobertura para público.',
+        priority: 'HIGH',
+        status: 'OPEN',
+        assigneeName: 'Carlos Silva',
+        assigneeRole: 'Coordenador Geral de Produção',
+        dueDate: '2026-09-25T18:00:00Z',
+        blockingPublication: true,
+        origin: 'DOCUMENT',
+        issueCode: 'MISSING_MANDATORY_DOC_SEGURO',
+        deduplicationKey: 'evt_1001:doc:SEGURO',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      },
+      {
+        id: 'tsk_2',
+        eventId: 'evt_1001',
+        title: 'Renovar Alvará de Funcionamento com a Prefeitura',
+        description: 'O alvará anexado vence em 05/10/2026, antes da data de realização do festival (19/10/2026).',
+        priority: 'MEDIUM',
+        status: 'IN_PROGRESS',
+        assigneeName: 'Carlos Silva',
+        assigneeRole: 'Coordenador Geral de Produção',
+        dueDate: '2026-09-30T18:00:00Z',
+        blockingPublication: false,
+        origin: 'DOCUMENT',
+        issueCode: 'EXPIRING_DOC_ALVARA',
+        deduplicationKey: 'evt_1001:doc:ALVARA',
+        createdAt: new Date(),
+        updatedAt: new Date()
+      }
     );
     this.notificationRules.push(
       { id: 'rule_1', eventType: 'FINANCE_TRANSFER_CREATED', requiredPerm: 'financeiro.transferencia.aprovar', defaultPriority: 'HIGH', type: 'ACTION_REQUIRED', isMandatory: false, createdAt: new Date() },
@@ -3188,35 +3403,6 @@ export class InMemoryPrismaStore {
     };
   }
 
-  public get eventResponsibility() {
-    return {
-      findMany: async (args?: any) => {
-        let list = [...this.eventResponsibilityRecords];
-        if (args?.where?.eventId) {
-          list = list.filter(r => r.eventId === args.where.eventId);
-        }
-        return list;
-      },
-      create: async (args: any) => {
-        const record = {
-          id: args.data.id || `resp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
-          ...args.data,
-          createdAt: new Date(),
-          updatedAt: new Date()
-        };
-        this.eventResponsibilityRecords.push(record);
-        return record;
-      },
-      deleteMany: async (args: any) => {
-        const initial = this.eventResponsibilityRecords.length;
-        if (args?.where?.eventId) {
-          this.eventResponsibilityRecords = this.eventResponsibilityRecords.filter(r => r.eventId !== args.where.eventId);
-        }
-        return { count: initial - this.eventResponsibilityRecords.length };
-      }
-    };
-  }
-
   public get eventWizardState() {
     return {
       findUnique: async (args: any) => {
@@ -4902,6 +5088,810 @@ export class InMemoryPrismaStore {
         const idx = this.salesRuleRecords.findIndex(r => r.id === args.where?.id);
         if (idx !== -1) return this.salesRuleRecords.splice(idx, 1)[0];
         return null;
+      }
+    };
+  }
+
+  // ==========================================
+  // GETTERS: CANAIS DE VENDA (FASE 1.2.7)
+  // ==========================================
+
+  public get salesChannel() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.salesChannelRecords];
+        if (args?.where?.active !== undefined) list = list.filter(c => c.active === args.where.active);
+        if (args?.where?.type) list = list.filter(c => c.type === args.where.type);
+        return list.map(c => ({ ...c }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id && !args?.where?.code) return null;
+        const c = this.salesChannelRecords.find(x => (args.where.id && x.id === args.where.id) || (args.where.code && x.code === args.where.code));
+        return c ? { ...c } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `sc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.salesChannelRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.salesChannelRecords.findIndex(c => c.id === args.where?.id);
+        if (idx === -1) throw new Error('Canal de venda não encontrado');
+        const updated = { ...this.salesChannelRecords[idx], ...args.data, updatedAt: new Date() };
+        this.salesChannelRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get eventSalesChannel() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSalesChannelRecords];
+        if (args?.where?.eventId) list = list.filter(esc => esc.eventId === args.where.eventId);
+        if (args?.where?.salesChannelId) list = list.filter(esc => esc.salesChannelId === args.where.salesChannelId);
+        if (args?.where?.enabled !== undefined) list = list.filter(esc => esc.enabled === args.where.enabled);
+
+        return list.map(esc => {
+          const copy = { ...esc };
+          if (args?.include?.salesChannel) {
+            copy.salesChannel = this.salesChannelRecords.find(c => c.id === esc.salesChannelId);
+          }
+          if (args?.include?.allocations) {
+            copy.allocations = this.channelAllocationRecords.filter(ca => ca.eventSalesChannelId === esc.id);
+          }
+          if (args?.include?.sessions) {
+            copy.sessions = this.eventSalesChannelSessionRecords.filter(s => s.eventSalesChannelId === esc.id);
+          }
+          if (args?.include?.sections) {
+            copy.sections = this.eventSalesChannelSectionRecords.filter(s => s.eventSalesChannelId === esc.id);
+          }
+          if (args?.include?.ticketTypes) {
+            copy.ticketTypes = this.eventSalesChannelTicketTypeRecords.filter(t => t.eventSalesChannelId === esc.id);
+          }
+          return copy;
+        });
+      },
+      findUnique: async (args: any) => {
+        let esc: any = null;
+        if (args?.where?.id) esc = this.eventSalesChannelRecords.find(x => x.id === args.where.id);
+        if (!esc && args?.where?.eventId_salesChannelId) {
+          esc = this.eventSalesChannelRecords.find(x => x.eventId === args.where.eventId_salesChannelId.eventId && x.salesChannelId === args.where.eventId_salesChannelId.salesChannelId);
+        }
+        if (!esc) return null;
+        const copy = { ...esc };
+        if (args?.include?.salesChannel) {
+          copy.salesChannel = this.salesChannelRecords.find(c => c.id === esc.salesChannelId);
+        }
+        if (args?.include?.allocations) {
+          copy.allocations = this.channelAllocationRecords.filter(ca => ca.eventSalesChannelId === esc.id);
+        }
+        return copy;
+      },
+      findFirst: async (args: any) => {
+        const matches = await this.eventSalesChannel.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `esc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          enabled: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventSalesChannelRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        let idx = -1;
+        if (args.where?.id) idx = this.eventSalesChannelRecords.findIndex(x => x.id === args.where.id);
+        if (idx === -1 && args.where?.eventId_salesChannelId) {
+          idx = this.eventSalesChannelRecords.findIndex(x => x.eventId === args.where.eventId_salesChannelId.eventId && x.salesChannelId === args.where.eventId_salesChannelId.salesChannelId);
+        }
+        if (idx === -1) throw new Error('Configuração de canal do evento não encontrada');
+        const updated = { ...this.eventSalesChannelRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventSalesChannelRecords[idx] = updated;
+        return { ...updated };
+      },
+      upsert: async (args: any) => {
+        let existing: any = null;
+        if (args.where?.eventId_salesChannelId) {
+          existing = this.eventSalesChannelRecords.find(x => x.eventId === args.where.eventId_salesChannelId.eventId && x.salesChannelId === args.where.eventId_salesChannelId.salesChannelId);
+        }
+        if (existing) {
+          return this.eventSalesChannel.update({ where: { id: existing.id }, data: args.update });
+        } else {
+          return this.eventSalesChannel.create({ data: { ...args.create, ...(args.where.eventId_salesChannelId || {}) } });
+        }
+      }
+    };
+  }
+
+  public get eventSalesChannelSession() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSalesChannelSessionRecords];
+        if (args?.where?.eventSalesChannelId) list = list.filter(x => x.eventSalesChannelId === args.where.eventSalesChannelId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = { id: `escs_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`, ...args.data };
+        this.eventSalesChannelSessionRecords.push(record);
+        return record;
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.eventSalesChannelSessionRecords.length;
+        if (args?.where?.eventSalesChannelId) {
+          this.eventSalesChannelSessionRecords = this.eventSalesChannelSessionRecords.filter(x => x.eventSalesChannelId !== args.where.eventSalesChannelId);
+        }
+        return { count: before - this.eventSalesChannelSessionRecords.length };
+      }
+    };
+  }
+
+  public get eventSalesChannelSection() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSalesChannelSectionRecords];
+        if (args?.where?.eventSalesChannelId) list = list.filter(x => x.eventSalesChannelId === args.where.eventSalesChannelId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = { id: `escsec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`, ...args.data };
+        this.eventSalesChannelSectionRecords.push(record);
+        return record;
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.eventSalesChannelSectionRecords.length;
+        if (args?.where?.eventSalesChannelId) {
+          this.eventSalesChannelSectionRecords = this.eventSalesChannelSectionRecords.filter(x => x.eventSalesChannelId !== args.where.eventSalesChannelId);
+        }
+        return { count: before - this.eventSalesChannelSectionRecords.length };
+      }
+    };
+  }
+
+  public get eventSalesChannelTicketType() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSalesChannelTicketTypeRecords];
+        if (args?.where?.eventSalesChannelId) list = list.filter(x => x.eventSalesChannelId === args.where.eventSalesChannelId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = { id: `esctt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`, ...args.data };
+        this.eventSalesChannelTicketTypeRecords.push(record);
+        return record;
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.eventSalesChannelTicketTypeRecords.length;
+        if (args?.where?.eventSalesChannelId) {
+          this.eventSalesChannelTicketTypeRecords = this.eventSalesChannelTicketTypeRecords.filter(x => x.eventSalesChannelId !== args.where.eventSalesChannelId);
+        }
+        return { count: before - this.eventSalesChannelTicketTypeRecords.length };
+      }
+    };
+  }
+
+  public get channelAllocation() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.channelAllocationRecords];
+        if (args?.where?.eventSalesChannelId) list = list.filter(ca => ca.eventSalesChannelId === args.where.eventSalesChannelId);
+        if (args?.where?.inventoryPoolId) list = list.filter(ca => ca.inventoryPoolId === args.where.inventoryPoolId);
+        return list.map(ca => ({ ...ca }));
+      },
+      findUnique: async (args: any) => {
+        let ca: any = null;
+        if (args?.where?.id) ca = this.channelAllocationRecords.find(x => x.id === args.where.id);
+        if (!ca && args?.where?.eventSalesChannelId_inventoryPoolId) {
+          const w = args.where.eventSalesChannelId_inventoryPoolId;
+          ca = this.channelAllocationRecords.find(x => x.eventSalesChannelId === w.eventSalesChannelId && x.inventoryPoolId === w.inventoryPoolId);
+        }
+        return ca ? { ...ca } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ca_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          quantityConsumed: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.channelAllocationRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        let idx = -1;
+        if (args.where?.id) idx = this.channelAllocationRecords.findIndex(x => x.id === args.where.id);
+        if (idx === -1 && args.where?.eventSalesChannelId_inventoryPoolId) {
+          const w = args.where.eventSalesChannelId_inventoryPoolId;
+          idx = this.channelAllocationRecords.findIndex(x => x.eventSalesChannelId === w.eventSalesChannelId && x.inventoryPoolId === w.inventoryPoolId);
+        }
+        if (idx === -1) throw new Error('Alocação de canal não encontrada');
+        const updated = { ...this.channelAllocationRecords[idx], ...args.data, updatedAt: new Date() };
+        this.channelAllocationRecords[idx] = updated;
+        return { ...updated };
+      },
+      upsert: async (args: any) => {
+        const w = args.where?.eventSalesChannelId_inventoryPoolId;
+        let existing: any = null;
+        if (w) existing = this.channelAllocationRecords.find(x => x.eventSalesChannelId === w.eventSalesChannelId && x.inventoryPoolId === w.inventoryPoolId);
+        if (existing) {
+          return this.channelAllocation.update({ where: { id: existing.id }, data: args.update });
+        } else {
+          return this.channelAllocation.create({ data: { ...args.create, ...(w || {}) } });
+        }
+      }
+    };
+  }
+
+  public get salesPoint() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.salesPointRecords];
+        if (args?.where?.venueId) list = list.filter(sp => sp.venueId === args.where.venueId);
+        if (args?.where?.active !== undefined) list = list.filter(sp => sp.active === args.where.active);
+        return list.map(sp => ({
+          ...sp,
+          terminalsCount: this.salesTerminalRecords.filter(t => t.salesPointId === sp.id).length
+        }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const sp = this.salesPointRecords.find(x => x.id === args.where.id);
+        return sp ? { ...sp, terminalsCount: this.salesTerminalRecords.filter(t => t.salesPointId === sp.id).length } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `sp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.salesPointRecords.push(record);
+        return { ...record };
+      }
+    };
+  }
+
+  public get salesTerminal() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.salesTerminalRecords];
+        if (args?.where?.salesPointId) list = list.filter(st => st.salesPointId === args.where.salesPointId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `st_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'ONLINE',
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.salesTerminalRecords.push(record);
+        return { ...record };
+      }
+    };
+  }
+
+  public get salesPartner() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.salesPartnerRecords];
+        if (args?.where?.status) list = list.filter(p => p.status === args.where.status);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const p = this.salesPartnerRecords.find(x => x.id === args.where.id);
+        return p ? { ...p } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `spart_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'ACTIVE',
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.salesPartnerRecords.push(record);
+        return { ...record };
+      }
+    };
+  }
+
+  // ==========================================
+  // GETTERS: CORTESIAS (FASE 1.2.7)
+  // ==========================================
+
+  public get complimentaryCategory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.complimentaryCategoryRecords];
+        if (args?.where?.active !== undefined) list = list.filter(c => c.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id && !args?.where?.code) return null;
+        const c = this.complimentaryCategoryRecords.find(x => (args.where.id && x.id === args.where.id) || (args.where.code && x.code === args.where.code));
+        return c ? { ...c } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `cc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.complimentaryCategoryRecords.push(record);
+        return { ...record };
+      }
+    };
+  }
+
+  public get complimentaryQuota() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.complimentaryQuotaRecords];
+        if (args?.where?.eventId) list = list.filter(q => q.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(q => q.sessionId === args.where.sessionId);
+        if (args?.where?.sectionId) list = list.filter(q => q.sectionId === args.where.sectionId);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const q = this.complimentaryQuotaRecords.find(x => x.id === args.where.id);
+        return q ? { ...q } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `cq_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          quantityUsed: 0,
+          quantityReserved: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.complimentaryQuotaRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.complimentaryQuotaRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Cota de cortesia não encontrada');
+        const updated = { ...this.complimentaryQuotaRecords[idx], ...args.data, updatedAt: new Date() };
+        this.complimentaryQuotaRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get complimentaryRequest() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.complimentaryRequestRecords];
+        if (args?.where?.eventId) list = list.filter(r => r.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(r => r.status === args.where.status);
+        if (args?.where?.sessionId) list = list.filter(r => r.sessionId === args.where.sessionId);
+
+        return list.map(r => {
+          const copy = { ...r };
+          if (args?.include?.guests) {
+            copy.guests = this.complimentaryGuestRecords.filter(g => g.requestId === r.id);
+          }
+          return copy;
+        });
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id && !args?.where?.code) return null;
+        const r = this.complimentaryRequestRecords.find(x => (args.where.id && x.id === args.where.id) || (args.where.code && x.code === args.where.code));
+        if (!r) return null;
+        const copy = { ...r };
+        if (args?.include?.guests) {
+          copy.guests = this.complimentaryGuestRecords.filter(g => g.requestId === r.id);
+        }
+        return copy;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `cr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          code: args.data.code || `SOL-${Math.floor(100000 + Math.random() * 900000)}`,
+          quantityIssued: 0,
+          status: 'SUBMITTED',
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.complimentaryRequestRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.complimentaryRequestRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Solicitação de cortesia não encontrada');
+        const updated = { ...this.complimentaryRequestRecords[idx], ...args.data, updatedAt: new Date() };
+        this.complimentaryRequestRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get complimentaryGuest() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.complimentaryGuestRecords];
+        if (args?.where?.requestId) list = list.filter(g => g.requestId === args.where.requestId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `cg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          issued: false,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.complimentaryGuestRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        let count = 0;
+        for (const item of (args.data || [])) {
+          this.complimentaryGuestRecords.push({
+            id: item.id || `cg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            issued: false,
+            ...item,
+            createdAt: new Date()
+          });
+          count++;
+        }
+        return { count };
+      },
+      update: async (args: any) => {
+        const idx = this.complimentaryGuestRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Convidado não encontrado');
+        const updated = { ...this.complimentaryGuestRecords[idx], ...args.data };
+        this.complimentaryGuestRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  // ==========================================
+  // GETTERS: EQUIPE DO EVENTO (FASE 1.2.7)
+  // ==========================================
+
+  public get eventTeam() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTeamRecords];
+        if (args?.where?.eventId) list = list.filter(t => t.eventId === args.where.eventId);
+        if (args?.where?.active !== undefined) list = list.filter(t => t.active === args.where.active);
+
+        return list.map(t => {
+          const members = this.eventTeamMemberRecords.filter(m => m.teamId === t.id);
+          const leader = members.find(m => m.id === t.leaderMemberId);
+          return {
+            ...t,
+            memberCount: members.length,
+            leaderName: leader?.name || null
+          };
+        });
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const t = this.eventTeamRecords.find(x => x.id === args.where.id);
+        return t ? { ...t } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `team_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventTeamRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventTeamRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Equipe não encontrada');
+        const updated = { ...this.eventTeamRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventTeamRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get eventTeamMember() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTeamMemberRecords];
+        if (args?.where?.eventId) list = list.filter(m => m.eventId === args.where.eventId);
+        if (args?.where?.teamId) list = list.filter(m => m.teamId === args.where.teamId);
+        if (args?.where?.active !== undefined) list = list.filter(m => m.active === args.where.active);
+
+        return list.map(m => {
+          const team = this.eventTeamRecords.find(t => t.id === m.teamId);
+          return {
+            ...m,
+            teamName: team?.name || null
+          };
+        });
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const m = this.eventTeamMemberRecords.find(x => x.id === args.where.id);
+        return m ? { ...m } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `tm_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventTeamMemberRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventTeamMemberRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Membro de equipe não encontrado');
+        const updated = { ...this.eventTeamMemberRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventTeamMemberRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get eventTeamShift() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTeamShiftRecords];
+        if (args?.where?.eventId) list = list.filter(s => s.eventId === args.where.eventId);
+        if (args?.where?.teamId) list = list.filter(s => s.teamId === args.where.teamId);
+        if (args?.where?.sessionId) list = list.filter(s => s.sessionId === args.where.sessionId);
+
+        return list.map(s => {
+          const assignments = this.eventShiftAssignmentRecords.filter(sa => sa.shiftId === s.id);
+          const memberIds = assignments.map(sa => sa.memberId);
+          const members = this.eventTeamMemberRecords.filter(m => memberIds.includes(m.id));
+          const team = this.eventTeamRecords.find(t => t.id === s.teamId);
+          const session = this.eventSessionRecords.find(ses => ses.id === s.sessionId);
+          return {
+            ...s,
+            teamName: team?.name || null,
+            sessionName: session?.name || null,
+            assignedMemberIds: memberIds,
+            assignedMembers: members
+          };
+        });
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const s = this.eventTeamShiftRecords.find(x => x.id === args.where.id);
+        return s ? { ...s } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `shift_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventTeamShiftRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventTeamShiftRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Turno não encontrado');
+        const updated = { ...this.eventTeamShiftRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventTeamShiftRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get eventShiftAssignment() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventShiftAssignmentRecords];
+        if (args?.where?.shiftId) list = list.filter(sa => sa.shiftId === args.where.shiftId);
+        if (args?.where?.memberId) list = list.filter(sa => sa.memberId === args.where.memberId);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = { id: `sa_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`, ...args.data, createdAt: new Date() };
+        this.eventShiftAssignmentRecords.push(record);
+        return record;
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.eventShiftAssignmentRecords.length;
+        if (args?.where?.shiftId) {
+          this.eventShiftAssignmentRecords = this.eventShiftAssignmentRecords.filter(sa => sa.shiftId !== args.where.shiftId);
+        }
+        return { count: before - this.eventShiftAssignmentRecords.length };
+      }
+    };
+  }
+
+  public get eventResponsibility() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventResponsibilityRecords];
+        if (args?.where?.eventId) list = list.filter(r => r.eventId === args.where.eventId);
+        if (args?.where?.responsibilityType) list = list.filter(r => r.responsibilityType === args.where.responsibilityType);
+        if (args?.where?.active !== undefined) list = list.filter(r => r.active === args.where.active);
+        return list.map(r => ({ ...r }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const r = this.eventResponsibilityRecords.find(x => x.id === args.where.id);
+        return r ? { ...r } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `resp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventResponsibilityRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventResponsibilityRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Responsabilidade não encontrada');
+        const updated = { ...this.eventResponsibilityRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventResponsibilityRecords[idx] = updated;
+        return { ...updated };
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventResponsibilityRecords.length;
+        if (args?.where?.id) {
+          this.eventResponsibilityRecords = this.eventResponsibilityRecords.filter(r => r.id !== args.where.id);
+        } else if (args?.where?.eventId) {
+          this.eventResponsibilityRecords = this.eventResponsibilityRecords.filter(r => r.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventResponsibilityRecords.length };
+      }
+    };
+  }
+
+  // ==========================================
+  // GETTERS: DOCUMENTOS & READINESS (FASE 1.2.8)
+  // ==========================================
+
+  public get eventDocumentRequirement() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventDocumentRequirementRecords];
+        if (args?.where?.eventId) list = list.filter(r => r.eventId === args.where.eventId);
+        if (args?.where?.categoryCode) list = list.filter(r => r.categoryCode === args.where.categoryCode);
+        if (args?.where?.status) list = list.filter(r => r.status === args.where.status);
+        return list.map(r => ({ ...r }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const r = this.eventDocumentRequirementRecords.find(x => x.id === args.where.id);
+        return r ? { ...r } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `edr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'MISSING',
+          required: true,
+          blocking: true,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventDocumentRequirementRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventDocumentRequirementRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Requisito documental não encontrado');
+        const updated = { ...this.eventDocumentRequirementRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventDocumentRequirementRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get readinessCheckDefinition() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.readinessCheckDefinitionRecords];
+        if (args?.where?.active !== undefined) list = list.filter(c => c.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.code) return null;
+        const c = this.readinessCheckDefinitionRecords.find(x => x.code === args.where.code);
+        return c ? { ...c } : null;
+      },
+      create: async (args: any) => {
+        const record = { id: `rcd_${Date.now()}`, active: true, ...args.data, createdAt: new Date() };
+        this.readinessCheckDefinitionRecords.push(record);
+        return record;
+      }
+    };
+  }
+
+  public get readinessSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        if (!args?.where?.eventId) return null;
+        const s = this.readinessSnapshotRecords.find(x => x.eventId === args.where.eventId);
+        return s ? { ...s } : null;
+      },
+      upsert: async (args: any) => {
+        const idx = this.readinessSnapshotRecords.findIndex(x => x.eventId === args.where?.eventId);
+        if (idx !== -1) {
+          const updated = { ...this.readinessSnapshotRecords[idx], ...args.update, evaluatedAt: new Date() };
+          this.readinessSnapshotRecords[idx] = updated;
+          return { ...updated };
+        } else {
+          const record = { id: `rsnap_${Date.now()}`, eventId: args.where.eventId, ...args.create, evaluatedAt: new Date() };
+          this.readinessSnapshotRecords.push(record);
+          return { ...record };
+        }
+      }
+    };
+  }
+
+  public get eventTask() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventTaskRecords];
+        if (args?.where?.eventId) list = list.filter(t => t.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(t => t.status === args.where.status);
+        if (args?.where?.origin) list = list.filter(t => t.origin === args.where.origin);
+        return list.map(t => ({ ...t }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const t = this.eventTaskRecords.find(x => x.id === args.where.id);
+        return t ? { ...t } : null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.eventTaskRecords];
+        if (args?.where?.eventId) list = list.filter(t => t.eventId === args.where.eventId);
+        if (args?.where?.deduplicationKey) list = list.filter(t => t.deduplicationKey === args.where.deduplicationKey);
+        if (args?.where?.status) list = list.filter(t => t.status === args.where.status);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `tsk_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'OPEN',
+          priority: 'MEDIUM',
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventTaskRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventTaskRecords.findIndex(t => t.id === args.where?.id);
+        if (idx === -1) throw new Error('Tarefa não encontrada');
+        const updated = { ...this.eventTaskRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventTaskRecords[idx] = updated;
+        return { ...updated };
       }
     };
   }

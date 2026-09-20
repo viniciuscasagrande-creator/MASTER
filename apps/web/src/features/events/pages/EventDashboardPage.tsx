@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Calendar,
   CheckCircle2,
@@ -11,13 +11,21 @@ import {
   ListTodo,
   ExternalLink,
   ChevronRight,
-  Info
+  Info,
+  AlertTriangle,
+  XCircle,
+  Globe,
+  Gift,
+  Users,
+  Sparkles
 } from 'lucide-react';
 import { EventDetailDTO, EventListItemDTO } from '../types/event.types';
 import { EventContextHeader } from '../components/EventContextHeader';
 import { StatCard } from '../../../shared/components/StatCard';
 import { Badge } from '../../../shared/components/Badge';
 import { formatNumber, formatDateTime } from '../../../shared/utils/formatters';
+import { fetchEventReadiness } from '../api/readiness.api';
+import { EventReadinessDTO } from '@shared/types/index';
 
 interface EventDashboardPageProps {
   event: EventDetailDTO;
@@ -37,6 +45,29 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
   const capacity = event.capacity || 0;
   const sold = event.soldTickets || 0;
   const occupancy = event.occupancyPercentage ?? (capacity > 0 ? Math.round((sold / capacity) * 100) : null);
+
+  const [readiness, setReadiness] = useState<EventReadinessDTO | null>(null);
+  const [loadingReadiness, setLoadingReadiness] = useState(false);
+
+  useEffect(() => {
+    let isMounted = true;
+    if (event?.id) {
+      setLoadingReadiness(true);
+      fetchEventReadiness(event.id)
+        .then((data) => {
+          if (isMounted) setReadiness(data);
+        })
+        .catch(() => {
+          // Fallback gracefully if endpoint isn't reached or event is freshly created
+        })
+        .finally(() => {
+          if (isMounted) setLoadingReadiness(false);
+        });
+    }
+    return () => {
+      isMounted = false;
+    };
+  }, [event?.id]);
 
   // Subphases of Eventos module for the operational roadmap
   const EVENT_SUBPHASES = [
@@ -78,21 +109,21 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
     },
     {
       id: '1.2.7',
-      title: 'Combos, Cupons & Políticas Comerciais',
-      desc: 'Cupons de desconto, pacotes promocionais e canais restritos.',
-      status: 'NEXT'
+      title: 'Canais de Venda + Cortesias + Equipe do Evento',
+      desc: 'Distribuição omnichannel (Site, PDV, Bilheteria), cotas e aprovação de cortesias, e dimensionamento de equipe operacional.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.8',
-      title: 'Publicação & Aprovação',
-      desc: 'Conferência, alçadas executivas e disparo para o ar.',
-      status: 'UPCOMING'
+      title: 'Documentos + Pendências + Central de Prontidão',
+      desc: 'Gestão documental de alvarás e contratos, central de pendências operacionais e motor algorítmico de Readiness.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.9',
       title: 'Gestão de Vendas & PDV',
-      desc: 'Acompanhamento comercial, pontos físicos e operadores.',
-      status: 'UPCOMING'
+      desc: 'Acompanhamento comercial em tempo real, terminais físicos e caixas.',
+      status: 'NEXT'
     },
     {
       id: '1.2.10',
@@ -198,14 +229,14 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-xs text-orange-300 font-semibold transition-colors"
             >
               <Calendar className="h-3.5 w-3.5 text-orange-400" />
-              Sessões & Capacidade
+              Sessões
             </button>
             <button
               onClick={() => onNavigateModule('events', 'events-sections')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs text-cyan-300 font-semibold transition-colors"
             >
               <Layers className="h-3.5 w-3.5 text-cyan-400" />
-              Setores & Inventário
+              Setores & Cota
             </button>
             <button
               onClick={() => onNavigateModule('events', 'events-batches')}
@@ -222,24 +253,162 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
               Regras de Venda
             </button>
             <button
-              onClick={() => onNavigateModule('documents')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition-colors"
+              onClick={() => onNavigateModule('events', 'events-channels')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-xs text-blue-300 font-semibold transition-colors"
             >
-              <FileText className="h-3.5 w-3.5 text-cyan-400" />
+              <Globe className="h-3.5 w-3.5 text-blue-400" />
+              Canais
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-complimentary')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-xs text-pink-300 font-semibold transition-colors"
+            >
+              <Gift className="h-3.5 w-3.5 text-pink-400" />
+              Cortesias
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-team')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs text-amber-300 font-semibold transition-colors"
+            >
+              <Users className="h-3.5 w-3.5 text-amber-400" />
+              Equipe
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-documents')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-xs text-teal-300 font-semibold transition-colors"
+            >
+              <FileText className="h-3.5 w-3.5 text-teal-400" />
               Documentos
             </button>
             <button
-              onClick={() => onNavigateModule('tasks')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition-colors"
+              onClick={() => onNavigateModule('events', 'events-tasks')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-xs text-indigo-300 font-semibold transition-colors"
             >
-              <ListTodo className="h-3.5 w-3.5 text-amber-400" />
-              Tarefas
+              <ListTodo className="h-3.5 w-3.5 text-indigo-400" />
+              Pendências
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-readiness')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-xs text-orange-300 font-bold transition-colors"
+            >
+              <Sparkles className="h-3.5 w-3.5 text-orange-400" />
+              Prontidão
             </button>
           </div>
         )}
       </div>
 
-      {/* 4. Publication Readiness Checklist */}
+      {/* 4. Central de Prontidão Operacional (Readiness Engine) */}
+      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg">
+        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
+          <div className="flex items-center gap-3">
+            <div
+              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${
+                readiness?.status === 'READY'
+                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
+                  : readiness?.status === 'BLOCKED'
+                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
+                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+              }`}
+            >
+              {readiness?.status === 'READY' ? (
+                <CheckCircle2 className="h-6 w-6" />
+              ) : readiness?.status === 'BLOCKED' ? (
+                <XCircle className="h-6 w-6" />
+              ) : (
+                <AlertTriangle className="h-6 w-6" />
+              )}
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-base font-bold text-white">Central de Prontidão Operacional (Readiness Engine)</h3>
+                <Badge
+                  variant={
+                    readiness?.status === 'READY'
+                      ? 'emerald'
+                      : readiness?.status === 'BLOCKED'
+                      ? 'rose'
+                      : 'amber'
+                  }
+                  size="sm"
+                >
+                  {readiness?.status === 'READY'
+                    ? '100% Pronto para Venda'
+                    : readiness?.status === 'BLOCKED'
+                    ? 'Bloqueios Críticos Detectados'
+                    : readiness?.status === 'WARNING'
+                    ? 'Alertas Identificados'
+                    : 'Avaliação Automática'}
+                </Badge>
+              </div>
+              <p className="text-xs text-slate-400 mt-0.5">
+                Auditoria contínua sobre alvarás, capacidade, canais, ingressos, equipe e pendências operacionais.
+              </p>
+            </div>
+          </div>
+
+          {onNavigateModule && (
+            <button
+              onClick={() => onNavigateModule('events', 'events-readiness')}
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-lg shadow-orange-500/20 transition-all shrink-0"
+            >
+              <Sparkles className="h-4 w-4" />
+              Abrir Central de Prontidão
+              <ChevronRight className="h-4 w-4" />
+            </button>
+          )}
+        </div>
+
+        {readiness && (
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
+            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
+              <span className="text-[11px] text-slate-400 font-medium">Índice de Prontidão</span>
+              <div className="text-lg font-bold font-mono text-white mt-0.5">
+                {readiness.scorePercentage}%
+              </div>
+              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
+                <div
+                  className={`h-full rounded-full transition-all duration-500 ${
+                    readiness.scorePercentage >= 80
+                      ? 'bg-emerald-500'
+                      : readiness.scorePercentage >= 50
+                      ? 'bg-amber-500'
+                      : 'bg-rose-500'
+                  }`}
+                  style={{ width: `${readiness.scorePercentage}%` }}
+                />
+              </div>
+            </div>
+
+            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
+              <span className="text-[11px] text-slate-400 font-medium">Regras Conformadas</span>
+              <div className="text-lg font-bold font-mono text-emerald-400 mt-0.5">
+                {readiness.summary.readyCount}{' '}
+                <span className="text-xs text-slate-500">/ {readiness.summary.totalChecks}</span>
+              </div>
+              <span className="text-[10px] text-slate-500 mt-1 block">critérios técnicos atendidos</span>
+            </div>
+
+            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
+              <span className="text-[11px] text-slate-400 font-medium">Bloqueios Críticos</span>
+              <div className="text-lg font-bold font-mono text-rose-400 mt-0.5">
+                {readiness.summary.blockingCount}
+              </div>
+              <span className="text-[10px] text-slate-500 mt-1 block">impedem abertura de vendas</span>
+            </div>
+
+            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
+              <span className="text-[11px] text-slate-400 font-medium">Avisos & Alertas</span>
+              <div className="text-lg font-bold font-mono text-amber-400 mt-0.5">
+                {readiness.summary.warningCount}
+              </div>
+              <span className="text-[10px] text-slate-500 mt-1 block">recomendações operacionais</span>
+            </div>
+          </div>
+        )}
+      </div>
+
+      {/* 5. Publication Readiness Checklist */}
       <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg">
         <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
           <div>

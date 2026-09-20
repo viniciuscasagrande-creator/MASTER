@@ -108,6 +108,28 @@ export type PermissionString =
   | 'eventos.checkin.operar'
   | 'eventos.setores.configurar'
   | 'eventos.operacao.visualizar'
+  // Canais, Cortesias e Equipe (Fase 1.2.7)
+  | 'eventos.canais.visualizar'
+  | 'eventos.canais.editar'
+  | 'eventos.canais.alocacao.editar'
+  | 'eventos.cortesias.visualizar'
+  | 'eventos.cortesias.solicitar'
+  | 'eventos.cortesias.cancelar'
+  | 'eventos.cortesias.cota.editar'
+  | 'eventos.equipe.visualizar'
+  | 'eventos.equipe.editar'
+  | 'eventos.equipe.escala.editar'
+  | 'eventos.equipe.responsabilidade.editar'
+  // Preparação, Documentos e Pendências (Fase 1.2.8)
+  | 'eventos.preparacao.visualizar'
+  | 'eventos.preparacao.recalcular'
+  | 'eventos.documentos.visualizar'
+  | 'eventos.documentos.enviar'
+  | 'eventos.documentos.versionar'
+  | 'eventos.documentos.requisitos.visualizar'
+  | 'eventos.documentos.requisitos.editar'
+  | 'eventos.pendencias.visualizar'
+  | 'eventos.pendencias.criar'
   // Comercial
 
   | 'comercial.produtores.visualizar'
@@ -2089,7 +2111,15 @@ export type EventResponsibilityType =
   | 'COMMERCIAL'
   | 'FINANCE'
   | 'MARKETING'
-  | 'SUPPORT';
+  | 'SUPPORT'
+  | 'BOX_OFFICE_LEAD'
+  | 'ACCESS_COORDINATOR'
+  | 'CREDENTIALING_LEAD'
+  | 'PRODUCTION_COORDINATOR'
+  | 'TECHNICAL_LEAD'
+  | 'FINANCIAL_LEAD'
+  | 'SECURITY_LEAD'
+  | 'OTHER';
 
 export interface EventResponsibilityDTO {
   id: string;
@@ -2100,8 +2130,16 @@ export interface EventResponsibilityDTO {
   userEmail?: string | null;
   teamId?: string | null;
   teamName?: string | null;
+  memberId?: string;
+  memberName?: string;
+  title?: string;
+  scope?: 'EVENT' | 'SESSION' | 'SECTION' | 'ACCESS_POINT' | 'SALES_POINT';
+  scopeId?: string | null;
+  scopeName?: string | null;
+  active?: boolean;
   notes?: string | null;
   createdAt: string;
+  updatedAt?: string;
 }
 
 export type EventWizardStepId =
@@ -3067,3 +3105,468 @@ export interface CreateSalesRuleInput {
 }
 
 export interface UpdateSalesRuleInput extends Partial<CreateSalesRuleInput> {}
+
+// ==========================================
+// FASE 1.2.7 — CANAIS DE VENDA, CORTESIAS & EQUIPE DO EVENTO
+// ==========================================
+
+// --- CANAIS DE VENDA ---
+export type SalesChannelType =
+  | 'ONLINE'
+  | 'BOX_OFFICE'
+  | 'POS'
+  | 'INTERNAL'
+  | 'PARTNER'
+  | 'AFFILIATE'
+  | 'INVITATION'
+  | 'API';
+
+export interface SalesChannelDTO {
+  id: string;
+  code: string;
+  name: string;
+  type: SalesChannelType;
+  scope: 'GLOBAL' | 'PRODUCER';
+  producerId?: string | null;
+  active: boolean;
+  configuration?: Record<string, any>;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ChannelAllocationDTO {
+  id: string;
+  eventSalesChannelId: string;
+  inventoryPoolId: string;
+  poolSectionName?: string;
+  quantityLimit: number;
+  quantityConsumed: number;
+  startsAt?: string | null;
+  endsAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventSalesChannelDTO {
+  id: string;
+  eventId: string;
+  salesChannelId: string;
+  salesChannel?: SalesChannelDTO;
+  enabled: boolean;
+  salesStartAt?: string | null;
+  salesEndAt?: string | null;
+  configuration?: Record<string, any>;
+  sessionIds?: string[];
+  sectionIds?: string[];
+  ticketTypeIds?: string[];
+  batchIds?: string[];
+  allocations?: ChannelAllocationDTO[];
+  createdBy?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ConfigureEventSalesChannelInput {
+  salesChannelId: string;
+  enabled?: boolean;
+  salesStartAt?: string | null;
+  salesEndAt?: string | null;
+  configuration?: Record<string, any>;
+  sessionIds?: string[];
+  sectionIds?: string[];
+  ticketTypeIds?: string[];
+  batchIds?: string[];
+}
+
+export interface SaveChannelAllocationInput {
+  inventoryPoolId: string;
+  quantityLimit: number;
+  startsAt?: string | null;
+  endsAt?: string | null;
+}
+
+export interface SalesPointDTO {
+  id: string;
+  producerId?: string | null;
+  name: string;
+  type: 'BOX_OFFICE' | 'STORE' | 'PARTNER_POS';
+  venueId?: string | null;
+  venueName?: string | null;
+  address?: string | null;
+  active: boolean;
+  terminalsCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateSalesPointInput {
+  producerId?: string;
+  name: string;
+  type: 'BOX_OFFICE' | 'STORE' | 'PARTNER_POS';
+  venueId?: string;
+  address?: string;
+  active?: boolean;
+}
+
+export interface SalesTerminalDTO {
+  id: string;
+  salesPointId: string;
+  name: string;
+  code: string;
+  status: 'ONLINE' | 'OFFLINE' | 'MAINTENANCE';
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface SalesPartnerDTO {
+  id: string;
+  producerId?: string | null;
+  name: string;
+  document: string;
+  type: 'AGENCY' | 'PROMOTER' | 'POS_PARTNER' | 'SPONSOR' | 'COMPANY';
+  status: 'ACTIVE' | 'INACTIVE' | 'PENDING';
+  email?: string | null;
+  phone?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+// --- CORTESIAS ---
+export interface ComplimentaryCategoryDTO {
+  id: string;
+  eventId?: string | null;
+  code: string;
+  name: string;
+  description?: string | null;
+  active: boolean;
+}
+
+export interface ComplimentaryQuotaDTO {
+  id: string;
+  eventId: string;
+  sessionId?: string | null;
+  sectionId?: string | null;
+  quantityLimit: number;
+  quantityUsed: number;
+  quantityReserved: number;
+  policyId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type ComplimentaryRequestStatus =
+  | 'DRAFT'
+  | 'SUBMITTED'
+  | 'APPROVAL_PENDING'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'ISSUING'
+  | 'ISSUED'
+  | 'PARTIALLY_ISSUED'
+  | 'CANCELLED';
+
+export interface ComplimentaryGuestDTO {
+  id: string;
+  requestId: string;
+  name: string;
+  email?: string | null;
+  document?: string | null;
+  phone?: string | null;
+  notes?: string | null;
+  ticketId?: string | null;
+  issued: boolean;
+  issuedAt?: string | null;
+}
+
+export interface ComplimentaryRequestDTO {
+  id: string;
+  code: string;
+  eventId: string;
+  sessionId: string;
+  sessionName?: string;
+  sectionId: string;
+  sectionName?: string;
+  categoryId: string;
+  categoryName?: string;
+  quantity: number;
+  quantityIssued: number;
+  reason: string;
+  requesterId: string;
+  requesterName: string;
+  status: ComplimentaryRequestStatus;
+  approvalRequestId?: string | null;
+  approvedBy?: string | null;
+  approvedAt?: string | null;
+  rejectionReason?: string | null;
+  guests?: ComplimentaryGuestDTO[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateComplimentaryRequestInput {
+  sessionId: string;
+  sectionId: string;
+  categoryId: string;
+  quantity: number;
+  reason: string;
+  guests?: {
+    name: string;
+    email?: string;
+    document?: string;
+    phone?: string;
+    notes?: string;
+  }[];
+}
+
+export interface AddComplimentaryGuestsInput {
+  guests: {
+    name: string;
+    email?: string;
+    document?: string;
+    phone?: string;
+    notes?: string;
+  }[];
+}
+
+// --- EQUIPE DO EVENTO ---
+export interface EventTeamDTO {
+  id: string;
+  eventId: string;
+  name: string;
+  description?: string | null;
+  leaderMemberId?: string | null;
+  leaderName?: string | null;
+  memberCount?: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventTeamInput {
+  name: string;
+  description?: string;
+  leaderMemberId?: string;
+  active?: boolean;
+}
+
+export interface EventTeamMemberDTO {
+  id: string;
+  eventId: string;
+  userId?: string | null;
+  externalPersonId?: string | null;
+  name: string;
+  email: string;
+  phone?: string | null;
+  roleName: string;
+  teamId?: string | null;
+  teamName?: string | null;
+  active: boolean;
+  emergencyContact?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventTeamMemberInput {
+  userId?: string;
+  externalPersonId?: string;
+  name: string;
+  email: string;
+  phone?: string;
+  roleName: string;
+  teamId?: string;
+  active?: boolean;
+  emergencyContact?: string;
+}
+
+export interface CreateEventResponsibilityInput {
+  memberId: string;
+  responsibilityType: EventResponsibilityType;
+  title: string;
+  scope: 'EVENT' | 'SESSION' | 'SECTION' | 'ACCESS_POINT' | 'SALES_POINT';
+  scopeId?: string;
+  notes?: string;
+  active?: boolean;
+}
+
+export interface EventTeamShiftDTO {
+  id: string;
+  eventId: string;
+  teamId: string;
+  teamName?: string;
+  sessionId?: string | null;
+  sessionName?: string | null;
+  name: string;
+  startAt: string;
+  endAt: string;
+  active: boolean;
+  assignedMemberIds?: string[];
+  assignedMembers?: EventTeamMemberDTO[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventTeamShiftInput {
+  teamId: string;
+  sessionId?: string;
+  name: string;
+  startAt: string;
+  endAt: string;
+  assignedMemberIds?: string[];
+  active?: boolean;
+}
+
+export interface ShiftConflictDTO {
+  memberId: string;
+  memberName: string;
+  shiftA: { id: string; name: string; teamName: string; startAt: string; endAt: string };
+  shiftB: { id: string; name: string; teamName: string; startAt: string; endAt: string };
+  message: string;
+}
+
+// ==========================================
+// FASE 1.2.8 — DOCUMENTOS, PENDÊNCIAS & READINESS DO EVENTO
+// ==========================================
+
+export type ReadinessTarget =
+  | 'REVIEW'
+  | 'PUBLICATION'
+  | 'SALES'
+  | 'OPERATION'
+  | 'CLOSURE';
+
+export type ReadinessStatus =
+  | 'READY'
+  | 'WARNING'
+  | 'BLOCKED'
+  | 'NOT_APPLICABLE'
+  | 'PENDING';
+
+export type ReadinessSeverity =
+  | 'INFO'
+  | 'WARNING'
+  | 'BLOCKING'
+  | 'CRITICAL';
+
+export interface ReadinessIssueDTO {
+  code: string;
+  category: 'INFO' | 'VENUE' | 'SESSIONS' | 'CAPACITY' | 'INVENTORY' | 'PRICING' | 'CHANNELS' | 'DOCUMENTS' | 'TEAM' | 'COMPLIANCE';
+  categoryLabel: string;
+  status: ReadinessStatus;
+  severity: ReadinessSeverity;
+  title: string;
+  description: string;
+  resourceType?: string;
+  resourceId?: string;
+  actionCode?: string;
+  actionLabel?: string;
+  actionRoute?: string;
+  target: ReadinessTarget;
+  detectedAt: string;
+  sessionId?: string;
+  sessionName?: string;
+  sectionId?: string;
+  sectionName?: string;
+}
+
+export interface EventReadinessDTO {
+  eventId: string;
+  status: ReadinessStatus;
+  scorePercentage: number;
+  targets: Record<ReadinessTarget, ReadinessStatus>;
+  summary: {
+    totalChecks: number;
+    readyCount: number;
+    warningCount: number;
+    blockingCount: number;
+    pendingCount: number;
+    criticalCount: number;
+  };
+  categories: {
+    category: string;
+    label: string;
+    status: ReadinessStatus;
+    issuesCount: number;
+  }[];
+  issues: ReadinessIssueDTO[];
+  evaluatedAt: string;
+}
+
+export type EventDocumentRequirementStatus =
+  | 'MISSING'
+  | 'UPLOADED'
+  | 'UNDER_REVIEW'
+  | 'VALID'
+  | 'REJECTED'
+  | 'EXPIRED'
+  | 'EXPIRING';
+
+export interface EventDocumentRequirementDTO {
+  id: string;
+  eventId: string;
+  categoryCode: string;
+  categoryName: string;
+  required: boolean;
+  blocking: boolean;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  status: EventDocumentRequirementStatus;
+  linkedDocumentId?: string | null;
+  linkedDocumentName?: string | null;
+  linkedDocumentUrl?: string | null;
+  fileSize?: string | null;
+  rejectionReason?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateDocumentRequirementInput {
+  categoryCode: string;
+  categoryName: string;
+  required?: boolean;
+  blocking?: boolean;
+  validFrom?: string;
+  validUntil?: string;
+  notes?: string;
+}
+
+export interface UploadEventDocumentInput {
+  requirementId: string;
+  documentName: string;
+  fileSize?: string;
+  validFrom?: string;
+  validUntil?: string;
+  notes?: string;
+}
+
+export interface EventTaskDTO {
+  id: string;
+  eventId: string;
+  title: string;
+  description?: string;
+  priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  status: 'OPEN' | 'IN_PROGRESS' | 'COMPLETED' | 'CANCELLED';
+  assigneeName?: string;
+  assigneeRole?: string;
+  dueDate?: string | null;
+  blockingPublication: boolean;
+  origin: 'READINESS' | 'DOCUMENT' | 'OPERATION' | 'TEAM' | 'FINANCE';
+  issueCode?: string;
+  deduplicationKey?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventTaskInput {
+  title: string;
+  description?: string;
+  priority?: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT';
+  assigneeName?: string;
+  assigneeRole?: string;
+  dueDate?: string;
+  blockingPublication?: boolean;
+  origin?: 'READINESS' | 'DOCUMENT' | 'OPERATION' | 'TEAM' | 'FINANCE';
+  issueCode?: string;
+  deduplicationKey?: string;
+}
