@@ -12,3 +12,6 @@ export * from './team.api';
 export * from './documents.api';
 export * from './tasks.api';
 export * from './readiness.api';
+export * from './lifecycle.api';
+export * from './changes.api';
+export * from './dashboard.api';

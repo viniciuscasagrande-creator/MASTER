@@ -149,6 +149,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'events-documents', label: 'Documentos do Evento', requiredPermission: 'eventos.documentos.visualizar' },
         { id: 'events-tasks', label: 'Pendências do Evento', requiredPermission: 'eventos.pendencias.visualizar' },
         { id: 'events-readiness', label: 'Central de Prontidão', requiredPermission: 'eventos.preparacao.visualizar' },
+        { id: 'events-changes', label: 'Central de Alterações', requiredPermission: 'eventos.alteracoes.visualizar' },
+        { id: 'events-review-publication', label: 'Revisão & Publicação', requiredPermission: 'eventos.lifecycle.review' },
         { id: 'events-checkin', label: 'Check-in e Portaria', requiredPermission: 'eventos.checkin.operar' },
         { id: 'events-realtime', label: 'Operação em Tempo Real' }
       ]

@@ -130,6 +130,41 @@ export type PermissionString =
   | 'eventos.documentos.requisitos.editar'
   | 'eventos.pendencias.visualizar'
   | 'eventos.pendencias.criar'
+  // Revisão, Aprovação e Publicação (Fase 1.2.9)
+  | 'eventos.evento.revisao.visualizar'
+  | 'eventos.evento.revisao.solicitar'
+  | 'eventos.evento.publicacao.visualizar'
+  | 'eventos.evento.publicacao.solicitar'
+  | 'eventos.evento.publicacao.agendar'
+  | 'eventos.evento.publicacao.cancelar_agendamento'
+  | 'eventos.evento.vendas.pausar'
+  | 'eventos.evento.vendas.retomar'
+  | 'eventos.evento.preview.visualizar'
+  | 'eventos.lifecycle.review'
+  | 'eventos.lifecycle.solicitar_aprovacao'
+  | 'eventos.lifecycle.aprovar'
+  | 'eventos.lifecycle.publicar'
+  | 'eventos.lifecycle.pausar_vendas'
+  | 'eventos.lifecycle.alterar_status'
+  | 'eventos.lifecycle.operacao'
+  | 'eventos.lifecycle.encerrar'
+  | 'eventos.lifecycle.cancelar'
+  | 'eventos.lifecycle.arquivar'
+  // Alterações Controladas & Impacto (Fase 1.2.10)
+  | 'eventos.alteracoes.visualizar'
+  | 'eventos.alteracoes.solicitar'
+  | 'eventos.alteracoes.analisar_impacto'
+  | 'eventos.alteracoes.cancelar'
+  | 'eventos.alteracoes.executar'
+  | 'eventos.alteracoes.agendar'
+  | 'eventos.alteracoes.emergencial.solicitar'
+  // Dashboard Executivo & Operacional (Fase 1.2.11)
+  | 'eventos.dashboard.visualizar'
+  | 'eventos.dashboard.comercial.visualizar'
+  | 'eventos.dashboard.operacao.visualizar'
+  | 'eventos.dashboard.marketing.visualizar'
+  | 'eventos.dashboard.financeiro.visualizar'
+  | 'eventos.dashboard.alertas.visualizar'
   // Comercial
 
   | 'comercial.produtores.visualizar'
@@ -3570,3 +3605,325 @@ export interface CreateEventTaskInput {
   issueCode?: string;
   deduplicationKey?: string;
 }
+
+// ==========================================
+// FASE 1.2.9: STATE MACHINE, REVISÃO & PUBLICAÇÃO
+// ==========================================
+
+export interface EventTransitionInput {
+  targetStatus: EventStatus;
+  reason?: string;
+  notes?: string;
+}
+
+export interface AvailableTransitionDTO {
+  targetStatus: EventStatus;
+  label: string;
+  allowed: boolean;
+  blockReasons?: Array<{
+    code: string;
+    message: string;
+    details?: any;
+  }>;
+}
+
+export interface EventAvailableTransitionsResponse {
+  currentStatus: EventStatus;
+  currentStatusLabel: string;
+  transitions: AvailableTransitionDTO[];
+}
+
+export interface EventReviewSnapshotDTO {
+  id: string;
+  eventId: string;
+  eventVersion: number;
+  configurationHash: string;
+  submittedBy: string;
+  submittedByName?: string;
+  submittedAt: string;
+  status: 'VALID' | 'INVALIDATED' | 'SUPERSEDED';
+  invalidatedReason?: string | null;
+  summaryData: {
+    eventName: string;
+    sessionsCount: number;
+    sectionsCount: number;
+    batchesCount: number;
+    channelsCount: number;
+    readinessScore: number;
+    totalCapacity: number;
+  };
+}
+
+export type EventPublicationMode = 'IMMEDIATE' | 'SCHEDULED';
+
+export interface EventPublicationScheduleDTO {
+  id: string;
+  eventId: string;
+  scheduledAt: string;
+  timezone: string;
+  status: 'PENDING' | 'EXECUTED' | 'CANCELLED' | 'BLOCKED';
+  createdBy: string;
+  createdAt: string;
+  executedAt?: string | null;
+  failureReason?: string | null;
+}
+
+export interface PublishEventInput {
+  mode: EventPublicationMode;
+  scheduledAt?: string;
+  timezone?: string;
+  openSalesImmediately?: boolean;
+}
+
+export interface PauseSalesInput {
+  reason: string;
+  channelIds?: string[];
+}
+
+export interface EventPreviewTokenDTO {
+  token: string;
+  previewUrl: string;
+  expiresAt: string;
+  eventId: string;
+}
+
+// ==========================================
+// FASE 1.2.10: ALTERAÇÕES CONTROLADAS & IMPACTO
+// ==========================================
+
+export type EventChangeType =
+  | 'EVENT_DATE'
+  | 'EVENT_VENUE'
+  | 'SESSION_DATE'
+  | 'SESSION_STATUS'
+  | 'SECTION_CAPACITY'
+  | 'SECTION_NAME'
+  | 'PRICE_ADJUSTMENT'
+  | 'FEE_ADJUSTMENT'
+  | 'BATCH_PRICE'
+  | 'BATCH_QUANTITY'
+  | 'BATCH_DATES'
+  | 'SALES_CHANNEL'
+  | 'CHANNEL_STATUS'
+  | 'VISIBILITY'
+  | 'STRUCTURE_MAP'
+  | 'EVENT_INFO'
+  | 'POLICY_UPDATE'
+  | 'COMPLIMENTARY_QUOTA'
+  | 'INTERNAL_NOTE';
+
+export type EventChangeClassification =
+  | 'NON_CRITICAL'
+  | 'REVIEW_INVALIDATING'
+  | 'PUBLICATION_CRITICAL'
+  | 'POST_SALES_CRITICAL';
+
+export type EventChangeRequestStatus =
+  | 'DRAFT'
+  | 'ANALYZING'
+  | 'READY_FOR_SUBMISSION'
+  | 'APPROVAL_PENDING'
+  | 'APPROVED'
+  | 'REJECTED'
+  | 'STALE'
+  | 'SCHEDULED'
+  | 'EXECUTING'
+  | 'EXECUTED'
+  | 'FAILED'
+  | 'CANCELLED';
+
+export interface EventChangePayload {
+  field: string;
+  fieldName: string;
+  before: any;
+  after: any;
+  beforeFormatted?: string;
+  afterFormatted?: string;
+}
+
+export interface EventChangeImpactDTO {
+  requestId: string;
+  calculatedAt: string;
+  dataVersion: string;
+  snapshotHash: string;
+  isStale: boolean;
+  affectedCustomers: number;
+  affectedOrders: number;
+  affectedTickets: number;
+  financialAmount: number; // centavos
+  checkedInTickets: number;
+  affectedInventory: {
+    poolId?: string;
+    sectionName?: string;
+    capacityBefore: number;
+    capacityAfter: number;
+    difference: number;
+    committed: number;
+    deficit: number;
+    isDeficit: boolean;
+  };
+  affectedTeamMembers: number;
+  affectedAccessPoints: number;
+  warnings: string[];
+  blockers: string[];
+  requiresApproval: boolean;
+  recommendedApprovers: string[];
+}
+
+export interface EventChangeRequestDTO {
+  id: string;
+  publicCode: string; // ALT-XXXXXX
+  eventId: string;
+  sessionId?: string | null;
+  sessionName?: string | null;
+  resourceType: string;
+  resourceId: string;
+  changeType: EventChangeType;
+  classification: EventChangeClassification;
+  status: EventChangeRequestStatus;
+  requestedBy: string;
+  requestedByName?: string;
+  requestedAt: string;
+  reason: string;
+  businessJustification?: string | null;
+  changePayload: EventChangePayload;
+  impact?: EventChangeImpactDTO | null;
+  approvalRequestId?: string | null;
+  approvalStatus?: 'PENDING' | 'APPROVED' | 'REJECTED' | null;
+  rejectionReason?: string | null;
+  scheduledExecutionAt?: string | null;
+  executedAt?: string | null;
+  executedBy?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventChangeRequestInput {
+  sessionId?: string;
+  resourceType: string;
+  resourceId: string;
+  changeType: EventChangeType;
+  reason: string;
+  businessJustification?: string;
+  changePayload: EventChangePayload;
+}
+
+// ==========================================
+// FASE 1.2.11: DASHBOARD EXECUTIVO & OPERACIONAL
+// ==========================================
+
+export type DashboardViewType = 'EXECUTIVE' | 'COMMERCIAL' | 'OPERATIONAL';
+
+export interface EventDashboardKPIs {
+  grossSalesInCents: number;
+  grossSalesFormatted: string;
+  paidOrdersCount: number;
+  ticketsSoldCount: number;
+  occupancyPercentage: number;
+  totalCommercialCapacity: number;
+  totalCommittedTickets: number;
+  totalAvailableTickets: number;
+}
+
+export interface SectionOccupancyDTO {
+  sectionId: string;
+  sectionName: string;
+  capacity: number;
+  sold: number;
+  complimentary: number;
+  available: number;
+  occupancyPercentage: number;
+}
+
+export interface SessionDashboardItemDTO {
+  sessionId: string;
+  name: string;
+  startAt: string;
+  status: string;
+  ticketsSold: number;
+  capacity: number;
+  occupancyPercentage: number;
+}
+
+export interface BatchDashboardItemDTO {
+  batchId: string;
+  batchName: string;
+  phase: number;
+  status: string;
+  ticketsSold: number;
+  totalCapacity: number;
+  percentageUsed: number;
+  lowStockAlert: boolean;
+}
+
+export interface ChannelDashboardItemDTO {
+  channelId: string;
+  channelName: string;
+  channelType: string;
+  ticketsIssued: number;
+  percentageOfTotal: number;
+}
+
+export interface DashboardAlertDTO {
+  id: string;
+  source: 'READINESS' | 'INVENTORY' | 'DOCUMENT' | 'TASK' | 'CHANGES' | 'CHECKIN';
+  severity: 'INFO' | 'WARNING' | 'HIGH' | 'CRITICAL';
+  title: string;
+  description: string;
+  actionLabel?: string;
+  actionCode?: string;
+  actionRoute?: string;
+  detectedAt: string;
+  isDismissible: boolean;
+}
+
+export interface DataFreshnessDTO {
+  generatedAt: string;
+  salesFreshnessSeconds: number;
+  inventoryFreshnessSeconds: number;
+  isRealtimeConnected: boolean;
+}
+
+export interface EventDashboardDTO {
+  eventId: string;
+  eventName: string;
+  eventStatus: EventStatus;
+  publicCode: string;
+  venueName?: string;
+  cityName?: string;
+  selectedSessionId?: string | null;
+  viewType: DashboardViewType;
+  kpis: EventDashboardKPIs;
+  sections: SectionOccupancyDTO[];
+  sessions: SessionDashboardItemDTO[];
+  nextSession?: SessionDashboardItemDTO | null;
+  batches: BatchDashboardItemDTO[];
+  channels: ChannelDashboardItemDTO[];
+  readinessSummary: {
+    status: ReadinessStatus;
+    scorePercentage: number;
+    blockingCount: number;
+    warningCount: number;
+  };
+  tasksSummary: {
+    openTasksCount: number;
+    criticalTasksCount: number;
+  };
+  changesSummary: {
+    pendingApprovalCount: number;
+    readyForExecutionCount: number;
+  };
+  checkinSummary?: {
+    status: 'NOT_STARTED' | 'IN_PROGRESS' | 'CLOSED';
+    validatedCount: number;
+    percentageCheckedIn: number;
+  } | null;
+  financeSummary?: {
+    grossAmountInCents: number;
+    feeAmountInCents: number;
+    authorized: boolean;
+  } | null;
+  alerts: DashboardAlertDTO[];
+  freshness: DataFreshnessDTO;
+}
+

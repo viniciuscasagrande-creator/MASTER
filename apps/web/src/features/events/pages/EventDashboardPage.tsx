@@ -17,15 +17,25 @@ import {
   Globe,
   Gift,
   Users,
-  Sparkles
+  Sparkles,
+  DollarSign,
+  Ticket,
+  Activity,
+  Zap,
+  Filter,
+  RefreshCw,
+  Eye,
+  FileDiff,
+  Send
 } from 'lucide-react';
 import { EventDetailDTO, EventListItemDTO } from '../types/event.types';
 import { EventContextHeader } from '../components/EventContextHeader';
 import { StatCard } from '../../../shared/components/StatCard';
 import { Badge } from '../../../shared/components/Badge';
 import { formatNumber, formatDateTime } from '../../../shared/utils/formatters';
-import { fetchEventReadiness } from '../api/readiness.api';
-import { EventReadinessDTO } from '@shared/types/index';
+import { fetchEventDashboard } from '../api/dashboard.api';
+import { EventDashboardDTO, DashboardViewType } from '@shared/types/index';
+import { EventStatusBadge } from '../components/EventStatusBadge';
 
 interface EventDashboardPageProps {
   event: EventDetailDTO;
@@ -42,124 +52,38 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
   onClearEventContext,
   onNavigateModule
 }) => {
-  const capacity = event.capacity || 0;
-  const sold = event.soldTickets || 0;
-  const occupancy = event.occupancyPercentage ?? (capacity > 0 ? Math.round((sold / capacity) * 100) : null);
+  const [dashboard, setDashboard] = useState<EventDashboardDTO | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [selectedSessionId, setSelectedSessionId] = useState<string>('');
+  const [viewType, setViewType] = useState<DashboardViewType>('OPERATIONAL');
+  const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const [readiness, setReadiness] = useState<EventReadinessDTO | null>(null);
-  const [loadingReadiness, setLoadingReadiness] = useState(false);
+  const loadDashboard = async () => {
+    if (!event?.id) return;
+    try {
+      setIsRefreshing(true);
+      const data = await fetchEventDashboard(event.id, {
+        sessionId: selectedSessionId || undefined,
+        viewType
+      });
+      setDashboard(data);
+    } catch (err) {
+      console.error('Erro ao carregar dashboard:', err);
+    } finally {
+      setIsRefreshing(false);
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    let isMounted = true;
-    if (event?.id) {
-      setLoadingReadiness(true);
-      fetchEventReadiness(event.id)
-        .then((data) => {
-          if (isMounted) setReadiness(data);
-        })
-        .catch(() => {
-          // Fallback gracefully if endpoint isn't reached or event is freshly created
-        })
-        .finally(() => {
-          if (isMounted) setLoadingReadiness(false);
-        });
-    }
-    return () => {
-      isMounted = false;
-    };
-  }, [event?.id]);
+    loadDashboard();
+  }, [event?.id, selectedSessionId, viewType]);
 
-  // Subphases of Eventos module for the operational roadmap
-  const EVENT_SUBPHASES = [
-    {
-      id: '1.2.1',
-      title: 'Estrutura Core & Contexto',
-      desc: 'Cadastro básico, código público imutável e isolamento multitenant.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.2',
-      title: 'Cadastro Completo & Wizard',
-      desc: 'Wizard inteligente de 8 etapas, autosave, slug único e rascunhos.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.3',
-      title: 'Central de Locais & Mapas',
-      desc: 'Venues reutilizáveis, setores físicos, portões e editor gráfico de layout.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.4',
-      title: 'Datas, Sessões & Capacidade',
-      desc: 'Múltiplas sessões, motor de recorrência, reservas técnicas e conflitos.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.5',
-      title: 'Setores, Ingressos & Inventário',
-      desc: 'Setores operacionais, catálogo de modalidades comerciais, cotas e inventário atômico compartilhado.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.6',
-      title: 'Lotes, Preços & Regras de Venda',
-      desc: 'Máquina de estados de lotes, matriz de preços, centavos inteiros, split de taxas e regras comerciais.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.7',
-      title: 'Canais de Venda + Cortesias + Equipe do Evento',
-      desc: 'Distribuição omnichannel (Site, PDV, Bilheteria), cotas e aprovação de cortesias, e dimensionamento de equipe operacional.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.8',
-      title: 'Documentos + Pendências + Central de Prontidão',
-      desc: 'Gestão documental de alvarás e contratos, central de pendências operacionais e motor algorítmico de Readiness.',
-      status: 'COMPLETED'
-    },
-    {
-      id: '1.2.9',
-      title: 'Gestão de Vendas & PDV',
-      desc: 'Acompanhamento comercial em tempo real, terminais físicos e caixas.',
-      status: 'NEXT'
-    },
-    {
-      id: '1.2.10',
-      title: 'Políticas & Cancelamento',
-      desc: 'Regras de arrependimento, adiamentos e estornos.',
-      status: 'UPCOMING'
-    },
-    {
-      id: '1.2.11',
-      title: 'BI & Analytics do Evento',
-      desc: 'Velocidade de vendas, curvas de conversão e ticket médio.',
-      status: 'UPCOMING'
-    },
-    {
-      id: '1.2.12',
-      title: 'Borderô & Fechamento',
-      desc: 'Conciliação contábil, taxas de serviço e repasse ao produtor.',
-      status: 'UPCOMING'
-    },
-    {
-      id: '1.2.13',
-      title: 'Check-in & Portaria',
-      desc: 'Leitura de QR codes, controle de fluxo e catracas integradas.',
-      status: 'UPCOMING'
-    },
-    {
-      id: '1.2.14',
-      title: 'Histórico & Auditoria',
-      desc: 'Trilha completa e imutável de alterações do evento.',
-      status: 'UPCOMING'
-    }
-  ];
+  const kpis = dashboard?.kpis;
 
   return (
-    <div className="space-y-6 animate-fadeIn">
-      {/* 1. Context Banner with Event Identity & Fast Switcher */}
+    <div className="space-y-6 animate-in fade-in duration-300">
+      {/* Top Context Header */}
       <EventContextHeader
         event={event}
         availableEvents={availableEvents}
@@ -167,404 +91,376 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
         onClearEventContext={onClearEventContext}
       />
 
-      {/* 2. Operational KPIs for this active event */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard
-          title="CAPACIDADE TOTAL"
-          value={capacity > 0 ? formatNumber(capacity) : 'A definir'}
-          subtitle="Carga máxima autorizada"
-          icon={<Layers className="h-4 w-4 text-cyan-400" />}
-          badge={capacity > 0 ? 'Capacidade' : 'Pendente'}
-          badgeVariant={capacity > 0 ? 'cyan' : 'amber'}
-        />
-
-        <StatCard
-          title="INGRESSOS VENDIDOS"
-          value={formatNumber(sold)}
-          subtitle={capacity > 0 ? `${occupancy}% do total ocupado` : 'Vendas não iniciadas'}
-          icon={<TrendingUp className="h-4 w-4 text-emerald-400" />}
-          badge="Bilheteria"
-          badgeVariant="emerald"
-        />
-
-        <StatCard
-          title="DATA DE REALIZAÇÃO"
-          value={event.startAt ? formatDateTime(event.startAt).split(' ')[0] : 'A definir'}
-          subtitle={event.startAt ? `Início: ${formatDateTime(event.startAt).split(' ')[1] || '00:00'}` : 'Data não agendada'}
-          icon={<Calendar className="h-4 w-4 text-orange-400" />}
-          badge="Agenda"
-          badgeVariant="orange"
-        />
-
-        <StatCard
-          title="LOCAL & CIDADE"
-          value={event.city || 'Curitiba'}
-          subtitle={event.venue || 'Local a definir'}
-          icon={<MapPin className="h-4 w-4 text-purple-400" />}
-          badge={event.state || 'PR'}
-          badgeVariant="purple"
-        />
-      </div>
-
-      {/* 3. Cross-Module Context Synchronization Banner */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/50 p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-        <div className="flex items-start gap-3">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-cyan-500/10 text-cyan-400 border border-cyan-500/30">
-            <Info className="h-5 w-5" />
+      {/* Control Bar: Sessão, Tipo de Visão e Freshness em Tempo Real */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-sm flex flex-col md:flex-row items-center justify-between gap-4">
+        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
+          {/* Seletor de Sessão Sensível ao Contexto */}
+          <div className="flex items-center gap-2">
+            <Filter className="w-4 h-4 text-slate-400" />
+            <select
+              value={selectedSessionId}
+              onChange={(e) => setSelectedSessionId(e.target.value)}
+              className="bg-slate-950 border border-slate-800 rounded-xl px-3 py-1.5 text-xs text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="">Todas as Sessões</option>
+              {dashboard?.sessions.map((s) => (
+                <option key={s.sessionId} value={s.sessionId}>
+                  {s.name} ({new Date(s.startAt).toLocaleDateString('pt-BR')})
+                </option>
+              ))}
+            </select>
           </div>
-          <div>
-            <h4 className="text-sm font-bold text-white">
-              Contexto Operacional Sincronizado Globalmente
-            </h4>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Ao selecionar <strong className="text-slate-200">{event.name || event.title}</strong>, todas as consultas nos módulos integrados (Documentos, Tarefas, Relatórios, Observabilidade) aplicarão automaticamente o filtro deste evento.
-            </p>
-          </div>
-        </div>
 
-        {onNavigateModule && (
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          {/* Toggle de Tipo de Visão */}
+          <div className="flex items-center p-1 bg-slate-950 rounded-xl border border-slate-800 text-xs font-semibold">
             <button
-              onClick={() => onNavigateModule('events', 'events-sessions')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-xs text-orange-300 font-semibold transition-colors"
-            >
-              <Calendar className="h-3.5 w-3.5 text-orange-400" />
-              Sessões
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-sections')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-cyan-500/10 hover:bg-cyan-500/20 border border-cyan-500/30 text-xs text-cyan-300 font-semibold transition-colors"
-            >
-              <Layers className="h-3.5 w-3.5 text-cyan-400" />
-              Setores & Cota
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-batches')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/30 text-xs text-emerald-300 font-semibold transition-colors"
-            >
-              <TrendingUp className="h-3.5 w-3.5 text-emerald-400" />
-              Lotes & Preços
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-rules')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-xs text-purple-300 font-semibold transition-colors"
-            >
-              <ShieldCheck className="h-3.5 w-3.5 text-purple-400" />
-              Regras de Venda
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-channels')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 border border-blue-500/30 text-xs text-blue-300 font-semibold transition-colors"
-            >
-              <Globe className="h-3.5 w-3.5 text-blue-400" />
-              Canais
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-complimentary')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-pink-500/10 hover:bg-pink-500/20 border border-pink-500/30 text-xs text-pink-300 font-semibold transition-colors"
-            >
-              <Gift className="h-3.5 w-3.5 text-pink-400" />
-              Cortesias
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-team')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-xs text-amber-300 font-semibold transition-colors"
-            >
-              <Users className="h-3.5 w-3.5 text-amber-400" />
-              Equipe
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-documents')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 border border-teal-500/30 text-xs text-teal-300 font-semibold transition-colors"
-            >
-              <FileText className="h-3.5 w-3.5 text-teal-400" />
-              Documentos
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-tasks')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-indigo-500/10 hover:bg-indigo-500/20 border border-indigo-500/30 text-xs text-indigo-300 font-semibold transition-colors"
-            >
-              <ListTodo className="h-3.5 w-3.5 text-indigo-400" />
-              Pendências
-            </button>
-            <button
-              onClick={() => onNavigateModule('events', 'events-readiness')}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/20 hover:bg-orange-500/30 border border-orange-500/40 text-xs text-orange-300 font-bold transition-colors"
-            >
-              <Sparkles className="h-3.5 w-3.5 text-orange-400" />
-              Prontidão
-            </button>
-          </div>
-        )}
-      </div>
-
-      {/* 4. Central de Prontidão Operacional (Readiness Engine) */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
-          <div className="flex items-center gap-3">
-            <div
-              className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border ${
-                readiness?.status === 'READY'
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400'
-                  : readiness?.status === 'BLOCKED'
-                  ? 'bg-rose-500/10 border-rose-500/30 text-rose-400'
-                  : 'bg-amber-500/10 border-amber-500/30 text-amber-400'
+              onClick={() => setViewType('OPERATIONAL')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                viewType === 'OPERATIONAL'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
               }`}
             >
-              {readiness?.status === 'READY' ? (
-                <CheckCircle2 className="h-6 w-6" />
-              ) : readiness?.status === 'BLOCKED' ? (
-                <XCircle className="h-6 w-6" />
-              ) : (
-                <AlertTriangle className="h-6 w-6" />
+              Operacional
+            </button>
+            <button
+              onClick={() => setViewType('EXECUTIVE')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                viewType === 'EXECUTIVE'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Executivo
+            </button>
+            <button
+              onClick={() => setViewType('COMMERCIAL')}
+              className={`px-3 py-1 rounded-lg transition-colors ${
+                viewType === 'COMMERCIAL'
+                  ? 'bg-blue-600 text-white shadow-sm'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              Comercial
+            </button>
+          </div>
+        </div>
+
+        {/* Indicador de Freshness e Atualização */}
+        <div className="flex items-center gap-3 w-full md:w-auto justify-between md:justify-end">
+          <div className="flex items-center gap-2 text-xs font-medium text-emerald-400 bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+            Tempo Real Conectado
+          </div>
+
+          <button
+            onClick={loadDashboard}
+            disabled={isRefreshing}
+            className="p-1.5 rounded-xl bg-slate-950 hover:bg-slate-800 text-slate-400 hover:text-white border border-slate-800 transition-colors"
+            title="Atualizar Dados"
+          >
+            <RefreshCw className={`w-4 h-4 ${isRefreshing ? 'animate-spin text-blue-400' : ''}`} />
+          </button>
+        </div>
+      </div>
+
+      {/* Alertas Críticos e Operacionais Consolidados */}
+      {dashboard && dashboard.alerts && dashboard.alerts.length > 0 && (
+        <div className="space-y-2">
+          {dashboard.alerts.map((alert) => (
+            <div
+              key={alert.id}
+              className={`p-4 rounded-xl border flex items-center justify-between gap-4 text-xs ${
+                alert.severity === 'CRITICAL'
+                  ? 'bg-rose-950/30 border-rose-800/50 text-rose-200'
+                  : alert.severity === 'HIGH' || alert.severity === 'WARNING'
+                  ? 'bg-amber-950/30 border-amber-800/50 text-amber-200'
+                  : 'bg-blue-950/30 border-blue-800/50 text-blue-200'
+              }`}
+            >
+              <div className="flex items-center gap-3">
+                <AlertTriangle
+                  className={`w-5 h-5 shrink-0 ${
+                    alert.severity === 'CRITICAL'
+                      ? 'text-rose-400'
+                      : alert.severity === 'HIGH' || alert.severity === 'WARNING'
+                      ? 'text-amber-400'
+                      : 'text-blue-400'
+                  }`}
+                />
+                <div>
+                  <span className="font-bold block text-sm">{alert.title}</span>
+                  <span className="opacity-90">{alert.description}</span>
+                </div>
+              </div>
+
+              {alert.actionRoute && (
+                <button
+                  onClick={() => {
+                    if (alert.actionRoute?.includes('changes') && onNavigateModule) {
+                      onNavigateModule('events-changes');
+                    } else if (alert.actionRoute?.includes('readiness') && onNavigateModule) {
+                      onNavigateModule('events-readiness');
+                    } else if (alert.actionRoute?.includes('channels') && onNavigateModule) {
+                      onNavigateModule('events-sales-channels');
+                    } else if (alert.actionRoute?.includes('batches') && onNavigateModule) {
+                      onNavigateModule('events-batches');
+                    }
+                  }}
+                  className="px-3 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap bg-white/10 hover:bg-white/20 transition-colors shrink-0"
+                >
+                  {alert.actionLabel || 'Resolver'}
+                </button>
               )}
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h3 className="text-base font-bold text-white">Central de Prontidão Operacional (Readiness Engine)</h3>
-                <Badge
-                  variant={
-                    readiness?.status === 'READY'
-                      ? 'emerald'
-                      : readiness?.status === 'BLOCKED'
-                      ? 'rose'
-                      : 'amber'
-                  }
-                  size="sm"
-                >
-                  {readiness?.status === 'READY'
-                    ? '100% Pronto para Venda'
-                    : readiness?.status === 'BLOCKED'
-                    ? 'Bloqueios Críticos Detectados'
-                    : readiness?.status === 'WARNING'
-                    ? 'Alertas Identificados'
-                    : 'Avaliação Automática'}
-                </Badge>
-              </div>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Auditoria contínua sobre alvarás, capacidade, canais, ingressos, equipe e pendências operacionais.
-              </p>
-            </div>
-          </div>
+          ))}
+        </div>
+      )}
 
-          {onNavigateModule && (
-            <button
-              onClick={() => onNavigateModule('events', 'events-readiness')}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-orange-500 to-amber-500 hover:from-orange-600 hover:to-amber-600 text-white text-xs font-bold shadow-lg shadow-orange-500/20 transition-all shrink-0"
-            >
-              <Sparkles className="h-4 w-4" />
-              Abrir Central de Prontidão
-              <ChevronRight className="h-4 w-4" />
-            </button>
-          )}
+      {/* KPI Cards em Tempo Real (Zero Fake Metrics) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Vendas Brutas (com Widget-Level RBAC) */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Receita Bruta</span>
+            <DollarSign className="w-4 h-4 text-emerald-400" />
+          </div>
+          <div className="text-2xl font-bold text-white mb-1">
+            {kpis ? kpis.grossSalesFormatted : 'R$ ••••••'}
+          </div>
+          <div className="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>{kpis?.paidOrdersCount || 0} pedidos pagos</span>
+            {dashboard?.financeSummary && (
+              <span className="text-emerald-400 font-medium">Taxas inclusas</span>
+            )}
+          </div>
         </div>
 
-        {readiness && (
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-4">
-            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
-              <span className="text-[11px] text-slate-400 font-medium">Índice de Prontidão</span>
-              <div className="text-lg font-bold font-mono text-white mt-0.5">
-                {readiness.scorePercentage}%
-              </div>
-              <div className="w-full bg-slate-800 h-1.5 rounded-full mt-2 overflow-hidden">
-                <div
-                  className={`h-full rounded-full transition-all duration-500 ${
-                    readiness.scorePercentage >= 80
-                      ? 'bg-emerald-500'
-                      : readiness.scorePercentage >= 50
-                      ? 'bg-amber-500'
-                      : 'bg-rose-500'
-                  }`}
-                  style={{ width: `${readiness.scorePercentage}%` }}
-                />
-              </div>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
-              <span className="text-[11px] text-slate-400 font-medium">Regras Conformadas</span>
-              <div className="text-lg font-bold font-mono text-emerald-400 mt-0.5">
-                {readiness.summary.readyCount}{' '}
-                <span className="text-xs text-slate-500">/ {readiness.summary.totalChecks}</span>
-              </div>
-              <span className="text-[10px] text-slate-500 mt-1 block">critérios técnicos atendidos</span>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
-              <span className="text-[11px] text-slate-400 font-medium">Bloqueios Críticos</span>
-              <div className="text-lg font-bold font-mono text-rose-400 mt-0.5">
-                {readiness.summary.blockingCount}
-              </div>
-              <span className="text-[10px] text-slate-500 mt-1 block">impedem abertura de vendas</span>
-            </div>
-
-            <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/40">
-              <span className="text-[11px] text-slate-400 font-medium">Avisos & Alertas</span>
-              <div className="text-lg font-bold font-mono text-amber-400 mt-0.5">
-                {readiness.summary.warningCount}
-              </div>
-              <span className="text-[10px] text-slate-500 mt-1 block">recomendações operacionais</span>
-            </div>
+        {/* Ingressos Vendidos & Capacidade */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Ingressos Vendidos</span>
+            <Ticket className="w-4 h-4 text-blue-400" />
           </div>
-        )}
-      </div>
-
-      {/* 5. Publication Readiness Checklist */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg">
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-          <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <CheckCircle2 className="h-4 w-4 text-orange-400" />
-              Checklist de Prontidão para Publicação do Evento
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Requisitos operacionais obrigatórios antes do envio para aprovação e abertura de vendas
-            </p>
+          <div className="text-2xl font-bold text-white mb-1">
+            {kpis ? formatNumber(kpis.ticketsSoldCount) : 0}
           </div>
-          <Badge variant="emerald" size="sm">
-            5 de 6 Etapas Concluídas
-          </Badge>
+          <div className="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>Capacidade: {kpis ? formatNumber(kpis.totalCommercialCapacity) : 0}</span>
+            <span className="text-blue-400 font-semibold">{kpis?.occupancyPercentage || 0}%</span>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-emerald-300">
-                1. Cadastro Básico & Código
-              </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
-                Código <span className="font-mono text-slate-300">{event.publicCode}</span> gerado com sucesso.
-              </div>
-            </div>
+        {/* Taxa de Ocupação Geral */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Taxa de Ocupação</span>
+            <TrendingUp className="w-4 h-4 text-purple-400" />
           </div>
-
-          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-emerald-300">
-                2. Sessões & Locais
-              </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
-                Venue <span className="text-slate-200">{event.venue || 'Local Definido'}</span> e sessão principal vinculados.
-              </div>
-            </div>
+          <div className="text-2xl font-bold text-white mb-1">
+            {kpis?.occupancyPercentage || 0}%
           </div>
-
-          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-emerald-300">
-                3. Setores & Inventário
-              </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
-                Capacidade de <span className="font-mono text-slate-200">{formatNumber(capacity)}</span> lugares e pool atômico.
-              </div>
-            </div>
+          <div className="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden mt-2">
+            <div
+              className="bg-purple-500 h-full rounded-full transition-all duration-500"
+              style={{ width: `${Math.min(100, kpis?.occupancyPercentage || 0)}%` }}
+            />
           </div>
+        </div>
 
-          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-emerald-300">
-                4. Ingressos, Lotes & Preços
-              </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
-                Modalidades comerciais, lotes escalonados e matriz de preços em centavos.
-              </div>
-            </div>
+        {/* Check-in Operacional */}
+        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-5 relative overflow-hidden">
+          <div className="flex items-center justify-between text-slate-400 text-xs mb-2">
+            <span>Check-in Realizado</span>
+            <CheckCircle2 className="w-4 h-4 text-indigo-400" />
           </div>
-
-          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-emerald-300">
-                5. Regras & Limites de Venda
-              </div>
-              <div className="text-[11px] text-slate-400 mt-0.5">
-                Cota de meia-entrada (40% legal) e proteção anti-cambismo por CPF.
-              </div>
-            </div>
+          <div className="text-2xl font-bold text-white mb-1">
+            {dashboard?.checkinSummary?.percentageCheckedIn || 0}%
           </div>
-
-          <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-start gap-3">
-            <Clock className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
-            <div>
-              <div className="text-xs font-semibold text-slate-300">
-                6. Aprovação & Publicação
-              </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Validação executiva de alçadas e publicação para venda pública.
-              </div>
-            </div>
+          <div className="text-[11px] text-slate-400 flex items-center justify-between">
+            <span>{dashboard?.checkinSummary?.validatedCount || 0} validados</span>
+            <span className="text-indigo-400 font-medium">{dashboard?.checkinSummary?.status || 'NÃO INICIADO'}</span>
           </div>
         </div>
       </div>
 
-      {/* 5. Subphases Roadmap of Module Eventos */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg">
-        <div className="flex items-center justify-between border-b border-slate-800/80 pb-3 mb-4">
-          <div>
-            <h3 className="text-sm font-bold text-white flex items-center gap-2">
-              <Layers className="h-4 w-4 text-cyan-400" />
-              Arquitetura Operacional do Módulo EVENTOS (Fases 1.2.1 a 1.2.14)
-            </h3>
-            <p className="text-xs text-slate-400 mt-0.5">
-              Estrutura modular de negócio construída consumindo o Core transversal Disk Interno
-            </p>
+      {/* Grid Central: Ocupação por Setor & Saúde de Lotes */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Ocupação por Setor (2 colunas) */}
+        <div className="lg:col-span-2 bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Layers className="w-5 h-5 text-blue-400" />
+              <h3 className="text-base font-bold text-white">Ocupação Operacional por Setor</h3>
+            </div>
+            <span className="text-xs text-slate-400">
+              {dashboard?.sections.length || 0} setores ativos
+            </span>
+          </div>
+
+          <div className="space-y-4">
+            {dashboard?.sections.map((sec) => (
+              <div key={sec.sectionId} className="space-y-1.5 bg-slate-950 p-3.5 rounded-xl border border-slate-800">
+                <div className="flex items-center justify-between text-xs">
+                  <span className="font-bold text-white">{sec.sectionName}</span>
+                  <span className="text-slate-400">
+                    <strong className="text-white">{formatNumber(sec.sold)}</strong> / {formatNumber(sec.capacity)} ({sec.occupancyPercentage}%)
+                  </span>
+                </div>
+
+                <div className="w-full bg-slate-800 h-2 rounded-full overflow-hidden">
+                  <div
+                    className={`h-full rounded-full transition-all duration-500 ${
+                      sec.occupancyPercentage >= 95
+                        ? 'bg-rose-500'
+                        : sec.occupancyPercentage >= 80
+                        ? 'bg-amber-500'
+                        : 'bg-blue-500'
+                    }`}
+                    style={{ width: `${Math.min(100, sec.occupancyPercentage)}%` }}
+                  />
+                </div>
+
+                <div className="flex items-center justify-between text-[10px] text-slate-500 pt-0.5">
+                  <span>Disponíveis: {formatNumber(sec.available)}</span>
+                  <span>Cortesias: {formatNumber(sec.complimentary)}</span>
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {EVENT_SUBPHASES.map((sub) => {
-            const isCompleted = sub.status === 'COMPLETED';
-            const isNext = sub.status === 'NEXT';
+        {/* Atalhos Operacionais de Gestão (1 coluna) */}
+        <div className="space-y-6">
+          {/* Card de Gestão e Prontidão */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-4">
+            <h3 className="text-sm font-bold text-white">Centro de Comando & Governança</h3>
 
-            return (
-              <div
-                key={sub.id}
-                className={`p-3.5 rounded-xl border transition-all ${
-                  isCompleted
-                    ? 'border-emerald-500/30 bg-emerald-500/5'
-                    : isNext
-                    ? 'border-orange-500/40 bg-orange-500/5'
-                    : 'border-slate-800/80 bg-slate-950/50'
-                }`}
+            <div className="space-y-2">
+              <button
+                onClick={() => onNavigateModule && onNavigateModule('events-review-publication')}
+                className="w-full p-3 bg-slate-950 hover:bg-slate-800/80 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-200 transition-colors group"
               >
-                <div className="flex items-center justify-between gap-2">
-                  <span className="font-mono text-[11px] font-bold text-slate-400">
-                    Fase {sub.id}
-                  </span>
-                  <Badge
-                    variant={isCompleted ? 'emerald' : isNext ? 'orange' : 'slate'}
-                    size="sm"
-                  >
-                    {isCompleted ? 'Concluído' : isNext ? 'Próxima Etapa' : 'Planejado'}
-                  </Badge>
+                <div className="flex items-center gap-2.5">
+                  <Send className="w-4 h-4 text-blue-400" />
+                  <span>Revisão & Publicação</span>
                 </div>
+                <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
+              </button>
 
-                <div className="text-xs font-bold text-white mt-1.5">
-                  {sub.title}
+              <button
+                onClick={() => onNavigateModule && onNavigateModule('events-changes')}
+                className="w-full p-3 bg-slate-950 hover:bg-slate-800/80 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-200 transition-colors group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <FileDiff className="w-4 h-4 text-purple-400" />
+                  <span>Central de Alterações</span>
                 </div>
-
-                <p className="text-[11px] text-slate-400 mt-1 leading-snug">
-                  {sub.desc}
-                </p>
-
-                <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-[10px]">
-                  <span className="text-slate-500">
-                    {isCompleted
-                      ? 'Integrado e operacional'
-                      : 'Disponível na próxima etapa'}
-                  </span>
-                  {isNext && (
-                    <span className="text-orange-400 font-semibold flex items-center">
-                      Configurar em breve <ChevronRight className="h-3 w-3" />
+                <div className="flex items-center gap-2">
+                  {dashboard?.changesSummary.pendingApprovalCount ? (
+                    <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300">
+                      {dashboard.changesSummary.pendingApprovalCount}
                     </span>
-                  )}
+                  ) : null}
+                  <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
                 </div>
-              </div>
-            );
-          })}
+              </button>
+
+              <button
+                onClick={() => onNavigateModule && onNavigateModule('events-readiness')}
+                className="w-full p-3 bg-slate-950 hover:bg-slate-800/80 rounded-xl border border-slate-800 flex items-center justify-between text-xs text-slate-200 transition-colors group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <span>Central de Prontidão</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[11px] font-bold text-emerald-400">
+                    {dashboard?.readinessSummary.scorePercentage || 0}%
+                  </span>
+                  <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
+                </div>
+              </button>
+            </div>
+          </div>
+
+          {/* Resumo de Canais de Distribuição */}
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-3">
+            <h3 className="text-sm font-bold text-white">Canais de Distribuição</h3>
+            <div className="space-y-2">
+              {dashboard?.channels.map((chn) => (
+                <div key={chn.channelId} className="p-2.5 bg-slate-950 rounded-xl border border-slate-800 flex items-center justify-between text-xs">
+                  <span className="text-slate-300 truncate">{chn.channelName}</span>
+                  <span className="font-semibold text-white">{chn.ticketsIssued} ing. ({chn.percentageOfTotal}%)</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabela de Lotes Comerciais */}
+      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <Ticket className="w-5 h-5 text-blue-400" />
+            <h3 className="text-base font-bold text-white">Status dos Lotes Comerciais</h3>
+          </div>
+          <button
+            onClick={() => onNavigateModule && onNavigateModule('events-batches')}
+            className="text-xs text-blue-400 hover:text-blue-300 font-medium"
+          >
+            Gerenciar Lotes
+          </button>
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left text-xs">
+            <thead className="bg-slate-950 text-slate-400 border-b border-slate-800 font-semibold">
+              <tr>
+                <th className="py-2.5 px-3">Lote</th>
+                <th className="py-2.5 px-3">Status</th>
+                <th className="py-2.5 px-3">Vendidos</th>
+                <th className="py-2.5 px-3">Capacidade</th>
+                <th className="py-2.5 px-3">Consumo</th>
+                <th className="py-2.5 px-3 text-right">Alerta</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-slate-800/60 text-slate-300">
+              {dashboard?.batches.map((batch) => (
+                <tr key={batch.batchId} className="hover:bg-slate-800/30">
+                  <td className="py-3 px-3 font-semibold text-white">{batch.batchName}</td>
+                  <td className="py-3 px-3">
+                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                      {batch.status}
+                    </span>
+                  </td>
+                  <td className="py-3 px-3 font-mono">{formatNumber(batch.ticketsSold)}</td>
+                  <td className="py-3 px-3 font-mono">{formatNumber(batch.totalCapacity)}</td>
+                  <td className="py-3 px-3">
+                    <div className="flex items-center gap-2">
+                      <div className="w-16 bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                        <div
+                          className="bg-blue-500 h-full rounded-full"
+                          style={{ width: `${batch.percentageUsed}%` }}
+                        />
+                      </div>
+                      <span className="text-[11px] font-mono">{batch.percentageUsed}%</span>
+                    </div>
+                  </td>
+                  <td className="py-3 px-3 text-right">
+                    {batch.lowStockAlert ? (
+                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                        ESTOQUE BAIXO
+                      </span>
+                    ) : (
+                      <span className="text-emerald-400 font-medium">OK</span>
+                    )}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       </div>
     </div>

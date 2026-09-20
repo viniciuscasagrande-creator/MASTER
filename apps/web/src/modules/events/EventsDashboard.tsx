@@ -20,6 +20,8 @@ import { EventTeamPage } from '../../features/events/team/EventTeamPage';
 import { EventDocumentsPage } from '../../features/events/documents/EventDocumentsPage';
 import { EventTasksPage } from '../../features/events/tasks/EventTasksPage';
 import { EventReadinessPage } from '../../features/events/readiness/EventReadinessPage';
+import { EventReviewPublicationPage } from '../../features/events/publication/EventReviewPublicationPage';
+import { EventChangeManagementPage } from '../../features/events/changes/EventChangeManagementPage';
 import { useEventSelection } from '../../features/events/hooks/useEventSelection';
 import { useEvents } from '../../features/events/hooks/useEvents';
 import { createEventDraft } from '../../features/events/api/events.api';
@@ -333,6 +335,28 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
         eventId={activeEvent.id}
         eventName={activeEvent.name || (activeEvent as any).title}
         onNavigateToTab={(tabId) => onNavigate?.('events', tabId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CENTRAL DE ALTERAÇÕES CONTROLADAS (FASE 1.2.10) ---
+  if (initialSubItem === 'events-changes') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar alterações controladas do evento');
+    return (
+      <EventChangeManagementPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: REVISÃO & PUBLICAÇÃO (FASE 1.2.9) ---
+  if (initialSubItem === 'events-review-publication') {
+    if (!activeEvent) return renderNoEventSelected('revisar e publicar o evento');
+    return (
+      <EventReviewPublicationPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
       />
     );
   }

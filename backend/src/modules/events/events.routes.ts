@@ -20,6 +20,9 @@ import eventTeamRoutes from './team/event-team.routes';
 import eventDocumentRoutes from './documents/event-document.routes';
 import eventTaskRoutes from './tasks/event-task.routes';
 import eventReadinessRoutes from './readiness/event-readiness.routes';
+import eventLifecycleRoutes from './lifecycle/event-lifecycle.routes';
+import eventChangeRoutes from './changes/event-change.routes';
+import eventDashboardRoutes from './dashboard/event-dashboard.routes';
 
 const router = Router();
 
@@ -90,6 +93,15 @@ router.use('/:eventId/tasks', eventTaskRoutes);
 
 // 5.13 Central de Preparação & Readiness Engine (Fase 1.2.8)
 router.use('/:eventId/readiness', eventReadinessRoutes);
+
+// 5.14 Ciclo de Vida, Revisão e Publicação (Fase 1.2.9)
+router.use('/:eventId', eventLifecycleRoutes);
+
+// 5.15 Alterações Críticas e Análise de Impacto (Fase 1.2.10)
+router.use('/:eventId/changes', eventChangeRoutes);
+
+// 5.16 Dashboard Executivo e Operacional (Fase 1.2.11)
+router.use('/:eventId/dashboard', eventDashboardRoutes);
 
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);

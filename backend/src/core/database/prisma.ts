@@ -65,6 +65,13 @@ export class InMemoryPrismaStore {
   public readinessCheckDefinitionRecords: any[] = [];
   public readinessSnapshotRecords: any[] = [];
   public eventTaskRecords: any[] = [];
+  // Fase 1.2.9 — State Machine, Revisão e Publicação
+  public eventReviewSnapshotRecords: any[] = [];
+  public eventPublicationScheduleRecords: any[] = [];
+  // Fase 1.2.10 — Alterações Controladas e Impacto
+  public eventChangeRequestRecords: any[] = [];
+  // Fase 1.2.11 — Dashboard Executivo e Operacional
+  public eventDashboardSnapshotRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -240,6 +247,10 @@ export class InMemoryPrismaStore {
     this.readinessCheckDefinitionRecords = [];
     this.readinessSnapshotRecords = [];
     this.eventTaskRecords = [];
+    this.eventReviewSnapshotRecords = [];
+    this.eventPublicationScheduleRecords = [];
+    this.eventChangeRequestRecords = [];
+    this.eventDashboardSnapshotRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -5892,6 +5903,187 @@ export class InMemoryPrismaStore {
         const updated = { ...this.eventTaskRecords[idx], ...args.data, updatedAt: new Date() };
         this.eventTaskRecords[idx] = updated;
         return { ...updated };
+      }
+    };
+  }
+
+  public get eventReviewSnapshot() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventReviewSnapshotRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        if (args?.orderBy?.submittedAt === 'desc') list.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+        return list.map(x => ({ ...x }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const x = this.eventReviewSnapshotRecords.find(item => item.id === args.where.id);
+        return x ? { ...x } : null;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventReviewSnapshotRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        if (args?.orderBy?.submittedAt === 'desc') list.sort((a, b) => new Date(b.submittedAt).getTime() - new Date(a.submittedAt).getTime());
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `rsnap_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'VALID',
+          ...args.data,
+          submittedAt: args.data.submittedAt ? new Date(args.data.submittedAt) : new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventReviewSnapshotRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventReviewSnapshotRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Snapshot de revisão não encontrado');
+        const updated = { ...this.eventReviewSnapshotRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventReviewSnapshotRecords[idx] = updated;
+        return { ...updated };
+      },
+      updateMany: async (args: any) => {
+        let count = 0;
+        this.eventReviewSnapshotRecords = this.eventReviewSnapshotRecords.map(x => {
+          if ((!args?.where?.eventId || x.eventId === args.where.eventId) &&
+              (!args?.where?.status || x.status === args.where.status)) {
+            count++;
+            return { ...x, ...args.data, updatedAt: new Date() };
+          }
+          return x;
+        });
+        return { count };
+      }
+    };
+  }
+
+  public get eventPublicationSchedule() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventPublicationScheduleRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.map(x => ({ ...x }));
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const x = this.eventPublicationScheduleRecords.find(item => item.id === args.where.id);
+        return x ? { ...x } : null;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventPublicationScheduleRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `pub_sched_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'PENDING',
+          timezone: 'America/Sao_Paulo',
+          ...args.data,
+          scheduledAt: new Date(args.data.scheduledAt),
+          createdAt: new Date()
+        };
+        this.eventPublicationScheduleRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventPublicationScheduleRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Agendamento de publicação não encontrado');
+        const updated = { ...this.eventPublicationScheduleRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventPublicationScheduleRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.eventPublicationScheduleRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Agendamento de publicação não encontrado');
+        const deleted = this.eventPublicationScheduleRecords.splice(idx, 1)[0];
+        return { ...deleted };
+      }
+    };
+  }
+
+  public get eventChangeRequest() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventChangeRequestRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        if (args?.where?.classification) list = list.filter(x => x.classification === args.where.classification);
+        if (args?.orderBy?.requestedAt === 'desc' || args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt || b.requestedAt).getTime() - new Date(a.createdAt || a.requestedAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      findUnique: async (args: any) => {
+        if (args?.where?.id) {
+          const x = this.eventChangeRequestRecords.find(item => item.id === args.where.id);
+          return x ? { ...x } : null;
+        }
+        if (args?.where?.publicCode) {
+          const x = this.eventChangeRequestRecords.find(item => item.publicCode === args.where.publicCode);
+          return x ? { ...x } : null;
+        }
+        return null;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventChangeRequestRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `chg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          requestedAt: new Date(),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.eventChangeRequestRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventChangeRequestRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Solicitação de alteração não encontrada');
+        const updated = { ...this.eventChangeRequestRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventChangeRequestRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get eventDashboardSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        const s = this.eventDashboardSnapshotRecords.find(x => x.id === args.where?.id || (x.eventId === args.where?.eventId && (!args.where?.sessionId || x.sessionId === args.where.sessionId)));
+        return s ? { ...s } : null;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventDashboardSnapshotRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      upsert: async (args: any) => {
+        const idx = this.eventDashboardSnapshotRecords.findIndex(x => x.eventId === args.where?.eventId && (!args.where?.sessionId || x.sessionId === args.where.sessionId));
+        if (idx !== -1) {
+          const updated = { ...this.eventDashboardSnapshotRecords[idx], ...args.update, generatedAt: new Date() };
+          this.eventDashboardSnapshotRecords[idx] = updated;
+          return { ...updated };
+        } else {
+          const record = { id: `dash_snap_${Date.now()}`, ...args.create, generatedAt: new Date() };
+          this.eventDashboardSnapshotRecords.push(record);
+          return { ...record };
+        }
       }
     };
   }

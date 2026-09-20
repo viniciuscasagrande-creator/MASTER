@@ -1251,6 +1251,98 @@ model ReadinessSnapshot {
   @@index([status])
 }
 
+// ------------------------------------------------------------------------------
+// FASE 1.2.9: REVISÃO, APROVAÇÃO E PUBLICAÇÃO
+// ------------------------------------------------------------------------------
+
+model EventReviewSnapshot {
+  id                String   @id @default(uuid())
+  eventId           String
+  eventVersion      Int      @default(1)
+  configurationHash String
+  submittedBy       String
+  submittedByName   String?
+  submittedAt       DateTime @default(now())
+  status            String   @default("VALID") // VALID, INVALIDATED, SUPERSEDED
+  invalidatedReason String?
+  summaryJson       String   // JSON com contagens e métricas na submissão
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([status])
+}
+
+model EventPublicationSchedule {
+  id            String    @id @default(uuid())
+  eventId       String
+  scheduledAt   DateTime
+  timezone      String    @default("America/Sao_Paulo")
+  status        String    @default("PENDING") // PENDING, EXECUTED, CANCELLED, BLOCKED
+  createdBy     String
+  createdAt     DateTime  @default(now())
+  executedAt    DateTime?
+  failureReason String?
+
+  @@index([eventId])
+  @@index([status])
+  @@index([scheduledAt])
+}
+
+// ------------------------------------------------------------------------------
+// FASE 1.2.10: ALTERAÇÕES CONTROLADAS & ANÁLISE DE IMPACTO
+// ------------------------------------------------------------------------------
+
+model EventChangeRequest {
+  id                    String    @id @default(uuid())
+  publicCode            String    @unique // ALT-XXXXXX
+  eventId               String
+  sessionId             String?
+  sessionName           String?
+  resourceType          String
+  resourceId            String
+  changeType            String    // EVENT_DATE, EVENT_VENUE, SESSION_DATE, SESSION_STATUS, etc.
+  classification        String    // NON_CRITICAL, REVIEW_INVALIDATING, PUBLICATION_CRITICAL, POST_SALES_CRITICAL
+  status                String    @default("DRAFT") // DRAFT, ANALYZING, READY_FOR_SUBMISSION, APPROVAL_PENDING, etc.
+  requestedBy           String
+  requestedByName       String?
+  requestedAt           DateTime  @default(now())
+  reason                String
+  businessJustification String?
+  payloadJson           String    // JSON do campo alterado { field, before, after }
+  impactJson            String?   // JSON com resultado da análise de impacto
+  approvalRequestId     String?
+  approvalStatus        String?
+  rejectionReason       String?
+  scheduledExecutionAt  DateTime?
+  executedAt            DateTime?
+  executedBy            String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([eventId])
+  @@index([status])
+  @@index([publicCode])
+}
+
+// ------------------------------------------------------------------------------
+// FASE 1.2.11: DASHBOARD EXECUTIVO & OPERACIONAL (SNAPSHOT CACHE)
+// ------------------------------------------------------------------------------
+
+model EventDashboardSnapshot {
+  id            String    @id @default(uuid())
+  eventId       String
+  sessionId     String?
+  snapshotType  String    @default("CONSOLIDATED")
+  payloadJson   String    // JSON com dados pré-agregados do dashboard
+  generatedAt   DateTime  @default(now())
+  sourceVersion Int       @default(1)
+  expiresAt     DateTime?
+
+  @@index([eventId])
+  @@index([sessionId])
+}
+
 model UserProducerAccess {
   id         String   @id @default(uuid())
   userId     String
