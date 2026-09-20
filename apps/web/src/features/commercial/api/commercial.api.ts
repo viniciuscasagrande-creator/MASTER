@@ -732,5 +732,6 @@ export const CommercialApi = {
 };
 
 export { CommercialContractsApi } from '../contracts/api/commercial-contracts.api';
+export { CommercialCatalogApi } from '../catalog/api/commercial-catalog.api';
 
 

@@ -4228,10 +4228,16 @@ model CommercialOfferingCategory {
 
 model CommercialOffering {
   id                   String   @id @default(uuid())
+  publicCode           String?  @unique // OFR-YYYY-XXXXXX
   categoryId           String
   code                 String   @unique
   name                 String
+  type                 String   @default("SERVICE") // PLAN, PACKAGE, SERVICE, MODULE, ADD_ON
+  shortDescription     String?
   description          String?
+  status               String   @default("ACTIVE") // DRAFT, ACTIVE, INACTIVE, DISCONTINUED
+  currentVersionId     String?
+  currentVersionNumber Int      @default(1)
   defaultPricingModel  String   @default("PERCENTAGE") // PERCENTAGE, FIXED_AMOUNT, PER_TICKET, SUBSCRIPTION, HYBRID, CUSTOM
   defaultPercentage    Float?
   defaultAmount        Float?
@@ -4242,8 +4248,113 @@ model CommercialOffering {
   updatedAt            DateTime @updatedAt
 
   category             CommercialOfferingCategory @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  versions             CommercialOfferingVersion[]
+  compositionsAsParent CommercialOfferingComposition[] @relation("ParentComposition")
+  compositionsAsChild  CommercialOfferingComposition[] @relation("ChildComposition")
 
   @@index([categoryId])
+  @@index([type])
+  @@index([status])
+}
+
+model CommercialOfferingVersion {
+  id                  String   @id @default(uuid())
+  offeringId          String
+  versionNumber       Int
+  status              String   @default("DRAFT") // DRAFT, ACTIVE, INACTIVE, DISCONTINUED
+  nameSnapshot        String
+  descriptionSnapshot String?
+  validFrom           DateTime?
+  validUntil          DateTime?
+  contentHash         String   // SHA-256
+  changeSummary       String?
+  publishedAt         DateTime?
+  publishedBy         String?
+  createdBy           String
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  offering            CommercialOffering @relation(fields: [offeringId], references: [id], onDelete: Cascade)
+  defaultTerms        CommercialDefaultTerm[]
+  features            OfferingFeature[]
+  compositions        CommercialOfferingComposition[] @relation("ParentComposition")
+
+  @@unique([offeringId, versionNumber])
+  @@index([offeringId])
+}
+
+model CommercialOfferingComposition {
+  id                      String   @id @default(uuid())
+  parentOfferingId        String
+  parentOfferingVersionId String
+  childOfferingId         String
+  childOfferingVersionId  String?
+  quantity                Int      @default(1)
+  required                Boolean  @default(true)
+  sortOrder               Int      @default(0)
+  createdAt               DateTime @default(now())
+
+  parentOffering          CommercialOffering @relation("ParentComposition", fields: [parentOfferingId], references: [id], onDelete: Cascade)
+  parentVersion           CommercialOfferingVersion @relation("ParentComposition", fields: [parentOfferingVersionId], references: [id], onDelete: Cascade)
+  childOffering           CommercialOffering @relation("ChildComposition", fields: [childOfferingId], references: [id], onDelete: Cascade)
+
+  @@index([parentOfferingId])
+  @@index([parentOfferingVersionId])
+  @@index([childOfferingId])
+}
+
+model CommercialFeature {
+  id               String   @id @default(uuid())
+  code             String   @unique // feature.marketing.boost, feature.access.offline_validator
+  name             String
+  description      String?
+  category         String   @default("PLATFORM") // PLATFORM, ACCESS, MARKETING, BOX_OFFICE, REPORTS, FINANCE
+  active           Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  offeringFeatures OfferingFeature[]
+}
+
+model OfferingFeature {
+  id                 String   @id @default(uuid())
+  offeringVersionId  String
+  featureId          String
+  included           Boolean  @default(true)
+  limitValue         Int?
+  limitUnit          String?
+  configurationJson  String?  // Schema-validated config
+  createdAt          DateTime @default(now())
+
+  offeringVersion    CommercialOfferingVersion @relation(fields: [offeringVersionId], references: [id], onDelete: Cascade)
+  feature            CommercialFeature @relation(fields: [featureId], references: [id], onDelete: Cascade)
+
+  @@unique([offeringVersionId, featureId])
+  @@index([offeringVersionId])
+  @@index([featureId])
+}
+
+model CommercialDefaultTerm {
+  id                      String   @id @default(uuid())
+  offeringVersionId       String
+  termType                String   // ProposalTermType: PLATFORM_COMMISSION, ACCESS_CONTROL, BOX_OFFICE, MARKETING, EQUIPMENT, REBATE, MINIMUM_GUARANTEE, SETUP_FEE, CUSTOM
+  calculationType         String   // CommercialPricingModel: PERCENTAGE, FIXED_AMOUNT, PER_TICKET, SUBSCRIPTION, HYBRID, CUSTOM
+  currency                String   @default("BRL")
+  percentage              Float?
+  amount                  Float?
+  minimumAmount           Float?
+  payer                   String   @default("PRODUCER") // PRODUCER, BUYER, SPLIT
+  splitProducerPercentage Float?
+  splitBuyerPercentage    Float?
+  conditions              String?
+  negotiable              Boolean  @default(true)
+  validFrom               DateTime?
+  validUntil              DateTime?
+  createdAt               DateTime @default(now())
+
+  offeringVersion         CommercialOfferingVersion @relation(fields: [offeringVersionId], references: [id], onDelete: Cascade)
+
+  @@index([offeringVersionId])
 }
 
 model CommercialProposal {

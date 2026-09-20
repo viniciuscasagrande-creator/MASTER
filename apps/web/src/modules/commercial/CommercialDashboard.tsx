@@ -13,6 +13,8 @@ import { ProposalsPage } from '../../features/commercial/proposals/ProposalsPage
 import { ProposalDetailsPage } from '../../features/commercial/proposals/ProposalDetailsPage';
 import { ContractsPage } from '../../features/commercial/contracts/ContractsPage';
 import { ContractDetailsPage } from '../../features/commercial/contracts/ContractDetailsPage';
+import { CommercialCatalogPage } from '../../features/commercial/catalog/CommercialCatalogPage';
+import { OfferingDetailsPage } from '../../features/commercial/catalog/OfferingDetailsPage';
 
 interface CommercialDashboardProps {
   initialSubItem?: string;
@@ -30,6 +32,7 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
   const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
   const [proposalForContractId, setProposalForContractId] = useState<string | null>(null);
+  const [selectedOfferingId, setSelectedOfferingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialSubItem) {
@@ -91,6 +94,16 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const handleGenerateContractFromProposal = (proposalId: string) => {
     setProposalForContractId(proposalId);
     setCurrentView('commercial-contracts');
+  };
+
+  const handleSelectOffering = (offeringId: string) => {
+    setSelectedOfferingId(offeringId);
+    setCurrentView('commercial-offering-detail');
+  };
+
+  const handleBackToCatalog = () => {
+    setSelectedOfferingId(null);
+    setCurrentView('commercial-catalog');
   };
 
   // Route switcher
@@ -227,6 +240,26 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
         onSelectContract={handleSelectContract}
         onSelectProducer={handleSelectProducer}
         initialProposalIdForCreate={proposalForContractId || undefined}
+      />
+    );
+  }
+
+  // Detalhes da Oferta Comercial (Fase 1.3.7)
+  if (currentView === 'commercial-offering-detail' && selectedOfferingId) {
+    return (
+      <OfferingDetailsPage
+        offeringId={selectedOfferingId}
+        onBack={handleBackToCatalog}
+        onSelectChildOffering={handleSelectOffering}
+      />
+    );
+  }
+
+  // Catálogo Comercial & Planos (Fase 1.3.7)
+  if (currentView === 'commercial-catalog') {
+    return (
+      <CommercialCatalogPage
+        onSelectOffering={handleSelectOffering}
       />
     );
   }

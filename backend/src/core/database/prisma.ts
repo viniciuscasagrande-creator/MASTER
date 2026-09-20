@@ -125,9 +125,14 @@ export class InMemoryPrismaStore {
   public commercialOpportunities: any[] = [];
   public opportunityStageHistories: any[] = [];
   public opportunityCloseReasons: any[] = [];
-  // Fase 1.3.5 — Propostas Comerciais, Condições de Negociação, Versionamento e Aprovação
+  // Fase 1.3.5 / 1.3.7 — Catálogo Comercial, Planos, Pacotes, Versões e Condições Padrão
   public commercialOfferingCategories: any[] = [];
   public commercialOfferings: any[] = [];
+  public commercialOfferingVersions: any[] = [];
+  public commercialOfferingCompositions: any[] = [];
+  public commercialFeatures: any[] = [];
+  public offeringFeatures: any[] = [];
+  public commercialDefaultTerms: any[] = [];
   public commercialProposals: any[] = [];
   public commercialProposalVersions: any[] = [];
   public proposalCommercialTerms: any[] = [];
@@ -371,9 +376,14 @@ export class InMemoryPrismaStore {
     this.commercialOpportunities = [];
     this.opportunityStageHistories = [];
     this.opportunityCloseReasons = [];
-    // Fase 1.3.5
+    // Fase 1.3.5 / 1.3.7
     this.commercialOfferingCategories = [];
     this.commercialOfferings = [];
+    this.commercialOfferingVersions = [];
+    this.commercialOfferingCompositions = [];
+    this.commercialFeatures = [];
+    this.offeringFeatures = [];
+    this.commercialDefaultTerms = [];
     this.commercialProposals = [];
     this.commercialProposalVersions = [];
     this.proposalCommercialTerms = [];
@@ -3878,16 +3888,100 @@ export class InMemoryPrismaStore {
       { id: 'cat_additional', code: 'ADDITIONAL', name: 'Serviços Adicionais', description: 'Suporte presencial no dia do evento e consultoria', sortOrder: 6, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
     );
 
-    // 12. Catálogo de Ofertas Comerciais
+    // 12. Recursos Técnicos do Catálogo Comercial (Features desacopladas de RBAC)
+    this.commercialFeatures.push(
+      { id: 'feat_offline_val', code: 'feature.access.offline_validator', name: 'Validação Offline em Catracas e Handhelds', description: 'Permite validação local criptografada sem depender de conexão ativa', category: 'ACCESS', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_realtime_sync', code: 'feature.access.realtime_sync', name: 'Sincronização de Portaria em Tempo Real', description: 'Monitoramento ao vivo de fluxo e ocupação por setor', category: 'ACCESS', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_cash_control', code: 'feature.boxoffice.cash_control', name: 'Fechamento de Caixa Cego e Sangria', description: 'Controle rigoroso de tesouraria para bilheterias físicas e PDVs', category: 'BOX_OFFICE', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_marketing_boost', code: 'feature.marketing.boost_email', name: 'Disparo Promocional para Base de Clientes', description: 'Ações segmentadas por perfil de comprador e histórico de eventos', category: 'MARKETING', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_bi_reports', code: 'feature.reports.advanced_bi', name: 'Relatórios Avançados e BI Comercial', description: 'Dashboards executivos, curva de vendas e projeções analíticas', category: 'REPORTS', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_split_auto', code: 'feature.finance.split_automated', name: 'Split Automatizado de Pagamento e Repasse', description: 'Liquidação direta das contas do produtor e coprodutores', category: 'FINANCE', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'feat_seat_map', code: 'feature.tickets.seat_map', name: 'Mapeamento e Reserva de Assentos Numerados', description: 'Suporte a teatros, arenas e setores marcados em 2D/3D', category: 'PLATFORM', active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+    );
+
+    // 12.1 Catálogo de Ofertas Comerciais (Planos, Pacotes, Serviços e Adicionais)
     this.commercialOfferings.push(
-      { id: 'off_plat_std', categoryId: 'cat_platform', code: 'PLATFORM_STANDARD', name: 'Comissão Padrão DiskIngressos', description: 'Taxa sobre o valor de face dos ingressos emitidos', defaultPricingModel: 'PERCENTAGE', defaultPercentage: 8.0, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_plat_prem', categoryId: 'cat_platform', code: 'PLATFORM_PREMIUM', name: 'Comissão Estratégica / Grande Escala', description: 'Taxa diferenciada para grandes eventos e festivais', defaultPricingModel: 'PERCENTAGE', defaultPercentage: 6.5, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_acc_device', categoryId: 'cat_access', code: 'ACCESS_DEVICE_RENTAL', name: 'Locação de Validador QR Handheld', description: 'Aparelho portátil com software de controle de acesso integrado', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 120.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_acc_op', categoryId: 'cat_access', code: 'ACCESS_OPERATOR_SHIFT', name: 'Operador Especializado de Portaria', description: 'Profissional treinado em validação e contingência offline', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_box_pdv', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_KIT', name: 'Kit PDV Bilheteria Física Completo', description: 'Mini-computador + impressora térmica + leitor de código de barras', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 350.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_box_op', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_OPERATOR', name: 'Operador Especializado de Bilheteria', description: 'Profissional treinado para emissão física e fechamento de caixa', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_mkt_boost', categoryId: 'cat_marketing', code: 'MARKETING_BOOST', name: 'Campanha Integrada de Divulgação Disk', description: 'Disparo de newsletter na base de clientes + post patrocinado', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 1500.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
-      { id: 'off_eqp_wristband', categoryId: 'cat_equipment', code: 'WRISTBAND_TYVEK', name: 'Pulseira Tyvek Antifraude com QR', description: 'Pulseiras invioláveis para camarote e áreas VIPs', defaultPricingModel: 'PER_TICKET', defaultPercentage: null, defaultAmount: 0.75, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+      // Planos Oficiais
+      { id: 'off_plan_starter', categoryId: 'cat_platform', code: 'PLAN_STARTER', publicCode: 'OFR-2026-000001', name: 'Plano Starter DiskIngressos', description: 'Solução ágil de ticketeria digital para eventos de pequeno e médio porte', type: 'PLAN', status: 'ACTIVE', currentVersionId: 'ver_off_plan_starter_1', currentVersionNumber: 1, defaultPricingModel: 'PERCENTAGE', defaultPercentage: 10.0, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_plan_pro', categoryId: 'cat_platform', code: 'PLAN_PRO', publicCode: 'OFR-2026-000002', name: 'Plano Pro DiskIngressos', description: 'Plano completo com suporte analítico, gestão de cortesias e BI executivo', type: 'PLAN', status: 'ACTIVE', currentVersionId: 'ver_off_plan_pro_1', currentVersionNumber: 1, defaultPricingModel: 'PERCENTAGE', defaultPercentage: 8.0, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_plan_enterprise', categoryId: 'cat_platform', code: 'PLAN_ENTERPRISE', publicCode: 'OFR-2026-000003', name: 'Plano Enterprise / Grandes Festivais', description: 'Solução sob medida para festivais e turnês de alta volumetria e complexidade', type: 'PLAN', status: 'ACTIVE', currentVersionId: 'ver_off_plan_enterprise_1', currentVersionNumber: 1, defaultPricingModel: 'PERCENTAGE', defaultPercentage: 6.5, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 3, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      // Pacotes de Serviços
+      { id: 'off_pkg_portaria', categoryId: 'cat_access', code: 'PKG_ACCESS_COMPLETE', publicCode: 'OFR-2026-000010', name: 'Pacote Operação de Portaria Completa', description: 'Combo com validador portátil homologado e operador de portaria especializado', type: 'PACKAGE', status: 'ACTIVE', currentVersionId: 'ver_off_pkg_portaria_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 300.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 10, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_pkg_bilheteria', categoryId: 'cat_boxoffice', code: 'PKG_BOXOFFICE_COMPLETE', publicCode: 'OFR-2026-000011', name: 'Pacote Bilheteria Física & PDV Completo', description: 'Combo com Kit PDV estruturado e operador de bilheteria física treinado', type: 'PACKAGE', status: 'ACTIVE', currentVersionId: 'ver_off_pkg_bilheteria_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 500.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 11, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      // Serviços Individuais
+      { id: 'off_plat_std', categoryId: 'cat_platform', code: 'PLATFORM_STANDARD', publicCode: 'OFR-2026-000101', name: 'Comissão Padrão DiskIngressos', description: 'Taxa sobre o valor de face dos ingressos emitidos', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_plat_std_1', currentVersionNumber: 1, defaultPricingModel: 'PERCENTAGE', defaultPercentage: 8.0, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 20, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_plat_prem', categoryId: 'cat_platform', code: 'PLATFORM_PREMIUM', publicCode: 'OFR-2026-000102', name: 'Comissão Estratégica / Grande Escala', description: 'Taxa diferenciada para grandes eventos e festivais', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_plat_prem_1', currentVersionNumber: 1, defaultPricingModel: 'PERCENTAGE', defaultPercentage: 6.5, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 21, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_acc_device', categoryId: 'cat_access', code: 'ACCESS_DEVICE_RENTAL', publicCode: 'OFR-2026-000103', name: 'Locação de Validador QR Handheld', description: 'Aparelho portátil com software de controle de acesso integrado', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_acc_device_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 120.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 22, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_acc_op', categoryId: 'cat_access', code: 'ACCESS_OPERATOR_SHIFT', publicCode: 'OFR-2026-000104', name: 'Operador Especializado de Portaria', description: 'Profissional treinado em validação e contingência offline', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_acc_op_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 23, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_box_pdv', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_KIT', publicCode: 'OFR-2026-000105', name: 'Kit PDV Bilheteria Física Completo', description: 'Mini-computador + impressora térmica + leitor de código de barras', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_box_pdv_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 350.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 24, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_box_op', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_OPERATOR', publicCode: 'OFR-2026-000106', name: 'Operador Especializado de Bilheteria', description: 'Profissional treinado para emissão física e fechamento de caixa', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_box_op_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 25, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_mkt_boost', categoryId: 'cat_marketing', code: 'MARKETING_BOOST', publicCode: 'OFR-2026-000107', name: 'Campanha Integrada de Divulgação Disk', description: 'Disparo de newsletter na base de clientes + post patrocinado', type: 'SERVICE', status: 'ACTIVE', currentVersionId: 'ver_off_mkt_boost_1', currentVersionNumber: 1, defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 1500.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 26, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      // Adicionais
+      { id: 'off_eqp_wristband', categoryId: 'cat_equipment', code: 'WRISTBAND_TYVEK', publicCode: 'OFR-2026-000108', name: 'Pulseira Tyvek Antifraude com QR', description: 'Pulseiras invioláveis para camarote e áreas VIPs', type: 'ADD_ON', status: 'ACTIVE', currentVersionId: 'ver_off_eqp_wristband_1', currentVersionNumber: 1, defaultPricingModel: 'PER_TICKET', defaultPercentage: null, defaultAmount: 0.75, defaultPayer: 'PRODUCER', active: true, sortOrder: 30, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+    );
+
+    // 12.2 Versões Oficiais Ativas do Catálogo (v1)
+    for (const off of this.commercialOfferings) {
+      this.commercialOfferingVersions.push({
+        id: off.currentVersionId,
+        offeringId: off.id,
+        versionNumber: 1,
+        status: 'ACTIVE',
+        nameSnapshot: off.name,
+        descriptionSnapshot: off.description,
+        validFrom: new Date('2026-01-01'),
+        validUntil: null,
+        contentHash: `hash_${off.code}_v1`,
+        changeSummary: 'Versão inicial publicada no lançamento oficial do catálogo',
+        publishedAt: new Date('2026-01-01'),
+        publishedBy: 'usr_comercial_admin',
+        createdBy: 'usr_comercial_admin',
+        createdAt: new Date('2026-01-01'),
+        updatedAt: new Date('2026-01-01')
+      });
+    }
+
+    // 12.3 Condições Padrão (CommercialDefaultTerm)
+    this.commercialDefaultTerms.push(
+      { id: 'term_plan_starter', offeringVersionId: 'ver_off_plan_starter_1', termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', currency: 'BRL', percentage: 10.0, amount: null, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_plan_pro', offeringVersionId: 'ver_off_plan_pro_1', termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', currency: 'BRL', percentage: 8.0, amount: null, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_plan_enterprise', offeringVersionId: 'ver_off_plan_enterprise_1', termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', currency: 'BRL', percentage: 6.5, amount: null, minimumAmount: 5000.0, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_pkg_portaria', offeringVersionId: 'ver_off_pkg_portaria_1', termType: 'ACCESS_CONTROL', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 300.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_pkg_bilheteria', offeringVersionId: 'ver_off_pkg_bilheteria_1', termType: 'BOX_OFFICE', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 500.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_plat_std', offeringVersionId: 'ver_off_plat_std_1', termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', currency: 'BRL', percentage: 8.0, amount: null, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_plat_prem', offeringVersionId: 'ver_off_plat_prem_1', termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', currency: 'BRL', percentage: 6.5, amount: null, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_acc_device', offeringVersionId: 'ver_off_acc_device_1', termType: 'ACCESS_CONTROL', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 120.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_acc_op', offeringVersionId: 'ver_off_acc_op_1', termType: 'ACCESS_CONTROL', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 220.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_box_pdv', offeringVersionId: 'ver_off_box_pdv_1', termType: 'BOX_OFFICE', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 350.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_box_op', offeringVersionId: 'ver_off_box_op_1', termType: 'BOX_OFFICE', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 220.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_mkt_boost', offeringVersionId: 'ver_off_mkt_boost_1', termType: 'MARKETING', calculationType: 'FIXED_AMOUNT', currency: 'BRL', percentage: null, amount: 1500.0, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') },
+      { id: 'term_eqp_wristband', offeringVersionId: 'ver_off_eqp_wristband_1', termType: 'EQUIPMENT', calculationType: 'PER_TICKET', currency: 'BRL', percentage: null, amount: 0.75, minimumAmount: null, payer: 'PRODUCER', negotiable: true, validFrom: new Date('2026-01-01'), createdAt: new Date('2026-01-01') }
+    );
+
+    // 12.4 Composições de Pacotes (CommercialOfferingComposition)
+    this.commercialOfferingCompositions.push(
+      // Pacote Portaria -> Validador + Operador
+      { id: 'comp_port_1', parentOfferingId: 'off_pkg_portaria', parentOfferingVersionId: 'ver_off_pkg_portaria_1', childOfferingId: 'off_acc_device', childOfferingVersionId: 'ver_off_acc_device_1', quantity: 1, required: true, sortOrder: 1, createdAt: new Date('2026-01-01') },
+      { id: 'comp_port_2', parentOfferingId: 'off_pkg_portaria', parentOfferingVersionId: 'ver_off_pkg_portaria_1', childOfferingId: 'off_acc_op', childOfferingVersionId: 'ver_off_acc_op_1', quantity: 1, required: true, sortOrder: 2, createdAt: new Date('2026-01-01') },
+      // Pacote Bilheteria -> Kit PDV + Operador
+      { id: 'comp_box_1', parentOfferingId: 'off_pkg_bilheteria', parentOfferingVersionId: 'ver_off_pkg_bilheteria_1', childOfferingId: 'off_box_pdv', childOfferingVersionId: 'ver_off_box_pdv_1', quantity: 1, required: true, sortOrder: 1, createdAt: new Date('2026-01-01') },
+      { id: 'comp_box_2', parentOfferingId: 'off_pkg_bilheteria', parentOfferingVersionId: 'ver_off_pkg_bilheteria_1', childOfferingId: 'off_box_op', childOfferingVersionId: 'ver_off_box_op_1', quantity: 1, required: true, sortOrder: 2, createdAt: new Date('2026-01-01') }
+    );
+
+    // 12.5 Recursos Vinculados às Ofertas (OfferingFeature)
+    this.offeringFeatures.push(
+      { id: 'off_feat_1', offeringVersionId: 'ver_off_plan_starter_1', featureId: 'feat_split_auto', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_2', offeringVersionId: 'ver_off_plan_pro_1', featureId: 'feat_split_auto', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_3', offeringVersionId: 'ver_off_plan_pro_1', featureId: 'feat_bi_reports', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_4', offeringVersionId: 'ver_off_plan_pro_1', featureId: 'feat_realtime_sync', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_5', offeringVersionId: 'ver_off_plan_enterprise_1', featureId: 'feat_split_auto', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_6', offeringVersionId: 'ver_off_plan_enterprise_1', featureId: 'feat_bi_reports', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_7', offeringVersionId: 'ver_off_plan_enterprise_1', featureId: 'feat_realtime_sync', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_8', offeringVersionId: 'ver_off_plan_enterprise_1', featureId: 'feat_seat_map', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_9', offeringVersionId: 'ver_off_acc_device_1', featureId: 'feat_offline_val', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_10', offeringVersionId: 'ver_off_acc_device_1', featureId: 'feat_realtime_sync', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_11', offeringVersionId: 'ver_off_box_pdv_1', featureId: 'feat_cash_control', included: true, createdAt: new Date('2026-01-01') },
+      { id: 'off_feat_12', offeringVersionId: 'ver_off_mkt_boost_1', featureId: 'feat_marketing_boost', included: true, createdAt: new Date('2026-01-01') }
     );
 
     // 13. Propostas Comerciais Existentes (PROP-2026-000101, PROP-2026-000201, PROP-2026-000301)
@@ -9329,34 +9423,367 @@ export class InMemoryPrismaStore {
   public get commercialOffering() {
     return {
       findUnique: async (args: any) => {
-        return this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+        const item = this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code || x.publicCode === args.where?.publicCode);
+        if (!item) return null;
+        return this.hydrateOffering(item, args.include);
       },
       findFirst: async (args: any) => {
         let list = [...this.commercialOfferings];
         if (args?.where) list = this.filterEntities(list, args.where);
-        return list[0] ? { ...list[0] } : null;
+        if (!list[0]) return null;
+        return this.hydrateOffering(list[0], args?.include);
       },
       findMany: async (args?: any) => {
         let list = [...this.commercialOfferings];
         if (args?.where) list = this.filterEntities(list, args.where);
         list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => this.hydrateOffering(x, args?.include));
+      },
+      create: async (args: any) => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const count = this.commercialOfferings.length + 101;
+        const publicCode = args.data.publicCode || `OFR-${year}-${String(count).padStart(6, '0')}`;
+        const item = {
+          id: args.data.id || `off_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          publicCode,
+          type: args.data.type || 'SERVICE',
+          status: args.data.status || 'ACTIVE',
+          currentVersionNumber: args.data.currentVersionNumber || 1,
+          currentVersionId: args.data.currentVersionId || null,
+          defaultPricingModel: args.data.defaultPricingModel || 'PERCENTAGE',
+          defaultPercentage: args.data.defaultPercentage ?? null,
+          defaultAmount: args.data.defaultAmount ?? null,
+          defaultPayer: args.data.defaultPayer || 'PRODUCER',
+          active: args.data.active !== undefined ? args.data.active : true,
+          sortOrder: args.data.sortOrder || 0,
+          createdAt: now,
+          updatedAt: now,
+          ...args.data
+        };
+        this.commercialOfferings.push(item);
+        return this.hydrateOffering(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code || x.publicCode === args.where?.publicCode);
+        if (!item) throw new Error('CommercialOffering not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateOffering(item, args.include);
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialOfferings.findIndex(x => x.id === args.where?.id || x.code === args.where?.code || x.publicCode === args.where?.publicCode);
+        if (idx >= 0) return this.commercialOfferings.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialOfferings];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialOfferingVersion() {
+    return {
+      findUnique: async (args: any) => {
+        let item: any = null;
+        if (args.where?.id) {
+          item = this.commercialOfferingVersions.find(x => x.id === args.where.id);
+        } else if (args.where?.offeringId_versionNumber) {
+          item = this.commercialOfferingVersions.find(
+            x => x.offeringId === args.where.offeringId_versionNumber.offeringId &&
+                 x.versionNumber === args.where.offeringId_versionNumber.versionNumber
+          );
+        }
+        if (!item) return null;
+        return this.hydrateOfferingVersion(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialOfferingVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateOfferingVersion(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialOfferingVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.versionNumber - b.versionNumber);
+        return list.map(x => this.hydrateOfferingVersion(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ov_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.commercialOfferingVersions.push(item);
+        return this.hydrateOfferingVersion(item, args.include);
+      },
+      update: async (args: any) => {
+        const item = this.commercialOfferingVersions.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialOfferingVersion not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateOfferingVersion(item, args.include);
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialOfferingVersions.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.commercialOfferingVersions.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialOfferingVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialOfferingComposition() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.commercialOfferingCompositions.find(x => x.id === args.where?.id);
+        if (!item) return null;
+        return this.hydrateOfferingComposition(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialOfferingCompositions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateOfferingComposition(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialOfferingCompositions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => this.hydrateOfferingComposition(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `comp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          quantity: args.data.quantity || 1,
+          required: args.data.required !== undefined ? args.data.required : true,
+          sortOrder: args.data.sortOrder || 0,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.commercialOfferingCompositions.push(item);
+        return this.hydrateOfferingComposition(item, args.include);
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `comp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          quantity: d.quantity || 1,
+          required: d.required !== undefined ? d.required : true,
+          sortOrder: d.sortOrder || 0,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.commercialOfferingCompositions.push(...items);
+        return { count: items.length };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialOfferingCompositions.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.commercialOfferingCompositions.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.commercialOfferingCompositions.length;
+        if (args?.where?.parentOfferingVersionId) {
+          this.commercialOfferingCompositions = this.commercialOfferingCompositions.filter(
+            x => x.parentOfferingVersionId !== args.where.parentOfferingVersionId
+          );
+        } else if (args?.where?.parentOfferingId) {
+          this.commercialOfferingCompositions = this.commercialOfferingCompositions.filter(
+            x => x.parentOfferingId !== args.where.parentOfferingId
+          );
+        }
+        return { count: initial - this.commercialOfferingCompositions.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialOfferingCompositions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialFeature() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialFeatures.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
         return list.map(x => ({ ...x }));
       },
       create: async (args: any) => {
-        const item = { id: args.data.id || `off_${Date.now()}`, active: true, sortOrder: args.data.sortOrder || 0, createdAt: new Date(), updatedAt: new Date(), ...args.data };
-        this.commercialOfferings.push(item);
+        const item = {
+          id: args.data.id || `feat_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          active: args.data.active !== undefined ? args.data.active : true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.commercialFeatures.push(item);
         return { ...item };
       },
       update: async (args: any) => {
-        const item = this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code);
-        if (!item) throw new Error('CommercialOffering not found');
+        const item = this.commercialFeatures.find(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (!item) throw new Error('CommercialFeature not found');
         Object.assign(item, args.data, { updatedAt: new Date() });
         return { ...item };
       },
       delete: async (args: any) => {
-        const idx = this.commercialOfferings.findIndex(x => x.id === args.where?.id || x.code === args.where?.code);
-        if (idx >= 0) return this.commercialOfferings.splice(idx, 1)[0];
+        const idx = this.commercialFeatures.findIndex(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (idx >= 0) return this.commercialFeatures.splice(idx, 1)[0];
         return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get offeringFeature() {
+    return {
+      findUnique: async (args: any) => {
+        if (args.where?.id) {
+          return this.offeringFeatures.find(x => x.id === args.where.id) || null;
+        }
+        if (args.where?.offeringVersionId_featureId) {
+          return this.offeringFeatures.find(
+            x => x.offeringVersionId === args.where.offeringVersionId_featureId.offeringVersionId &&
+                 x.featureId === args.where.offeringVersionId_featureId.featureId
+          ) || null;
+        }
+        return null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.offeringFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.offeringFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => {
+          const feat = this.commercialFeatures.find(f => f.id === x.featureId);
+          return {
+            ...x,
+            feature: feat || null
+          };
+        });
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `of_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          included: args.data.included !== undefined ? args.data.included : true,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.offeringFeatures.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `of_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          included: d.included !== undefined ? d.included : true,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.offeringFeatures.push(...items);
+        return { count: items.length };
+      },
+      delete: async (args: any) => {
+        const idx = this.offeringFeatures.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.offeringFeatures.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.offeringFeatures.length;
+        if (args?.where?.offeringVersionId) {
+          this.offeringFeatures = this.offeringFeatures.filter(x => x.offeringVersionId !== args.where.offeringVersionId);
+        }
+        return { count: initial - this.offeringFeatures.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.offeringFeatures];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialDefaultTerm() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialDefaultTerms.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialDefaultTerms];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialDefaultTerms];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `term_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          currency: args.data.currency || 'BRL',
+          negotiable: args.data.negotiable !== undefined ? args.data.negotiable : true,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.commercialDefaultTerms.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `term_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          currency: d.currency || 'BRL',
+          negotiable: d.negotiable !== undefined ? d.negotiable : true,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.commercialDefaultTerms.push(...items);
+        return { count: items.length };
+      },
+      update: async (args: any) => {
+        const item = this.commercialDefaultTerms.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialDefaultTerm not found');
+        Object.assign(item, args.data);
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialDefaultTerms.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.commercialDefaultTerms.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.commercialDefaultTerms.length;
+        if (args?.where?.offeringVersionId) {
+          this.commercialDefaultTerms = this.commercialDefaultTerms.filter(x => x.offeringVersionId !== args.where.offeringVersionId);
+        }
+        return { count: initial - this.commercialDefaultTerms.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialDefaultTerms];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
       }
     };
   }
@@ -14486,6 +14913,91 @@ export class InMemoryPrismaStore {
     }
     if (include?.contract) {
       res.contract = this.commercialContracts.find(c => c.id === envelope.contractId) || null;
+    }
+    return res;
+  }
+
+  private hydrateOffering(offering: any, include?: any): any {
+    if (!offering) return null;
+    const res = { ...offering };
+    if (include?.category || include?.category === undefined) {
+      res.category = this.commercialOfferingCategories.find(c => c.id === offering.categoryId) || null;
+      if (res.category) {
+        res.categoryName = res.category.name;
+      }
+    }
+    if (include?.currentVersion || include?.currentVersion === undefined) {
+      if (offering.currentVersionId) {
+        const ver = this.commercialOfferingVersions.find(v => v.id === offering.currentVersionId);
+        res.currentVersion = ver ? this.hydrateOfferingVersion(ver, include?.currentVersion?.include || { defaultTerms: true, features: true, compositions: true }) : null;
+      } else {
+        res.currentVersion = null;
+      }
+    }
+    if (include?.versions) {
+      let vers = this.commercialOfferingVersions.filter(v => v.offeringId === offering.id);
+      vers.sort((a, b) => a.versionNumber - b.versionNumber);
+      if (include?.versions === true || typeof include?.versions === 'object') {
+        vers = vers.map(v => this.hydrateOfferingVersion(v, include?.versions?.include));
+      }
+      res.versions = vers;
+    }
+    if (include?.compositionsAsParent || include?.compositions) {
+      const parentComps = this.commercialOfferingCompositions.filter(c => c.parentOfferingId === offering.id);
+      parentComps.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      const inc = include?.compositionsAsParent?.include || include?.compositions?.include;
+      const hydratedComps = parentComps.map(c => this.hydrateOfferingComposition(c, inc));
+      if (include?.compositionsAsParent) res.compositionsAsParent = hydratedComps;
+      if (include?.compositions) res.compositions = hydratedComps;
+    }
+    if (include?.compositionsAsChild) {
+      res.compositionsAsChild = this.commercialOfferingCompositions.filter(c => c.childOfferingId === offering.id);
+    }
+    return res;
+  }
+
+  private hydrateOfferingVersion(version: any, include?: any): any {
+    if (!version) return null;
+    const res = { ...version };
+    if (include?.offering) {
+      res.offering = this.commercialOfferings.find(o => o.id === version.offeringId) || null;
+    }
+    if (include?.defaultTerms || include?.defaultTerms === undefined) {
+      res.defaultTerms = this.commercialDefaultTerms.filter(t => t.offeringVersionId === version.id);
+    }
+    if (include?.features || include?.features === undefined) {
+      const ofs = this.offeringFeatures.filter(f => f.offeringVersionId === version.id);
+      res.features = ofs.map(of => {
+        const feat = this.commercialFeatures.find(f => f.id === of.featureId);
+        return {
+          ...of,
+          feature: feat || null,
+          featureCode: feat?.code,
+          featureName: feat?.name,
+          featureCategory: feat?.category
+        };
+      });
+    }
+    if (include?.compositions || include?.compositions === undefined) {
+      const comps = this.commercialOfferingCompositions.filter(c => c.parentOfferingVersionId === version.id);
+      comps.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      res.compositions = comps.map(c => this.hydrateOfferingComposition(c, include?.compositions?.include));
+    }
+    return res;
+  }
+
+  private hydrateOfferingComposition(composition: any, include?: any): any {
+    if (!composition) return null;
+    const res = { ...composition };
+    const child = this.commercialOfferings.find(o => o.id === composition.childOfferingId);
+    if (child) {
+      res.childOffering = { ...child };
+      res.childOfferingPublicCode = child.publicCode;
+      res.childOfferingName = child.name;
+      res.childOfferingType = child.type;
+    }
+    if (include?.parentOffering) {
+      res.parentOffering = this.commercialOfferings.find(o => o.id === composition.parentOfferingId) || null;
     }
     return res;
   }

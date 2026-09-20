@@ -267,6 +267,17 @@ export type PermissionString =
   | 'comercial.contratos.suspender'
   | 'comercial.contratos.rescindir'
   | 'comercial.contratos.condicoes.visualizar'
+  // Catálogo Comercial (Fase 1.3.7)
+  | 'comercial.catalogo.visualizar'
+  | 'comercial.catalogo.ofertas.criar'
+  | 'comercial.catalogo.ofertas.editar'
+  | 'comercial.catalogo.ofertas.publicar'
+  | 'comercial.catalogo.ofertas.descontinuar'
+  | 'comercial.catalogo.composicao.visualizar'
+  | 'comercial.catalogo.composicao.editar'
+  | 'comercial.catalogo.condicoes.visualizar'
+  | 'comercial.catalogo.condicoes.editar'
+  | 'comercial.catalogo.historico.visualizar'
   // Suporte Eventos
   | 'suporte.incidentes.visualizar'
   | 'suporte.incidentes.criar'
@@ -5297,13 +5308,106 @@ export interface CommercialOfferingCategoryDTO {
   offerings?: CommercialOfferingDTO[];
 }
 
+export type CommercialOfferingType = 'PLAN' | 'PACKAGE' | 'SERVICE' | 'MODULE' | 'ADD_ON';
+export type CommercialOfferingStatus = 'DRAFT' | 'ACTIVE' | 'INACTIVE' | 'DISCONTINUED';
+
+export interface CommercialFeatureDTO {
+  id: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  category: string;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OfferingFeatureDTO {
+  id: string;
+  offeringVersionId: string;
+  featureId: string;
+  featureCode?: string;
+  featureName?: string;
+  featureCategory?: string;
+  included: boolean;
+  limitValue?: number | null;
+  limitUnit?: string | null;
+  configurationJson?: string | null;
+  createdAt: string;
+}
+
+export interface CommercialDefaultTermDTO {
+  id: string;
+  offeringVersionId: string;
+  termType: ProposalTermType;
+  calculationType: CommercialPricingModel;
+  currency: string;
+  percentage?: number | null;
+  amount?: number | null;
+  minimumAmount?: number | null;
+  payer: ProposalPayer;
+  splitProducerPercentage?: number | null;
+  splitBuyerPercentage?: number | null;
+  conditions?: string | null;
+  negotiable: boolean;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  createdAt: string;
+}
+
+export interface CommercialOfferingCompositionDTO {
+  id: string;
+  parentOfferingId: string;
+  parentOfferingVersionId: string;
+  childOfferingId: string;
+  childOfferingPublicCode?: string;
+  childOfferingName?: string;
+  childOfferingType?: CommercialOfferingType;
+  childOfferingVersionId?: string | null;
+  childOfferingVersionNumber?: number;
+  quantity: number;
+  required: boolean;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface CommercialOfferingVersionDTO {
+  id: string;
+  offeringId: string;
+  versionNumber: number;
+  status: CommercialOfferingStatus;
+  nameSnapshot: string;
+  descriptionSnapshot?: string | null;
+  validFrom?: string | null;
+  validUntil?: string | null;
+  contentHash: string;
+  changeSummary?: string | null;
+  publishedAt?: string | null;
+  publishedBy?: string | null;
+  publishedByName?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  defaultTerms?: CommercialDefaultTermDTO[];
+  features?: OfferingFeatureDTO[];
+  compositions?: CommercialOfferingCompositionDTO[];
+}
+
 export interface CommercialOfferingDTO {
   id: string;
+  publicCode: string; // OFR-YYYY-XXXXXX
   categoryId: string;
   categoryName?: string;
   code: string;
   name: string;
+  type: CommercialOfferingType;
+  shortDescription?: string | null;
   description?: string | null;
+  status: CommercialOfferingStatus;
+  currentVersionId?: string | null;
+  currentVersionNumber: number;
+  currentVersion?: CommercialOfferingVersionDTO | null;
   defaultPricingModel: CommercialPricingModel;
   defaultPercentage?: number | null;
   defaultAmount?: number | null;
@@ -5312,6 +5416,149 @@ export interface CommercialOfferingDTO {
   sortOrder: number;
   createdAt: string;
   updatedAt: string;
+  versions?: CommercialOfferingVersionDTO[];
+  compositions?: CommercialOfferingCompositionDTO[];
+}
+
+export interface CommercialCatalogImpactDTO {
+  offeringId: string;
+  offeringCode: string;
+  offeringName: string;
+  draftProposalsCount: number;
+  sentProposalsCount: number;
+  activeContractsCount: number;
+  parentPackagesCount: number;
+  parentPackages: Array<{ id: string; name: string; publicCode: string }>;
+  canDiscontinue: boolean;
+  warningMessage?: string;
+}
+
+export interface CommercialCatalogMetricsDTO {
+  totalOfferings: number;
+  plansCount: number;
+  packagesCount: number;
+  servicesCount: number;
+  modulesCount: number;
+  addOnsCount: number;
+  activeCount: number;
+  draftCount: number;
+  discontinuedCount: number;
+}
+
+export interface CreateOfferingDTO {
+  categoryId: string;
+  code?: string;
+  name: string;
+  type: CommercialOfferingType;
+  shortDescription?: string;
+  description?: string;
+  defaultPricingModel?: CommercialPricingModel;
+  defaultPercentage?: number;
+  defaultAmount?: number;
+  defaultPayer?: ProposalPayer;
+  sortOrder?: number;
+  defaultTerms?: Array<{
+    termType: ProposalTermType;
+    calculationType: CommercialPricingModel;
+    percentage?: number;
+    amount?: number;
+    minimumAmount?: number;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number;
+    splitBuyerPercentage?: number;
+    conditions?: string;
+    negotiable?: boolean;
+    validFrom?: string;
+    validUntil?: string;
+  }>;
+  features?: Array<{
+    featureId: string;
+    included?: boolean;
+    limitValue?: number;
+    limitUnit?: string;
+    configurationJson?: string;
+  }>;
+  composition?: Array<{
+    childOfferingId: string;
+    childOfferingVersionId?: string | null;
+    quantity?: number;
+    required?: boolean;
+    sortOrder?: number;
+  }>;
+  compositions?: Array<{
+    childOfferingId: string;
+    childOfferingVersionId?: string | null;
+    quantity?: number;
+    required?: boolean;
+    sortOrder?: number;
+  }>;
+}
+
+export interface UpdateOfferingDTO {
+  name?: string;
+  categoryId?: string;
+  shortDescription?: string;
+  description?: string;
+  defaultPricingModel?: CommercialPricingModel;
+  defaultPercentage?: number;
+  defaultAmount?: number;
+  defaultPayer?: ProposalPayer;
+  sortOrder?: number;
+  active?: boolean;
+}
+
+export interface CreateOfferingVersionDTO {
+  nameSnapshot?: string;
+  descriptionSnapshot?: string;
+  changeSummary: string;
+  validFrom?: string;
+  validUntil?: string;
+  defaultTerms?: Array<{
+    termType: ProposalTermType;
+    calculationType: CommercialPricingModel;
+    percentage?: number;
+    amount?: number;
+    minimumAmount?: number;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number;
+    splitBuyerPercentage?: number;
+    conditions?: string;
+    negotiable?: boolean;
+    validFrom?: string;
+    validUntil?: string;
+  }>;
+  features?: Array<{
+    featureId: string;
+    included?: boolean;
+    limitValue?: number;
+    limitUnit?: string;
+    configurationJson?: string;
+  }>;
+  composition?: Array<{
+    childOfferingId: string;
+    childOfferingVersionId?: string | null;
+    quantity?: number;
+    required?: boolean;
+    sortOrder?: number;
+  }>;
+  compositions?: Array<{
+    childOfferingId: string;
+    childOfferingVersionId?: string | null;
+    quantity?: number;
+    required?: boolean;
+    sortOrder?: number;
+  }>;
+}
+
+export interface PublishOfferingVersionDTO {
+  validFrom?: string;
+  validUntil?: string;
+  changeSummary?: string;
+  reason?: string;
+}
+
+export interface DiscontinueOfferingDTO {
+  reason: string;
 }
 
 export interface ProposalCommercialTermDTO {
