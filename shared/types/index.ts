@@ -178,6 +178,32 @@ export type PermissionString =
   | 'eventos.operacao.comunicados.enviar'
   | 'eventos.operacao.comandos.executar'
   | 'eventos.operacao.handoff.realizar'
+  // Check-in + Controle de Acesso + Dispositivos (Fase 1.2.13)
+  | 'eventos.checkin.validar'
+  | 'eventos.checkin.reverter'
+  | 'eventos.checkin.manual'
+  | 'eventos.checkin.excecao.solicitar'
+  | 'eventos.checkin.excecao.aprovar'
+  | 'eventos.checkin.bloqueio.gerenciar'
+  | 'eventos.checkin.dispositivos.visualizar'
+  | 'eventos.checkin.dispositivos.vincular'
+  | 'eventos.checkin.dispositivos.autorizar'
+  | 'eventos.checkin.dispositivos.revogar'
+  | 'eventos.checkin.regras.gerenciar'
+  | 'eventos.checkin.offline.sincronizar'
+  | 'eventos.checkin.relatorios.visualizar'
+  // Encerramento + Cancelamento + Pós-Evento + Arquivamento (Fase 1.2.14)
+  | 'eventos.encerramento.sessao.encerrar'
+  | 'eventos.encerramento.evento.encerrar'
+  | 'eventos.encerramento.override.aplicar'
+  | 'eventos.cancelamento.solicitar'
+  | 'eventos.cancelamento.avaliar_impacto'
+  | 'eventos.cancelamento.executar'
+  | 'eventos.cancelamento.sessao.executar'
+  | 'eventos.pos_evento.visualizar'
+  | 'eventos.pos_evento.relatorio.exportar'
+  | 'eventos.arquivamento.arquivar'
+  | 'eventos.arquivamento.visualizar'
   // Comercial
 
   | 'comercial.produtores.visualizar'
@@ -4167,5 +4193,492 @@ export interface OperationSnapshotDTO {
   generatedAt: string;
   isRealtimeConnected: boolean;
 }
+
+// ============================================================================
+// FASE 1.2.13 — CHECK-IN + CONTROLE DE ACESSO + DISPOSITIVOS
+// ============================================================================
+
+export type AccessValidationDecision = 'ALLOW' | 'DENY' | 'REVIEW';
+
+export type AccessReasonCode =
+  | 'ACCESS_ALLOWED'
+  | 'TICKET_NOT_FOUND'
+  | 'TICKET_INVALID_STATUS'
+  | 'TICKET_WRONG_EVENT'
+  | 'TICKET_WRONG_SESSION'
+  | 'TICKET_WRONG_ACCESS_POINT'
+  | 'TICKET_WRONG_SECTOR'
+  | 'TICKET_ENTRY_WINDOW_NOT_OPEN'
+  | 'TICKET_ENTRY_WINDOW_CLOSED'
+  | 'TICKET_ALREADY_USED'
+  | 'REENTRY_NOT_ALLOWED'
+  | 'REENTRY_LIMIT_EXCEEDED'
+  | 'EXIT_RECORDED'
+  | 'TICKET_BLOCKED'
+  | 'DEVICE_NOT_FOUND'
+  | 'DEVICE_REVOKED'
+  | 'DEVICE_UNAUTHORIZED_POINT'
+  | 'DEVICE_SESSION_EXPIRED'
+  | 'ACCESS_RULE_RESTRICTION'
+  | 'EXCEPTION_PENDING_SUPERVISOR'
+  | 'EXCEPTION_APPROVED'
+  | 'OFFLINE_SYNC_ACCEPTED'
+  | 'CONFLICT_DUPLICATE_OFFLINE';
+
+export type AccessMovementType = 'ENTRY' | 'REENTRY' | 'EXIT' | 'MANUAL_ENTRY';
+
+export type ReentryPolicyType = 'NO_REENTRY' | 'REENTRY_ALLOWED' | 'REENTRY_AFTER_EXIT' | 'LIMITED_REENTRY';
+
+export type AccessDeviceType = 'MOBILE_APP' | 'DEDICATED_SCANNER' | 'TURNSTILE' | 'DESKTOP_POS' | 'TOTEM';
+
+export type AccessDeviceStatus = 'PENDING_ACTIVATION' | 'ACTIVE' | 'REVOKED' | 'MAINTENANCE';
+
+export interface AccessValidationRequestDTO {
+  tokenOrCode: string;
+  eventId: string;
+  sessionId: string;
+  accessPointId: string;
+  deviceId: string;
+  operatorId: string;
+  operatorName?: string;
+  movementType?: AccessMovementType;
+  offlineTimestamp?: string;
+  validationRequestId?: string;
+  overrideJustification?: string;
+}
+
+export interface AccessValidationResultDTO {
+  id: string;
+  decision: AccessValidationDecision;
+  reasonCode: AccessReasonCode;
+  message: string;
+  timestamp: string;
+  validationRequestId: string;
+  ticket?: {
+    id: string;
+    ticketNumber: string;
+    ticketType: string;
+    sectorName?: string;
+    seatInfo?: string;
+    attendeeName?: string;
+    documentNumberMasked?: string;
+  };
+  session?: {
+    id: string;
+    name: string;
+  };
+  accessPoint?: {
+    id: string;
+    name: string;
+    code: string;
+  };
+  movementType: AccessMovementType;
+  entriesCount: number;
+  maxEntriesAllowed: number;
+  requiresSupervisorReview?: boolean;
+  offlineProcessed?: boolean;
+}
+
+export interface AccessDeviceDTO {
+  id: string;
+  eventId: string;
+  name: string;
+  deviceCode: string;
+  type: AccessDeviceType;
+  status: AccessDeviceStatus;
+  apiKeyMasked?: string;
+  batteryLevel?: number;
+  appVersion?: string;
+  allowedAccessPointIds: string[];
+  allowedSessionIds: string[];
+  currentSessionId?: string;
+  lastHeartbeatAt?: string;
+  lastSyncAt?: string;
+  registeredBy: string;
+  revokedAt?: string;
+  revokedReason?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface DeviceSessionDTO {
+  id: string;
+  deviceId: string;
+  eventId: string;
+  sessionId: string;
+  accessPointId: string;
+  operatorId: string;
+  operatorName: string;
+  startedAt: string;
+  endedAt?: string;
+  isActive: boolean;
+  validationsCount: number;
+  allowsCount: number;
+  deniesCount: number;
+}
+
+export interface AccessRuleDTO {
+  id: string;
+  eventId: string;
+  sessionId?: string;
+  name: string;
+  ticketTypeIds: string[];
+  allowedAccessPointIds: string[];
+  allowedSectionIds: string[];
+  reentryPolicy: ReentryPolicyType;
+  maxReentries: number;
+  windowStartsBeforeMinutes: number;
+  windowEndsAfterMinutes: number;
+  active: boolean;
+}
+
+export interface OfflineValidationBundleDTO {
+  bundleId: string;
+  eventId: string;
+  sessionId: string;
+  accessPointId: string;
+  deviceId: string;
+  generatedAt: string;
+  validUntil: string;
+  ticketsSummary: {
+    totalTickets: number;
+  };
+  tickets: Array<{
+    id: string;
+    tokenHash: string;
+    ticketNumber: string;
+    ticketTypeId: string;
+    ticketTypeName: string;
+    sectionName?: string;
+    attendeeName?: string;
+    reentryPolicy: ReentryPolicyType;
+    maxEntries: number;
+    currentEntries: number;
+    status: string;
+    isBlocked: boolean;
+  }>;
+  rules: AccessRuleDTO[];
+}
+
+export interface OfflineSyncBatchItemDTO {
+  validationRequestId: string;
+  tokenOrCode: string;
+  movementType: AccessMovementType;
+  accessPointId: string;
+  localTimestamp: string;
+  offlineDecision: AccessValidationDecision;
+  offlineReasonCode: AccessReasonCode;
+}
+
+export interface OfflineSyncBatchDTO {
+  batchId: string;
+  deviceId: string;
+  eventId: string;
+  sessionId: string;
+  operatorId: string;
+  items: OfflineSyncBatchItemDTO[];
+}
+
+export interface OfflineConflictDTO {
+  id: string;
+  batchId: string;
+  ticketId: string;
+  ticketNumber: string;
+  conflictType: 'CONFLICT_DUPLICATE_OFFLINE' | 'STATUS_CHANGED_ONLINE' | 'DEVICE_REVOKED_OFFLINE';
+  serverMovementAt?: string;
+  offlineMovementAt: string;
+  deviceId: string;
+  operatorId: string;
+  resolved: boolean;
+  resolvedBy?: string;
+  resolvedAt?: string;
+  resolutionNotes?: string;
+  createdAt: string;
+}
+
+export interface TicketAccessBlockDTO {
+  id: string;
+  ticketId: string;
+  ticketNumber: string;
+  eventId: string;
+  reason: string;
+  blockedBy: string;
+  blockedByName: string;
+  blockedAt: string;
+  active: boolean;
+  unblockedBy?: string;
+  unblockedAt?: string;
+  unblockReason?: string;
+}
+
+export interface AccessExceptionRequestDTO {
+  id: string;
+  ticketId?: string;
+  ticketNumber?: string;
+  eventId: string;
+  sessionId: string;
+  accessPointId: string;
+  deviceId: string;
+  operatorId: string;
+  operatorName: string;
+  reason: string;
+  requestedMovement: AccessMovementType;
+  status: 'PENDING' | 'APPROVED' | 'REJECTED';
+  supervisorId?: string;
+  supervisorName?: string;
+  decidedAt?: string;
+  decisionNotes?: string;
+  createdAt: string;
+}
+
+export interface CheckinSummaryDTO {
+  eventId: string;
+  sessionId?: string;
+  totalTicketsSold: number;
+  totalCheckedIn: number;
+  checkInPercentage: number;
+  totalExits: number;
+  totalInsideVenue: number;
+  validationsTotal: number;
+  validationsAllowed: number;
+  validationsDenied: number;
+  validationsReview: number;
+  recentValidations: AccessValidationResultDTO[];
+  byAccessPoint: Array<{
+    accessPointId: string;
+    accessPointName: string;
+    code: string;
+    totalAllowed: number;
+    totalDenied: number;
+  }>;
+  byTicketType: Array<{
+    ticketTypeId: string;
+    ticketTypeName: string;
+    sold: number;
+    checkedIn: number;
+    percentage: number;
+  }>;
+  conflictsCount: number;
+  devicesOnlineCount: number;
+  generatedAt: string;
+}
+
+// ============================================================================
+// FASE 1.2.14 — ENCERRAMENTO + CANCELAMENTO + PÓS-EVENTO + ARQUIVAMENTO
+// ============================================================================
+
+export type ClosureCheckCategory =
+  | 'OPERATION'
+  | 'CHECKIN'
+  | 'DEVICES'
+  | 'OFFLINE_SYNC'
+  | 'INCIDENTS'
+  | 'TASKS'
+  | 'ACCESS_POINTS'
+  | 'FINANCIAL_READINESS';
+
+export type ClosureCheckStatus = 'PASSED' | 'WARNING' | 'BLOCKER';
+
+export interface ClosureCheckItemDTO {
+  code: string;
+  category: ClosureCheckCategory;
+  title: string;
+  description: string;
+  status: ClosureCheckStatus;
+  blocking: boolean;
+  metrics?: Record<string, any>;
+  resolutionAdvice?: string;
+}
+
+export interface SessionClosureReadinessDTO {
+  sessionId: string;
+  sessionName: string;
+  canClose: boolean;
+  hasBlockers: boolean;
+  checks: ClosureCheckItemDTO[];
+  summary: {
+    passedCount: number;
+    warningCount: number;
+    blockerCount: number;
+  };
+  evaluatedAt: string;
+}
+
+export interface EventClosureReadinessDTO {
+  eventId: string;
+  eventName: string;
+  canClose: boolean;
+  allSessionsClosed: boolean;
+  sessionsSummary: Array<{
+    sessionId: string;
+    sessionName: string;
+    status: string;
+    isClosed: boolean;
+  }>;
+  checks: ClosureCheckItemDTO[];
+  blockers: string[];
+  evaluatedAt: string;
+}
+
+export interface ClosureOverrideDTO {
+  id: string;
+  scope: 'SESSION' | 'EVENT';
+  targetId: string;
+  checkCode: string;
+  justification: string;
+  authorizedBy: string;
+  authorizedByName: string;
+  createdAt: string;
+}
+
+export interface SessionClosureRecordDTO {
+  id: string;
+  sessionId: string;
+  sessionName: string;
+  eventId: string;
+  closedBy: string;
+  closedByName: string;
+  closedAt: string;
+  hadBlockerOverrides: boolean;
+  overridesCount: number;
+  finalCheckinCount: number;
+  finalCapacityUsed: number;
+  notes?: string;
+}
+
+export interface EventClosureRecordDTO {
+  id: string;
+  eventId: string;
+  eventName: string;
+  closedBy: string;
+  closedByName: string;
+  closedAt: string;
+  statusBefore: string;
+  statusAfter: string;
+  hadBlockerOverrides: boolean;
+  overridesCount: number;
+  notes?: string;
+}
+
+export interface EventClosureSnapshotDTO {
+  id: string;
+  eventId: string;
+  closedAt: string;
+  sessionsCount: number;
+  totalTicketsSold: number;
+  totalCheckedIn: number;
+  checkInRate: number;
+  totalOrdersCount: number;
+  totalGrossRevenue: number;
+  incidentsSummary: {
+    total: number;
+    resolved: number;
+    unresolved: number;
+  };
+  tasksSummary: {
+    total: number;
+    completed: number;
+    uncompleted: number;
+  };
+  devicesSummary: {
+    totalDevices: number;
+    offlineBatchesSynced: number;
+    conflictsRecorded: number;
+  };
+  closureRecords: SessionClosureRecordDTO[];
+}
+
+export interface CancellationImpactSnapshotDTO {
+  eventId: string;
+  sessionId?: string;
+  isPartialSessionCancellation: boolean;
+  totalSessionsAffected: number;
+  totalTicketsIssued: number;
+  totalTicketsSold: number;
+  totalTicketsCheckedIn: number;
+  totalOrdersCount: number;
+  grossRevenueToRefund: number;
+  customersAffectedCount: number;
+  activeAccessPointsCount: number;
+  activeStaffAllocatedCount: number;
+  activeSalesChannelsCount: number;
+  activeMarketingCampaignsCount: number;
+  calculatedAt: string;
+}
+
+export interface EventCancellationRequestDTO {
+  id: string;
+  eventId: string;
+  sessionId?: string;
+  isPartialSession: boolean;
+  reason: string;
+  cancellationCategory: 'FORCE_MAJEURE' | 'ORGANIZER_DECISION' | 'WEATHER' | 'SECURITY' | 'LEGAL' | 'OTHER';
+  impactSnapshot: CancellationImpactSnapshotDTO;
+  requestedBy: string;
+  requestedByName: string;
+  requestedAt: string;
+  approvalRequestId?: string;
+  status: 'DRAFT' | 'PENDING_APPROVAL' | 'APPROVED' | 'EXECUTED' | 'REJECTED';
+  executedBy?: string;
+  executedByName?: string;
+  executedAt?: string;
+  refundPolicyNotes: string;
+  notifyCustomers: boolean;
+}
+
+export interface EventOperationalReportDTO {
+  eventId: string;
+  eventName: string;
+  eventStatus: string;
+  period: {
+    startAt?: string;
+    endAt?: string;
+    closedAt?: string;
+  };
+  venue: {
+    name?: string;
+    city?: string;
+    state?: string;
+  };
+  operationalKPIs: {
+    totalCapacity: number;
+    totalTicketsSold: number;
+    totalTicketsCheckedIn: number;
+    attendancePercentage: number;
+    peakCheckinHour?: string;
+    peakValidationsPerMinute: number;
+    totalIncidents: number;
+    criticalIncidents: number;
+    totalHandoffs: number;
+    devicesUsedCount: number;
+    conflictsResolvedCount: number;
+  };
+  sessions: Array<{
+    sessionId: string;
+    sessionName: string;
+    status: string;
+    capacity: number;
+    sold: number;
+    checkedIn: number;
+    closedAt?: string;
+  }>;
+  incidentsByType: Record<string, number>;
+  generatedAt: string;
+}
+
+export interface EventArchiveRecordDTO {
+  id: string;
+  eventId: string;
+  eventName: string;
+  statusBeforeArchive: string;
+  archivedBy: string;
+  archivedByName: string;
+  archivedAt: string;
+  justification: string;
+  closureSnapshotId?: string;
+  cancellationRequestId?: string;
+  readOnlyEnforced: boolean;
+}
+
 
 

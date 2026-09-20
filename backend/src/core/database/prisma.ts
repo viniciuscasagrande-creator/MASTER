@@ -81,6 +81,25 @@ export class InMemoryPrismaStore {
   public operationBroadcastRecords: any[] = [];
   public operationBroadcastReceiptRecords: any[] = [];
   public operationHandoffRecords: any[] = [];
+  // Fase 1.2.13 — Check-in + Controle de Acesso + Dispositivos
+  public accessDeviceRecords: any[] = [];
+  public deviceSessionRecords: any[] = [];
+  public accessRuleRecords: any[] = [];
+  public accessValidationRecords: any[] = [];
+  public accessEntryRecords: any[] = [];
+  public ticketAccessBlockRecords: any[] = [];
+  public accessExceptionRequestRecords: any[] = [];
+  public offlineValidationBundleRecords: any[] = [];
+  public offlineSyncBatchRecords: any[] = [];
+  public offlineConflictRecords: any[] = [];
+  // Fase 1.2.14 — Encerramento + Cancelamento + Pós-Evento + Arquivamento
+  public sessionClosureRecords: any[] = [];
+  public eventClosureRecords: any[] = [];
+  public eventClosureSnapshotRecords: any[] = [];
+  public closureOverrideRecords: any[] = [];
+  public eventCancellationRequestRecords: any[] = [];
+  public cancellationImpactSnapshotRecords: any[] = [];
+  public eventArchiveRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -268,6 +287,23 @@ export class InMemoryPrismaStore {
     this.operationBroadcastRecords = [];
     this.operationBroadcastReceiptRecords = [];
     this.operationHandoffRecords = [];
+    this.accessDeviceRecords = [];
+    this.deviceSessionRecords = [];
+    this.accessRuleRecords = [];
+    this.accessValidationRecords = [];
+    this.accessEntryRecords = [];
+    this.ticketAccessBlockRecords = [];
+    this.accessExceptionRequestRecords = [];
+    this.offlineValidationBundleRecords = [];
+    this.offlineSyncBatchRecords = [];
+    this.offlineConflictRecords = [];
+    this.sessionClosureRecords = [];
+    this.eventClosureRecords = [];
+    this.eventClosureSnapshotRecords = [];
+    this.closureOverrideRecords = [];
+    this.eventCancellationRequestRecords = [];
+    this.cancellationImpactSnapshotRecords = [];
+    this.eventArchiveRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -404,6 +440,32 @@ export class InMemoryPrismaStore {
       { id: 'p-evt-5', module: 'eventos', resource: 'evento', action: 'responsaveis.visualizar', code: 'eventos.evento.responsaveis.visualizar', description: 'Visualizar responsáveis pelo evento' },
       { id: 'p-evt-6', module: 'eventos', resource: 'evento', action: 'responsaveis.editar', code: 'eventos.evento.responsaveis.editar', description: 'Editar responsáveis pelo evento' },
       { id: 'p-evt-7', module: 'eventos', resource: 'evento', action: 'rascunho.descartar', code: 'eventos.evento.rascunho.descartar', description: 'Descartar rascunho de evento' },
+      // Check-in + Controle de Acesso + Dispositivos (Fase 1.2.13)
+      { id: 'p-chk-1', module: 'eventos', resource: 'checkin', action: 'validar', code: 'eventos.checkin.validar', description: 'Validar check-in de ingressos' },
+      { id: 'p-chk-2', module: 'eventos', resource: 'checkin', action: 'reverter', code: 'eventos.checkin.reverter', description: 'Reverter check-in de ingressos' },
+      { id: 'p-chk-3', module: 'eventos', resource: 'checkin', action: 'manual', code: 'eventos.checkin.manual', description: 'Realizar entrada manual em contingência' },
+      { id: 'p-chk-4', module: 'eventos', resource: 'checkin', action: 'excecao.solicitar', code: 'eventos.checkin.excecao.solicitar', description: 'Solicitar liberação de exceção de acesso' },
+      { id: 'p-chk-5', module: 'eventos', resource: 'checkin', action: 'excecao.aprovar', code: 'eventos.checkin.excecao.aprovar', description: 'Aprovar exceção de acesso como supervisor' },
+      { id: 'p-chk-6', module: 'eventos', resource: 'checkin', action: 'bloqueio.gerenciar', code: 'eventos.checkin.bloqueio.gerenciar', description: 'Bloquear e desbloquear acesso de ingressos' },
+      { id: 'p-chk-7', module: 'eventos', resource: 'checkin', action: 'dispositivos.visualizar', code: 'eventos.checkin.dispositivos.visualizar', description: 'Visualizar scanners e dispositivos de acesso' },
+      { id: 'p-chk-8', module: 'eventos', resource: 'checkin', action: 'dispositivos.vincular', code: 'eventos.checkin.dispositivos.vincular', description: 'Vincular dispositivo a operador e ponto de acesso' },
+      { id: 'p-chk-9', module: 'eventos', resource: 'checkin', action: 'dispositivos.autorizar', code: 'eventos.checkin.dispositivos.autorizar', description: 'Autorizar novos dispositivos de scanner' },
+      { id: 'p-chk-10', module: 'eventos', resource: 'checkin', action: 'dispositivos.revogar', code: 'eventos.checkin.dispositivos.revogar', description: 'Revogar dispositivo imediatamente' },
+      { id: 'p-chk-11', module: 'eventos', resource: 'checkin', action: 'regras.gerenciar', code: 'eventos.checkin.regras.gerenciar', description: 'Gerenciar regras de acesso e reentrada' },
+      { id: 'p-chk-12', module: 'eventos', resource: 'checkin', action: 'offline.sincronizar', code: 'eventos.checkin.offline.sincronizar', description: 'Sincronizar lotes validados offline' },
+      { id: 'p-chk-13', module: 'eventos', resource: 'checkin', action: 'relatorios.visualizar', code: 'eventos.checkin.relatorios.visualizar', description: 'Visualizar relatórios de check-in e conciliação' },
+      // Encerramento + Cancelamento + Pós-Evento + Arquivamento (Fase 1.2.14)
+      { id: 'p-cls-1', module: 'eventos', resource: 'encerramento', action: 'sessao.encerrar', code: 'eventos.encerramento.sessao.encerrar', description: 'Encerrar sessão de evento' },
+      { id: 'p-cls-2', module: 'eventos', resource: 'encerramento', action: 'evento.encerrar', code: 'eventos.encerramento.evento.encerrar', description: 'Encerrar evento após fechamento de todas as sessões' },
+      { id: 'p-cls-3', module: 'eventos', resource: 'encerramento', action: 'override.aplicar', code: 'eventos.encerramento.override.aplicar', description: 'Aplicar justificativa de override em bloqueador de encerramento' },
+      { id: 'p-cls-4', module: 'eventos', resource: 'cancelamento', action: 'solicitar', code: 'eventos.cancelamento.solicitar', description: 'Solicitar cancelamento de evento ou sessão' },
+      { id: 'p-cls-5', module: 'eventos', resource: 'cancelamento', action: 'avaliar_impacto', code: 'eventos.cancelamento.avaliar_impacto', description: 'Calcular impacto sistêmico do cancelamento' },
+      { id: 'p-cls-6', module: 'eventos', resource: 'cancelamento', action: 'executar', code: 'eventos.cancelamento.executar', description: 'Executar cancelamento do evento' },
+      { id: 'p-cls-7', module: 'eventos', resource: 'cancelamento', action: 'sessao.executar', code: 'eventos.cancelamento.sessao.executar', description: 'Executar cancelamento parcial de sessão' },
+      { id: 'p-cls-8', module: 'eventos', resource: 'pos_evento', action: 'visualizar', code: 'eventos.pos_evento.visualizar', description: 'Visualizar painel pós-evento operacional' },
+      { id: 'p-cls-9', module: 'eventos', resource: 'pos_evento', action: 'relatorio.exportar', code: 'eventos.pos_evento.relatorio.exportar', description: 'Exportar relatório operacional consolidado de pós-evento' },
+      { id: 'p-cls-10', module: 'eventos', resource: 'arquivamento', action: 'arquivar', code: 'eventos.arquivamento.arquivar', description: 'Arquivar evento encerrado ou cancelado' },
+      { id: 'p-cls-11', module: 'eventos', resource: 'arquivamento', action: 'visualizar', code: 'eventos.arquivamento.visualizar', description: 'Visualizar acervo de eventos arquivados' },
       // Financeiro
       { id: 'p-fin-0', module: 'financeiro', resource: 'dashboard', action: 'visualizar', code: 'financeiro.dashboard.visualizar', description: 'Visualizar dashboard financeiro' },
       { id: 'p-fin-1', module: 'financeiro', resource: 'saldo', action: 'visualizar', code: 'financeiro.saldo.visualizar', description: 'Visualizar saldos' },
@@ -658,6 +720,13 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'aprovacoes.solicitacao.visualizar');
     associate('PRODUTOR', 'aprovacoes.solicitacao.criar');
     associate('PRODUTOR', 'aprovacoes.solicitacao.cancelar');
+
+    // Check-in, Controle de Acesso, Encerramento e Cancelamento (Fases 1.2.13 e 1.2.14)
+    this.permissions.filter(p => p.code.startsWith('eventos.checkin.') || p.code.startsWith('eventos.encerramento.') || p.code.startsWith('eventos.cancelamento.') || p.code.startsWith('eventos.pos_evento.') || p.code.startsWith('eventos.arquivamento.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+      associate('PRODUTOR', p.code);
+      associate('SUPORTE_EVENTOS', p.code);
+    });
 
     // Documentos (Fase 1.1.5.8)
     // Financeiro
@@ -6493,6 +6562,694 @@ export class InMemoryPrismaStore {
     };
   }
 
+  // ============================================================================
+  // FASE 1.2.13 — CHECK-IN, DISPOSITIVOS, REGRAS E OFFLINE
+  // ============================================================================
+
+  public get accessDevice() {
+    return {
+      findUnique: async (args: any) => {
+        return this.accessDeviceRecords.find(x => x.id === args.where?.id || (args.where?.deviceCode && x.deviceCode === args.where.deviceCode)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.accessDeviceRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.accessDeviceRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dev_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'ACTIVE',
+          type: args.data.type || 'MOBILE_APP',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.accessDeviceRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.accessDeviceRecords.findIndex(x => x.id === args.where?.id || (args.where?.deviceCode && x.deviceCode === args.where.deviceCode));
+        if (idx >= 0) {
+          this.accessDeviceRecords[idx] = {
+            ...this.accessDeviceRecords[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return { ...this.accessDeviceRecords[idx] };
+        }
+        throw new Error('AccessDevice not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.accessDeviceRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get deviceSession() {
+    return {
+      findUnique: async (args: any) => {
+        return this.deviceSessionRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.deviceSessionRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.deviceSessionRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ds_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          startedAt: new Date(),
+          isActive: true,
+          validationsCount: 0,
+          allowsCount: 0,
+          deniesCount: 0,
+          ...args.data
+        };
+        this.deviceSessionRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.deviceSessionRecords.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.deviceSessionRecords[idx] = {
+            ...this.deviceSessionRecords[idx],
+            ...args.data
+          };
+          return { ...this.deviceSessionRecords[idx] };
+        }
+        throw new Error('DeviceSession not found');
+      },
+      updateMany: async (args: any) => {
+        let list = [...this.deviceSessionRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        for (const item of list) {
+          Object.assign(item, args.data);
+        }
+        return { count: list.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.deviceSessionRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get accessRule() {
+    return {
+      findUnique: async (args: any) => {
+        return this.accessRuleRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.accessRuleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.accessRuleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ar_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: args.data.active ?? true,
+          reentryPolicy: args.data.reentryPolicy || 'NO_REENTRY',
+          maxReentries: args.data.maxReentries || 0,
+          windowStartsBeforeMinutes: args.data.windowStartsBeforeMinutes ?? 120,
+          windowEndsAfterMinutes: args.data.windowEndsAfterMinutes ?? 60,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.accessRuleRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.accessRuleRecords.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.accessRuleRecords[idx] = {
+            ...this.accessRuleRecords[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return { ...this.accessRuleRecords[idx] };
+        }
+        throw new Error('AccessRule not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.accessRuleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get accessValidation() {
+    return {
+      findUnique: async (args: any) => {
+        return this.accessValidationRecords.find(x => x.id === args.where?.id || (args.where?.validationRequestId && x.validationRequestId === args.where.validationRequestId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.accessValidationRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.accessValidationRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        if (args?.take) list = list.slice(0, args.take);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `val_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          createdAt: new Date(),
+          isOfflineProcessed: args.data.isOfflineProcessed || false,
+          movementType: args.data.movementType || 'ENTRY',
+          ...args.data
+        };
+        this.accessValidationRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.accessValidationRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get accessEntry() {
+    return {
+      findUnique: async (args: any) => {
+        return this.accessEntryRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.accessEntryRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.accessEntryRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ent_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.accessEntryRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.accessEntryRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get ticketAccessBlock() {
+    return {
+      findUnique: async (args: any) => {
+        return this.ticketAccessBlockRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.ticketAccessBlockRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.ticketAccessBlockRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `blk_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          blockedAt: new Date(),
+          ...args.data
+        };
+        this.ticketAccessBlockRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.ticketAccessBlockRecords.findIndex(x => x.id === args.where?.id || (args.where?.ticketId && x.ticketId === args.where.ticketId && x.active));
+        if (idx >= 0) {
+          this.ticketAccessBlockRecords[idx] = {
+            ...this.ticketAccessBlockRecords[idx],
+            ...args.data
+          };
+          return { ...this.ticketAccessBlockRecords[idx] };
+        }
+        throw new Error('TicketAccessBlock not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.ticketAccessBlockRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get accessExceptionRequest() {
+    return {
+      findUnique: async (args: any) => {
+        return this.accessExceptionRequestRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.accessExceptionRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.accessExceptionRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `axr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'PENDING',
+          requestedMovement: args.data.requestedMovement || 'ENTRY',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.accessExceptionRequestRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.accessExceptionRequestRecords.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.accessExceptionRequestRecords[idx] = {
+            ...this.accessExceptionRequestRecords[idx],
+            ...args.data
+          };
+          return { ...this.accessExceptionRequestRecords[idx] };
+        }
+        throw new Error('AccessExceptionRequest not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.accessExceptionRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get offlineValidationBundle() {
+    return {
+      findUnique: async (args: any) => {
+        return this.offlineValidationBundleRecords.find(x => x.id === args.where?.id || (args.where?.bundleId && x.bundleId === args.where.bundleId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.offlineValidationBundleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.offlineValidationBundleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `bun_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          bundleId: args.data.bundleId || `bundle_${Date.now()}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.offlineValidationBundleRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.offlineValidationBundleRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get offlineSyncBatch() {
+    return {
+      findUnique: async (args: any) => {
+        return this.offlineSyncBatchRecords.find(x => x.id === args.where?.id || (args.where?.batchId && x.batchId === args.where.batchId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.offlineSyncBatchRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.offlineSyncBatchRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `sbat_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          batchId: args.data.batchId || `batch_${Date.now()}`,
+          syncedAt: new Date(),
+          ...args.data
+        };
+        this.offlineSyncBatchRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.offlineSyncBatchRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get offlineConflict() {
+    return {
+      findUnique: async (args: any) => {
+        return this.offlineConflictRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.offlineConflictRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.offlineConflictRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cnf_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          resolved: false,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.offlineConflictRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.offlineConflictRecords.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.offlineConflictRecords[idx] = {
+            ...this.offlineConflictRecords[idx],
+            ...args.data
+          };
+          return { ...this.offlineConflictRecords[idx] };
+        }
+        throw new Error('OfflineConflict not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.offlineConflictRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  // ============================================================================
+  // FASE 1.2.14 — ENCERRAMENTO, CANCELAMENTO E ARQUIVAMENTO
+  // ============================================================================
+
+  public get sessionClosureRecord() {
+    return {
+      findUnique: async (args: any) => {
+        return this.sessionClosureRecords.find(x => x.id === args.where?.id || (args.where?.sessionId && x.sessionId === args.where.sessionId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.sessionClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.sessionClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `scls_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          closedAt: new Date(),
+          hadBlockerOverrides: args.data.hadBlockerOverrides || false,
+          overridesCount: args.data.overridesCount || 0,
+          ...args.data
+        };
+        this.sessionClosureRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.sessionClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get eventClosureRecord() {
+    return {
+      findUnique: async (args: any) => {
+        return this.eventClosureRecords.find(x => x.id === args.where?.id || (args.where?.eventId && x.eventId === args.where.eventId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.eventClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.eventClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ecls_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          closedAt: new Date(),
+          hadBlockerOverrides: args.data.hadBlockerOverrides || false,
+          overridesCount: args.data.overridesCount || 0,
+          ...args.data
+        };
+        this.eventClosureRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.eventClosureRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get eventClosureSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        return this.eventClosureSnapshotRecords.find(x => x.id === args.where?.id || (args.where?.eventId && x.eventId === args.where.eventId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.eventClosureSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.eventClosureSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `esnap_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          closedAt: new Date(),
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.eventClosureSnapshotRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.eventClosureSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get closureOverride() {
+    return {
+      findUnique: async (args: any) => {
+        return this.closureOverrideRecords.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.closureOverrideRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.closureOverrideRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ovr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.closureOverrideRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.closureOverrideRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get eventCancellationRequest() {
+    return {
+      findUnique: async (args: any) => {
+        return this.eventCancellationRequestRecords.find(x => x.id === args.where?.id || (args.where?.eventId && x.eventId === args.where.eventId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.eventCancellationRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.eventCancellationRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.requestedAt === 'desc') {
+          list.sort((a, b) => new Date(b.requestedAt).getTime() - new Date(a.requestedAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cncr_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          requestedAt: new Date(),
+          isPartialSession: args.data.isPartialSession || false,
+          notifyCustomers: args.data.notifyCustomers ?? true,
+          ...args.data
+        };
+        this.eventCancellationRequestRecords.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const idx = this.eventCancellationRequestRecords.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.eventCancellationRequestRecords[idx] = {
+            ...this.eventCancellationRequestRecords[idx],
+            ...args.data
+          };
+          return { ...this.eventCancellationRequestRecords[idx] };
+        }
+        throw new Error('EventCancellationRequest not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.eventCancellationRequestRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get cancellationImpactSnapshot() {
+    return {
+      findUnique: async (args: any) => {
+        return this.cancellationImpactSnapshotRecords.find(x => x.id === args.where?.id || (args.where?.eventId && x.eventId === args.where.eventId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.cancellationImpactSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.cancellationImpactSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `cis_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          calculatedAt: new Date(),
+          ...args.data
+        };
+        this.cancellationImpactSnapshotRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.cancellationImpactSnapshotRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get eventArchiveRecord() {
+    return {
+      findUnique: async (args: any) => {
+        return this.eventArchiveRecords.find(x => x.id === args.where?.id || (args.where?.eventId && x.eventId === args.where.eventId)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.eventArchiveRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.eventArchiveRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.archivedAt === 'desc') {
+          list.sort((a, b) => new Date(b.archivedAt).getTime() - new Date(a.archivedAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `arc_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          archivedAt: new Date(),
+          readOnlyEnforced: true,
+          ...args.data
+        };
+        this.eventArchiveRecords.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.eventArchiveRecords];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
   public get userProducerAccess() {
     return {
       create: async (args: any) => {
@@ -6991,6 +7748,14 @@ export class InMemoryPrismaStore {
         if (!item) throw new Error('Ticket not found');
         Object.assign(item, args.data);
         return item;
+      },
+      updateMany: async (args: any) => {
+        let list = [...this.tickets];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        for (const item of list) {
+          Object.assign(item, args.data);
+        }
+        return { count: list.length };
       },
       count: async (args?: any) => {
         let list = [...this.tickets];

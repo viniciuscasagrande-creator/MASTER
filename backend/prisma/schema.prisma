@@ -3587,4 +3587,339 @@ model OperationHandoff {
   @@index([operationId])
 }
 
+// ============================================================================
+// FASE 1.2.13 — CHECK-IN + CONTROLE DE ACESSO + DISPOSITIVOS
+// ============================================================================
+
+model AccessDevice {
+  id                    String    @id @default(uuid())
+  eventId               String
+  name                  String
+  deviceCode            String    @unique
+  type                  String    @default("MOBILE_APP")
+  status                String    @default("ACTIVE")
+  apiKeyHash            String?
+  batteryLevel          Int?
+  appVersion            String?
+  allowedAccessPointIds String?   // JSON array
+  allowedSessionIds     String?   // JSON array
+  currentSessionId      String?
+  lastHeartbeatAt       DateTime?
+  lastSyncAt            DateTime?
+  registeredBy          String
+  revokedAt             DateTime?
+  revokedReason         String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([eventId])
+  @@index([status])
+  @@index([deviceCode])
+}
+
+model DeviceSession {
+  id               String    @id @default(uuid())
+  deviceId         String
+  eventId          String
+  sessionId        String
+  accessPointId    String
+  operatorId       String
+  operatorName     String
+  startedAt        DateTime  @default(now())
+  endedAt          DateTime?
+  isActive         Boolean   @default(true)
+  validationsCount Int       @default(0)
+  allowsCount      Int       @default(0)
+  deniesCount      Int       @default(0)
+
+  @@index([deviceId])
+  @@index([sessionId])
+  @@index([operatorId])
+}
+
+model AccessRule {
+  id                        String   @id @default(uuid())
+  eventId                   String
+  sessionId                 String?
+  name                      String
+  ticketTypeIds             String?  // JSON array
+  allowedAccessPointIds     String?  // JSON array
+  allowedSectionIds         String?  // JSON array
+  reentryPolicy             String   @default("NO_REENTRY")
+  maxReentries              Int      @default(0)
+  windowStartsBeforeMinutes Int      @default(120)
+  windowEndsAfterMinutes    Int      @default(60)
+  active                    Boolean  @default(true)
+  createdAt                 DateTime @default(now())
+  updatedAt                 DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([sessionId])
+}
+
+model AccessValidation {
+  id                    String    @id @default(uuid())
+  eventId               String
+  sessionId             String
+  ticketId              String?
+  ticketNumber          String?
+  accessPointId         String
+  deviceId              String
+  operatorId            String
+  operatorName          String?
+  decision              String    // ALLOW, DENY, REVIEW
+  reasonCode            String
+  movementType          String    @default("ENTRY")
+  validationRequestId   String    @unique
+  overrideJustification String?
+  isOfflineProcessed    Boolean   @default(false)
+  offlineTimestamp      DateTime?
+  createdAt             DateTime  @default(now())
+
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([ticketId])
+  @@index([deviceId])
+  @@index([createdAt])
+}
+
+model AccessEntry {
+  id            String   @id @default(uuid())
+  ticketId      String
+  eventId       String
+  sessionId     String
+  accessPointId String
+  deviceId      String
+  operatorId    String
+  movementType  String   // ENTRY, REENTRY, EXIT, MANUAL_ENTRY
+  validationId  String
+  createdAt     DateTime @default(now())
+
+  @@index([ticketId])
+  @@index([sessionId])
+  @@index([createdAt])
+}
+
+model TicketAccessBlock {
+  id            String    @id @default(uuid())
+  ticketId      String
+  ticketNumber  String
+  eventId       String
+  reason        String
+  blockedBy     String
+  blockedByName String
+  blockedAt     DateTime  @default(now())
+  active        Boolean   @default(true)
+  unblockedBy   String?
+  unblockedAt   DateTime?
+  unblockReason String?
+
+  @@index([ticketId])
+  @@index([eventId])
+  @@index([active])
+}
+
+model AccessExceptionRequest {
+  id                String    @id @default(uuid())
+  ticketId          String?
+  ticketNumber      String?
+  eventId           String
+  sessionId         String
+  accessPointId     String
+  deviceId          String
+  operatorId        String
+  operatorName      String
+  reason            String
+  requestedMovement String    @default("ENTRY")
+  status            String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  supervisorId      String?
+  supervisorName    String?
+  decidedAt         DateTime?
+  decisionNotes     String?
+  createdAt         DateTime  @default(now())
+
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([status])
+}
+
+model OfflineValidationBundle {
+  id            String   @id @default(uuid())
+  bundleId      String   @unique
+  eventId       String
+  sessionId     String
+  accessPointId String
+  deviceId      String
+  totalTickets  Int      @default(0)
+  bundleData    String   // JSON
+  validUntil    DateTime
+  createdAt     DateTime @default(now())
+
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([deviceId])
+}
+
+model OfflineSyncBatch {
+  id              String   @id @default(uuid())
+  batchId         String   @unique
+  deviceId        String
+  eventId         String
+  sessionId       String
+  operatorId      String
+  itemsCount      Int      @default(0)
+  acceptedCount   Int      @default(0)
+  conflictsCount  Int      @default(0)
+  syncedAt        DateTime @default(now())
+
+  @@index([deviceId])
+  @@index([eventId])
+}
+
+model OfflineConflict {
+  id                String    @id @default(uuid())
+  batchId           String
+  ticketId          String
+  ticketNumber      String
+  conflictType      String    // CONFLICT_DUPLICATE_OFFLINE, STATUS_CHANGED_ONLINE, DEVICE_REVOKED_OFFLINE
+  serverMovementAt  DateTime?
+  offlineMovementAt DateTime
+  deviceId          String
+  operatorId        String
+  resolved          Boolean   @default(false)
+  resolvedBy        String?
+  resolvedAt        DateTime?
+  resolutionNotes   String?
+  createdAt         DateTime  @default(now())
+
+  @@index([batchId])
+  @@index([ticketId])
+  @@index([resolved])
+}
+
+// ============================================================================
+// FASE 1.2.14 — ENCERRAMENTO + CANCELAMENTO + PÓS-EVENTO + ARQUIVAMENTO
+// ============================================================================
+
+model SessionClosureRecord {
+  id                  String   @id @default(uuid())
+  sessionId           String   @unique
+  sessionName         String
+  eventId             String
+  closedBy            String
+  closedByName        String
+  closedAt            DateTime @default(now())
+  hadBlockerOverrides Boolean  @default(false)
+  overridesCount      Int      @default(0)
+  finalCheckinCount   Int      @default(0)
+  finalCapacityUsed   Int      @default(0)
+  notes               String?
+
+  @@index([eventId])
+  @@index([closedAt])
+}
+
+model EventClosureRecord {
+  id                  String   @id @default(uuid())
+  eventId             String   @unique
+  eventName           String
+  closedBy            String
+  closedByName        String
+  closedAt            DateTime @default(now())
+  statusBefore        String
+  statusAfter         String
+  hadBlockerOverrides Boolean  @default(false)
+  overridesCount      Int      @default(0)
+  notes               String?
+
+  @@index([closedAt])
+}
+
+model EventClosureSnapshot {
+  id                String   @id @default(uuid())
+  eventId           String
+  closedAt          DateTime @default(now())
+  sessionsCount     Int      @default(0)
+  totalTicketsSold  Int      @default(0)
+  totalCheckedIn    Int      @default(0)
+  checkInRate       Float    @default(0.0)
+  totalOrdersCount  Int      @default(0)
+  totalGrossRevenue Float    @default(0.0)
+  snapshotData      String   // JSON
+  createdAt         DateTime @default(now())
+
+  @@index([eventId])
+}
+
+model ClosureOverride {
+  id               String   @id @default(uuid())
+  scope            String   // SESSION, EVENT
+  targetId         String
+  checkCode        String
+  justification    String
+  authorizedBy     String
+  authorizedByName String
+  createdAt        DateTime @default(now())
+
+  @@index([targetId])
+  @@index([scope])
+}
+
+model EventCancellationRequest {
+  id                   String    @id @default(uuid())
+  eventId              String
+  sessionId            String?
+  isPartialSession     Boolean   @default(false)
+  reason               String
+  cancellationCategory String
+  impactData           String    // JSON
+  requestedBy          String
+  requestedByName      String
+  requestedAt          DateTime  @default(now())
+  approvalRequestId    String?
+  status               String    @default("DRAFT")
+  executedBy           String?
+  executedByName       String?
+  executedAt           DateTime?
+  refundPolicyNotes    String
+  notifyCustomers      Boolean   @default(true)
+
+  @@index([eventId])
+  @@index([status])
+}
+
+model CancellationImpactSnapshot {
+  id                         String   @id @default(uuid())
+  eventId                    String
+  sessionId                  String?
+  isPartialSession           Boolean  @default(false)
+  totalSessionsAffected      Int      @default(0)
+  totalTicketsIssued         Int      @default(0)
+  totalTicketsSold           Int      @default(0)
+  totalTicketsCheckedIn      Int      @default(0)
+  totalOrdersCount           Int      @default(0)
+  grossRevenueToRefund       Float    @default(0.0)
+  customersAffectedCount     Int      @default(0)
+  calculatedAt               DateTime @default(now())
+
+  @@index([eventId])
+}
+
+model EventArchiveRecord {
+  id                    String   @id @default(uuid())
+  eventId               String   @unique
+  eventName             String
+  statusBeforeArchive   String
+  archivedBy            String
+  archivedByName        String
+  archivedAt            DateTime @default(now())
+  justification         String
+  closureSnapshotId     String?
+  cancellationRequestId String?
+  readOnlyEnforced      Boolean  @default(true)
+
+  @@index([archivedAt])
+}
+
+
 

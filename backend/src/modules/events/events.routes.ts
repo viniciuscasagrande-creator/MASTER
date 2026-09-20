@@ -24,6 +24,10 @@ import eventLifecycleRoutes from './lifecycle/event-lifecycle.routes';
 import eventChangeRoutes from './changes/event-change.routes';
 import eventDashboardRoutes from './dashboard/event-dashboard.routes';
 import eventOperationRoutes from './operation/event-operation.routes';
+import eventCheckinRoutes from './checkin/checkin.routes';
+import eventClosureRoutes from './closure/closure.routes';
+import eventCancellationRoutes from './cancellation/cancellation.routes';
+import eventArchiveRoutes from './archive/archive.routes';
 
 const router = Router();
 
@@ -107,6 +111,20 @@ router.use('/:eventId/dashboard', eventDashboardRoutes);
 // 5.17 Central de Operação em Tempo Real (Fase 1.2.12)
 router.use('/:eventId/operation', eventOperationRoutes);
 router.use('/:eventId/sessions/:sessionId/operation', eventOperationRoutes);
+
+// 5.18 Check-in, Controle de Acesso e Dispositivos (Fase 1.2.13)
+router.use('/:eventId/checkin', eventCheckinRoutes);
+router.use('/:eventId/sessions/:sessionId/checkin', eventCheckinRoutes);
+
+// 5.19 Encerramento e Pós-Evento (Fase 1.2.14)
+router.use('/:eventId/closure', eventClosureRoutes);
+
+// 5.20 Cancelamento de Evento e Sessão (Fase 1.2.14)
+router.use('/:eventId/cancellation', eventCancellationRoutes);
+
+// 5.21 Arquivamento de Eventos (Fase 1.2.14)
+router.use('/:eventId/archive', eventArchiveRoutes);
+router.use('/archive', eventArchiveRoutes);
 
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);

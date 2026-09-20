@@ -152,7 +152,11 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'events-changes', label: 'Central de Alterações', requiredPermission: 'eventos.alteracoes.visualizar' },
         { id: 'events-review-publication', label: 'Revisão & Publicação', requiredPermission: 'eventos.lifecycle.review' },
         { id: 'events-checkin', label: 'Check-in e Portaria', requiredPermission: 'eventos.checkin.operar' },
-        { id: 'events-operation', label: 'Central de Operação', requiredPermission: 'eventos.operacao.visualizar' }
+        { id: 'events-operation', label: 'Central de Operação', requiredPermission: 'eventos.operacao.visualizar' },
+        { id: 'events-closure', label: 'Encerramento', requiredPermission: 'eventos.encerramento.sessao.encerrar' },
+        { id: 'events-post-event', label: 'Relatório Pós-Evento', requiredPermission: 'eventos.pos_evento.visualizar' },
+        { id: 'events-cancellation', label: 'Cancelamento', requiredPermission: 'eventos.cancelamento.solicitar' },
+        { id: 'events-archive', label: 'Eventos Arquivados', requiredPermission: 'eventos.arquivamento.visualizar' }
       ]
     },
     {

@@ -23,6 +23,11 @@ import { EventReadinessPage } from '../../features/events/readiness/EventReadine
 import { EventReviewPublicationPage } from '../../features/events/publication/EventReviewPublicationPage';
 import { EventChangeManagementPage } from '../../features/events/changes/EventChangeManagementPage';
 import { EventOperationPage } from '../../features/events/operation/EventOperationPage';
+import { EventCheckinPage } from '../../features/events/checkin/EventCheckinPage';
+import { EventClosurePage } from '../../features/events/closure/EventClosurePage';
+import { PostEventPage } from '../../features/events/closure/PostEventPage';
+import { EventCancellationPage } from '../../features/events/cancellation/EventCancellationPage';
+import { ArchivedEventsPage } from '../../features/events/archive/ArchivedEventsPage';
 import { useEventSelection } from '../../features/events/hooks/useEventSelection';
 import { useEvents } from '../../features/events/hooks/useEvents';
 import { createEventDraft } from '../../features/events/api/events.api';
@@ -369,6 +374,65 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
       <EventOperationPage
         eventId={activeEvent.id}
         eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CHECK-IN & CONTROLE DE ACESSO (FASE 1.2.13) ---
+  if (initialSubItem === 'events-checkin') {
+    if (!activeEvent) return renderNoEventSelected('operar o check-in e controle de acesso');
+    return (
+      <EventCheckinPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: ENCERRAMENTO DO EVENTO & SESSÕES (FASE 1.2.14) ---
+  if (initialSubItem === 'events-closure') {
+    if (!activeEvent) return renderNoEventSelected('gerenciar o encerramento do evento');
+    return (
+      <EventClosurePage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: RELATÓRIO PÓS-EVENTO (FASE 1.2.14) ---
+  if (initialSubItem === 'events-post-event') {
+    if (!activeEvent) return renderNoEventSelected('visualizar o relatório pós-evento');
+    return (
+      <PostEventPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: GESTÃO DE CANCELAMENTO (FASE 1.2.14) ---
+  if (initialSubItem === 'events-cancellation') {
+    if (!activeEvent) return renderNoEventSelected('avaliar cancelamento e raio de impacto');
+    return (
+      <EventCancellationPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: EVENTOS ARQUIVADOS (FASE 1.2.14) ---
+  if (initialSubItem === 'events-archive') {
+    return (
+      <ArchivedEventsPage
+        currentEventId={activeEvent?.id}
+        currentEventName={activeEvent ? (activeEvent.name || (activeEvent as any).title) : undefined}
         onNavigate={(subId) => onNavigate?.('events', subId)}
       />
     );

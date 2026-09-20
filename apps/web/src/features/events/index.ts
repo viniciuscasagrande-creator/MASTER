@@ -73,3 +73,9 @@ export * from './readiness/EventReadinessPage';
 export * from './publication/EventReviewPublicationPage';
 export * from './changes/EventChangeManagementPage';
 export * from './operation/EventOperationPage';
+export * from './checkin/EventCheckinPage';
+export * from './closure/EventClosurePage';
+export * from './closure/PostEventPage';
+export * from './cancellation/EventCancellationPage';
+export * from './archive/ArchivedEventsPage';
+
