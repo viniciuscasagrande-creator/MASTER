@@ -153,6 +153,8 @@ model Producer {
   events         Event[]
   userAccesses   UserProducerAccess[]
   contracts      CommercialContract[]
+  entitlements   ProducerEntitlement[]
+  entitlementOverrides EntitlementOverride[]
 
   @@index([cnpj])
 }
@@ -4313,7 +4315,8 @@ model CommercialFeature {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  offeringFeatures OfferingFeature[]
+  offeringFeatures     OfferingFeature[]
+  producerEntitlements ProducerEntitlement[]
 }
 
 model OfferingFeature {
@@ -4743,9 +4746,98 @@ model SignatureSigner {
   @@index([email])
 }
 
+// ==============================================================================
+// FASE 1.3.8 — HABILITAÇÕES COMERCIAIS DO PRODUTOR + PRODUTOS CONTRATADOS + LIMITES + VIGÊNCIA (ENTITLEMENTS)
+// ==============================================================================
 
+model ProducerEntitlement {
+  id                 String                      @id @default(uuid())
+  producerId         String
+  sourceType         String                      @default("CONTRACT") // CONTRACT, LEGACY_MIGRATION, ADMIN_OVERRIDE
+  sourceId           String?                     // Contract ID, migration batch ID or override reference
+  offeringId         String?                     // ID da CommercialOffering
+  offeringVersionId  String?                     // ID da CommercialOfferingVersion
+  featureCode        String                      // Código canônico da feature (ex: feature.access.offline_validator)
+  featureId          String?                     // Referência a CommercialFeature
+  status             String                      @default("ACTIVE") // SCHEDULED, ACTIVE, SUSPENDED, EXPIRED, TERMINATED
+  effectiveFrom      DateTime?
+  effectiveUntil     DateTime?
+  enforcementMode    String                      @default("ENFORCE") // DISABLED, OBSERVE, WARN, ENFORCE
+  configurationJson  String?                     // Configurações herdadas ou customizadas (JSON)
+  notes              String?
+  version            Int                         @default(1)
+  createdAt          DateTime                    @default(now())
+  updatedAt          DateTime                    @updatedAt
 
+  producer           Producer                    @relation(fields: [producerId], references: [id], onDelete: Cascade)
+  feature            CommercialFeature?          @relation(fields: [featureId], references: [id])
+  limits             ProducerEntitlementLimit[]
 
+  @@unique([producerId, featureCode, sourceId])
+  @@index([producerId])
+  @@index([featureCode])
+  @@index([status])
+  @@index([sourceType])
+  @@index([sourceId])
+}
 
+model ProducerEntitlementLimit {
+  id                 String              @id @default(uuid())
+  entitlementId      String
+  limitKey           String              // ex: events.active_max, devices.offline_max, tickets.monthly_quota
+  limitType          String              @default("COUNT") // COUNT, MAX_VALUE, VOLUME, BOOLEAN_FLAG
+  value              Float               // Limite numérico ou 1 para flags booleanas
+  unit               String?             @default("UNITS") // UNITS, DEVICES, TICKETS, BRL, EVENTS
+  effectiveFrom      DateTime?
+  effectiveUntil     DateTime?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
 
+  entitlement        ProducerEntitlement @relation(fields: [entitlementId], references: [id], onDelete: Cascade)
+
+  @@index([entitlementId])
+  @@index([limitKey])
+}
+
+model EntitlementOverride {
+  id                 String              @id @default(uuid())
+  producerId         String
+  featureCode        String
+  action             String              // GRANT, REVOKE, LIMIT_MODIFICATION
+  customLimitKey     String?
+  customLimitValue   Float?
+  reason             String              // Justificativa operacional/comercial obrigatória
+  status             String              @default("ACTIVE") // ACTIVE, EXPIRED, REVOKED
+  effectiveFrom      DateTime            @default(now())
+  effectiveUntil     DateTime
+  approvedBy         String
+  approvedByName     String?
+  createdBy          String
+  createdByName      String?
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime            @updatedAt
+
+  producer           Producer            @relation(fields: [producerId], references: [id], onDelete: Cascade)
+
+  @@index([producerId])
+  @@index([featureCode])
+  @@index([status])
+}
+
+model EntitlementAuditLog {
+  id                 String              @id @default(uuid())
+  producerId         String
+  featureCode        String?
+  eventType          String              // PROVISIONED, RECONCILED, STATUS_CHANGED, OVERRIDE_APPLIED, CHECK_DENIED, CHECK_WARNING, LIMIT_EXCEEDED
+  source             String              // CONTRACT_ACTIVATION, RECONCILIATION_JOB, MANUAL_OVERRIDE, MIDDLEWARE_ENFORCEMENT
+  detailsJson        String?
+  actorId            String?
+  actorName          String?
+  createdAt          DateTime            @default(now())
+
+  @@index([producerId])
+  @@index([featureCode])
+  @@index([eventType])
+  @@index([createdAt])
+}
 

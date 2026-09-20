@@ -17,6 +17,10 @@ Esta pasta reúne a documentação técnica, matrizes de fronteira arquitetural 
 * [Fase 1.3.7 — Catálogo Comercial, Planos, Pacotes, Serviços & Condições Padrão](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/IMPLEMENTACAO_FASE_1_3_7.md)
   * [Auditoria Prévia de Catálogo (Passo Zero)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/AUDITORIA_CATALOGO_FASE_1_3_7.md)
   * [Relatório de Testes 1.3.7](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/TESTES_FASE_1_3_7.md)
+* [Fase 1.3.8 — Habilitações Comerciais do Produtor, Produtos Contratados, Limites & Vigência (Entitlements)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/IMPLEMENTACAO_FASE_1_3_8.md)
+  * [Auditoria Prévia de Habilitações (Passo Zero)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/AUDITORIA_HABILITACOES_FASE_1_3_8.md)
+  * [Plano de Migração de Habilitações Legadas](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/PLANO_MIGRACAO_HABILITACOES_FASE_1_3_8.md)
+  * [Relatório de Testes 1.3.8](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/phases/TESTES_FASE_1_3_8.md)
 
 ---
 
@@ -27,6 +31,7 @@ Esta pasta reúne a documentação técnica, matrizes de fronteira arquitetural 
 * [Matriz de Fronteiras: Contratos Comerciais, Assinatura vs Vigência (1.3.6)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/architecture/MATRIZ_DOMINIOS_FASE_1_3_6.md)
 * [Integração de Assinatura Eletrônica & Autentique Adapter (1.3.6)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/architecture/INTEGRACAO_ASSINATURA_FASE_1_3_6.md)
 * [Matriz de Fronteiras: Catálogo Comercial, Versionamento e Condições Padrão (1.3.7)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/architecture/MATRIZ_DOMINIOS_FASE_1_3_7.md)
+* [Matriz de Domínios e Separação: RBAC vs Entitlements vs Escopo (1.3.8)](file:///C:/Users/vinad/OneDrive/Desktop/MASTER/docs/architecture/MATRIZ_DOMINIOS_FASE_1_3_8.md)
 
 ---
 

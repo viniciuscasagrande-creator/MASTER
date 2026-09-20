@@ -40,6 +40,7 @@ import venueRoutes from '../modules/events/venues/venue.routes';
 import commercialRoutes from '../modules/commercial/commercial.routes';
 import contractRoutes from '../modules/commercial/contracts/contract.routes';
 import catalogRoutes from '../modules/commercial/catalog/catalog.routes';
+import entitlementRoutes from '../modules/entitlements/entitlement.routes';
 import { authenticate } from '../core/middleware/authenticate';
 
 const router = Router();
@@ -73,6 +74,7 @@ router.use('/finance', financeRoutes);
 router.use('/commercial/catalog', catalogRoutes);
 router.use('/commercial/contracts', contractRoutes);
 router.use('/commercial', commercialRoutes);
+router.use('/entitlements', entitlementRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/audit', auditRoutes);
 router.use('/marketing', marketingRoutes);

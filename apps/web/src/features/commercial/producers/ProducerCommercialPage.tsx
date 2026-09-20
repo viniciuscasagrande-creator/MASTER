@@ -38,6 +38,7 @@ import { Button } from '../../../shared/components/Button';
 import { StatCard } from '../../../shared/components/StatCard';
 import { Modal } from '../../../shared/components/Modal';
 import { formatCnpj, formatCurrency, formatDate, formatDateTime } from '../../../shared/utils/formatters';
+import { ProducerProductsTab } from './components/ProducerProductsTab';
 
 interface ProducerCommercialPageProps {
   producerId: string;
@@ -46,7 +47,7 @@ interface ProducerCommercialPageProps {
   onSelectEvent?: (eventId: string) => void;
 }
 
-type TabType = 'resumo' | 'eventos' | 'performance' | 'contatos' | 'oportunidades' | 'atividades' | 'pendencias';
+type TabType = 'resumo' | 'produtos' | 'eventos' | 'performance' | 'contatos' | 'oportunidades' | 'atividades' | 'pendencias';
 
 export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
   producerId,
@@ -526,6 +527,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         <div className="flex items-center gap-2 border-t border-slate-800 mt-6 pt-4 overflow-x-auto">
           {[
             { id: 'resumo', label: 'Resumo da Conta' },
+            { id: 'produtos', label: 'Produtos Contratados & Limites' },
             { id: 'eventos', label: `Eventos (${performance?.events?.length || summary.eventsCount})` },
             { id: 'performance', label: 'Performance Comercial' },
             { id: 'contatos', label: `Contatos B2B (${contacts.length})` },
@@ -547,6 +549,11 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
           ))}
         </div>
       </div>
+
+      {/* Tab: Produtos Contratados & Limites (Fase 1.3.8) */}
+      {activeTab === 'produtos' && (
+        <ProducerProductsTab producerId={producerId} />
+      )}
 
       {/* Tab 1: Resumo da Conta */}
       {activeTab === 'resumo' && (

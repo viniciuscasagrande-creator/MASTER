@@ -5,6 +5,7 @@ import { ISignatureProvider, SignatureSignerInput } from './signature-provider';
 import { ContractDocumentService } from '../generation/contract-document.service';
 import { AuditService } from '../../../audit/audit.service';
 import { PrepareSignatureDTO, SignatureEnvelopeDTO } from '../../../../../../shared/types';
+import { EntitlementProvisioningService } from '../../../entitlements/provisioning/entitlement-provisioning.service';
 
 export class SignatureService {
   private static provider: ISignatureProvider = new AutentiqueSignatureProvider();
@@ -313,6 +314,13 @@ export class SignatureService {
             signedAt: now
           }
         });
+      }
+
+      // Provisionar Habilitações Comerciais (Fase 1.3.8)
+      try {
+        await EntitlementProvisioningService.provisionFromContract(contract.id);
+      } catch (provisionErr) {
+        console.error('Falha ao provisionar entitlements pós-assinatura:', provisionErr);
       }
 
       await AuditService.log({

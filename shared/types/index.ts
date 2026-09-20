@@ -6230,8 +6230,165 @@ export interface TerminateContractDTO {
   notes?: string;
 }
 
+// ==============================================================================
+// FASE 1.3.8 — HABILITAÇÕES COMERCIAIS DO PRODUTOR + PRODUTOS CONTRATADOS + LIMITES + VIGÊNCIA (ENTITLEMENTS)
+// ==============================================================================
 
+export type EntitlementSourceType = 'CONTRACT' | 'LEGACY_MIGRATION' | 'ADMIN_OVERRIDE';
+export type EntitlementStatus = 'SCHEDULED' | 'ACTIVE' | 'SUSPENDED' | 'EXPIRED' | 'TERMINATED';
+export type EntitlementEnforcementMode = 'DISABLED' | 'OBSERVE' | 'WARN' | 'ENFORCE';
+export type EntitlementLimitType = 'COUNT' | 'MAX_VALUE' | 'VOLUME' | 'BOOLEAN_FLAG';
+export type EntitlementOverrideAction = 'GRANT' | 'REVOKE' | 'LIMIT_MODIFICATION';
+export type EntitlementOverrideStatus = 'ACTIVE' | 'EXPIRED' | 'REVOKED';
 
+export interface ProducerEntitlementLimitDTO {
+  id: string;
+  entitlementId: string;
+  limitKey: string;
+  limitType: EntitlementLimitType;
+  value: number;
+  unit: string;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  currentUsage?: number;
+  isExceeded?: boolean;
+}
 
+export interface ProducerEntitlementDTO {
+  id: string;
+  producerId: string;
+  sourceType: EntitlementSourceType;
+  sourceId?: string | null;
+  offeringId?: string | null;
+  offeringVersionId?: string | null;
+  offeringName?: string | null;
+  featureCode: string;
+  featureId?: string | null;
+  featureName?: string | null;
+  featureCategory?: string | null;
+  status: EntitlementStatus;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  enforcementMode: EntitlementEnforcementMode;
+  configurationJson?: string | null;
+  notes?: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  limits?: ProducerEntitlementLimitDTO[];
+  hasActiveOverride?: boolean;
+}
 
+export interface EntitlementOverrideDTO {
+  id: string;
+  producerId: string;
+  featureCode: string;
+  featureName?: string | null;
+  action: EntitlementOverrideAction;
+  customLimitKey?: string | null;
+  customLimitValue?: number | null;
+  reason: string;
+  status: EntitlementOverrideStatus;
+  effectiveFrom: string;
+  effectiveUntil: string;
+  approvedBy: string;
+  approvedByName?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
 
+export interface EntitlementAuditLogDTO {
+  id: string;
+  producerId: string;
+  featureCode?: string | null;
+  eventType: string;
+  source: string;
+  detailsJson?: string | null;
+  actorId?: string | null;
+  actorName?: string | null;
+  createdAt: string;
+}
+
+export interface ContractedProductSummaryDTO {
+  offeringId: string;
+  offeringName: string;
+  offeringType: CommercialOfferingType;
+  publicCode?: string | null;
+  contractId: string;
+  contractPublicCode?: string | null;
+  status: 'ACTIVE' | 'SCHEDULED' | 'EXPIRED' | 'SUSPENDED';
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  features: Array<{
+    code: string;
+    name: string;
+    category: string;
+    status: EntitlementStatus;
+    limits: Array<{
+      key: string;
+      value: number;
+      unit: string;
+      currentUsage: number;
+      isExceeded: boolean;
+    }>;
+  }>;
+}
+
+export interface EntitlementCheckResultDTO {
+  allowed: boolean;
+  featureCode: string;
+  producerId: string;
+  reason?: string;
+  enforcementMode: EntitlementEnforcementMode;
+  entitlementId?: string;
+  status?: EntitlementStatus;
+  limit?: {
+    key: string;
+    limitValue: number;
+    currentUsage: number;
+    exceeded: boolean;
+  };
+  warningMessage?: string;
+}
+
+export interface CreateEntitlementOverrideDTO {
+  producerId: string;
+  featureCode: string;
+  action: EntitlementOverrideAction;
+  customLimitKey?: string;
+  customLimitValue?: number;
+  reason: string;
+  effectiveFrom?: string;
+  effectiveUntil: string;
+  approvedBy: string;
+  approvedByName?: string;
+}
+
+export interface ReconcileEntitlementsResultDTO {
+  producerId?: string;
+  evaluatedContracts: number;
+  createdEntitlements: number;
+  updatedEntitlements: number;
+  expiredEntitlements: number;
+  activatedEntitlements: number;
+  reconciledAt: string;
+}
+
+export interface LegacyMigrationDTO {
+  producerId: string;
+  features: Array<{
+    featureCode: string;
+    limits?: Array<{
+      limitKey: string;
+      value: number;
+      unit?: string;
+    }>;
+    notes?: string;
+  }>;
+  reason: string;
+  effectiveUntil?: string;
+}

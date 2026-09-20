@@ -12,6 +12,7 @@ import {
   SuspendContractDTO,
   TerminateContractDTO
 } from '../../../../../shared/types';
+import { EntitlementProvisioningService } from '../../entitlements/provisioning/entitlement-provisioning.service';
 
 export class ContractService {
   /**
@@ -659,6 +660,12 @@ export class ContractService {
       details: { reason: input.reason }
     });
 
+    try {
+      await EntitlementProvisioningService.provisionFromContract(id);
+    } catch (e) {
+      console.error('Falha ao atualizar entitlements na suspensão:', e);
+    }
+
     const full = await prisma.commercialContract.findUnique({
       where: { id: updated.id },
       include: {
@@ -703,6 +710,12 @@ export class ContractService {
       producerId: contract.producerId,
       details: { newStatus }
     });
+
+    try {
+      await EntitlementProvisioningService.provisionFromContract(id);
+    } catch (e) {
+      console.error('Falha ao atualizar entitlements na reativação:', e);
+    }
 
     const full = await prisma.commercialContract.findUnique({
       where: { id: updated.id },
@@ -749,6 +762,12 @@ export class ContractService {
       details: { reason: input.reason }
     });
 
+    try {
+      await EntitlementProvisioningService.provisionFromContract(id);
+    } catch (e) {
+      console.error('Falha ao atualizar entitlements na rescisão:', e);
+    }
+
     const full = await prisma.commercialContract.findUnique({
       where: { id: updated.id },
       include: {
@@ -787,6 +806,11 @@ export class ContractService {
             }
           });
           activatedCount++;
+          try {
+            await EntitlementProvisioningService.provisionFromContract(c.id);
+          } catch (e) {
+            console.error('Falha ao provisionar na ativação do sweep:', e);
+          }
         }
       }
 
@@ -798,6 +822,11 @@ export class ContractService {
             data: { status: 'EXPIRED' }
           });
           expiredCount++;
+          try {
+            await EntitlementProvisioningService.provisionFromContract(c.id);
+          } catch (e) {
+            console.error('Falha ao provisionar na expiração do sweep:', e);
+          }
         }
       }
     }

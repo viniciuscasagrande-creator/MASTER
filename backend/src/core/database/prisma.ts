@@ -148,6 +148,11 @@ export class InMemoryPrismaStore {
   public contractRenewals: any[] = [];
   public signatureEnvelopes: any[] = [];
   public signatureSigners: any[] = [];
+  // Fase 1.3.8 — Habilitações Comerciais do Produtor + Produtos Contratados + Limites + Vigência (Entitlements)
+  public producerEntitlements: any[] = [];
+  public producerEntitlementLimits: any[] = [];
+  public entitlementOverrides: any[] = [];
+  public entitlementAuditLogs: any[] = [];
   public tickets: any[] = [];
   public payments: any[] = [];
   public refunds: any[] = [];
@@ -399,6 +404,11 @@ export class InMemoryPrismaStore {
     this.contractRenewals = [];
     this.signatureEnvelopes = [];
     this.signatureSigners = [];
+    // Fase 1.3.8
+    this.producerEntitlements = [];
+    this.producerEntitlementLimits = [];
+    this.entitlementOverrides = [];
+    this.entitlementAuditLogs = [];
     this.tickets = [];
     this.payments = [];
     this.refunds = [];
@@ -14998,6 +15008,254 @@ export class InMemoryPrismaStore {
     }
     if (include?.parentOffering) {
       res.parentOffering = this.commercialOfferings.find(o => o.id === composition.parentOfferingId) || null;
+    }
+    return res;
+  }
+
+  // ==============================================================================
+  // FASE 1.3.8 — HABILITAÇÕES COMERCIAIS DO PRODUTOR (ENTITLEMENTS)
+  // ==============================================================================
+
+  public get producerEntitlement() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.producerEntitlements.find(x => {
+          if (args.where?.id) return x.id === args.where.id;
+          if (args.where?.producerId_featureCode_sourceId) {
+            const p = args.where.producerId_featureCode_sourceId;
+            return x.producerId === p.producerId && x.featureCode === p.featureCode && x.sourceId === p.sourceId;
+          }
+          return false;
+        });
+        if (!item) return null;
+        return this.hydrateEntitlement(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.producerEntitlements];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateEntitlement(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.producerEntitlements];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => this.hydrateEntitlement(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ent_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'ACTIVE',
+          enforcementMode: args.data.enforcementMode || 'ENFORCE',
+          version: args.data.version || 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.producerEntitlements.push(item);
+        return this.hydrateEntitlement(item, args.include);
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `ent_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: d.status || 'ACTIVE',
+          enforcementMode: d.enforcementMode || 'ENFORCE',
+          version: d.version || 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...d
+        }));
+        this.producerEntitlements.push(...items);
+        return { count: items.length };
+      },
+      update: async (args: any) => {
+        const item = this.producerEntitlements.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('ProducerEntitlement not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return this.hydrateEntitlement(item, args.include);
+      },
+      updateMany: async (args: any) => {
+        let count = 0;
+        const matching = this.filterEntities(this.producerEntitlements, args.where);
+        for (const item of matching) {
+          Object.assign(item, args.data, { updatedAt: new Date() });
+          count++;
+        }
+        return { count };
+      },
+      delete: async (args: any) => {
+        const idx = this.producerEntitlements.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.producerEntitlements.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.producerEntitlements.length;
+        if (args?.where) {
+          const toDelete = this.filterEntities(this.producerEntitlements, args.where);
+          const toDeleteIds = new Set(toDelete.map((x: any) => x.id));
+          this.producerEntitlements = this.producerEntitlements.filter(x => !toDeleteIds.has(x.id));
+        }
+        return { count: initial - this.producerEntitlements.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.producerEntitlements];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get producerEntitlementLimit() {
+    return {
+      findUnique: async (args: any) => {
+        return this.producerEntitlementLimits.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.producerEntitlementLimits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.producerEntitlementLimits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ent_lim_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          limitType: args.data.limitType || 'COUNT',
+          unit: args.data.unit || 'UNITS',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.producerEntitlementLimits.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `ent_lim_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          limitType: d.limitType || 'COUNT',
+          unit: d.unit || 'UNITS',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...d
+        }));
+        this.producerEntitlementLimits.push(...items);
+        return { count: items.length };
+      },
+      update: async (args: any) => {
+        const item = this.producerEntitlementLimits.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('ProducerEntitlementLimit not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.producerEntitlementLimits.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.producerEntitlementLimits.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.producerEntitlementLimits.length;
+        if (args?.where?.entitlementId) {
+          this.producerEntitlementLimits = this.producerEntitlementLimits.filter(x => x.entitlementId !== args.where.entitlementId);
+        }
+        return { count: initial - this.producerEntitlementLimits.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.producerEntitlementLimits];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get entitlementOverride() {
+    return {
+      findUnique: async (args: any) => {
+        return this.entitlementOverrides.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.entitlementOverrides];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.entitlementOverrides];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ovr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'ACTIVE',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.entitlementOverrides.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.entitlementOverrides.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('EntitlementOverride not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.entitlementOverrides.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.entitlementOverrides.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.entitlementOverrides];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get entitlementAuditLog() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.entitlementAuditLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `audit_ent_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.entitlementAuditLogs.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.entitlementAuditLogs];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  private hydrateEntitlement(entitlement: any, include?: any): any {
+    if (!entitlement) return null;
+    const res = { ...entitlement };
+    if (include?.limits) {
+      res.limits = this.producerEntitlementLimits.filter(l => l.entitlementId === entitlement.id);
+    }
+    if (include?.feature) {
+      res.feature = this.commercialFeatures.find(f => f.code === entitlement.featureCode || f.id === entitlement.featureId) || null;
+    }
+    if (include?.producer) {
+      res.producer = this.producers.find(p => p.id === entitlement.producerId) || null;
     }
     return res;
   }
