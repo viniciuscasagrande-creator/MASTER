@@ -9,6 +9,8 @@
     "build": "tsc",
     "test": "tsx tests/auth-rbac-real.test.ts",
     "test:real": "tsx tests/auth-rbac-real.test.ts",
+    "test:entitlements": "tsx tests/entitlements.test.ts",
+    "test:gemini": "tsx tests/gemini.test.ts",
     "seed": "tsx prisma/seed.ts",
     "prisma:seed": "tsx prisma/seed.ts",
     "start": "node dist/server.js"

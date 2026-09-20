@@ -11,7 +11,8 @@ const envSchema = z.object({
   JWT_EXPIRES_IN: z.string().default('15m'),
   JWT_REFRESH_SECRET: z.string().default('dk_refresh_enterprise_super_key_2026_secure'),
   JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
-  SUPERADMIN_EMAIL: z.string().email().default('admin@diskingressos.com.br')
+  SUPERADMIN_EMAIL: z.string().email().default('admin@diskingressos.com.br'),
+  GEMINI_API_KEY: z.string().optional()
 });
 
 const _env = envSchema.safeParse(process.env);
