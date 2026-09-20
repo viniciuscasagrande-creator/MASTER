@@ -64,6 +64,9 @@ import { ObservabilityCenterView } from './modules/observability';
 // Motor Central de Relatórios, Exportações e BI Operacional (Fase 1.1.5.13)
 import { AnalyticsCenterView } from './modules/analytics';
 
+// Central de Jobs, Agendamentos e Processamento em Lote (Fase 1.1.5.14)
+import { ProcessingCenterView } from './modules/jobs';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
@@ -75,6 +78,8 @@ const MODULE_NAMES: Record<string, string> = {
   observability: 'Auditoria & Observabilidade',
   analytics: 'Relatórios & BI',
   reports: 'Relatórios & BI',
+  jobs: 'Central de Processamentos',
+  processamentos: 'Central de Processamentos',
   events: 'Eventos',
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
@@ -301,6 +306,14 @@ const MainShell: React.FC = () => {
         return (
           <ProtectedRoute permission="relatorios.central.visualizar" onBack={() => handleNavigate('overview')}>
             <AnalyticsCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
+          </ProtectedRoute>
+        );
+
+      case 'jobs':
+      case 'processamentos':
+        return (
+          <ProtectedRoute permission="processamentos.central.visualizar" onBack={() => handleNavigate('overview')}>
+            <ProcessingCenterView initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

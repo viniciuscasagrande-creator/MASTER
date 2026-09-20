@@ -70,7 +70,20 @@ export type DomainEventType =
   | 'POLICY_CONFLICT_DETECTED'
   | 'FEATURE_FLAG_UPDATED'
   | 'KILL_SWITCH_TRIGGERED'
-  | 'KILL_SWITCH_RESET';
+  | 'KILL_SWITCH_RESET'
+  // Jobs & Processamentos Assíncronos (Fase 1.1.5.14)
+  | 'JOB_CREATED'
+  | 'JOB_QUEUED'
+  | 'JOB_STARTED'
+  | 'JOB_PROGRESS_UPDATED'
+  | 'JOB_COMPLETED'
+  | 'JOB_FAILED'
+  | 'JOB_RETRYING'
+  | 'JOB_CANCELLED'
+  | 'JOB_DEAD_LETTER'
+  | 'JOB_BATCH_COMPLETED'
+  | 'JOB_BATCH_PARTIALLY_COMPLETED'
+  | 'JOB_BATCH_FAILED';
 
 export interface DomainEvent<T = any> {
   id: string; // Unique event ID for Idempotency

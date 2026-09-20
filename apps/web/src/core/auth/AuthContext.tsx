@@ -32,7 +32,8 @@ export const INITIAL_USERS: UserAccount[] = [
       'admin.usuarios.visualizar', 'admin.usuarios.gerenciar', 'admin.perfis.gerenciar', 'admin.auditoria.visualizar', 'admin.configuracoes.editar',
       'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar',
       'documentos.versao.criar', 'documentos.versao.visualizar', 'documentos.arquivo.arquivar', 'documentos.arquivo.excluir',
-      'documentos.categoria.visualizar', 'documentos.categoria.editar', 'documentos.auditoria.visualizar'
+      'documentos.categoria.visualizar', 'documentos.categoria.editar', 'documentos.auditoria.visualizar',
+      'processamentos.central.visualizar', 'processamentos.job.visualizar', 'processamentos.job.cancelar', 'processamentos.job.pausar', 'processamentos.job.retomar', 'processamentos.job.reprocessar', 'processamentos.lote.visualizar', 'processamentos.lote.executar', 'processamentos.lote.cancelar', 'processamentos.agendamento.visualizar', 'processamentos.agendamento.criar', 'processamentos.agendamento.editar', 'processamentos.agendamento.desativar', 'processamentos.fila.visualizar', 'processamentos.worker.visualizar', 'processamentos.dead_letter.visualizar', 'processamentos.dead_letter.reprocessar'
     ],
     lastLoginAt: '2026-09-18T14:30:00Z',
     lastIpAddress: '189.44.120.19',
@@ -313,6 +314,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'analytics':
       case 'reports':
         return currentUser.permissions.some(p => p.startsWith('relatorios.'));
+      case 'jobs':
+      case 'processamentos':
+        return currentUser.permissions.some(p => p.startsWith('processamentos.'));
       case 'admin':
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':

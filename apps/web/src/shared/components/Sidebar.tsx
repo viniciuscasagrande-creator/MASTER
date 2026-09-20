@@ -23,7 +23,8 @@ import {
   ListTodo,
   Sliders,
   Activity,
-  BarChart3
+  BarChart3,
+  Layers
 } from 'lucide-react';
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
@@ -298,6 +299,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'analytics-goals', label: 'Metas (Realizado x Meta)' },
         { id: 'analytics-snapshots', label: 'Fechamentos & Snapshots' },
         { id: 'analytics-domains', label: 'BI por Domínio' }
+      ]
+    },
+    {
+      id: 'jobs',
+      label: 'Processamentos',
+      icon: <Layers className="h-4 w-4 text-cyan-400" />,
+      requiredPermission: 'processamentos.central.visualizar',
+      subItems: [
+        { id: 'jobs-overview', label: 'Visão Geral' },
+        { id: 'jobs-running', label: 'Em Execução', requiredPermission: 'processamentos.job.visualizar' },
+        { id: 'jobs-queued', label: 'Na Fila', requiredPermission: 'processamentos.job.visualizar' },
+        { id: 'jobs-schedules', label: 'Agendamentos', requiredPermission: 'processamentos.agendamento.visualizar' },
+        { id: 'jobs-batches', label: 'Lotes Operacionais', requiredPermission: 'processamentos.lote.visualizar' },
+        { id: 'jobs-completed', label: 'Histórico & Concluídos', requiredPermission: 'processamentos.job.visualizar' },
+        { id: 'jobs-dead-letter', label: 'Dead Letter', requiredPermission: 'processamentos.dead_letter.visualizar' },
+        { id: 'jobs-queues', label: 'Filas Lógicas', requiredPermission: 'processamentos.fila.visualizar' },
+        { id: 'jobs-workers', label: 'Cluster de Workers', requiredPermission: 'processamentos.worker.visualizar' }
       ]
     },
     {

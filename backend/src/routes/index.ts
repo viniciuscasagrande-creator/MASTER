@@ -21,6 +21,12 @@ import { taskRoutes } from '../modules/tasks/task.routes';
 import { configurationRoutes } from '../modules/configuration/configuration.routes';
 import { observabilityRoutes } from '../modules/observability/observability.routes';
 import { analyticsRoutes, reportRoutes } from '../modules/analytics/analytics.routes';
+import {
+  createJobsRoutes,
+  createJobBatchesRoutes,
+  createJobSchedulesRoutes,
+  createAdminProcessingRoutes
+} from '../modules/jobs/jobs.routes';
 
 const router = Router();
 
@@ -54,5 +60,9 @@ router.use('/marketing', marketingRoutes);
 router.use('/accounting', accountingRoutes);
 router.use('/analytics', analyticsRoutes);
 router.use('/reports', reportRoutes);
+router.use('/jobs', createJobsRoutes());
+router.use('/job-batches', createJobBatchesRoutes());
+router.use('/job-schedules', createJobSchedulesRoutes());
+router.use('/admin/processing', createAdminProcessingRoutes());
 
 export default router;

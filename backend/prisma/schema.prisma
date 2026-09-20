@@ -1896,6 +1896,174 @@ model AnalyticsGoalModel {
   @@index([eventId])
 }
 
+// ============================================================================
+// FASE 1.1.5.14: CENTRAL DE JOBS, AGENDAMENTOS, LOTES E PROCESSAMENTO ASSÍNCRONO
+// ============================================================================
 
+model JobModel {
+  id               String   @id @default(uuid())
+  type             String
+  module           String
+  producerId       String?
+  eventId          String?
+  resourceType     String?
+  resourceId       String?
+  status           String   @default("CREATED") // CREATED, SCHEDULED, QUEUED, RUNNING, WAITING, RETRYING, COMPLETED, FAILED, CANCELLED, DEAD_LETTER
+  priority         String   @default("NORMAL")  // LOW, NORMAL, HIGH, CRITICAL
+  queue            String   @default("critical")
+  progress         Int      @default(0)
+  progressData     String?  // JSON stringified JobProgressData
+  payloadReference String?
+  payload          String?  // JSON stringified payload (non-sensitive)
+  result           String?  // JSON stringified result
+  error            String?  // JSON stringified error details
+  createdBy        String
+  createdByName    String
+  createdAt        DateTime @default(now())
+  scheduledAt      DateTime?
+  startedAt        DateTime?
+  finishedAt       DateTime?
+  attempts         Int      @default(0)
+  maxAttempts      Int      @default(3)
+  correlationId    String
+  parentJobId      String?
+  batchId          String?
+  workflowId       String?
+  cancellable      Boolean  @default(true)
+  cancelRequested  Boolean  @default(false)
+  pausable         Boolean  @default(false)
+  pauseRequested   Boolean  @default(false)
+  paused           Boolean  @default(false)
+  idempotencyKey   String?
+  checkpoint       String?  // JSON stringified checkpoint
 
+  @@index([type])
+  @@index([status])
+  @@index([queue])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([correlationId])
+  @@index([batchId])
+  @@index([parentJobId])
+  @@index([idempotencyKey])
+}
 
+model JobAttemptModel {
+  id            String    @id @default(uuid())
+  jobId         String
+  attemptNumber Int
+  status        String    @default("RUNNING") // RUNNING, COMPLETED, FAILED
+  startedAt     DateTime  @default(now())
+  finishedAt    DateTime?
+  error         String?
+  workerId      String?
+
+  @@index([jobId])
+}
+
+model JobCheckpointModel {
+  id             String   @id @default(uuid())
+  jobId          String
+  cursor         String   // JSON stringified cursor
+  processedCount Int      @default(0)
+  savedAt        DateTime @default(now())
+  state          String?  // JSON stringified state
+
+  @@index([jobId])
+}
+
+model JobBatchModel {
+  id              String    @id @default(uuid())
+  name            String
+  module          String
+  producerId      String?
+  eventId         String?
+  status          String    @default("CREATED") // CREATED, QUEUED, RUNNING, COMPLETED, PARTIALLY_COMPLETED, FAILED, CANCELLED
+  totalItems      Int       @default(0)
+  completedItems  Int       @default(0)
+  failedItems     Int       @default(0)
+  pendingItems    Int       @default(0)
+  progressPercent Float     @default(0)
+  createdBy       String
+  createdByName   String
+  createdAt       DateTime  @default(now())
+  startedAt       DateTime?
+  finishedAt      DateTime?
+  correlationId   String
+
+  @@index([status])
+  @@index([producerId])
+  @@index([eventId])
+  @@index([correlationId])
+}
+
+model JobScheduleModel {
+  id              String    @id @default(uuid())
+  name            String
+  description     String?
+  jobType         String
+  module          String
+  queue           String
+  priority        String    @default("NORMAL")
+  frequency       String    // ONCE, HOURLY, DAILY, WEEKLY, MONTHLY, CRON
+  cronExpression  String?
+  timeOfDay       String?
+  dayOfWeek       Int?
+  dayOfMonth      Int?
+  timezone        String    @default("America/Sao_Paulo")
+  misfirePolicy   String    @default("EXECUTE_IMMEDIATELY")
+  payload         String?
+  producerId      String?
+  eventId         String?
+  creatorUserId   String
+  creatorUserName String
+  active          Boolean   @default(true)
+  lastRunAt       DateTime?
+  lastRunStatus   String?
+  nextRunAt       DateTime
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@index([active])
+  @@index([nextRunAt])
+  @@index([creatorUserId])
+  @@index([producerId])
+}
+
+model JobWorkerModel {
+  id              String   @id @default(uuid())
+  name            String
+  hostname        String
+  queues          String   // JSON stringified array of queues
+  status          String   @default("ACTIVE") // ACTIVE, IDLE, STALLED, OFFLINE
+  concurrency     Int      @default(5)
+  activeJobsCount Int      @default(0)
+  lastHeartbeatAt DateTime @default(now())
+  startedAt       DateTime @default(now())
+  metrics         String?  // JSON stringified metrics
+
+  @@index([status])
+  @@index([lastHeartbeatAt])
+}
+
+model JobDeadLetterModel {
+  id                  String    @id @default(uuid())
+  jobId               String    @unique
+  jobType             String
+  module              String
+  originalQueue       String
+  failureReason       String
+  errorStack          String?
+  attemptsCount       Int
+  movedToDeadLetterAt DateTime  @default(now())
+  investigated        Boolean   @default(false)
+  investigatedBy      String?
+  investigatedAt      DateTime?
+  reprocessed         Boolean   @default(false)
+  reprocessedJobId    String?
+  reprocessedAt       DateTime?
+
+  @@index([jobId])
+  @@index([investigated])
+  @@index([reprocessed])
+}

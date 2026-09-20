@@ -99,6 +99,14 @@ export class InMemoryPrismaStore {
   public reportScheduleModels: any[] = [];
   public reportSnapshotModels: any[] = [];
   public analyticsGoalModels: any[] = [];
+  // Central de Jobs, Agendamentos, Lotes e Processamento Assíncrono (Fase 1.1.5.14)
+  public jobModels: any[] = [];
+  public jobAttemptModels: any[] = [];
+  public jobCheckpointModels: any[] = [];
+  public jobBatchModels: any[] = [];
+  public jobScheduleModels: any[] = [];
+  public jobWorkerModels: any[] = [];
+  public jobDeadLetterModels: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -200,6 +208,14 @@ export class InMemoryPrismaStore {
     this.reportScheduleModels = [];
     this.reportSnapshotModels = [];
     this.analyticsGoalModels = [];
+    // Central de Jobs, Agendamentos, Lotes e Processamento Assíncrono (Fase 1.1.5.14)
+    this.jobModels = [];
+    this.jobAttemptModels = [];
+    this.jobCheckpointModels = [];
+    this.jobBatchModels = [];
+    this.jobScheduleModels = [];
+    this.jobWorkerModels = [];
+    this.jobDeadLetterModels = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -349,7 +365,25 @@ export class InMemoryPrismaStore {
       { id: 'p-rel-13', module: 'relatorios', resource: 'marketing', action: 'visualizar', code: 'relatorios.marketing.visualizar', description: 'Visualizar indicadores e relatórios de marketing' },
       { id: 'p-rel-14', module: 'relatorios', resource: 'sac', action: 'visualizar', code: 'relatorios.sac.visualizar', description: 'Visualizar indicadores e relatórios de SAC' },
       { id: 'p-rel-15', module: 'relatorios', resource: 'eventos', action: 'visualizar', code: 'relatorios.eventos.visualizar', description: 'Visualizar indicadores e relatórios de eventos' },
-      { id: 'p-rel-16', module: 'relatorios', resource: 'contabilidade', action: 'visualizar', code: 'relatorios.contabilidade.visualizar', description: 'Visualizar indicadores contábeis' }
+      { id: 'p-rel-16', module: 'relatorios', resource: 'contabilidade', action: 'visualizar', code: 'relatorios.contabilidade.visualizar', description: 'Visualizar indicadores contábeis' },
+      // Processamentos, Jobs & Orquestração (Fase 1.1.5.14)
+      { id: 'p-prc-1', module: 'processamentos', resource: 'central', action: 'visualizar', code: 'processamentos.central.visualizar', description: 'Visualizar central de processamentos' },
+      { id: 'p-prc-2', module: 'processamentos', resource: 'job', action: 'visualizar', code: 'processamentos.job.visualizar', description: 'Visualizar detalhes de processamentos' },
+      { id: 'p-prc-3', module: 'processamentos', resource: 'job', action: 'cancelar', code: 'processamentos.job.cancelar', description: 'Cancelar processamentos executáveis' },
+      { id: 'p-prc-4', module: 'processamentos', resource: 'job', action: 'pausar', code: 'processamentos.job.pausar', description: 'Pausar processamentos em lote' },
+      { id: 'p-prc-5', module: 'processamentos', resource: 'job', action: 'retomar', code: 'processamentos.job.retomar', description: 'Retomar processamentos pausados' },
+      { id: 'p-prc-6', module: 'processamentos', resource: 'job', action: 'reprocessar', code: 'processamentos.job.reprocessar', description: 'Reprocessar jobs com falha' },
+      { id: 'p-prc-7', module: 'processamentos', resource: 'lote', action: 'visualizar', code: 'processamentos.lote.visualizar', description: 'Visualizar lotes de processamento' },
+      { id: 'p-prc-8', module: 'processamentos', resource: 'lote', action: 'executar', code: 'processamentos.lote.executar', description: 'Disparar processamento em lote' },
+      { id: 'p-prc-9', module: 'processamentos', resource: 'lote', action: 'cancelar', code: 'processamentos.lote.cancelar', description: 'Cancelar lote de processamento' },
+      { id: 'p-prc-10', module: 'processamentos', resource: 'agendamento', action: 'visualizar', code: 'processamentos.agendamento.visualizar', description: 'Visualizar agendamentos de rotinas' },
+      { id: 'p-prc-11', module: 'processamentos', resource: 'agendamento', action: 'criar', code: 'processamentos.agendamento.criar', description: 'Criar novos agendamentos' },
+      { id: 'p-prc-12', module: 'processamentos', resource: 'agendamento', action: 'editar', code: 'processamentos.agendamento.editar', description: 'Editar rotinas agendadas' },
+      { id: 'p-prc-13', module: 'processamentos', resource: 'agendamento', action: 'desativar', code: 'processamentos.agendamento.desativar', description: 'Desativar rotinas agendadas' },
+      { id: 'p-prc-14', module: 'processamentos', resource: 'fila', action: 'visualizar', code: 'processamentos.fila.visualizar', description: 'Visualizar métricas e status das filas' },
+      { id: 'p-prc-15', module: 'processamentos', resource: 'worker', action: 'visualizar', code: 'processamentos.worker.visualizar', description: 'Visualizar workers e telemetria' },
+      { id: 'p-prc-16', module: 'processamentos', resource: 'dead_letter', action: 'visualizar', code: 'processamentos.dead_letter.visualizar', description: 'Visualizar processamentos em Dead Letter' },
+      { id: 'p-prc-17', module: 'processamentos', resource: 'dead_letter', action: 'reprocessar', code: 'processamentos.dead_letter.reprocessar', description: 'Reprocessar processamentos da Dead Letter' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -592,6 +626,31 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'relatorios.relatorio.visualizar');
     associate('PRODUTOR', 'relatorios.exportacao.criar');
     associate('PRODUTOR', 'relatorios.exportacao.baixar');
+
+    // Processamentos & Jobs (Fase 1.1.5.14)
+    this.permissions.filter(p => p.code.startsWith('processamentos.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+    associate('FINANCEIRO', 'processamentos.central.visualizar');
+    associate('FINANCEIRO', 'processamentos.job.visualizar');
+    associate('FINANCEIRO', 'processamentos.job.reprocessar');
+    associate('FINANCEIRO', 'processamentos.lote.visualizar');
+    associate('FINANCEIRO', 'processamentos.lote.executar');
+    associate('FINANCEIRO', 'processamentos.agendamento.visualizar');
+    associate('FINANCEIRO', 'processamentos.fila.visualizar');
+
+    associate('MARKETING', 'processamentos.central.visualizar');
+    associate('MARKETING', 'processamentos.job.visualizar');
+    associate('MARKETING', 'processamentos.agendamento.visualizar');
+
+    associate('PRODUTOR', 'processamentos.central.visualizar');
+    associate('PRODUTOR', 'processamentos.job.visualizar');
+
+    associate('AUDITOR', 'processamentos.central.visualizar');
+    associate('AUDITOR', 'processamentos.job.visualizar');
+    associate('AUDITOR', 'processamentos.fila.visualizar');
+    associate('AUDITOR', 'processamentos.worker.visualizar');
+    associate('AUDITOR', 'processamentos.dead_letter.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -5610,6 +5669,362 @@ export class InMemoryPrismaStore {
       },
       count: async (args?: any) => {
         let list = [...this.analyticsGoalModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  // --- FASE 1.1.5.14: JOBS, AGENDAMENTOS E PROCESSAMENTOS ASSÍNCRONOS ---
+  public get jobModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobModels.find(x => x.id === args.where?.id || (args.where?.idempotencyKey && x.idempotencyKey === args.where.idempotencyKey)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `job_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'CREATED',
+          priority: args.data.priority || 'NORMAL',
+          queue: args.data.queue || 'critical',
+          progress: args.data.progress || 0,
+          attempts: args.data.attempts || 0,
+          maxAttempts: args.data.maxAttempts || 3,
+          cancellable: args.data.cancellable !== undefined ? args.data.cancellable : true,
+          cancelRequested: args.data.cancelRequested || false,
+          pausable: args.data.pausable || false,
+          pauseRequested: args.data.pauseRequested || false,
+          paused: args.data.paused || false,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.jobModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.jobModels[idx] = {
+            ...this.jobModels[idx],
+            ...args.data
+          };
+          return this.jobModels[idx];
+        }
+        throw new Error(`Job not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.jobModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.jobModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`Job not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get jobAttemptModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobAttemptModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobAttemptModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobAttemptModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.attemptNumber || 0) - (b.attemptNumber || 0));
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `att_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          startedAt: new Date(),
+          ...args.data
+        };
+        this.jobAttemptModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobAttemptModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.jobAttemptModels[idx] = {
+            ...this.jobAttemptModels[idx],
+            ...args.data
+          };
+          return this.jobAttemptModels[idx];
+        }
+        throw new Error(`JobAttempt not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobAttemptModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get jobCheckpointModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobCheckpointModels.find(x => x.id === args.where?.id || x.jobId === args.where?.jobId) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobCheckpointModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.savedAt).getTime() - new Date(a.savedAt).getTime());
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobCheckpointModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `chk_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          savedAt: new Date(),
+          ...args.data
+        };
+        this.jobCheckpointModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobCheckpointModels.findIndex(x => x.id === args.where?.id || x.jobId === args.where?.jobId);
+        if (idx >= 0) {
+          this.jobCheckpointModels[idx] = {
+            ...this.jobCheckpointModels[idx],
+            ...args.data,
+            savedAt: new Date()
+          };
+          return this.jobCheckpointModels[idx];
+        }
+        throw new Error(`JobCheckpoint not found for update`);
+      },
+      deleteMany: async (args: any) => {
+        const before = this.jobCheckpointModels.length;
+        if (args?.where?.jobId) {
+          this.jobCheckpointModels = this.jobCheckpointModels.filter(x => x.jobId !== args.where.jobId);
+        }
+        return { count: before - this.jobCheckpointModels.length };
+      }
+    };
+  }
+
+  public get jobBatchModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobBatchModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobBatchModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobBatchModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        if (args?.take) list = list.slice(0, args.take);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `batch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'CREATED',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.jobBatchModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobBatchModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.jobBatchModels[idx] = {
+            ...this.jobBatchModels[idx],
+            ...args.data
+          };
+          return this.jobBatchModels[idx];
+        }
+        throw new Error(`JobBatch not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobBatchModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get jobScheduleModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobScheduleModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `sch_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          active: args.data.active !== undefined ? args.data.active : true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.jobScheduleModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobScheduleModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.jobScheduleModels[idx] = {
+            ...this.jobScheduleModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.jobScheduleModels[idx];
+        }
+        throw new Error(`JobSchedule not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.jobScheduleModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.jobScheduleModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`JobSchedule not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobScheduleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get jobWorkerModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobWorkerModels.find(x => x.id === args.where?.id || x.name === args.where?.name) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobWorkerModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobWorkerModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `wrk_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'ACTIVE',
+          lastHeartbeatAt: new Date(),
+          startedAt: new Date(),
+          ...args.data
+        };
+        this.jobWorkerModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobWorkerModels.findIndex(x => x.id === args.where?.id || x.name === args.where?.name);
+        if (idx >= 0) {
+          this.jobWorkerModels[idx] = {
+            ...this.jobWorkerModels[idx],
+            ...args.data
+          };
+          return this.jobWorkerModels[idx];
+        }
+        throw new Error(`JobWorker not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.jobWorkerModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.jobWorkerModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`JobWorker not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobWorkerModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get jobDeadLetterModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.jobDeadLetterModels.find(x => x.id === args.where?.id || x.jobId === args.where?.jobId) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.jobDeadLetterModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.jobDeadLetterModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.movedToDeadLetterAt).getTime() - new Date(a.movedToDeadLetterAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dl_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          investigated: false,
+          reprocessed: false,
+          movedToDeadLetterAt: new Date(),
+          ...args.data
+        };
+        this.jobDeadLetterModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.jobDeadLetterModels.findIndex(x => x.id === args.where?.id || x.jobId === args.where?.jobId);
+        if (idx >= 0) {
+          this.jobDeadLetterModels[idx] = {
+            ...this.jobDeadLetterModels[idx],
+            ...args.data
+          };
+          return this.jobDeadLetterModels[idx];
+        }
+        throw new Error(`JobDeadLetter not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.jobDeadLetterModels];
         if (args?.where) list = this.filterEntities(list, args.where);
         return list.length;
       }

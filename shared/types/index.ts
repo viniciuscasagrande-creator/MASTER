@@ -25,6 +25,25 @@ export interface UserScope {
   eventIds: string[];    // empty means all if type === 'GLOBAL' or all producer events
 }
 
+export interface User {
+  id: string;
+  name: string;
+  email?: string;
+  role?: string;
+  roles?: any[];
+  permissions?: any[];
+  scope?: {
+    type?: ScopeType;
+    isGlobal?: boolean;
+    producerId?: string | null;
+    eventId?: string | null;
+    producerIds?: string[];
+    eventIds?: string[];
+    producers?: string[];
+    events?: string[];
+  };
+}
+
 export type PermissionAction = 'visualizar' | 'criar' | 'editar' | 'aprovar' | 'cancelar' | 'estornar' | 'transferir' | 'exportar' | 'administrar';
 
 // Granular Permission String format: "module.resource.action"
@@ -187,7 +206,25 @@ export type PermissionString =
   | 'relatorios.contabilidade.visualizar'
   | 'relatorios.marketing.visualizar'
   | 'relatorios.sac.visualizar'
-  | 'relatorios.eventos.visualizar';
+  | 'relatorios.eventos.visualizar'
+  // Processamentos, Jobs & Orquestração (Fase 1.1.5.14)
+  | 'processamentos.central.visualizar'
+  | 'processamentos.job.visualizar'
+  | 'processamentos.job.cancelar'
+  | 'processamentos.job.pausar'
+  | 'processamentos.job.retomar'
+  | 'processamentos.job.reprocessar'
+  | 'processamentos.lote.visualizar'
+  | 'processamentos.lote.executar'
+  | 'processamentos.lote.cancelar'
+  | 'processamentos.agendamento.visualizar'
+  | 'processamentos.agendamento.criar'
+  | 'processamentos.agendamento.editar'
+  | 'processamentos.agendamento.desativar'
+  | 'processamentos.fila.visualizar'
+  | 'processamentos.worker.visualizar'
+  | 'processamentos.dead_letter.visualizar'
+  | 'processamentos.dead_letter.reprocessar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -1080,9 +1117,12 @@ export type ExportJobStatus =
   | 'EXPIRED';
 
 export type ScheduleFrequency =
+  | 'ONCE'
+  | 'HOURLY'
   | 'DAILY'
   | 'WEEKLY'
-  | 'MONTHLY';
+  | 'MONTHLY'
+  | 'CRON';
 
 export type FilterOperator =
   | 'EQUALS'
@@ -1280,9 +1320,279 @@ export interface DashboardWidget {
   metricCodes: string[];
   chartType: ChartType;
   size: 'SMALL' | 'MEDIUM' | 'LARGE' | 'FULL';
-  requiredPermission?: PermissionString | null;
+  requiredPermission?: string | null;
 }
 
+// ============================================================================
+// FASE 1.1.5.14: CENTRAL DE JOBS, AGENDAMENTOS, LOTES E PROCESSAMENTO ASSÍNCRONO
+// ============================================================================
 
+export type JobStatus =
+  | 'CREATED'
+  | 'SCHEDULED'
+  | 'QUEUED'
+  | 'RUNNING'
+  | 'WAITING'
+  | 'RETRYING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'DEAD_LETTER';
 
+export type JobPriority = 'LOW' | 'NORMAL' | 'HIGH' | 'CRITICAL';
 
+export type JobQueue =
+  | 'critical'
+  | 'finance'
+  | 'payments'
+  | 'integrations'
+  | 'webhooks'
+  | 'documents'
+  | 'analytics'
+  | 'marketing'
+  | 'communications'
+  | 'maintenance';
+
+export type JobModule =
+  | 'FINANCEIRO'
+  | 'CONTABILIDADE'
+  | 'MARKETING'
+  | 'SAC'
+  | 'EVENTOS'
+  | 'RELATORIOS'
+  | 'DOCUMENTOS'
+  | 'INTEGRACOES'
+  | 'CONFIGURACOES'
+  | 'AUDITORIA';
+
+export interface JobProgressData {
+  processedItems: number;
+  totalItems: number;
+  successItems: number;
+  failedItems: number;
+  percentage: number;
+  currentStep?: string;
+  estimatedTimeRemainingSeconds?: number;
+}
+
+export interface JobAttempt {
+  id: string;
+  jobId: string;
+  attemptNumber: number;
+  status: 'RUNNING' | 'COMPLETED' | 'FAILED';
+  startedAt: string;
+  finishedAt?: string | null;
+  error?: string | null;
+  workerId?: string | null;
+}
+
+export interface JobCheckpoint {
+  id: string;
+  jobId: string;
+  cursor: any;
+  processedCount: number;
+  savedAt: string;
+  state?: any;
+}
+
+export interface Job {
+  id: string;
+  type: string;
+  module: JobModule;
+  producerId?: string | null;
+  eventId?: string | null;
+  resourceType?: string | null;
+  resourceId?: string | null;
+  status: JobStatus;
+  priority: JobPriority;
+  queue: JobQueue;
+  progress: number; // 0 to 100
+  progressData?: JobProgressData;
+  payloadReference?: string | null;
+  payload?: any;
+  result?: any;
+  error?: {
+    message: string;
+    code?: string;
+    stack?: string;
+    isPermanent?: boolean;
+  } | null;
+  createdBy: string;
+  createdByName: string;
+  createdAt: string;
+  scheduledAt?: string | null;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  attempts: number;
+  maxAttempts: number;
+  correlationId: string;
+  parentJobId?: string | null;
+  batchId?: string | null;
+  workflowId?: string | null;
+  cancellable: boolean;
+  cancelRequested?: boolean;
+  pausable?: boolean;
+  pauseRequested?: boolean;
+  paused?: boolean;
+  idempotencyKey?: string | null;
+  checkpoint?: any;
+}
+
+export type BatchStatus =
+  | 'CREATED'
+  | 'QUEUED'
+  | 'RUNNING'
+  | 'COMPLETED'
+  | 'PARTIALLY_COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED';
+
+export interface JobBatch {
+  id: string;
+  name: string;
+  module: JobModule;
+  producerId?: string | null;
+  eventId?: string | null;
+  status: BatchStatus;
+  totalItems: number;
+  completedItems: number;
+  failedItems: number;
+  pendingItems: number;
+  progressPercent: number;
+  createdBy: string;
+  createdByName: string;
+  createdAt: string;
+  startedAt?: string | null;
+  finishedAt?: string | null;
+  correlationId: string;
+  childJobs?: Job[];
+}
+
+export type MisfirePolicy =
+  | 'EXECUTE_IMMEDIATELY'
+  | 'SKIP_MISSED'
+  | 'RESCHEDULE'
+  | 'CUSTOM';
+
+export interface JobSchedule {
+  id: string;
+  name: string;
+  description?: string | null;
+  jobType: string;
+  module: JobModule;
+  queue: JobQueue;
+  priority: JobPriority;
+  frequency: ScheduleFrequency;
+  cronExpression?: string | null;
+  timeOfDay?: string | null; // e.g. "02:00"
+  dayOfWeek?: number | null; // 0-6
+  dayOfMonth?: number | null; // 1-31
+  timezone: string; // e.g. "America/Sao_Paulo"
+  misfirePolicy: MisfirePolicy;
+  payload?: any;
+  producerId?: string | null;
+  eventId?: string | null;
+  creatorUserId: string;
+  creatorUserName: string;
+  active: boolean;
+  lastRunAt?: string | null;
+  lastRunStatus?: 'SUCCESS' | 'FAILED' | null;
+  nextRunAt: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type WorkerStatus = 'ACTIVE' | 'IDLE' | 'STALLED' | 'OFFLINE';
+
+export interface JobWorker {
+  id: string;
+  name: string;
+  hostname: string;
+  queues: JobQueue[];
+  status: WorkerStatus;
+  concurrency: number;
+  activeJobsCount: number;
+  lastHeartbeatAt: string;
+  startedAt: string;
+  metrics: {
+    totalProcessed: number;
+    totalFailed: number;
+    uptimeSeconds: number;
+    cpuUsagePercent?: number;
+    memoryUsageMb?: number;
+  };
+}
+
+export interface JobDeadLetter {
+  id: string;
+  jobId: string;
+  jobType: string;
+  module: JobModule;
+  originalQueue: JobQueue;
+  failureReason: string;
+  errorStack?: string | null;
+  attemptsCount: number;
+  movedToDeadLetterAt: string;
+  investigated: boolean;
+  investigatedBy?: string | null;
+  investigatedAt?: string | null;
+  reprocessed: boolean;
+  reprocessedJobId?: string | null;
+  reprocessedAt?: string | null;
+  job?: Job;
+}
+
+export interface JobQueueMetrics {
+  name: JobQueue;
+  displayName: string;
+  depth: number;
+  runningCount: number;
+  processingRatePerMinute: number;
+  oldestJobAgeSeconds: number;
+  activeWorkers: number;
+  status: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+}
+
+export interface ProcessingCenterStats {
+  runningCount: number;
+  queuedCount: number;
+  scheduledCount: number;
+  completedTodayCount: number;
+  failedCount: number;
+  deadLetterCount: number;
+  health: {
+    workers: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+    queues: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+    redis: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+    database: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+    integrations: 'HEALTHY' | 'WARNING' | 'CRITICAL';
+  };
+  p95DurationSeconds: number;
+  p99DurationSeconds: number;
+  avgDurationSeconds: number;
+}
+
+export interface JobRegistryEntry {
+  type: string;
+  name: string;
+  description: string;
+  module: JobModule;
+  queue: JobQueue;
+  defaultPriority: JobPriority;
+  timeoutSeconds: number;
+  retryPolicy: {
+    maxAttempts: number;
+    backoffType: 'FIXED' | 'EXPONENTIAL';
+    initialDelayMs: number;
+    maxDelayMs: number;
+    jitter: boolean;
+  };
+  cancellable: boolean;
+  pausable: boolean;
+  progressEnabled: boolean;
+  idempotencyPolicy: {
+    enabled: boolean;
+    keyGenerator?: (payload: any) => string;
+  };
+  requiredPermission: string;
+}
