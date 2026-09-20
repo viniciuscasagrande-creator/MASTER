@@ -4515,17 +4515,22 @@ export class InMemoryPrismaStore {
       {
         id: 'rnw_101_1',
         contractId: 'ctr_101',
+        renewalCycle: 1,
         renewalType: 'SIMPLE',
-        status: 'IN_NEGOTIATION',
+        status: 'IN_PROGRESS',
         targetEffectiveFrom: new Date('2027-01-01T00:00:00Z'),
         targetEffectiveUntil: new Date('2027-12-31T23:59:59Z'),
         sourceOpportunityId: null,
         sourceProposalId: null,
         newContractId: null,
+        responsibleId: 'usr_comercial_1',
+        responsibleName: 'Mariana Souza',
         notes: 'Início de tratativas para extensão do prazo por mais 12 meses mantendo as condições do aditivo 1.',
+        version: 1,
         createdBy: 'usr_comercial_1',
         createdByName: 'Mariana Souza',
         createdAt: new Date('2026-09-01T10:00:00Z'),
+        updatedAt: new Date('2026-09-01T10:00:00Z'),
         completedAt: null
       }
     );
@@ -10289,47 +10294,84 @@ export class InMemoryPrismaStore {
   }
 
   public get contractRenewal() {
+    const hydrateRenewal = (x: any, include?: any) => {
+      if (!x) return null;
+      const res = { ...x };
+      if (include?.contract) {
+        const c = this.commercialContracts.find(cc => cc.id === x.contractId);
+        if (c) {
+          const cCopy = { ...c };
+          if (include.contract.include?.producer) {
+            cCopy.producer = this.producers.find(p => p.id === c.producerId) || null;
+          }
+          res.contract = cCopy;
+        } else {
+          res.contract = null;
+        }
+      }
+      if (include?.sourceOpportunity) {
+        res.sourceOpportunity = this.commercialOpportunities.find(o => o.id === x.sourceOpportunityId) || null;
+      }
+      return res;
+    };
+
     return {
       findUnique: async (args: any) => {
         const item = this.contractRenewals.find(x => x.id === args.where?.id);
         if (!item) return null;
-        const res = { ...item };
-        if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === item.contractId) || null;
-        return res;
+        return hydrateRenewal(item, args?.include);
       },
       findFirst: async (args: any) => {
         let list = [...this.contractRenewals];
         if (args?.where) list = this.filterEntities(list, args.where);
         if (!list[0]) return null;
-        const res = { ...list[0] };
-        if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === res.contractId) || null;
-        return res;
+        return hydrateRenewal(list[0], args?.include);
       },
       findMany: async (args?: any) => {
         let list = [...this.contractRenewals];
         if (args?.where) list = this.filterEntities(list, args.where);
         list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-        return list.map(x => {
-          const res = { ...x };
-          if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === x.contractId) || null;
-          return res;
-        });
+        return list.map(x => hydrateRenewal(x, args?.include));
       },
       create: async (args: any) => {
+        const renewalCycle = args.data.renewalCycle || (
+          this.contractRenewals
+            .filter(x => x.contractId === args.data.contractId)
+            .reduce((max, r) => Math.max(max, r.renewalCycle || 1), 0) + 1
+        );
+
+        const existing = this.contractRenewals.find(
+          x => x.contractId === args.data.contractId && x.renewalCycle === renewalCycle
+        );
+        if (existing) {
+          return hydrateRenewal(existing, args?.include);
+        }
+
         const item = {
           id: args.data.id || `rnw_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
-          status: args.data.status || 'IN_NEGOTIATION',
+          renewalCycle,
+          status: args.data.status || 'NOT_STARTED',
+          version: 1,
           createdAt: new Date(),
+          updatedAt: new Date(),
           ...args.data
         };
         this.contractRenewals.push(item);
-        return { ...item };
+        return hydrateRenewal(item, args?.include);
       },
       update: async (args: any) => {
         const item = this.contractRenewals.find(x => x.id === args.where?.id);
         if (!item) throw new Error('ContractRenewal not found');
-        Object.assign(item, args.data);
-        return { ...item };
+        if (args.where?.version !== undefined && item.version !== args.where.version) {
+          const err: any = new Error('Conflito de versão (409): O registro de renovação foi alterado por outro usuário.');
+          err.statusCode = 409;
+          throw err;
+        }
+        Object.assign(item, args.data, {
+          version: (item.version || 1) + 1,
+          updatedAt: new Date()
+        });
+        return hydrateRenewal(item, args?.include);
       },
       delete: async (args: any) => {
         const idx = this.contractRenewals.findIndex(x => x.id === args.where?.id);

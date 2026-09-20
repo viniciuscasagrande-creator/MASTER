@@ -4167,6 +4167,12 @@ model CommercialOpportunity {
   title              String
   description        String?
   typeId             String?   // NEW_EVENT, CONTRACT_RENEWAL, PACKAGE_UPGRADE, EXTRA_SERVICES, OTHER
+  movementType       String?   // RENEWAL, EXPANSION, UPGRADE, DOWNGRADE, ADDITIONAL_SERVICE, CONTRACT_CHANGE
+  contractRenewalId  String?
+  originContractId   String?
+  currentOfferingId  String?
+  proposedOfferingId String?
+  changeReason       String?
   ownerId            String
   ownerName          String?
   estimatedValue     Float?
@@ -4679,23 +4685,31 @@ model ContractAmendment {
 }
 
 model ContractRenewal {
-  id                  String    @id @default(uuid())
-  contractId          String
-  renewalType         String    @default("SIMPLE") // SIMPLE, RENEGOTIATION
-  status              String    @default("IN_NEGOTIATION") // IN_NEGOTIATION, PENDING_APPROVAL, PENDING_SIGNATURE, COMPLETED, CANCELLED
-  targetEffectiveFrom DateTime?
+  id                   String    @id @default(uuid())
+  contractId           String
+  renewalCycle         Int       @default(1)
+  renewalType          String    @default("SIMPLE") // SIMPLE, RENEGOTIATION
+  status               String    @default("NOT_STARTED") // NOT_STARTED, PLANNED, IN_PROGRESS, PROPOSAL, AWAITING_DECISION, COMPLETED, NOT_RENEWED, CANCELLED
+  targetEffectiveFrom  DateTime?
   targetEffectiveUntil DateTime?
-  sourceOpportunityId String?
-  sourceProposalId    String?
-  newContractId       String?
-  notes               String?
-  createdBy           String
-  createdByName       String?
-  createdAt           DateTime  @default(now())
-  completedAt         DateTime?
+  sourceOpportunityId  String?
+  sourceProposalId     String?
+  newContractId        String?
+  responsibleId        String?
+  responsibleName      String?
+  decisionReason       String?
+  decisionNotes        String?
+  notes                String?
+  version              Int       @default(1)
+  createdBy            String
+  createdByName        String?
+  createdAt            DateTime  @default(now())
+  updatedAt            DateTime  @updatedAt
+  completedAt          DateTime?
 
-  contract            CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  contract             CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
 
+  @@unique([contractId, renewalCycle])
   @@index([contractId])
   @@index([status])
 }

@@ -40,6 +40,7 @@ import venueRoutes from '../modules/events/venues/venue.routes';
 import commercialRoutes from '../modules/commercial/commercial.routes';
 import contractRoutes from '../modules/commercial/contracts/contract.routes';
 import catalogRoutes from '../modules/commercial/catalog/catalog.routes';
+import accountManagementRoutes from '../modules/commercial/account-management/account-management.routes';
 import entitlementRoutes from '../modules/entitlements/entitlement.routes';
 import { authenticate } from '../core/middleware/authenticate';
 
@@ -73,6 +74,8 @@ router.get('/event-categories', authenticate, EventCategoryController.listCatego
 router.use('/finance', financeRoutes);
 router.use('/commercial/catalog', catalogRoutes);
 router.use('/commercial/contracts', contractRoutes);
+router.use('/commercial/account-management', accountManagementRoutes);
+router.use('/commercial', accountManagementRoutes);
 router.use('/commercial', commercialRoutes);
 router.use('/entitlements', entitlementRoutes);
 router.use('/orders', ordersRoutes);

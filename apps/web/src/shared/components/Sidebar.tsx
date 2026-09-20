@@ -175,6 +175,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'commercial-proposals', label: 'Propostas Comerciais', requiredPermission: 'comercial.propostas.visualizar' },
         { id: 'commercial-contracts', label: 'Contratos Comerciais', requiredPermission: 'comercial.contratos.visualizar' },
         { id: 'commercial-catalog', label: 'Catálogo & Planos', requiredPermission: 'comercial.catalogo.visualizar' },
+        { id: 'commercial-account-management', label: 'Gestão de Contas & Renovações', requiredPermission: 'comercial.gestao_contas.visualizar' },
         { id: 'commercial-goals', label: 'Metas e Comissões', requiredPermission: 'comercial.metas.visualizar' }
       ]
     },

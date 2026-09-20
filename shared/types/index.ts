@@ -278,6 +278,16 @@ export type PermissionString =
   | 'comercial.catalogo.condicoes.visualizar'
   | 'comercial.catalogo.condicoes.editar'
   | 'comercial.catalogo.historico.visualizar'
+  // Gestão de Contas, Renovações e Movimentações Comerciais (Fase 1.3.9)
+  | 'comercial.gestao_contas.visualizar'
+  | 'comercial.renovacoes.visualizar'
+  | 'comercial.renovacoes.iniciar'
+  | 'comercial.renovacoes.atualizar_status'
+  | 'comercial.renovacoes.decidir'
+  | 'comercial.movimentacoes.visualizar'
+  | 'comercial.movimentacoes.criar'
+  | 'comercial.movimentacoes.analisar_impacto'
+  | 'comercial.contas.historico.visualizar'
   // Suporte Eventos
   | 'suporte.incidentes.visualizar'
   | 'suporte.incidentes.criar'
@@ -6392,3 +6402,254 @@ export interface LegacyMigrationDTO {
   reason: string;
   effectiveUntil?: string;
 }
+
+// ==============================================================================
+// FASE 1.3.9 — RENOVAÇÕES + EXPANSÃO DE CONTA + UPGRADE/DOWNGRADE + GESTÃO
+// ==============================================================================
+
+export type CommercialRenewalStatus =
+  | 'NOT_STARTED'
+  | 'PLANNED'
+  | 'IN_PROGRESS'
+  | 'PROPOSAL'
+  | 'AWAITING_DECISION'
+  | 'COMPLETED'
+  | 'NOT_RENEWED'
+  | 'CANCELLED';
+
+export type CommercialRenewalType = 'SIMPLE' | 'RENEGOTIATION';
+
+export type CommercialMovementType =
+  | 'RENEWAL'
+  | 'EXPANSION'
+  | 'UPGRADE'
+  | 'DOWNGRADE'
+  | 'ADDITIONAL_SERVICE'
+  | 'CONTRACT_CHANGE';
+
+export type AccountCommercialStatus = 'ACTIVE' | 'INACTIVE' | 'PROSPECT' | 'SUSPENDED';
+
+export interface CommercialAccountSummaryDTO {
+  producerId: string;
+  producerName: string;
+  tradeName: string | null;
+  document: string | null;
+  commercialStatus: AccountCommercialStatus;
+  responsibleId: string | null;
+  responsibleName: string | null;
+  assignedAt: string | null;
+  activeContractsCount: number;
+  expiringContractsCount: number;
+  contractedOfferingsCount: number;
+  openOpportunitiesCount: number;
+  pendingRenewalsCount: number;
+  openTasksCount: number;
+  overdueTasksCount: number;
+  lastActivityAt: string | null;
+  lastActivitySubject: string | null;
+  nearestContractExpiration: string | null;
+}
+
+export interface CommercialAccountDetailsDTO extends CommercialAccountSummaryDTO {
+  contracts: any[];
+  contractedProducts: ContractedProductSummaryDTO[];
+  entitlements: Array<{
+    featureKey: string;
+    featureName: string;
+    category: string;
+    granted: boolean;
+    limits: Array<{ limitKey: string; limitValue: number; unit?: string }>;
+  }>;
+  activeRenewals: CommercialRenewalDTO[];
+  recentOpportunities: CommercialMovementDTO[];
+  recentActivities: any[];
+  pendingTasks: any[];
+  alerts: AccountCommercialAlertDTO[];
+}
+
+export interface CommercialRenewalDTO {
+  id: string;
+  contractId: string;
+  contractPublicCode: string;
+  producerId: string;
+  producerName: string;
+  renewalCycle: number;
+  renewalType: CommercialRenewalType;
+  status: CommercialRenewalStatus;
+  contractExpiresAt: string;
+  targetEffectiveFrom: string | null;
+  targetEffectiveUntil: string | null;
+  daysUntilExpiration: number;
+  isWithinPlanningWindow: boolean;
+  isOverdue: boolean;
+  sourceOpportunityId: string | null;
+  sourceOpportunityPublicCode: string | null;
+  sourceProposalId: string | null;
+  responsibleId: string | null;
+  responsibleName: string | null;
+  notes: string | null;
+  decisionReason: string | null;
+  decisionNotes: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  completedAt: string | null;
+}
+
+export interface CreateRenewalNegotiationDTO {
+  contractId: string;
+  renewalType: CommercialRenewalType;
+  targetEffectiveFrom?: string;
+  targetEffectiveUntil?: string;
+  notes?: string;
+  estimatedValue?: number;
+}
+
+export interface UpdateRenewalStatusDTO {
+  status: CommercialRenewalStatus;
+  notes?: string;
+  decisionReason?: string;
+  decisionNotes?: string;
+  targetEffectiveUntil?: string;
+  version: number;
+}
+
+export interface CommercialMovementDTO {
+  id: string; // Opportunity ID
+  publicCode: string;
+  producerId: string;
+  producerName: string;
+  title: string;
+  description: string | null;
+  movementType: CommercialMovementType;
+  stageId: string;
+  stageName: string;
+  stageCode: string;
+  status: 'OPEN' | 'WON' | 'CLOSED';
+  originContractId: string | null;
+  originContractPublicCode: string | null;
+  contractRenewalId: string | null;
+  currentOfferingId: string | null;
+  currentOfferingName: string | null;
+  proposedOfferingId: string | null;
+  proposedOfferingName: string | null;
+  changeReason: string | null;
+  ownerId: string;
+  ownerName: string | null;
+  estimatedValue: number | null;
+  expectedDecisionAt: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateCommercialMovementDTO {
+  producerId: string;
+  movementType: CommercialMovementType;
+  title: string;
+  description?: string;
+  originContractId?: string;
+  currentOfferingId?: string;
+  proposedOfferingId?: string;
+  changeReason?: string;
+  estimatedValue?: number;
+  expectedDecisionAt?: string;
+  ownerId?: string;
+}
+
+export interface CommercialChangeImpactDTO {
+  producerId: string;
+  producerName: string;
+  originContractId: string | null;
+  movementType: CommercialMovementType;
+  currentOffering: {
+    id: string;
+    name: string;
+    code: string;
+    type: string;
+    terms: Array<{ type: string; value: number; payer: string }>;
+    features: Array<{ key: string; name: string; category: string; limits?: any }>;
+  } | null;
+  proposedOffering: {
+    id: string;
+    name: string;
+    code: string;
+    type: string;
+    terms: Array<{ type: string; value: number; payer: string }>;
+    features: Array<{ key: string; name: string; category: string; limits?: any }>;
+  };
+  impactAnalysis: {
+    featuresAdded: Array<{ key: string; name: string; category: string }>;
+    featuresRemoved: Array<{ key: string; name: string; category: string }>;
+    featuresMaintained: Array<{ key: string; name: string; category: string }>;
+    limitChanges: Array<{
+      featureKey: string;
+      featureName: string;
+      limitKey: string;
+      currentValue: number | null;
+      proposedValue: number | null;
+      difference: number | null;
+    }>;
+    termComparison: {
+      currentTerms: Array<{ type: string; value: number; payer: string }>;
+      proposedTerms: Array<{ type: string; value: number; payer: string }>;
+      notes: string;
+    };
+    operationalRisks: string[];
+    entitlementWillChangeImmediately: boolean;
+  };
+}
+
+export interface AccountCommercialTimelineEventDTO {
+  id: string;
+  timestamp: string;
+  category: 'CONTRACT' | 'RENEWAL' | 'AMENDMENT' | 'OPPORTUNITY' | 'PROPOSAL' | 'ACTIVITY' | 'ENTITLEMENT' | 'ALERT';
+  type: string;
+  title: string;
+  description: string | null;
+  actorId: string | null;
+  actorName: string | null;
+  referenceId: string | null;
+  referencePublicCode: string | null;
+  metadata?: Record<string, any>;
+}
+
+export interface AccountCommercialTimelineDTO {
+  producerId: string;
+  producerName: string;
+  events: AccountCommercialTimelineEventDTO[];
+  totalEvents: number;
+}
+
+export interface AccountCommercialAlertDTO {
+  id: string;
+  code: string;
+  severity: 'INFO' | 'WARNING' | 'CRITICAL';
+  title: string;
+  description: string;
+  producerId: string;
+  producerName: string;
+  contractId: string | null;
+  actionUrl: string | null;
+  createdAt: string;
+}
+
+export interface AccountManagementMetricsDTO {
+  totalProducers: number;
+  activeProducers: number;
+  portfolioCoveragePercentage: number;
+  activeContracts: number;
+  contractsInRenewalWindow: number;
+  overdueContracts: number;
+  ongoingRenewals: number;
+  completedRenewals: number;
+  renewalRetentionRate: number;
+  openMovementsCount: {
+    renewals: number;
+    expansions: number;
+    upgrades: number;
+    downgrades: number;
+    additionalServices: number;
+  };
+}
+

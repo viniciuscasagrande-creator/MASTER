@@ -15,6 +15,7 @@ import { ContractsPage } from '../../features/commercial/contracts/ContractsPage
 import { ContractDetailsPage } from '../../features/commercial/contracts/ContractDetailsPage';
 import { CommercialCatalogPage } from '../../features/commercial/catalog/CommercialCatalogPage';
 import { OfferingDetailsPage } from '../../features/commercial/catalog/OfferingDetailsPage';
+import { AccountManagementPage } from '../../features/commercial/account-management';
 
 interface CommercialDashboardProps {
   initialSubItem?: string;
@@ -262,6 +263,19 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
         onSelectOffering={handleSelectOffering}
       />
     );
+  }
+
+  // Gestão de Contas, Renovações & Movimentações (Fase 1.3.9)
+  if (currentView === 'commercial-account-management') {
+    return <AccountManagementPage initialTab="portfolio" />;
+  }
+
+  if (currentView === 'commercial-renewals') {
+    return <AccountManagementPage initialTab="renewals" />;
+  }
+
+  if (currentView === 'commercial-movements') {
+    return <AccountManagementPage initialTab="movements" />;
   }
 
   // Default: Executive Dashboard (Fase 1.3.1)

@@ -109,6 +109,78 @@ export const PERMISSIONS_CATALOG: PermissionDetail[] = [
     label: 'Visualizar Metas e Comissões',
     description: 'Permite consultar previsões de faturamento e comissões da equipe.'
   },
+  {
+    slug: 'comercial.gestao_contas.visualizar',
+    module: 'comercial',
+    resource: 'gestao_contas',
+    action: 'visualizar',
+    label: 'Visualizar Gestão de Contas',
+    description: 'Permite consultar carteira de produtores ativos, contratos e métricas de relacionamento.'
+  },
+  {
+    slug: 'comercial.renovacoes.visualizar',
+    module: 'comercial',
+    resource: 'renovacoes',
+    action: 'visualizar',
+    label: 'Visualizar Central de Renovações',
+    description: 'Permite consultar contratos em janela de planejamento e histórico de renovações.'
+  },
+  {
+    slug: 'comercial.renovacoes.iniciar',
+    module: 'comercial',
+    resource: 'renovacoes',
+    action: 'criar',
+    label: 'Iniciar Negociação de Renovação',
+    description: 'Permite abrir ciclo de renovação e gerar oportunidade vinculada no pipeline.'
+  },
+  {
+    slug: 'comercial.renovacoes.atualizar_status',
+    module: 'comercial',
+    resource: 'renovacoes',
+    action: 'editar',
+    label: 'Atualizar Status de Renovação',
+    description: 'Permite alterar o status operacional do processo de renovação do contrato.'
+  },
+  {
+    slug: 'comercial.renovacoes.decidir',
+    module: 'comercial',
+    resource: 'renovacoes',
+    action: 'aprovar',
+    label: 'Registrar Decisão de Renovação',
+    description: 'Permite formalizar conclusão (renovado simples/renegociado), não renovação ou cancelamento.'
+  },
+  {
+    slug: 'comercial.movimentacoes.visualizar',
+    module: 'comercial',
+    resource: 'movimentacoes',
+    action: 'visualizar',
+    label: 'Visualizar Movimentações Comerciais',
+    description: 'Permite consultar oportunidades de expansão, upgrades, downgrades e novos serviços.'
+  },
+  {
+    slug: 'comercial.movimentacoes.criar',
+    module: 'comercial',
+    resource: 'movimentacoes',
+    action: 'criar',
+    label: 'Criar Oportunidade de Movimentação',
+    description: 'Permite registrar nova oportunidade de movimentação de conta para o produtor.'
+  },
+  {
+    slug: 'comercial.movimentacoes.analisar_impacto',
+    module: 'comercial',
+    resource: 'movimentacoes',
+    action: 'visualizar',
+    label: 'Analisar Impacto Comercial',
+    description: 'Permite comparar condições vigentes versus propostas sem alterar habilitações ou contratos.'
+  },
+  {
+    slug: 'comercial.contas.historico.visualizar',
+    module: 'comercial',
+    resource: 'contas',
+    action: 'visualizar',
+    label: 'Visualizar Linha do Tempo da Conta',
+    description: 'Permite inspecionar a cronologia factual unificada da conta comercial do produtor.'
+  },
 
   // Suporte Eventos
   {

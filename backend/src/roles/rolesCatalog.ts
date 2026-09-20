@@ -108,7 +108,11 @@ export const ROLES_CATALOG: RoleDefinition[] = [
     defaultPermissions: [
       'eventos.evento.visualizar',
       'comercial.produtores.visualizar', 'comercial.produtores.criar', 'comercial.produtores.editar',
-      'comercial.propostas.gerenciar', 'comercial.metas.visualizar'
+      'comercial.propostas.gerenciar', 'comercial.metas.visualizar',
+      'comercial.gestao_contas.visualizar',
+      'comercial.renovacoes.visualizar', 'comercial.renovacoes.iniciar', 'comercial.renovacoes.atualizar_status', 'comercial.renovacoes.decidir',
+      'comercial.movimentacoes.visualizar', 'comercial.movimentacoes.criar', 'comercial.movimentacoes.analisar_impacto',
+      'comercial.contas.historico.visualizar'
     ]
   },
   {
