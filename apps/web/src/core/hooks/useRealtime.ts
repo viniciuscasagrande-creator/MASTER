@@ -32,7 +32,9 @@ export function useRealtime({
   }, [onMessage]);
 
   const defaultWsUrl = typeof window !== 'undefined'
-    ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:3001/realtime`
+    ? (import.meta.env.VITE_WS_URL || (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? `${window.location.protocol === 'https:' ? 'wss:' : 'ws:'}//${window.location.hostname}:3001/realtime`
+        : 'wss://master-production-82a6.up.railway.app/realtime'))
     : 'ws://localhost:3001/realtime';
 
   const wsUrl = url || defaultWsUrl;

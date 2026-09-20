@@ -5,7 +5,7 @@
   "rewrites": [
     {
       "source": "/api/:path*",
-      "destination": "/api/:path*"
+      "destination": "https://master-production-82a6.up.railway.app/api/:path*"
     },
     {
       "source": "/((?!api/).*)",
