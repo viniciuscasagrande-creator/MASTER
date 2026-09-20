@@ -9,6 +9,8 @@ import { MyPortfolioPage } from '../../features/commercial/portfolio/MyPortfolio
 import { CommercialLeadsPage } from '../../features/commercial/leads/CommercialLeadsPage';
 import { OpportunitiesPage } from '../../features/commercial/opportunities/OpportunitiesPage';
 import { OpportunityDetailsPage } from '../../features/commercial/opportunities/OpportunityDetailsPage';
+import { ProposalsPage } from '../../features/commercial/proposals/ProposalsPage';
+import { ProposalDetailsPage } from '../../features/commercial/proposals/ProposalDetailsPage';
 
 interface CommercialDashboardProps {
   initialSubItem?: string;
@@ -23,6 +25,7 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
   const [selectedProducerId, setSelectedProducerId] = useState<string | null>(null);
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
+  const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialSubItem) {
@@ -58,6 +61,16 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const handleBackToOpportunities = () => {
     setSelectedOpportunityId(null);
     setCurrentView('commercial-opportunities');
+  };
+
+  const handleSelectProposal = (proposalId: string) => {
+    setSelectedProposalId(proposalId);
+    setCurrentView('commercial-proposal-detail');
+  };
+
+  const handleBackToProposals = () => {
+    setSelectedProposalId(null);
+    setCurrentView('commercial-proposals');
   };
 
   // Route switcher
@@ -146,6 +159,29 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
       <OpportunitiesPage
         onSelectOpportunity={handleSelectOpportunity}
         onSelectProducer={handleSelectProducer}
+      />
+    );
+  }
+
+  // Detalhes da Proposta Comercial (Fase 1.3.5)
+  if (currentView === 'commercial-proposal-detail' && selectedProposalId) {
+    return (
+      <ProposalDetailsPage
+        proposalId={selectedProposalId}
+        onBack={handleBackToProposals}
+        onSelectProducer={handleSelectProducer}
+        onSelectOpportunity={handleSelectOpportunity}
+      />
+    );
+  }
+
+  // Central de Propostas Comerciais (Fase 1.3.5)
+  if (currentView === 'commercial-proposals') {
+    return (
+      <ProposalsPage
+        onSelectProposal={handleSelectProposal}
+        onSelectProducer={handleSelectProducer}
+        onSelectOpportunity={handleSelectOpportunity}
       />
     );
   }

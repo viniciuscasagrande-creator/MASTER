@@ -2,7 +2,20 @@ import {
   CommercialDashboardDTO,
   CommercialPerformanceDTO,
   OrderDTO,
-  OrderStatus
+  OrderStatus,
+  CommercialProposalDTO,
+  CommercialProposalVersionDTO,
+  CommercialOfferingCategoryDTO,
+  CommercialOfferingDTO,
+  ProposalDiffDTO,
+  CommercialProposalMetricsDTO,
+  CreateProposalDTO,
+  UpdateProposalDTO,
+  CreateProposalVersionDTO,
+  SubmitProposalApprovalDTO,
+  SendProposalDTO,
+  RegisterProposalAcceptanceDTO,
+  DeclineProposalDTO
 } from '@shared/types/index';
 
 const BASE_URL = '/api/v1/commercial';
@@ -492,5 +505,229 @@ export const CommercialApi = {
       throw new Error(err.error || 'Falha ao encerrar oportunidade.');
     }
     return res.json();
+  },
+
+  // ===========================================================================
+  // FASE 1.3.5 — PROPOSTAS COMERCIAIS & CATÁLOGO DE OFERTAS
+  // ===========================================================================
+
+  async listOfferingCategories(): Promise<CommercialOfferingCategoryDTO[]> {
+    const res = await fetch(`${BASE_URL}/offerings/categories`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao carregar categorias de ofertas.');
+    }
+    return res.json();
+  },
+
+  async listOfferings(categoryId?: string): Promise<CommercialOfferingDTO[]> {
+    const query = categoryId ? `?categoryId=${encodeURIComponent(categoryId)}` : '';
+    const res = await fetch(`${BASE_URL}/offerings${query}`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao carregar ofertas do catálogo.');
+    }
+    return res.json();
+  },
+
+  async listProposals(params?: {
+    status?: string;
+    producerId?: string;
+    opportunityId?: string;
+    ownerId?: string;
+    search?: string;
+    page?: number;
+    limit?: number;
+    pendingApproval?: boolean;
+  }): Promise<{ data: CommercialProposalDTO[]; total: number; page: number; limit: number }> {
+    const query = new URLSearchParams();
+    if (params?.status && params.status !== 'ALL') query.set('status', params.status);
+    if (params?.producerId) query.set('producerId', params.producerId);
+    if (params?.opportunityId) query.set('opportunityId', params.opportunityId);
+    if (params?.ownerId) query.set('ownerId', params.ownerId);
+    if (params?.search) query.set('search', params.search);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.limit) query.set('limit', String(params.limit));
+    if (params?.pendingApproval) query.set('pendingApproval', 'true');
+
+    const res = await fetch(`${BASE_URL}/proposals?${query.toString()}`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao listar propostas comerciais.');
+    }
+    return res.json();
+  },
+
+  async getProposalMetrics(): Promise<CommercialProposalMetricsDTO> {
+    const res = await fetch(`${BASE_URL}/proposals/metrics`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao carregar métricas de propostas.');
+    }
+    return res.json();
+  },
+
+  async getProposalById(id: string): Promise<CommercialProposalDTO> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao carregar detalhes da proposta comercial.');
+    }
+    return res.json();
+  },
+
+  async createProposal(data: CreateProposalDTO): Promise<CommercialProposalDTO> {
+    const res = await fetch(`${BASE_URL}/proposals`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao criar proposta comercial.');
+    }
+    return res.json();
+  },
+
+  async updateProposal(id: string, data: UpdateProposalDTO): Promise<CommercialProposalDTO> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atualizar rascunho da proposta.');
+    }
+    return res.json();
+  },
+
+  async cancelProposal(id: string, reason: string): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/cancel`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify({ reason })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao cancelar proposta.');
+    }
+    return res.json();
+  },
+
+  async createProposalVersion(id: string, data: CreateProposalVersionDTO): Promise<CommercialProposalVersionDTO> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao criar nova versão da proposta.');
+    }
+    return res.json();
+  },
+
+  async getProposalDiff(id: string, base: number, target: number): Promise<ProposalDiffDTO> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/diff?base=${base}&target=${target}`, {
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao comparar versões da proposta.');
+    }
+    return res.json();
+  },
+
+  async submitProposalApproval(id: string, versionNumber: number, data: SubmitProposalApprovalDTO): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/submit-approval`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao submeter proposta para aprovação.');
+    }
+    return res.json();
+  },
+
+  async processProposalDecision(
+    id: string,
+    versionNumber: number,
+    data: { decision: 'APPROVE' | 'REJECT'; reason?: string; expectedVersion?: number }
+  ): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/decision`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao registrar decisão de aprovação.');
+    }
+    return res.json();
+  },
+
+  async generateProposalDocument(id: string, versionNumber: number): Promise<{ documentId: string; documentChecksum: string; htmlContent: string }> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/document`, {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao gerar documento formal da proposta.');
+    }
+    return res.json();
+  },
+
+  async sendProposal(id: string, versionNumber: number, data: SendProposalDTO): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/send`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao enviar proposta ao produtor.');
+    }
+    return res.json();
+  },
+
+  async registerProposalAcceptance(id: string, versionNumber: number, data: RegisterProposalAcceptanceDTO): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/accept`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao registrar aceite formal da proposta.');
+    }
+    return res.json();
+  },
+
+  async declineProposal(id: string, versionNumber: number, data: DeclineProposalDTO): Promise<any> {
+    const res = await fetch(`${BASE_URL}/proposals/${encodeURIComponent(id)}/versions/${versionNumber}/decline`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao recusar proposta.');
+    }
+    return res.json();
   }
 };
+

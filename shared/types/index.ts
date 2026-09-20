@@ -238,6 +238,20 @@ export type PermissionString =
   | 'comercial.oportunidades.documentos.adicionar'
   | 'comercial.atividades.visualizar'
   | 'comercial.atividades.registrar'
+  // Propostas Comerciais & Negociação (Fase 1.3.5)
+  | 'comercial.propostas.visualizar'
+  | 'comercial.propostas.criar'
+  | 'comercial.propostas.editar'
+  | 'comercial.propostas.condicoes.visualizar'
+  | 'comercial.propostas.condicoes.editar'
+  | 'comercial.propostas.enviar_aprovacao'
+  | 'comercial.propostas.enviar'
+  | 'comercial.propostas.aceite.registrar'
+  | 'comercial.propostas.cancelar'
+  | 'comercial.propostas.documentos.visualizar'
+  | 'comercial.propostas.documentos.gerar'
+  | 'comercial.propostas.versoes.visualizar'
+  | 'comercial.ofertas.gerenciar'
   | 'comercial.propostas.gerenciar'
   | 'comercial.metas.visualizar'
   // Suporte Eventos
@@ -5201,6 +5215,375 @@ export interface CommercialOpportunityMetricsDTO {
   averageStageDurationDays: Record<string, number>;
   averageCycleDurationDays: number;
 }
+
+// ==============================================================================
+// FASE 1.3.5 — PROPOSTAS COMERCIAIS + CONDIÇÕES DE NEGOCIAÇÃO + VERSIONAMENTO + APROVAÇÃO
+// ==============================================================================
+
+export type CommercialProposalStatus =
+  | 'DRAFT'
+  | 'IN_REVIEW'
+  | 'APPROVAL_PENDING'
+  | 'APPROVED'
+  | 'REJECTED_INTERNAL'
+  | 'READY_TO_SEND'
+  | 'SENT'
+  | 'VIEWED'
+  | 'ACCEPTED'
+  | 'DECLINED'
+  | 'EXPIRED'
+  | 'CANCELLED'
+  | 'SUPERSEDED';
+
+export type CommercialPricingModel =
+  | 'PERCENTAGE'
+  | 'FIXED_AMOUNT'
+  | 'PER_TICKET'
+  | 'SUBSCRIPTION'
+  | 'HYBRID'
+  | 'CUSTOM';
+
+export type CommercialModelType =
+  | 'STANDARD'
+  | 'EXCLUSIVE'
+  | 'ENTERPRISE'
+  | 'CUSTOM';
+
+export type ProposalTermType =
+  | 'PLATFORM_COMMISSION'
+  | 'ACCESS_CONTROL'
+  | 'BOX_OFFICE'
+  | 'MARKETING'
+  | 'EQUIPMENT'
+  | 'REBATE'
+  | 'MINIMUM_GUARANTEE'
+  | 'SETUP_FEE'
+  | 'CUSTOM';
+
+export type ProposalPayer = 'PRODUCER' | 'BUYER' | 'SPLIT';
+
+export type ProposalAcceptanceMethod =
+  | 'DIGITAL_SIGNATURE'
+  | 'EMAIL_CONFIRMATION'
+  | 'WRITTEN_FORM'
+  | 'WHATSAPP_FORMAL'
+  | 'PLATFORM_PORTAL'
+  | 'OTHER';
+
+export type ProposalDeliveryChannel = 'EMAIL' | 'WHATSAPP' | 'LINK_PORTAL' | 'MANUAL_HANDOFF';
+
+export interface CommercialOfferingCategoryDTO {
+  id: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  sortOrder: number;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+  offerings?: CommercialOfferingDTO[];
+}
+
+export interface CommercialOfferingDTO {
+  id: string;
+  categoryId: string;
+  categoryName?: string;
+  code: string;
+  name: string;
+  description?: string | null;
+  defaultPricingModel: CommercialPricingModel;
+  defaultPercentage?: number | null;
+  defaultAmount?: number | null;
+  defaultPayer: ProposalPayer;
+  active: boolean;
+  sortOrder: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProposalCommercialTermDTO {
+  id: string;
+  proposalVersionId: string;
+  offeringId?: string | null;
+  offeringName?: string | null;
+  termType: ProposalTermType;
+  name: string;
+  calculationType: CommercialPricingModel;
+  percentage?: number | null;
+  amount?: number | null;
+  minimumAmount?: number | null;
+  payer: ProposalPayer;
+  splitProducerPercentage?: number | null;
+  splitBuyerPercentage?: number | null;
+  conditions?: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface ProposalEventReferenceDTO {
+  id: string;
+  proposalVersionId: string;
+  eventId?: string | null;
+  eventName?: string | null;
+  estimatedEventName: string;
+  estimatedDate?: string | null;
+  estimatedVenue?: string | null;
+  estimatedTickets?: number | null;
+  estimatedGrossRevenue?: number | null;
+  createdAt: string;
+}
+
+export interface ProposalAcceptanceDTO {
+  id: string;
+  proposalId: string;
+  proposalVersionId: string;
+  method: ProposalAcceptanceMethod;
+  acceptedAt: string;
+  acceptedByContactId?: string | null;
+  contactName: string;
+  contactEmail?: string | null;
+  contactDocument?: string | null;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  evidenceDocumentId?: string | null;
+  notes?: string | null;
+  registeredBy: string;
+  registeredByName?: string | null;
+  createdAt: string;
+}
+
+export interface ProposalDeliveryDTO {
+  id: string;
+  proposalId: string;
+  proposalVersionId: string;
+  channel: ProposalDeliveryChannel;
+  recipientName: string;
+  recipientEmail?: string | null;
+  recipientPhone?: string | null;
+  sentAt: string;
+  sentBy: string;
+  sentByName?: string | null;
+  status: 'DELIVERED' | 'FAILED' | 'OPENED' | 'PENDING';
+  messageBody?: string | null;
+  trackingId?: string | null;
+  createdAt: string;
+}
+
+export interface CommercialProposalVersionDTO {
+  id: string;
+  proposalId: string;
+  versionNumber: number;
+  status: CommercialProposalStatus;
+  contentHash: string;
+  title: string;
+  summary?: string | null;
+  validUntil: string;
+  commercialModel: CommercialModelType;
+  snapshotJson: string;
+  approvalRequestId?: string | null;
+  approvalStatus: 'NOT_REQUIRED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  approvedAt?: string | null;
+  approvedBy?: string | null;
+  approvedByName?: string | null;
+  rejectionReason?: string | null;
+  documentId?: string | null;
+  documentChecksum?: string | null;
+  changeSummary?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  terms?: ProposalCommercialTermDTO[];
+  events?: ProposalEventReferenceDTO[];
+}
+
+export interface CommercialProposalDTO {
+  id: string;
+  publicCode: string; // PROP-YYYY-XXXXXX
+  producerId: string;
+  producerName?: string;
+  opportunityId?: string | null;
+  opportunityPublicCode?: string | null;
+  opportunityTitle?: string | null;
+  title: string;
+  description?: string | null;
+  status: CommercialProposalStatus;
+  currentVersionNumber: number;
+  currentVersionId?: string | null;
+  currentVersion?: CommercialProposalVersionDTO | null;
+  ownerId: string;
+  ownerName?: string | null;
+  validUntil: string;
+  isExpired?: boolean;
+  notes?: string | null;
+  internalNotes?: string | null;
+  version: number;
+  versions?: CommercialProposalVersionDTO[];
+  acceptances?: ProposalAcceptanceDTO[];
+  deliveries?: ProposalDeliveryDTO[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ProposalDiffItemDTO {
+  category: 'HEADER' | 'TERM' | 'EVENT';
+  changeType: 'ADDED' | 'REMOVED' | 'MODIFIED' | 'UNCHANGED';
+  identifier: string;
+  label: string;
+  oldValue?: any;
+  newValue?: any;
+  description: string;
+}
+
+export interface ProposalDiffDTO {
+  baseVersionNumber: number;
+  targetVersionNumber: number;
+  hasDifferences: boolean;
+  contentHashBase: string;
+  contentHashTarget: string;
+  changes: ProposalDiffItemDTO[];
+}
+
+export interface CommercialProposalMetricsDTO {
+  totalProposals: number;
+  draftCount: number;
+  pendingApprovalCount: number;
+  sentCount: number;
+  acceptedCount: number;
+  declinedCount: number;
+  expiredCount: number;
+  acceptanceRatePercent: number;
+  averageApprovalTimeHours: number;
+  averageDecisionTimeDays: number;
+  activeValueUnderProposal: number;
+}
+
+// Request / Input DTOs
+export interface CreateProposalDTO {
+  producerId: string;
+  opportunityId?: string | null;
+  title: string;
+  description?: string;
+  validUntil: string;
+  commercialModel?: CommercialModelType;
+  terms: Array<{
+    offeringId?: string | null;
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string;
+  }>;
+  events?: Array<{
+    eventId?: string | null;
+    estimatedEventName: string;
+    estimatedDate?: string | null;
+    estimatedVenue?: string | null;
+    estimatedTickets?: number | null;
+    estimatedGrossRevenue?: number | null;
+  }>;
+  notes?: string;
+  internalNotes?: string;
+}
+
+export interface UpdateProposalDTO {
+  title?: string;
+  description?: string;
+  validUntil?: string;
+  commercialModel?: CommercialModelType;
+  terms?: Array<{
+    offeringId?: string | null;
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string;
+  }>;
+  events?: Array<{
+    eventId?: string | null;
+    estimatedEventName: string;
+    estimatedDate?: string | null;
+    estimatedVenue?: string | null;
+    estimatedTickets?: number | null;
+    estimatedGrossRevenue?: number | null;
+  }>;
+  notes?: string;
+  internalNotes?: string;
+  expectedVersion: number;
+}
+
+export interface CreateProposalVersionDTO {
+  changeSummary: string;
+  title?: string;
+  validUntil?: string;
+  commercialModel?: CommercialModelType;
+  terms: Array<{
+    offeringId?: string | null;
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string;
+  }>;
+  events?: Array<{
+    eventId?: string | null;
+    estimatedEventName: string;
+    estimatedDate?: string | null;
+    estimatedVenue?: string | null;
+    estimatedTickets?: number | null;
+    estimatedGrossRevenue?: number | null;
+  }>;
+  notes?: string;
+  internalNotes?: string;
+  expectedVersion: number;
+}
+
+export interface SubmitProposalApprovalDTO {
+  justification?: string;
+  expectedVersion: number;
+}
+
+export interface SendProposalDTO {
+  channel: ProposalDeliveryChannel;
+  recipientName: string;
+  recipientEmail?: string;
+  recipientPhone?: string;
+  messageBody?: string;
+  expectedVersion: number;
+}
+
+export interface RegisterProposalAcceptanceDTO {
+  method: ProposalAcceptanceMethod;
+  acceptedAt?: string;
+  contactName: string;
+  contactEmail?: string;
+  contactDocument?: string;
+  evidenceDocumentId?: string;
+  notes?: string;
+  expectedVersion: number;
+}
+
+export interface DeclineProposalDTO {
+  reason: string;
+  notes?: string;
+  expectedVersion: number;
+}
+
 
 
 

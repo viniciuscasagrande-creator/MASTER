@@ -265,4 +265,119 @@ router.post(
   CommercialController.closeOpportunity
 );
 
+// =============================================================================
+// FASE 1.3.5 — CATÁLOGO DE OFERTAS & PROPOSTAS COMERCIAIS
+// =============================================================================
+
+// Ofertas Comerciais
+router.get(
+  '/offerings/categories',
+  requireAnyPermission(['comercial.propostas.visualizar', 'comercial.propostas.criar', 'comercial.ofertas.gerenciar']),
+  CommercialController.listOfferingCategories
+);
+
+router.get(
+  '/offerings',
+  requireAnyPermission(['comercial.propostas.visualizar', 'comercial.propostas.criar', 'comercial.ofertas.gerenciar']),
+  CommercialController.listOfferings
+);
+
+router.post(
+  '/offerings',
+  requireAnyPermission(['comercial.ofertas.gerenciar', 'admin.sistema.configurar']),
+  CommercialController.createOffering
+);
+
+router.put(
+  '/offerings/:id',
+  requireAnyPermission(['comercial.ofertas.gerenciar', 'admin.sistema.configurar']),
+  CommercialController.updateOffering
+);
+
+// Propostas Comerciais
+router.get(
+  '/proposals',
+  requireAnyPermission(['comercial.propostas.visualizar', 'comercial.propostas.gerenciar']),
+  CommercialController.listProposals
+);
+
+router.get(
+  '/proposals/metrics',
+  requireAnyPermission(['comercial.propostas.visualizar', 'comercial.dashboard.visualizar']),
+  CommercialController.getProposalMetrics
+);
+
+router.get(
+  '/proposals/:id',
+  requireAnyPermission(['comercial.propostas.visualizar', 'comercial.propostas.gerenciar']),
+  CommercialController.getProposalById
+);
+
+router.post(
+  '/proposals',
+  requireAnyPermission(['comercial.propostas.criar', 'admin.sistema.configurar']),
+  CommercialController.createProposal
+);
+
+router.put(
+  '/proposals/:id',
+  requireAnyPermission(['comercial.propostas.editar', 'admin.sistema.configurar']),
+  CommercialController.updateProposal
+);
+
+router.post(
+  '/proposals/:id/cancel',
+  requireAnyPermission(['comercial.propostas.cancelar', 'admin.sistema.configurar']),
+  CommercialController.cancelProposal
+);
+
+router.post(
+  '/proposals/:id/versions',
+  requireAnyPermission(['comercial.propostas.editar', 'admin.sistema.configurar']),
+  CommercialController.createProposalVersion
+);
+
+router.get(
+  '/proposals/:id/diff',
+  requireAnyPermission(['comercial.propostas.versoes.visualizar', 'comercial.propostas.visualizar']),
+  CommercialController.getProposalDiff
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/submit-approval',
+  requireAnyPermission(['comercial.propostas.enviar_aprovacao', 'admin.sistema.configurar']),
+  CommercialController.submitProposalApproval
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/decision',
+  requireAnyPermission(['comercial.propostas.enviar_aprovacao', 'admin.sistema.configurar']),
+  CommercialController.processProposalDecision
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/document',
+  requireAnyPermission(['comercial.propostas.documentos.gerar', 'comercial.propostas.visualizar']),
+  CommercialController.generateProposalDocument
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/send',
+  requireAnyPermission(['comercial.propostas.enviar', 'admin.sistema.configurar']),
+  CommercialController.sendProposal
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/accept',
+  requireAnyPermission(['comercial.propostas.aceite.registrar', 'admin.sistema.configurar']),
+  CommercialController.registerProposalAcceptance
+);
+
+router.post(
+  '/proposals/:id/versions/:versionNumber/decline',
+  requireAnyPermission(['comercial.propostas.aceite.registrar', 'comercial.propostas.editar', 'admin.sistema.configurar']),
+  CommercialController.declineProposal
+);
+
 export default router;
+

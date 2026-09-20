@@ -1,4 +1,5 @@
 # RELATÓRIO DE HOMOLOGAÇÃO DO MÓDULO EVENTOS (Fases 1.2.1 → 1.2.14)
+
 **Disk Interno — Sistema de Gestão e Operação de Eventos e Ticketeria**  
 *Ambiente: Homologação (HML) / Staging*  
 *Data de Execução: 20/09/2026*  
@@ -49,21 +50,25 @@ O bloco de **EVENTOS** do Disk Interno, compreendendo as **Fases 1.2.1 até 1.2.
 ## 3. Detalhamento dos Testes Críticos de Segurança e Concorrência
 
 ### 3.1. Concorrência no Check-in (Dupla Leitura)
+
 - **Cenário:** Disparo de 100 requisições concorrentes de validação do mesmo QR Token sob a política `NO_REENTRY`.
 - **Resultado:** Exatamente 1 validação retornou status `ALLOW` e registrou a entrada. As 99 requisições concorrentes retornaram `DENY` com código `ALREADY_USED`.
 - **Veredito:** **CONFORME** — Sem duplicidade de acesso e bloqueio atômico mantido.
 
 ### 3.2. Concorrência em Inventário e Lotes
+
 - **Cenário:** Tentativas concorrentes de compra excedendo a capacidade do `InventoryPool` e limite de lote.
 - **Resultado:** Atingido o limite configurado, todas as tentativas excedentes foram rejeitadas com erro controlado.
 - **Veredito:** **CONFORME** — Estoque negativo estritamente impedido.
 
 ### 3.3. Isolamento de Dados (Data Scope Cross-Producer)
+
 - **Cenário:** Usuário autenticado pelo Produtor A manipulou o cabeçalho/parâmetro de requisição para consultar e alterar recursos pertencentes ao Produtor B (`eventId`, `sessionId`, `orderId`).
 - **Resultado:** O backend interceptou e rejeitou a tentativa com código HTTP 403 Forbidden e registrou o log de auditoria de segurança `SCOPE_VIOLATION`.
 - **Veredito:** **CONFORME** — Acesso cruzado bloqueado na raiz.
 
 ### 3.4. Imutabilidade do Arquivo Histórico (Cold Storage)
+
 - **Cenário:** Tentativa de alteração em ingressos, borderôs e lotes de um evento transicionado para o status `ARCHIVED`.
 - **Resultado:** O `ArchiveWritePolicy` barrou qualquer mutação com código HTTP 403 / 409 e justificativa formal de somente leitura.
 - **Veredito:** **CONFORME** — Histórico preservado sem mutabilidade posterior.

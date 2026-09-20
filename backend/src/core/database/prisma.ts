@@ -125,6 +125,15 @@ export class InMemoryPrismaStore {
   public commercialOpportunities: any[] = [];
   public opportunityStageHistories: any[] = [];
   public opportunityCloseReasons: any[] = [];
+  // Fase 1.3.5 — Propostas Comerciais, Condições de Negociação, Versionamento e Aprovação
+  public commercialOfferingCategories: any[] = [];
+  public commercialOfferings: any[] = [];
+  public commercialProposals: any[] = [];
+  public commercialProposalVersions: any[] = [];
+  public proposalCommercialTerms: any[] = [];
+  public proposalEventReferences: any[] = [];
+  public proposalAcceptances: any[] = [];
+  public proposalDeliveries: any[] = [];
   public tickets: any[] = [];
   public payments: any[] = [];
   public refunds: any[] = [];
@@ -689,7 +698,21 @@ export class InMemoryPrismaStore {
       { id: 'p-com-28', module: 'comercial', resource: 'pipeline', action: 'visualizar', code: 'comercial.pipeline.visualizar', description: 'Visualizar pipeline / kanban comercial' },
       { id: 'p-com-29', module: 'comercial', resource: 'pipeline', action: 'configurar', code: 'comercial.pipeline.configurar', description: 'Configurar pipelines e estágios' },
       { id: 'p-com-30', module: 'comercial', resource: 'atividades', action: 'visualizar', code: 'comercial.atividades.visualizar', description: 'Visualizar atividades comerciais' },
-      { id: 'p-com-31', module: 'comercial', resource: 'atividades', action: 'registrar', code: 'comercial.atividades.registrar', description: 'Registrar reuniões, ligações e contatos comerciais' }
+      { id: 'p-com-31', module: 'comercial', resource: 'atividades', action: 'registrar', code: 'comercial.atividades.registrar', description: 'Registrar reuniões, ligações e contatos comerciais' },
+      // Fase 1.3.5: Propostas Comerciais
+      { id: 'p-com-32', module: 'comercial', resource: 'propostas', action: 'visualizar', code: 'comercial.propostas.visualizar', description: 'Visualizar propostas comerciais' },
+      { id: 'p-com-33', module: 'comercial', resource: 'propostas', action: 'criar', code: 'comercial.propostas.criar', description: 'Criar proposta comercial' },
+      { id: 'p-com-34', module: 'comercial', resource: 'propostas', action: 'editar', code: 'comercial.propostas.editar', description: 'Editar rascunho de proposta comercial' },
+      { id: 'p-com-35', module: 'comercial', resource: 'propostas', action: 'condicoes.visualizar', code: 'comercial.propostas.condicoes.visualizar', description: 'Visualizar condições comerciais de taxas e repasses' },
+      { id: 'p-com-36', module: 'comercial', resource: 'propostas', action: 'condicoes.editar', code: 'comercial.propostas.condicoes.editar', description: 'Editar condições e taxas comerciais' },
+      { id: 'p-com-37', module: 'comercial', resource: 'propostas', action: 'enviar_aprovacao', code: 'comercial.propostas.enviar_aprovacao', description: 'Submeter proposta para alçada de aprovação interna' },
+      { id: 'p-com-38', module: 'comercial', resource: 'propostas', action: 'enviar', code: 'comercial.propostas.enviar', description: 'Enviar proposta aprovada para o produtor' },
+      { id: 'p-com-39', module: 'comercial', resource: 'propostas', action: 'aceite.registrar', code: 'comercial.propostas.aceite.registrar', description: 'Registrar aceite comercial formal do produtor' },
+      { id: 'p-com-40', module: 'comercial', resource: 'propostas', action: 'cancelar', code: 'comercial.propostas.cancelar', description: 'Cancelar proposta comercial' },
+      { id: 'p-com-41', module: 'comercial', resource: 'propostas', action: 'documentos.visualizar', code: 'comercial.propostas.documentos.visualizar', description: 'Visualizar documento PDF/HTML gerado da proposta' },
+      { id: 'p-com-42', module: 'comercial', resource: 'propostas', action: 'documentos.gerar', code: 'comercial.propostas.documentos.gerar', description: 'Gerar documento formal imutável da versão da proposta' },
+      { id: 'p-com-43', module: 'comercial', resource: 'propostas', action: 'versoes.visualizar', code: 'comercial.propostas.versoes.visualizar', description: 'Visualizar histórico e diff de versões da proposta' },
+      { id: 'p-com-44', module: 'comercial', resource: 'ofertas', action: 'gerenciar', code: 'comercial.ofertas.gerenciar', description: 'Gerenciar catálogo de serviços e ofertas comerciais' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -2405,6 +2428,29 @@ export class InMemoryPrismaStore {
         version: 1,
         isActive: true,
         createdAt: new Date('2026-01-01')
+      },
+      {
+        id: 'rule_commercial_proposal',
+        code: 'RULE_COMMERCIAL_PROPOSAL',
+        name: 'Aprovação de Proposta Comercial e Condições Especiais',
+        description: 'Alçada para validação de comissões, taxas e condições comerciais antes do envio ao produtor',
+        operation: 'COMMERCIAL_PROPOSAL',
+        producerId: null,
+        eventId: null,
+        minAmount: 0,
+        maxAmount: null,
+        approvalsRequired: 1,
+        isSequential: false,
+        requireDistinctApprovers: true,
+        prohibitSelfApproval: true,
+        requireStepUp: false,
+        require2FA: false,
+        requireComment: false,
+        slaMinutes: 240,
+        allowedRoles: JSON.stringify(['COMERCIAL', 'ADMINISTRADOR_GERAL']),
+        version: 1,
+        isActive: true,
+        createdAt: new Date('2026-01-01')
       }
     );
 
@@ -3776,6 +3822,368 @@ export class InMemoryPrismaStore {
         createdAt: new Date('2026-09-19T11:00:00Z')
       }
     );
+
+    // ==============================================================================
+    // FASE 1.3.5 — SEED DE PROPOSTAS COMERCIAIS & CATÁLOGO DE OFERTAS
+    // ==============================================================================
+    // 11. Categorias do Catálogo de Ofertas Comerciais
+    this.commercialOfferingCategories.push(
+      { id: 'cat_platform', code: 'PLATFORM', name: 'Plataforma & Ticketeria', description: 'Taxas de serviço e processamento da plataforma DiskIngressos', sortOrder: 1, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'cat_access', code: 'ACCESS_CONTROL', name: 'Controle de Acesso & Portaria', description: 'Equipamentos e equipe para validação na portaria', sortOrder: 2, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'cat_boxoffice', code: 'BOX_OFFICE', name: 'Bilheteria Física & PDV', description: 'Estrutura, computadores e operadores para vendas presenciais', sortOrder: 3, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'cat_marketing', code: 'MARKETING', name: 'Marketing & Divulgação', description: 'Ações de alavancagem, redes sociais, newsletter e tráfego pago', sortOrder: 4, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'cat_equipment', code: 'EQUIPMENT', name: 'Equipamentos & Insumos', description: 'Pulseiras, bobinas térmicas, catracas e coletores', sortOrder: 5, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'cat_additional', code: 'ADDITIONAL', name: 'Serviços Adicionais', description: 'Suporte presencial no dia do evento e consultoria', sortOrder: 6, active: true, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+    );
+
+    // 12. Catálogo de Ofertas Comerciais
+    this.commercialOfferings.push(
+      { id: 'off_plat_std', categoryId: 'cat_platform', code: 'PLATFORM_STANDARD', name: 'Comissão Padrão DiskIngressos', description: 'Taxa sobre o valor de face dos ingressos emitidos', defaultPricingModel: 'PERCENTAGE', defaultPercentage: 8.0, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_plat_prem', categoryId: 'cat_platform', code: 'PLATFORM_PREMIUM', name: 'Comissão Estratégica / Grande Escala', description: 'Taxa diferenciada para grandes eventos e festivais', defaultPricingModel: 'PERCENTAGE', defaultPercentage: 6.5, defaultAmount: null, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_acc_device', categoryId: 'cat_access', code: 'ACCESS_DEVICE_RENTAL', name: 'Locação de Validador QR Handheld', description: 'Aparelho portátil com software de controle de acesso integrado', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 120.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_acc_op', categoryId: 'cat_access', code: 'ACCESS_OPERATOR_SHIFT', name: 'Operador Especializado de Portaria', description: 'Profissional treinado em validação e contingência offline', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_box_pdv', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_KIT', name: 'Kit PDV Bilheteria Física Completo', description: 'Mini-computador + impressora térmica + leitor de código de barras', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 350.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_box_op', categoryId: 'cat_boxoffice', code: 'BOX_OFFICE_OPERATOR', name: 'Operador Especializado de Bilheteria', description: 'Profissional treinado para emissão física e fechamento de caixa', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 220.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 2, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_mkt_boost', categoryId: 'cat_marketing', code: 'MARKETING_BOOST', name: 'Campanha Integrada de Divulgação Disk', description: 'Disparo de newsletter na base de clientes + post patrocinado', defaultPricingModel: 'FIXED_AMOUNT', defaultPercentage: null, defaultAmount: 1500.0, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') },
+      { id: 'off_eqp_wristband', categoryId: 'cat_equipment', code: 'WRISTBAND_TYVEK', name: 'Pulseira Tyvek Antifraude com QR', description: 'Pulseiras invioláveis para camarote e áreas VIPs', defaultPricingModel: 'PER_TICKET', defaultPercentage: null, defaultAmount: 0.75, defaultPayer: 'PRODUCER', active: true, sortOrder: 1, createdAt: new Date('2026-01-01'), updatedAt: new Date('2026-01-01') }
+    );
+
+    // 13. Propostas Comerciais Existentes (PROP-2026-000101, PROP-2026-000201, PROP-2026-000301)
+    const validUntil30d = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    const validUntil15d = new Date(Date.now() + 15 * 24 * 60 * 60 * 1000);
+    const validUntilPast = new Date('2026-09-15T00:00:00Z');
+
+    this.commercialProposals.push(
+      {
+        id: 'prop_101',
+        publicCode: 'PROP-2026-000101',
+        producerId: 'prd_100',
+        opportunityId: 'opc_101',
+        title: 'Proposta Comercial — Festival de Inverno Curitiba 2026',
+        description: 'Formalização de condições comerciais para venda exclusiva de ingressos e portaria.',
+        status: 'SENT',
+        currentVersionNumber: 1,
+        currentVersionId: 'ver_101_1',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        validUntil: validUntil30d,
+        notes: 'Produtor solicitou inclusão de 4 coletores de cortesia no pacote.',
+        internalNotes: 'Margem segura com taxa de 7.5% aprovada pela gerência.',
+        version: 1,
+        createdAt: new Date('2026-09-16T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T16:00:00Z')
+      },
+      {
+        id: 'prop_201',
+        publicCode: 'PROP-2026-000201',
+        producerId: 'prd_200',
+        opportunityId: 'opc_201',
+        title: 'Proposta Comercial — Mega Turnê Internacional Curitiba 2027',
+        description: 'Proposta para operação completa de ticketeria de grande porte em estádio.',
+        status: 'APPROVAL_PENDING',
+        currentVersionNumber: 1,
+        currentVersionId: 'ver_201_1',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        validUntil: validUntil15d,
+        notes: 'Taxa de 6.0% necessita de alçada de aprovação interna antes do envio.',
+        internalNotes: 'Estimativa de faturamento bruto de R$ 7.000.000,00.',
+        version: 1,
+        createdAt: new Date('2026-09-19T11:00:00Z'),
+        updatedAt: new Date('2026-09-19T11:00:00Z')
+      },
+      {
+        id: 'prop_301',
+        publicCode: 'PROP-2026-000301',
+        producerId: 'prd_300',
+        opportunityId: null,
+        title: 'Proposta Comercial — Temporada de Teatro Guaíra 2026',
+        description: 'Contratação padrão de plataforma e bilheteria física.',
+        status: 'ACCEPTED',
+        currentVersionNumber: 1,
+        currentVersionId: 'ver_301_1',
+        ownerId: 'usr_comercial_2',
+        ownerName: 'Carlos Lima',
+        validUntil: validUntilPast,
+        notes: 'Aceite recebido por email e formalizado.',
+        internalNotes: 'Pronto para seguir para a fase contratual (1.3.6).',
+        version: 2,
+        createdAt: new Date('2026-09-08T09:00:00Z'),
+        updatedAt: new Date('2026-09-14T15:30:00Z')
+      }
+    );
+
+    // 14. Versões das Propostas
+    this.commercialProposalVersions.push(
+      {
+        id: 'ver_101_1',
+        proposalId: 'prop_101',
+        versionNumber: 1,
+        status: 'SENT',
+        contentHash: 'a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0',
+        title: 'Proposta Comercial — Festival de Inverno Curitiba 2026 (V1)',
+        summary: 'Comissão DiskIngressos de 7.5% e 4 coletores handheld inclusos',
+        validUntil: validUntil30d,
+        commercialModel: 'EXCLUSIVE',
+        snapshotJson: JSON.stringify({
+          title: 'Proposta Comercial — Festival de Inverno Curitiba 2026 (V1)',
+          validUntil: validUntil30d.toISOString(),
+          commercialModel: 'EXCLUSIVE',
+          terms: [
+            { termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', percentage: 7.5, payer: 'PRODUCER', conditions: 'Válido para vendas online' },
+            { termType: 'ACCESS_CONTROL', calculationType: 'FIXED_AMOUNT', amount: 480.0, payer: 'PRODUCER', conditions: '4 coletores handheld' }
+          ],
+          events: [
+            { estimatedEventName: 'Festival de Inverno Curitiba 2026', estimatedVenue: 'Pedreira Paulo Leminski', estimatedTickets: 8000, estimatedGrossRevenue: 640000.0 }
+          ]
+        }),
+        approvalRequestId: null,
+        approvalStatus: 'NOT_REQUIRED',
+        approvedAt: new Date('2026-09-17T14:00:00Z'),
+        approvedBy: 'usr_admin',
+        approvedByName: 'Administrador Geral',
+        documentId: 'doc_prop_101_1',
+        documentChecksum: 'd0c101checksumsha256placeholder',
+        changeSummary: 'Versão inicial formalizada após alinhamento presencial.',
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        createdAt: new Date('2026-09-16T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T16:00:00Z')
+      },
+      {
+        id: 'ver_201_1',
+        proposalId: 'prop_201',
+        versionNumber: 1,
+        status: 'APPROVAL_PENDING',
+        contentHash: 'b2c3d4e5f6a7890123456789abcdef0123456789abcdef0123456789abcdef0',
+        title: 'Proposta Comercial — Mega Turnê Internacional Curitiba 2027 (V1)',
+        summary: 'Taxa de 6.0% e Marketing Boost de R$ 1.500,00',
+        validUntil: validUntil15d,
+        commercialModel: 'ENTERPRISE',
+        snapshotJson: JSON.stringify({
+          title: 'Proposta Comercial — Mega Turnê Internacional Curitiba 2027 (V1)',
+          validUntil: validUntil15d.toISOString(),
+          commercialModel: 'ENTERPRISE',
+          terms: [
+            { termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', percentage: 6.0, payer: 'PRODUCER', conditions: 'Alçada requerida por taxa inferior a 7%' },
+            { termType: 'MARKETING', calculationType: 'FIXED_AMOUNT', amount: 1500.0, payer: 'PRODUCER', conditions: 'Disparo de newsletter nacional' }
+          ],
+          events: [
+            { estimatedEventName: 'Mega Turnê Internacional Curitiba 2027', estimatedVenue: 'Estádio Couto Pereira', estimatedTickets: 35000, estimatedGrossRevenue: 7000000.0 }
+          ]
+        }),
+        approvalRequestId: 'apr_prop_201_1',
+        approvalStatus: 'PENDING',
+        approvedAt: null,
+        approvedBy: null,
+        approvedByName: null,
+        documentId: null,
+        documentChecksum: null,
+        changeSummary: 'Versão inicial para turnê em estádio com alçada de taxa especial.',
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        createdAt: new Date('2026-09-19T11:00:00Z'),
+        updatedAt: new Date('2026-09-19T11:00:00Z')
+      },
+      {
+        id: 'ver_301_1',
+        proposalId: 'prop_301',
+        versionNumber: 1,
+        status: 'ACCEPTED',
+        contentHash: 'c3d4e5f6a7b890123456789abcdef0123456789abcdef0123456789abcdef0',
+        title: 'Proposta Comercial — Temporada de Teatro Guaíra 2026 (V1)',
+        summary: 'Comissão padrão de 8.0%',
+        validUntil: validUntilPast,
+        commercialModel: 'STANDARD',
+        snapshotJson: JSON.stringify({
+          title: 'Proposta Comercial — Temporada de Teatro Guaíra 2026 (V1)',
+          validUntil: validUntilPast.toISOString(),
+          commercialModel: 'STANDARD',
+          terms: [
+            { termType: 'PLATFORM_COMMISSION', calculationType: 'PERCENTAGE', percentage: 8.0, payer: 'PRODUCER', conditions: 'Vendas online e presencial' }
+          ],
+          events: [
+            { estimatedEventName: 'Temporada de Teatro Guaíra 2026', estimatedVenue: 'Teatro Guaíra', estimatedTickets: 2500, estimatedGrossRevenue: 150000.0 }
+          ]
+        }),
+        approvalRequestId: null,
+        approvalStatus: 'NOT_REQUIRED',
+        approvedAt: new Date('2026-09-08T09:30:00Z'),
+        approvedBy: 'usr_comercial_2',
+        approvedByName: 'Carlos Lima',
+        documentId: 'doc_prop_301_1',
+        documentChecksum: 'd0c301checksumsha256placeholder',
+        changeSummary: 'Versão inicial aceita sem divergências.',
+        createdBy: 'usr_comercial_2',
+        createdByName: 'Carlos Lima',
+        createdAt: new Date('2026-09-08T09:00:00Z'),
+        updatedAt: new Date('2026-09-14T15:30:00Z')
+      }
+    );
+
+    // 15. Termos Comerciais
+    this.proposalCommercialTerms.push(
+      {
+        id: 'term_101_1',
+        proposalVersionId: 'ver_101_1',
+        offeringId: 'off_plat_std',
+        termType: 'PLATFORM_COMMISSION',
+        name: 'Taxa de Serviço / Plataforma',
+        calculationType: 'PERCENTAGE',
+        percentage: 7.5,
+        amount: null,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Válido para vendas online e PDV físico.',
+        sortOrder: 1,
+        createdAt: new Date('2026-09-16T10:00:00Z')
+      },
+      {
+        id: 'term_101_2',
+        proposalVersionId: 'ver_101_1',
+        offeringId: 'off_acc_device',
+        termType: 'ACCESS_CONTROL',
+        name: 'Coletores Handheld (4 aparelhos)',
+        calculationType: 'FIXED_AMOUNT',
+        percentage: null,
+        amount: 480.0,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'R$ 120,00 por aparelho/dia com software instalado.',
+        sortOrder: 2,
+        createdAt: new Date('2026-09-16T10:00:00Z')
+      },
+      {
+        id: 'term_201_1',
+        proposalVersionId: 'ver_201_1',
+        offeringId: 'off_plat_prem',
+        termType: 'PLATFORM_COMMISSION',
+        name: 'Comissão de Plataforma em Estádio',
+        calculationType: 'PERCENTAGE',
+        percentage: 6.0,
+        amount: null,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Taxa negociada com volume acima de 30 mil ingressos.',
+        sortOrder: 1,
+        createdAt: new Date('2026-09-19T11:00:00Z')
+      },
+      {
+        id: 'term_201_2',
+        proposalVersionId: 'ver_201_1',
+        offeringId: 'off_mkt_boost',
+        termType: 'MARKETING',
+        name: 'Marketing Boost Promocional',
+        calculationType: 'FIXED_AMOUNT',
+        percentage: null,
+        amount: 1500.0,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Campanha de disparo de email marketing e destaque na home.',
+        sortOrder: 2,
+        createdAt: new Date('2026-09-19T11:00:00Z')
+      },
+      {
+        id: 'term_301_1',
+        proposalVersionId: 'ver_301_1',
+        offeringId: 'off_plat_std',
+        termType: 'PLATFORM_COMMISSION',
+        name: 'Comissão Padrão DiskIngressos',
+        calculationType: 'PERCENTAGE',
+        percentage: 8.0,
+        amount: null,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Taxa padrão aplicada para temporada.',
+        sortOrder: 1,
+        createdAt: new Date('2026-09-08T09:00:00Z')
+      }
+    );
+
+    // 16. Referências de Eventos das Propostas
+    this.proposalEventReferences.push(
+      {
+        id: 'pevt_101_1',
+        proposalVersionId: 'ver_101_1',
+        eventId: 'evt_1001',
+        estimatedEventName: 'Festival de Inverno Curitiba 2026',
+        estimatedDate: new Date('2026-07-15T18:00:00Z'),
+        estimatedVenue: 'Pedreira Paulo Leminski',
+        estimatedTickets: 8000,
+        estimatedGrossRevenue: 640000.0,
+        createdAt: new Date('2026-09-16T10:00:00Z')
+      },
+      {
+        id: 'pevt_201_1',
+        proposalVersionId: 'ver_201_1',
+        eventId: null,
+        estimatedEventName: 'Mega Turnê Internacional Curitiba 2027',
+        estimatedDate: new Date('2027-03-20T20:00:00Z'),
+        estimatedVenue: 'Estádio Couto Pereira',
+        estimatedTickets: 35000,
+        estimatedGrossRevenue: 7000000.0,
+        createdAt: new Date('2026-09-19T11:00:00Z')
+      },
+      {
+        id: 'pevt_301_1',
+        proposalVersionId: 'ver_301_1',
+        eventId: null,
+        estimatedEventName: 'Temporada de Teatro Guaíra 2026',
+        estimatedDate: new Date('2026-11-05T19:00:00Z'),
+        estimatedVenue: 'Teatro Guaíra',
+        estimatedTickets: 2500,
+        estimatedGrossRevenue: 150000.0,
+        createdAt: new Date('2026-09-08T09:00:00Z')
+      }
+    );
+
+    // 17. Envio Registrado (ProposalDelivery)
+    this.proposalDeliveries.push({
+      id: 'pdel_101_1',
+      proposalId: 'prop_101',
+      proposalVersionId: 'ver_101_1',
+      channel: 'EMAIL',
+      recipientName: 'Eduardo Guimarães',
+      recipientEmail: 'eduardo@curitibalive.com.br',
+      recipientPhone: '(41) 99123-4567',
+      sentAt: new Date('2026-09-18T16:00:00Z'),
+      sentBy: 'usr_comercial_1',
+      sentByName: 'Mariana Souza',
+      status: 'DELIVERED',
+      messageBody: 'Olá Eduardo, segue a proposta formalizada da DiskIngressos para o Festival de Inverno.',
+      trackingId: 'trk_prop_101_email',
+      createdAt: new Date('2026-09-18T16:00:00Z')
+    });
+
+    // 18. Aceite Registrado (ProposalAcceptance)
+    this.proposalAcceptances.push({
+      id: 'pacc_301_1',
+      proposalId: 'prop_301',
+      proposalVersionId: 'ver_301_1',
+      method: 'EMAIL_CONFIRMATION',
+      acceptedAt: new Date('2026-09-14T15:30:00Z'),
+      acceptedByContactId: null,
+      contactName: 'Renata Albuquerque',
+      contactEmail: 'renata@curitibateatro.com.br',
+      contactDocument: '12.345.678/0001-90',
+      ipAddress: '187.54.12.99',
+      userAgent: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)',
+      evidenceDocumentId: null,
+      notes: 'Aceite formal por email respondendo à proposta PROP-2026-000301 v1.',
+      registeredBy: 'usr_comercial_2',
+      registeredByName: 'Carlos Lima',
+      createdAt: new Date('2026-09-14T15:35:00Z')
+    });
   }
 
   // Model Emulators with relational hydration
@@ -8593,6 +9001,305 @@ export class InMemoryPrismaStore {
     };
   }
 
+  // ==============================================================================
+  // FASE 1.3.5: PROPOSTAS COMERCIAIS + CONDIÇÕES + VERSIONAMENTO + APROVAÇÃO
+  // ==============================================================================
+
+  public get commercialOfferingCategory() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialOfferingCategories.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialOfferingCategories];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cat_${Date.now()}`, sortOrder: args.data.sortOrder || 0, active: true, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialOfferingCategories.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialOfferingCategories.find(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (!item) throw new Error('CommercialOfferingCategory not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      }
+    };
+  }
+
+  public get commercialOffering() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialOfferings];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialOfferings];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `off_${Date.now()}`, active: true, sortOrder: args.data.sortOrder || 0, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialOfferings.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialOfferings.find(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (!item) throw new Error('CommercialOffering not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialOfferings.findIndex(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (idx >= 0) return this.commercialOfferings.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  public get commercialProposal() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.commercialProposals.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) return null;
+        return this.hydrateProposal(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialProposals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateProposal(list[0], args.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialProposals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        } else if (args?.orderBy?.updatedAt === 'desc') {
+          list.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        }
+        return list.map(x => this.hydrateProposal(x, args?.include));
+      },
+      create: async (args: any) => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const count = this.commercialProposals.length + 101;
+        const publicCode = args.data.publicCode || `PROP-${year}-${String(count).padStart(6, '0')}`;
+        const item = {
+          id: args.data.id || `prop_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          publicCode,
+          version: 1,
+          currentVersionNumber: 1,
+          status: args.data.status || 'DRAFT',
+          createdAt: now,
+          updatedAt: now,
+          ...args.data
+        };
+        this.commercialProposals.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialProposals.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) throw new Error('CommercialProposal not found');
+        if (args.where?.version !== undefined && item.version !== args.where.version) {
+          const err: any = new Error('Conflito de versão (409): a proposta foi alterada concorrentemente.');
+          err.statusCode = 409;
+          throw err;
+        }
+        Object.assign(item, args.data, { version: (item.version || 1) + 1, updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialProposals.findIndex(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (idx >= 0) return this.commercialProposals.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialProposals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialProposalVersion() {
+    return {
+      findUnique: async (args: any) => {
+        let item: any = null;
+        if (args.where?.id) {
+          item = this.commercialProposalVersions.find(x => x.id === args.where.id);
+        } else if (args.where?.proposalId_versionNumber) {
+          item = this.commercialProposalVersions.find(
+            x => x.proposalId === args.where.proposalId_versionNumber.proposalId &&
+                 x.versionNumber === args.where.proposalId_versionNumber.versionNumber
+          );
+        }
+        if (!item) return null;
+        return this.hydrateProposalVersion(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialProposalVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateProposalVersion(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialProposalVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.versionNumber - b.versionNumber);
+        return list.map(x => this.hydrateProposalVersion(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ver_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          approvalStatus: args.data.approvalStatus || 'NOT_REQUIRED',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.commercialProposalVersions.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialProposalVersions.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialProposalVersion not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialProposalVersions.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.commercialProposalVersions.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialProposalVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get proposalCommercialTerm() {
+    return {
+      findUnique: async (args: any) => {
+        return this.proposalCommercialTerms.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.proposalCommercialTerms];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `trm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.proposalCommercialTerms.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `trm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.proposalCommercialTerms.push(...items);
+        return { count: items.length };
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.proposalCommercialTerms.length;
+        if (args?.where?.proposalVersionId) {
+          this.proposalCommercialTerms = this.proposalCommercialTerms.filter(x => x.proposalVersionId !== args.where.proposalVersionId);
+        }
+        return { count: initial - this.proposalCommercialTerms.length };
+      }
+    };
+  }
+
+  public get proposalEventReference() {
+    return {
+      findUnique: async (args: any) => {
+        return this.proposalEventReferences.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.proposalEventReferences];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pevt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.proposalEventReferences.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `pevt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.proposalEventReferences.push(...items);
+        return { count: items.length };
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.proposalEventReferences.length;
+        if (args?.where?.proposalVersionId) {
+          this.proposalEventReferences = this.proposalEventReferences.filter(x => x.proposalVersionId !== args.where.proposalVersionId);
+        }
+        return { count: initial - this.proposalEventReferences.length };
+      }
+    };
+  }
+
+  public get proposalAcceptance() {
+    return {
+      findUnique: async (args: any) => {
+        return this.proposalAcceptances.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.proposalAcceptances];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.proposalAcceptances];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.acceptedAt).getTime() - new Date(a.acceptedAt).getTime());
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pacc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, acceptedAt: args.data.acceptedAt || new Date(), createdAt: new Date(), ...args.data };
+        this.proposalAcceptances.push(item);
+        return { ...item };
+      }
+    };
+  }
+
+  public get proposalDelivery() {
+    return {
+      findUnique: async (args: any) => {
+        return this.proposalDeliveries.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.proposalDeliveries];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pdel_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, sentAt: args.data.sentAt || new Date(), createdAt: new Date(), ...args.data };
+        this.proposalDeliveries.push(item);
+        return { ...item };
+      }
+    };
+  }
+
   public get notificationPreference() {
     return {
       findUnique: async (args: any) => {
@@ -12959,6 +13666,46 @@ export class InMemoryPrismaStore {
       copy.reservations = this.sessionCapacityReservationRecords.filter(r => r.sessionId === session.id);
     }
     return copy;
+  }
+
+  private hydrateProposal(proposal: any, include?: any): any {
+    if (!proposal) return null;
+    const res = { ...proposal };
+    if (include?.producer) {
+      res.producer = this.producers.find(p => p.id === proposal.producerId) || null;
+    }
+    if (include?.versions) {
+      let vers = this.commercialProposalVersions.filter(v => v.proposalId === proposal.id);
+      vers.sort((a, b) => a.versionNumber - b.versionNumber);
+      if (include?.versions === true || typeof include?.versions === 'object') {
+        vers = vers.map(v => this.hydrateProposalVersion(v, include?.versions?.include));
+      }
+      res.versions = vers;
+    }
+    if (include?.acceptances) {
+      res.acceptances = this.proposalAcceptances.filter(a => a.proposalId === proposal.id);
+    }
+    if (include?.deliveries) {
+      res.deliveries = this.proposalDeliveries.filter(d => d.proposalId === proposal.id);
+    }
+    return res;
+  }
+
+  private hydrateProposalVersion(version: any, include?: any): any {
+    if (!version) return null;
+    const res = { ...version };
+    if (include?.terms) {
+      let terms = this.proposalCommercialTerms.filter(t => t.proposalVersionId === version.id);
+      terms.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      res.terms = terms;
+    }
+    if (include?.events) {
+      res.events = this.proposalEventReferences.filter(e => e.proposalVersionId === version.id);
+    }
+    if (include?.proposal) {
+      res.proposal = this.commercialProposals.find(p => p.id === version.proposalId) || null;
+    }
+    return res;
   }
 }
 

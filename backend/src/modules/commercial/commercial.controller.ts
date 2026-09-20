@@ -696,4 +696,291 @@ export class CommercialController {
       next(err);
     }
   }
+
+  // ===========================================================================
+  // FASE 1.3.5 — CATÁLOGO DE OFERTAS & PROPOSTAS COMERCIAIS
+  // ===========================================================================
+
+  public static async listOfferingCategories(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const categories = await (await import('./proposals/offerings/commercial-offering.service')).CommercialOfferingService.listCategories();
+      res.status(200).json(categories);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async listOfferings(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { categoryId } = req.query;
+      const offerings = await (await import('./proposals/offerings/commercial-offering.service')).CommercialOfferingService.listOfferings(categoryId as string);
+      res.status(200).json(offerings);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async createOffering(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const offering = await (await import('./proposals/offerings/commercial-offering.service')).CommercialOfferingService.createOffering(req.body);
+      res.status(201).json(offering);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async updateOffering(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const offering = await (await import('./proposals/offerings/commercial-offering.service')).CommercialOfferingService.updateOffering(String(id), req.body);
+      res.status(200).json(offering);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async listProposals(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { status, producerId, opportunityId, ownerId, search, page, limit, pendingApproval } = req.query;
+      const result = await (await import('./proposals/proposal-query.service')).ProposalQueryService.listProposals(
+        {
+          status: status as string,
+          producerId: producerId as string,
+          opportunityId: opportunityId as string,
+          ownerId: ownerId as string,
+          search: search as string,
+          page: page ? Number(page) : 1,
+          limit: limit ? Number(limit) : 20,
+          pendingApproval: pendingApproval === 'true'
+        },
+        user
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async getProposalMetrics(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const metrics = await (await import('./proposals/proposal-query.service')).ProposalQueryService.getProposalMetrics(user);
+      res.status(200).json(metrics);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async getProposalById(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user as any;
+      const { id } = req.params;
+      const proposal = await (await import('./proposals/proposal.service')).ProposalService.getProposalById(String(id));
+
+      // Escopo de produtor
+      const isProducerUser = user.role === 'PRODUTOR' || (user.roles && user.roles.includes('PRODUTOR'));
+      if (isProducerUser && user.producerId && proposal.producerId !== user.producerId) {
+        res.status(403).json({ error: 'Acesso negado: a proposta pertence a outro produtor.' });
+        return;
+      }
+
+      // Oculta notas internas para quem não possui alçada de condições
+      const hasSensitive = user.isSuperAdmin || (user.permissions && user.permissions.includes('comercial.propostas.condicoes.visualizar'));
+      if (!hasSensitive) {
+        proposal.internalNotes = null;
+      }
+
+      res.status(200).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async createProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const proposal = await (await import('./proposals/proposal.service')).ProposalService.createProposal(req.body, user);
+      res.status(201).json(proposal);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async updateProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id } = req.params;
+      const proposal = await (await import('./proposals/proposal.service')).ProposalService.updateDraftProposal(String(id), req.body, user);
+      res.status(200).json(proposal);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async cancelProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id } = req.params;
+      const { reason } = req.body;
+      await (await import('./proposals/proposal.service')).ProposalService.cancelProposal(String(id), reason || 'Cancelado pelo usuário', user);
+      res.status(200).json({ message: 'Proposta comercial cancelada com sucesso.' });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async createProposalVersion(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id } = req.params;
+      const version = await (await import('./proposals/versions/proposal-version.service')).ProposalVersionService.createNewVersion(String(id), req.body, user);
+      res.status(201).json(version);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async getProposalDiff(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const { base, target } = req.query;
+      const diff = await (await import('./proposals/versions/proposal-diff.service')).ProposalDiffService.compareVersions(
+        String(id),
+        Number(base || 1),
+        Number(target || 2)
+      );
+      res.status(200).json(diff);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async submitProposalApproval(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const { justification, expectedVersion } = req.body;
+      const result = await (await import('./proposals/approvals/proposal-approval.adapter')).ProposalApprovalAdapter.submitForApproval(
+        String(id),
+        Number(versionNumber),
+        justification,
+        user,
+        expectedVersion !== undefined ? Number(expectedVersion) : undefined
+      );
+      res.status(200).json(result);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async processProposalDecision(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const { decision, reason, expectedVersion } = req.body;
+      const result = await (await import('./proposals/approvals/proposal-approval.adapter')).ProposalApprovalAdapter.processDecision(
+        String(id),
+        Number(versionNumber),
+        decision,
+        reason,
+        user,
+        expectedVersion !== undefined ? Number(expectedVersion) : undefined
+      );
+      res.status(200).json(result);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async generateProposalDocument(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const result = await (await import('./proposals/documents/proposal-document.service')).ProposalDocumentService.generateDocument(
+        String(id),
+        Number(versionNumber),
+        user
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async sendProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const delivery = await (await import('./proposals/delivery/proposal-delivery.service')).ProposalDeliveryService.sendProposal(
+        String(id),
+        Number(versionNumber),
+        req.body,
+        user
+      );
+      res.status(200).json(delivery);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async registerProposalAcceptance(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const acceptance = await (await import('./proposals/acceptance/proposal-acceptance.service')).ProposalAcceptanceService.registerAcceptance(
+        String(id),
+        Number(versionNumber),
+        req.body,
+        user
+      );
+      res.status(200).json(acceptance);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
+
+  public static async declineProposal(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const user = req.user!;
+      const { id, versionNumber } = req.params;
+      const result = await (await import('./proposals/acceptance/proposal-acceptance.service')).ProposalAcceptanceService.declineProposal(
+        String(id),
+        Number(versionNumber),
+        req.body,
+        user
+      );
+      res.status(200).json(result);
+    } catch (err: any) {
+      if (err.statusCode === 409) {
+        res.status(409).json({ error: err.message, code: 'CONCURRENCY_CONFLICT' });
+        return;
+      }
+      next(err);
+    }
+  }
 }
