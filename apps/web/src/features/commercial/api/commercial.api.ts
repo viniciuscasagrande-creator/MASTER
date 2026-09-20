@@ -154,5 +154,343 @@ export const CommercialApi = {
     if (params?.endDate) query.set('endDate', params.endDate);
 
     return `${BASE_URL}/export/sales?${query.toString()}`;
+  },
+
+  // ===========================================================================
+  // FASE 1.3.3 — CENTRAL DE PRODUTORES & CARTEIRA COMERCIAL
+  // ===========================================================================
+
+  async listProducers(params?: {
+    search?: string;
+    segmentId?: string;
+    classification?: string;
+    ownerId?: string;
+    commercialStatus?: string;
+    page?: number;
+    pageSize?: number;
+  }): Promise<{ data: any[]; total: number; page: number; pageSize: number; totalPages: number }> {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.segmentId && params.segmentId !== 'ALL') query.set('segmentId', params.segmentId);
+    if (params?.classification && params.classification !== 'ALL') query.set('classification', params.classification);
+    if (params?.ownerId && params.ownerId !== 'ALL') query.set('ownerId', params.ownerId);
+    if (params?.commercialStatus && params.commercialStatus !== 'ALL') query.set('commercialStatus', params.commercialStatus);
+    if (params?.page) query.set('page', String(params.page));
+    if (params?.pageSize) query.set('pageSize', String(params.pageSize));
+
+    const res = await fetch(`${BASE_URL}/producers?${query.toString()}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar produtores.');
+    return res.json();
+  },
+
+  async getProducerSummary(id: string): Promise<any> {
+    const res = await fetch(`${BASE_URL}/producers/${encodeURIComponent(id)}/summary`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar visão comercial do produtor.');
+    return res.json();
+  },
+
+  async getCommercialAccount(id: string): Promise<any> {
+    const res = await fetch(`${BASE_URL}/producers/${encodeURIComponent(id)}/account`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar conta comercial.');
+    return res.json();
+  },
+
+  async updateCommercialAccount(id: string, data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/producers/${encodeURIComponent(id)}/account`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atualizar conta comercial.');
+    }
+    return res.json();
+  },
+
+  async listContacts(producerId: string): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/producers/${encodeURIComponent(producerId)}/contacts`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar contatos do produtor.');
+    return res.json();
+  },
+
+  async addContact(producerId: string, data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/producers/${encodeURIComponent(producerId)}/contacts`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao adicionar contato.');
+    }
+    return res.json();
+  },
+
+  async updateContact(contactId: string, data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/contacts/${encodeURIComponent(contactId)}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atualizar contato.');
+    }
+    return res.json();
+  },
+
+  async deleteContact(contactId: string): Promise<void> {
+    const res = await fetch(`${BASE_URL}/contacts/${encodeURIComponent(contactId)}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Falha ao remover contato.');
+  },
+
+  // Carteira
+  async getMyPortfolioSummary(): Promise<any> {
+    const res = await fetch(`${BASE_URL}/portfolio/my-summary`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar resumo da carteira.');
+    return res.json();
+  },
+
+  async getMyPortfolioProducers(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/portfolio/my-producers`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar carteira comercial.');
+    return res.json();
+  },
+
+  async assignProducerToPortfolio(data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/portfolio/assign`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atribuir produtor à carteira.');
+    }
+    return res.json();
+  },
+
+  // Prospecções / Leads
+  async listLeads(params?: { search?: string; status?: string; ownerId?: string }): Promise<any[]> {
+    const query = new URLSearchParams();
+    if (params?.search) query.set('search', params.search);
+    if (params?.status && params.status !== 'ALL') query.set('status', params.status);
+    if (params?.ownerId && params.ownerId !== 'ALL') query.set('ownerId', params.ownerId);
+
+    const res = await fetch(`${BASE_URL}/leads?${query.toString()}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar prospecções.');
+    return res.json();
+  },
+
+  async getLeadById(id: string): Promise<any> {
+    const res = await fetch(`${BASE_URL}/leads/${encodeURIComponent(id)}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar prospecção.');
+    return res.json();
+  },
+
+  async createLead(data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/leads`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao criar prospecção.');
+    }
+    return res.json();
+  },
+
+  async updateLead(id: string, data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/leads/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atualizar prospecção.');
+    }
+    return res.json();
+  },
+
+  async deleteLead(id: string): Promise<void> {
+    const res = await fetch(`${BASE_URL}/leads/${encodeURIComponent(id)}`, {
+      method: 'DELETE',
+      headers: getHeaders()
+    });
+    if (!res.ok) throw new Error('Falha ao desqualificar prospecção.');
+  },
+
+  async convertLead(id: string): Promise<{ producerId: string; commercialAccountId: string }> {
+    const res = await fetch(`${BASE_URL}/leads/${encodeURIComponent(id)}/convert`, {
+      method: 'POST',
+      headers: getHeaders()
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao converter prospecção em produtor.');
+    }
+    return res.json();
+  },
+
+  // Atividades
+  async listActivities(params?: { producerId?: string; leadId?: string; opportunityId?: string }): Promise<any[]> {
+    const query = new URLSearchParams();
+    if (params?.producerId) query.set('producerId', params.producerId);
+    if (params?.leadId) query.set('leadId', params.leadId);
+    if (params?.opportunityId) query.set('opportunityId', params.opportunityId);
+
+    const res = await fetch(`${BASE_URL}/activities?${query.toString()}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar atividades comerciais.');
+    return res.json();
+  },
+
+  async registerActivity(data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/activities`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao registrar atividade comercial.');
+    }
+    return res.json();
+  },
+
+  // ===========================================================================
+  // FASE 1.3.4 — PIPELINE, ESTÁGIOS & OPORTUNIDADES
+  // ===========================================================================
+
+  async getDefaultPipeline(): Promise<any> {
+    const res = await fetch(`${BASE_URL}/pipelines/default`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar pipeline comercial.');
+    return res.json();
+  },
+
+  async listPipelines(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/pipelines`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar pipelines.');
+    return res.json();
+  },
+
+  async listStages(pipelineId: string): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/pipelines/${encodeURIComponent(pipelineId)}/stages`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar estágios.');
+    return res.json();
+  },
+
+  async listCloseReasons(): Promise<any[]> {
+    const res = await fetch(`${BASE_URL}/close-reasons`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar motivos de encerramento.');
+    return res.json();
+  },
+
+  async listOpportunities(params?: {
+    pipelineId?: string;
+    stageId?: string;
+    producerId?: string;
+    leadId?: string;
+    ownerId?: string;
+    status?: string;
+    search?: string;
+  }): Promise<any[]> {
+    const query = new URLSearchParams();
+    if (params?.pipelineId) query.set('pipelineId', params.pipelineId);
+    if (params?.stageId && params.stageId !== 'ALL') query.set('stageId', params.stageId);
+    if (params?.producerId && params.producerId !== 'ALL') query.set('producerId', params.producerId);
+    if (params?.leadId && params.leadId !== 'ALL') query.set('leadId', params.leadId);
+    if (params?.ownerId && params.ownerId !== 'ALL') query.set('ownerId', params.ownerId);
+    if (params?.status && params.status !== 'ALL') query.set('status', params.status);
+    if (params?.search) query.set('search', params.search);
+
+    const res = await fetch(`${BASE_URL}/opportunities?${query.toString()}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao listar oportunidades.');
+    return res.json();
+  },
+
+  async getOpportunityMetrics(pipelineId?: string): Promise<any> {
+    const query = new URLSearchParams();
+    if (pipelineId) query.set('pipelineId', pipelineId);
+
+    const res = await fetch(`${BASE_URL}/opportunities/metrics?${query.toString()}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar métricas de oportunidades.');
+    return res.json();
+  },
+
+  async getOpportunityById(id: string): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities/${encodeURIComponent(id)}`, { headers: getHeaders() });
+    if (!res.ok) throw new Error('Falha ao carregar detalhes da oportunidade.');
+    return res.json();
+  },
+
+  async createOpportunity(data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao criar oportunidade.');
+    }
+    return res.json();
+  },
+
+  async updateOpportunity(id: string, data: any): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities/${encodeURIComponent(id)}`, {
+      method: 'PUT',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao atualizar oportunidade.');
+    }
+    return res.json();
+  },
+
+  async transitionOpportunity(id: string, data: { targetStageId: string; expectedVersion: number; reason?: string; closeReasonId?: string; closeNotes?: string }): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities/${encodeURIComponent(id)}/transition`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao mover estágio da oportunidade.');
+    }
+    return res.json();
+  },
+
+  async winOpportunity(id: string, data: { expectedVersion?: number; notes?: string }): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities/${encodeURIComponent(id)}/win`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao marcar oportunidade como ganha.');
+    }
+    return res.json();
+  },
+
+  async closeOpportunity(id: string, data: { closeReasonId: string; closeNotes: string; expectedVersion?: number }): Promise<any> {
+    const res = await fetch(`${BASE_URL}/opportunities/${encodeURIComponent(id)}/close`, {
+      method: 'POST',
+      headers: getHeaders(),
+      body: JSON.stringify(data)
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error || 'Falha ao encerrar oportunidade.');
+    }
+    return res.json();
   }
 };

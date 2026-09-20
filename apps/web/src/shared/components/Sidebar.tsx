@@ -168,8 +168,10 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'commercial-dashboard', label: 'Visão Geral' },
         { id: 'commercial-orders', label: 'Central de Pedidos', requiredPermission: 'comercial.pedidos.visualizar' },
         { id: 'commercial-sales', label: 'Central de Vendas', requiredPermission: 'comercial.vendas.visualizar' },
-        { id: 'commercial-producers', label: 'Produtores', requiredPermission: 'comercial.produtores.visualizar' },
-        { id: 'commercial-pipeline', label: 'Pipeline & Funil', requiredPermission: 'comercial.propostas.gerenciar' },
+        { id: 'commercial-producers', label: 'Central de Produtores', requiredPermission: 'comercial.produtores.visualizar' },
+        { id: 'commercial-portfolio', label: 'Minha Carteira', requiredPermission: 'comercial.carteira.visualizar' },
+        { id: 'commercial-leads', label: 'Prospecções (Leads)', requiredPermission: 'comercial.prospeccoes.visualizar' },
+        { id: 'commercial-opportunities', label: 'Oportunidades & Pipeline', requiredPermission: 'comercial.oportunidades.visualizar' },
         { id: 'commercial-goals', label: 'Metas e Comissões', requiredPermission: 'comercial.metas.visualizar' }
       ]
     },

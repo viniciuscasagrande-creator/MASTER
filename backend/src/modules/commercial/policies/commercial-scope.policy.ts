@@ -38,6 +38,16 @@ export class CommercialScopePolicy {
   }
 
   /**
+   * Checks if user has permission to access given producer
+   */
+  public static canAccessProducer(
+    user: AuthenticatedUserContext,
+    targetProducerId?: string
+  ): boolean {
+    return this.canAccessScope(user, targetProducerId);
+  }
+
+  /**
    * Enforces scope rules, throwing ForbiddenError and recording an audit record if unauthorized
    */
   public static async enforceScope(

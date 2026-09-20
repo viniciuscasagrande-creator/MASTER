@@ -219,6 +219,25 @@ export type PermissionString =
   | 'comercial.produtores.visualizar'
   | 'comercial.produtores.criar'
   | 'comercial.produtores.editar'
+  | 'comercial.produtores.detalhes'
+  | 'comercial.carteira.visualizar'
+  | 'comercial.carteira.atribuir'
+  | 'comercial.prospeccoes.visualizar'
+  | 'comercial.prospeccoes.criar'
+  | 'comercial.prospeccoes.editar'
+  | 'comercial.prospeccoes.converter'
+  | 'comercial.oportunidades.visualizar'
+  | 'comercial.oportunidades.criar'
+  | 'comercial.oportunidades.editar'
+  | 'comercial.oportunidades.mover'
+  | 'comercial.oportunidades.ganhar'
+  | 'comercial.oportunidades.encerrar'
+  | 'comercial.pipeline.visualizar'
+  | 'comercial.pipeline.configurar'
+  | 'comercial.oportunidades.documentos.visualizar'
+  | 'comercial.oportunidades.documentos.adicionar'
+  | 'comercial.atividades.visualizar'
+  | 'comercial.atividades.registrar'
   | 'comercial.propostas.gerenciar'
   | 'comercial.metas.visualizar'
   // Suporte Eventos
@@ -4939,6 +4958,250 @@ export interface CommercialOpportunitySummaryDTO {
   recoveryRate: number | null;
   lastUpdatedAt: string | null;
 }
+
+// ============================================================================
+// FASE 1.3.3 — CENTRAL DE PRODUTORES + CARTEIRA + CRM B2B
+// ============================================================================
+
+export type CommercialStatus = 'PROSPECT' | 'ACTIVE' | 'INACTIVE' | 'SUSPENDED' | 'CLOSED';
+
+export interface CommercialAccountDTO {
+  id: string;
+  producerId: string;
+  commercialStatus: CommercialStatus;
+  commercialOwnerId?: string;
+  commercialOwnerName?: string;
+  origin?: string;
+  segmentId?: string;
+  commercialClassification?: string;
+  firstContactAt?: string;
+  lastContactAt?: string;
+  nextActionAt?: string;
+  nextActionDescription?: string;
+  notesSummary?: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CommercialPortfolioRole = 'PRIMARY' | 'SUPPORT' | 'MANAGER';
+
+export interface CommercialPortfolioAssignmentDTO {
+  id: string;
+  producerId: string;
+  userId: string;
+  userName?: string;
+  userEmail?: string;
+  role: CommercialPortfolioRole;
+  isPrimary?: boolean;
+  validFrom?: string;
+  validUntil?: string;
+  assignedAt?: string;
+  assignedBy?: string;
+  active?: boolean;
+  createdAt?: string;
+  createdBy?: string;
+  createdByName?: string;
+}
+
+export interface ProducerContactDTO {
+  id: string;
+  producerId: string;
+  name: string;
+  roleName?: string;
+  roleTitle?: string;
+  email?: string;
+  phone?: string;
+  area?: string;
+  isPrimary: boolean;
+  canNegotiate?: boolean;
+  notes?: string;
+  active?: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CommercialLeadStatus = 'NEW' | 'CONTACTED' | 'QUALIFIED' | 'NEGOTIATING' | 'CONVERTED' | 'DISQUALIFIED' | 'LOST';
+
+export interface CommercialLeadDTO {
+  id: string;
+  companyName: string;
+  tradeName?: string;
+  document?: string;
+  cnpj?: string;
+  city?: string;
+  state?: string;
+  segmentId?: string;
+  contactName?: string;
+  contactRole?: string;
+  contactEmail?: string;
+  contactPhone?: string;
+  email?: string;
+  phone?: string;
+  source?: string;
+  origin?: string;
+  ownerId?: string;
+  ownerName?: string;
+  status: CommercialLeadStatus;
+  notes?: string;
+  convertedAt?: string;
+  convertedBy?: string;
+  convertedProducerId?: string;
+  version?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CommercialActivityType = 'CALL' | 'MEETING' | 'EMAIL' | 'WHATSAPP' | 'VISIT' | 'NOTE' | 'FOLLOW_UP';
+
+export interface CommercialActivityDTO {
+  id: string;
+  producerId?: string;
+  leadId?: string;
+  opportunityId?: string;
+  type: CommercialActivityType;
+  subject: string;
+  description?: string;
+  occurredAt: string;
+  createdBy: string;
+  createdByName?: string;
+  nextActionAt?: string;
+  nextActionDescription?: string;
+  taskId?: string;
+  createdAt: string;
+}
+
+export interface ProducerCommercialSummaryDTO {
+  producer: {
+    id: string;
+    name: string;
+    cnpj: string;
+    email?: string;
+    phone?: string;
+    status: string;
+  };
+  commercialAccount: CommercialAccountDTO | null;
+  portfolio: CommercialPortfolioAssignmentDTO[];
+  contacts: ProducerContactDTO[];
+  eventsCount: number;
+  activeEventsCount: number;
+  openOpportunitiesCount: number;
+  pendingTasksCount: number;
+  lastContactAt?: string;
+  nextActionAt?: string;
+  nextActionDescription?: string;
+}
+
+export interface CommercialPortfolioSummaryDTO {
+  ownerId: string;
+  ownerName: string;
+  producersCount: number;
+  activeEventsCount: number;
+  openOpportunitiesCount: number;
+  pendingActionsCount: number;
+  overdueActionsCount: number;
+}
+
+// ============================================================================
+// FASE 1.3.4 — OPORTUNIDADES + PIPELINE COMERCIAL + NEGOCIAÇÕES
+// ============================================================================
+
+export interface CommercialPipelineDTO {
+  id: string;
+  name: string;
+  active: boolean;
+  isDefault: boolean;
+  version: number;
+  stages: CommercialPipelineStageDTO[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type PipelineStageType = 'OPEN' | 'WON' | 'CLOSED';
+
+export interface CommercialPipelineStageDTO {
+  id: string;
+  pipelineId: string;
+  name: string;
+  code: string;
+  position: number;
+  stageType: PipelineStageType;
+  active: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type CommercialOpportunityStatus = 'OPEN' | 'WON' | 'CLOSED';
+
+export interface CommercialOpportunityDTO {
+  id: string;
+  publicCode: string;
+  producerId?: string;
+  producerName?: string;
+  leadId?: string;
+  leadCompanyName?: string;
+  pipelineId: string;
+  stageId: string;
+  stageName?: string;
+  stageCode?: string;
+  stagePosition?: number;
+  title: string;
+  description?: string;
+  typeId?: string;
+  ownerId: string;
+  ownerName?: string;
+  estimatedValue?: number | null;
+  expectedDecisionAt?: string;
+  status: CommercialOpportunityStatus;
+  wonAt?: string;
+  wonBy?: string;
+  closedAt?: string;
+  closedBy?: string;
+  closeReasonId?: string;
+  closeReasonName?: string;
+  closeNotes?: string;
+  timeInCurrentStageDays?: number;
+  lastActivityAt?: string;
+  nextActionAt?: string;
+  nextActionDescription?: string;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface OpportunityStageHistoryDTO {
+  id: string;
+  opportunityId: string;
+  fromStageId?: string;
+  fromStageName?: string;
+  toStageId: string;
+  toStageName?: string;
+  changedBy: string;
+  changedByName?: string;
+  changedAt: string;
+  reason?: string;
+  durationSeconds?: number;
+}
+
+export interface OpportunityCloseReasonDTO {
+  id: string;
+  code: string;
+  name: string;
+  active: boolean;
+  sortOrder: number;
+}
+
+export interface CommercialOpportunityMetricsDTO {
+  totalOpen: number;
+  inNegotiation: number;
+  withoutNextAction: number;
+  overdueActions: number;
+  wonInPeriod: number;
+  closedInPeriod: number;
+  averageStageDurationDays: Record<string, number>;
+  averageCycleDurationDays: number;
+}
+
 
 
 

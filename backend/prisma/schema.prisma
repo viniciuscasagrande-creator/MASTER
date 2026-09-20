@@ -4015,6 +4015,200 @@ model OrderTimelineEvent {
   @@index([orderId, createdAt])
 }
 
+// ==============================================================================
+// FASE 1.3.3 — CENTRAL DE PRODUTORES + CARTEIRA + CRM B2B
+// ==============================================================================
+
+model CommercialAccount {
+  id                      String    @id @default(uuid())
+  producerId              String    @unique
+  commercialStatus        String    @default("ACTIVE") // PROSPECT, ACTIVE, INACTIVE, SUSPENDED, CLOSED
+  commercialOwnerId       String?
+  commercialOwnerName     String?
+  origin                  String?   // INDICATION, ACTIVE_PROSPECTING, WEBSITE, PARTNER, EVENT, CAMPAIGN, OTHER
+  segmentId               String?   // SHOWS_AND_CONCERTS, FESTIVALS, THEATER, SPORTS, GRADUATION, CORPORATE, OTHER
+  commercialClassification String?  // STRATEGIC, KEY_ACCOUNT, STANDARD, EMERGING
+  firstContactAt          DateTime?
+  lastContactAt           DateTime?
+  nextActionAt            DateTime?
+  nextActionDescription   String?
+  notesSummary            String?
+  version                 Int       @default(1)
+  createdAt               DateTime  @default(now())
+  updatedAt               DateTime  @updatedAt
+
+  @@index([producerId])
+  @@index([commercialOwnerId])
+  @@index([commercialStatus])
+}
+
+model CommercialPortfolioAssignment {
+  id             String    @id @default(uuid())
+  producerId     String
+  userId         String
+  userName       String?
+  role           String    @default("PRIMARY") // PRIMARY, SUPPORT, MANAGER
+  isPrimary      Boolean   @default(false)
+  validFrom      DateTime  @default(now())
+  validUntil     DateTime?
+  createdAt      DateTime  @default(now())
+  createdBy      String?
+  createdByName  String?
+
+  @@index([producerId])
+  @@index([userId])
+}
+
+model ProducerContact {
+  id         String   @id @default(uuid())
+  producerId String
+  name       String
+  roleName   String
+  email      String?
+  phone      String?
+  area       String?  // ARTISTICO, FINANCEIRO, PRODUCAO, COMERCIAL, JURIDICO, DIRETORIA
+  isPrimary  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([producerId])
+}
+
+model CommercialLead {
+  id                  String    @id @default(uuid())
+  companyName         String
+  tradeName           String?
+  document            String?
+  city                String?
+  state               String?
+  contactName         String?
+  contactRole         String?
+  email               String?
+  phone               String?
+  source              String?   // INDICATION, ACTIVE_PROSPECTING, WEBSITE, PARTNER, EVENT, CAMPAIGN, OTHER
+  ownerId             String?
+  ownerName           String?
+  status              String    @default("NEW") // NEW, CONTACTED, QUALIFIED, NEGOTIATING, CONVERTED, LOST
+  notes               String?
+  convertedAt         DateTime?
+  convertedProducerId String?
+  version             Int       @default(1)
+  createdAt           DateTime  @default(now())
+  updatedAt           DateTime  @updatedAt
+
+  @@index([status])
+  @@index([ownerId])
+  @@index([document])
+}
+
+model CommercialActivity {
+  id                    String    @id @default(uuid())
+  producerId            String?
+  leadId                String?
+  opportunityId         String?
+  type                  String    // CALL, MEETING, EMAIL, WHATSAPP, VISIT, NOTE, FOLLOW_UP
+  subject               String
+  description           String?
+  occurredAt            DateTime  @default(now())
+  createdBy             String
+  createdByName         String?
+  nextActionAt          DateTime?
+  nextActionDescription String?
+  taskId                String?
+  createdAt             DateTime  @default(now())
+
+  @@index([producerId])
+  @@index([leadId])
+  @@index([opportunityId])
+}
+
+// ==============================================================================
+// FASE 1.3.4 — OPORTUNIDADES + PIPELINE COMERCIAL + NEGOCIAÇÕES
+// ==============================================================================
+
+model CommercialPipeline {
+  id        String   @id @default(uuid())
+  name      String
+  active    Boolean  @default(true)
+  isDefault Boolean  @default(true)
+  version   Int      @default(1)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  stages    CommercialPipelineStage[]
+}
+
+model CommercialPipelineStage {
+  id          String   @id @default(uuid())
+  pipelineId  String
+  name        String
+  code        String   // IDENTIFIED, QUALIFYING, NEGOTIATING, PROPOSAL, DECISION, WON, CLOSED
+  position    Int
+  stageType   String   @default("OPEN") // OPEN, WON, CLOSED
+  active      Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  pipeline    CommercialPipeline @relation(fields: [pipelineId], references: [id], onDelete: Cascade)
+
+  @@index([pipelineId])
+}
+
+model CommercialOpportunity {
+  id                 String    @id @default(uuid())
+  publicCode         String    @unique
+  producerId         String?
+  leadId             String?
+  pipelineId         String
+  stageId            String
+  title              String
+  description        String?
+  typeId             String?   // NEW_EVENT, CONTRACT_RENEWAL, PACKAGE_UPGRADE, EXTRA_SERVICES, OTHER
+  ownerId            String
+  ownerName          String?
+  estimatedValue     Float?
+  expectedDecisionAt DateTime?
+  status             String    @default("OPEN") // OPEN, WON, CLOSED
+  wonAt              DateTime?
+  wonBy              String?
+  closedAt           DateTime?
+  closedBy           String?
+  closeReasonId      String?
+  closeNotes         String?
+  version            Int       @default(1)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  @@index([producerId])
+  @@index([leadId])
+  @@index([stageId])
+  @@index([ownerId])
+  @@index([status])
+}
+
+model OpportunityStageHistory {
+  id              String   @id @default(uuid())
+  opportunityId   String
+  fromStageId     String?
+  toStageId       String
+  changedBy       String
+  changedByName   String?
+  changedAt       DateTime @default(now())
+  reason          String?
+  durationSeconds Int?
+
+  @@index([opportunityId])
+}
+
+model OpportunityCloseReason {
+  id        String  @id @default(uuid())
+  code      String  @unique
+  name      String
+  active    Boolean @default(true)
+  sortOrder Int     @default(0)
+}
+
+
 
 
 

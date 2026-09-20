@@ -114,6 +114,17 @@ export class InMemoryPrismaStore {
   public orderItems: any[] = [];
   public orderBuyerSnapshots: any[] = [];
   public orderTimelineEvents: any[] = [];
+  // Fase 1.3.3 & 1.3.4 — CRM B2B & Oportunidades
+  public commercialAccounts: any[] = [];
+  public commercialPortfolioAssignments: any[] = [];
+  public producerContacts: any[] = [];
+  public commercialLeads: any[] = [];
+  public commercialActivities: any[] = [];
+  public commercialPipelines: any[] = [];
+  public commercialPipelineStages: any[] = [];
+  public commercialOpportunities: any[] = [];
+  public opportunityStageHistories: any[] = [];
+  public opportunityCloseReasons: any[] = [];
   public tickets: any[] = [];
   public payments: any[] = [];
   public refunds: any[] = [];
@@ -331,6 +342,17 @@ export class InMemoryPrismaStore {
     this.orderItems = [];
     this.orderBuyerSnapshots = [];
     this.orderTimelineEvents = [];
+    // Fase 1.3.3 & 1.3.4
+    this.commercialAccounts = [];
+    this.commercialPortfolioAssignments = [];
+    this.producerContacts = [];
+    this.commercialLeads = [];
+    this.commercialActivities = [];
+    this.commercialPipelines = [];
+    this.commercialPipelineStages = [];
+    this.commercialOpportunities = [];
+    this.opportunityStageHistories = [];
+    this.opportunityCloseReasons = [];
     this.tickets = [];
     this.payments = [];
     this.refunds = [];
@@ -636,7 +658,38 @@ export class InMemoryPrismaStore {
       { id: 'p-dat-17', module: 'dados', resource: 'migracao', action: 'criar', code: 'dados.migracao.criar', description: 'Criar projetos de migração' },
       { id: 'p-dat-18', module: 'dados', resource: 'migracao', action: 'executar', code: 'dados.migracao.executar', description: 'Executar projetos de migração' },
       { id: 'p-dat-19', module: 'dados', resource: 'rollback', action: 'executar', code: 'dados.rollback.executar', description: 'Executar rollback e compensações' },
-      { id: 'p-dat-20', module: 'dados', resource: 'historico', action: 'visualizar', code: 'dados.historico.visualizar', description: 'Visualizar histórico de dados' }
+      // Comercial (Fases 1.3.1 a 1.3.4)
+      { id: 'p-com-1', module: 'comercial', resource: 'dashboard', action: 'visualizar', code: 'comercial.dashboard.visualizar', description: 'Visualizar Dashboard Comercial' },
+      { id: 'p-com-2', module: 'comercial', resource: 'pedidos', action: 'visualizar', code: 'comercial.pedidos.visualizar', description: 'Visualizar pedidos comerciais' },
+      { id: 'p-com-3', module: 'comercial', resource: 'pedidos', action: 'detalhes', code: 'comercial.pedidos.detalhes', description: 'Visualizar detalhes de pedidos' },
+      { id: 'p-com-4', module: 'comercial', resource: 'pedidos', action: 'exportar', code: 'comercial.pedidos.exportar', description: 'Exportar pedidos comerciais' },
+      { id: 'p-com-5', module: 'comercial', resource: 'clientes', action: 'resumo.visualizar', code: 'comercial.clientes.resumo.visualizar', description: 'Visualizar resumo do comprador do pedido' },
+      { id: 'p-com-6', module: 'comercial', resource: 'clientes', action: 'dados_sensiveis', code: 'comercial.clientes.dados_sensiveis', description: 'Visualizar dados sensíveis do comprador' },
+      { id: 'p-com-7', module: 'comercial', resource: 'vendas', action: 'visualizar', code: 'comercial.vendas.visualizar', description: 'Visualizar central de vendas' },
+      { id: 'p-com-8', module: 'comercial', resource: 'vendas', action: 'valores.visualizar', code: 'comercial.vendas.valores.visualizar', description: 'Visualizar valores financeiros de vendas' },
+      { id: 'p-com-9', module: 'comercial', resource: 'vendas', action: 'performance.visualizar', code: 'comercial.vendas.performance.visualizar', description: 'Visualizar performance comercial dos eventos' },
+      { id: 'p-com-10', module: 'comercial', resource: 'vendas', action: 'exportar', code: 'comercial.vendas.exportar', description: 'Exportar relatórios de vendas comerciais' },
+      { id: 'p-com-11', module: 'comercial', resource: 'alertas', action: 'visualizar', code: 'comercial.alertas.visualizar', description: 'Visualizar alertas comerciais' },
+      { id: 'p-com-12', module: 'comercial', resource: 'produtores', action: 'visualizar', code: 'comercial.produtores.visualizar', description: 'Visualizar central de produtores' },
+      { id: 'p-com-13', module: 'comercial', resource: 'produtores', action: 'criar', code: 'comercial.produtores.criar', description: 'Criar cadastro comercial de produtor' },
+      { id: 'p-com-14', module: 'comercial', resource: 'produtores', action: 'editar', code: 'comercial.produtores.editar', description: 'Editar informações comerciais do produtor' },
+      { id: 'p-com-15', module: 'comercial', resource: 'produtores', action: 'detalhes', code: 'comercial.produtores.detalhes', description: 'Visualizar detalhes e visão comercial do produtor' },
+      { id: 'p-com-16', module: 'comercial', resource: 'carteira', action: 'visualizar', code: 'comercial.carteira.visualizar', description: 'Visualizar carteira comercial' },
+      { id: 'p-com-17', module: 'comercial', resource: 'carteira', action: 'atribuir', code: 'comercial.carteira.atribuir', description: 'Atribuir produtores à carteira de operadores' },
+      { id: 'p-com-18', module: 'comercial', resource: 'prospeccoes', action: 'visualizar', code: 'comercial.prospeccoes.visualizar', description: 'Visualizar prospecções comerciais / leads' },
+      { id: 'p-com-19', module: 'comercial', resource: 'prospeccoes', action: 'criar', code: 'comercial.prospeccoes.criar', description: 'Criar prospecção comercial' },
+      { id: 'p-com-20', module: 'comercial', resource: 'prospeccoes', action: 'editar', code: 'comercial.prospeccoes.editar', description: 'Editar prospecção comercial' },
+      { id: 'p-com-21', module: 'comercial', resource: 'prospeccoes', action: 'converter', code: 'comercial.prospeccoes.converter', description: 'Converter lead em produtor formal' },
+      { id: 'p-com-22', module: 'comercial', resource: 'oportunidades', action: 'visualizar', code: 'comercial.oportunidades.visualizar', description: 'Visualizar oportunidades e negociações' },
+      { id: 'p-com-23', module: 'comercial', resource: 'oportunidades', action: 'criar', code: 'comercial.oportunidades.criar', description: 'Criar oportunidade comercial' },
+      { id: 'p-com-24', module: 'comercial', resource: 'oportunidades', action: 'editar', code: 'comercial.oportunidades.editar', description: 'Editar oportunidade comercial' },
+      { id: 'p-com-25', module: 'comercial', resource: 'oportunidades', action: 'mover', code: 'comercial.oportunidades.mover', description: 'Transicionar estágio de oportunidade' },
+      { id: 'p-com-26', module: 'comercial', resource: 'oportunidades', action: 'ganhar', code: 'comercial.oportunidades.ganhar', description: 'Marcar oportunidade como ganha' },
+      { id: 'p-com-27', module: 'comercial', resource: 'oportunidades', action: 'encerrar', code: 'comercial.oportunidades.encerrar', description: 'Encerrar/perder oportunidade comercial' },
+      { id: 'p-com-28', module: 'comercial', resource: 'pipeline', action: 'visualizar', code: 'comercial.pipeline.visualizar', description: 'Visualizar pipeline / kanban comercial' },
+      { id: 'p-com-29', module: 'comercial', resource: 'pipeline', action: 'configurar', code: 'comercial.pipeline.configurar', description: 'Configurar pipelines e estágios' },
+      { id: 'p-com-30', module: 'comercial', resource: 'atividades', action: 'visualizar', code: 'comercial.atividades.visualizar', description: 'Visualizar atividades comerciais' },
+      { id: 'p-com-31', module: 'comercial', resource: 'atividades', action: 'registrar', code: 'comercial.atividades.registrar', description: 'Registrar reuniões, ligações e contatos comerciais' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -942,6 +995,15 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'dados.importacao.criar');
     associate('PRODUTOR', 'dados.modelo.visualizar');
     associate('PRODUTOR', 'dados.modelo.baixar');
+
+    // Comercial (Fases 1.3.1 a 1.3.4)
+    this.permissions.filter(p => p.code.startsWith('comercial.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+      associate('COMERCIAL', p.code);
+    });
+    associate('COMERCIAL', 'busca.global.utilizar');
+    associate('COMERCIAL', 'busca.evento.visualizar');
+    associate('COMERCIAL', 'busca.produtor.visualizar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -3321,6 +3383,397 @@ export class InMemoryPrismaStore {
         isKillSwitch: true,
         createdAt: new Date('2026-01-01'),
         updatedAt: new Date('2026-01-01')
+      }
+    );
+
+    // =========================================================================
+    // Fases 1.3.3 & 1.3.4 — Central de Produtores, Carteira, CRM B2B & Pipeline
+    // =========================================================================
+
+    // 1. Pipeline Comercial Padrão
+    this.commercialPipelines.push({
+      id: 'pip_main',
+      name: 'Pipeline Comercial Principal',
+      active: true,
+      isDefault: true,
+      version: 1,
+      createdAt: new Date('2026-01-01T00:00:00Z'),
+      updatedAt: new Date('2026-01-01T00:00:00Z')
+    });
+
+    // 2. Estágios do Pipeline
+    this.commercialPipelineStages.push(
+      {
+        id: 'stage_id',
+        pipelineId: 'pip_main',
+        name: 'Identificação',
+        code: 'IDENTIFIED',
+        position: 1,
+        stageType: 'OPEN',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_qual',
+        pipelineId: 'pip_main',
+        name: 'Qualificação',
+        code: 'QUALIFYING',
+        position: 2,
+        stageType: 'OPEN',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_neg',
+        pipelineId: 'pip_main',
+        name: 'Negociação',
+        code: 'NEGOTIATING',
+        position: 3,
+        stageType: 'OPEN',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_prop',
+        pipelineId: 'pip_main',
+        name: 'Proposta Comercial',
+        code: 'PROPOSAL',
+        position: 4,
+        stageType: 'OPEN',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_dec',
+        pipelineId: 'pip_main',
+        name: 'Decisão / Fechamento',
+        code: 'DECISION',
+        position: 5,
+        stageType: 'OPEN',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_won',
+        pipelineId: 'pip_main',
+        name: 'Ganho',
+        code: 'WON',
+        position: 6,
+        stageType: 'WON',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      },
+      {
+        id: 'stage_lost',
+        pipelineId: 'pip_main',
+        name: 'Perdido / Encerrado',
+        code: 'CLOSED',
+        position: 7,
+        stageType: 'CLOSED',
+        active: true,
+        createdAt: new Date('2026-01-01T00:00:00Z'),
+        updatedAt: new Date('2026-01-01T00:00:00Z')
+      }
+    );
+
+    // 3. Motivos de Encerramento (Catálogo Objetivo)
+    this.opportunityCloseReasons.push(
+      { id: 'clr_1', code: 'DESISTENCIA', name: 'Produtor desistiu do projeto/evento', active: true, sortOrder: 1 },
+      { id: 'clr_2', code: 'CONCORRENTE', name: 'Optou por outra tiqueteira / concorrente', active: true, sortOrder: 2 },
+      { id: 'clr_3', code: 'COMERCIAL', name: 'Sem acordo comercial de taxa ou comissão', active: true, sortOrder: 3 },
+      { id: 'clr_4', code: 'ADIADO', name: 'Evento adiado indefinidamente', active: true, sortOrder: 4 },
+      { id: 'clr_5', code: 'SEM_RETORNO', name: 'Sem retorno nas tentativas de contato', active: true, sortOrder: 5 },
+      { id: 'clr_6', code: 'TECNICO', name: 'Incompatibilidade técnica ou estrutural', active: true, sortOrder: 6 },
+      { id: 'clr_7', code: 'OUTRO', name: 'Outro motivo (especificado em notas)', active: true, sortOrder: 7 }
+    );
+
+    // 4. Contas Comerciais dos Produtores (Extensão B2B sobre a entidade Producer)
+    this.commercialAccounts.push(
+      {
+        id: 'cacc_100',
+        producerId: 'prd_100',
+        commercialStatus: 'ACTIVE',
+        commercialOwnerId: 'usr_comercial_1',
+        commercialOwnerName: 'Mariana Souza',
+        segmentId: 'FESTIVAIS_SHOWS',
+        commercialClassification: 'KEY_ACCOUNT',
+        firstContactAt: new Date('2026-01-10T10:00:00Z'),
+        lastContactAt: new Date('2026-09-18T14:00:00Z'),
+        nextActionAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Alinhamento da grade de atrações para o Verão 2027',
+        notesSummary: 'Produtor parceiro estratégico de festivais e grandes turnês em Curitiba.',
+        version: 1,
+        createdAt: new Date('2026-01-10T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T14:00:00Z')
+      },
+      {
+        id: 'cacc_200',
+        producerId: 'prd_200',
+        commercialStatus: 'ACTIVE',
+        commercialOwnerId: 'usr_comercial_1',
+        commercialOwnerName: 'Mariana Souza',
+        segmentId: 'ARENAS_ESTADIOS',
+        commercialClassification: 'STRATEGIC',
+        firstContactAt: new Date('2026-02-15T11:30:00Z'),
+        lastContactAt: new Date('2026-09-19T10:00:00Z'),
+        nextActionAt: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Follow-up de proposta comercial da turnê 2027',
+        notesSummary: 'Conta corporativa internacional de megaespetáculos em estádios.',
+        version: 1,
+        createdAt: new Date('2026-02-15T11:30:00Z'),
+        updatedAt: new Date('2026-09-19T10:00:00Z')
+      },
+      {
+        id: 'cacc_300',
+        producerId: 'prd_300',
+        commercialStatus: 'PROSPECT',
+        commercialOwnerId: 'usr_comercial_2',
+        commercialOwnerName: 'Carlos Lima',
+        segmentId: 'TEATRO_CULTURA',
+        commercialClassification: 'STANDARD',
+        firstContactAt: new Date('2026-04-01T09:00:00Z'),
+        lastContactAt: new Date('2026-09-10T16:00:00Z'),
+        nextActionAt: null,
+        nextActionDescription: null,
+        notesSummary: 'Produtora cultural local com foco em teatro e musicais.',
+        version: 1,
+        createdAt: new Date('2026-04-01T09:00:00Z'),
+        updatedAt: new Date('2026-09-10T16:00:00Z')
+      }
+    );
+
+    // 5. Atribuições de Carteira Comercial
+    this.commercialPortfolioAssignments.push(
+      {
+        id: 'cpa_100_1',
+        producerId: 'prd_100',
+        userId: 'usr_comercial_1',
+        userName: 'Mariana Souza',
+        userEmail: 'mariana.souza@diskingressos.com.br',
+        role: 'PRIMARY',
+        assignedAt: new Date('2026-01-10T10:00:00Z'),
+        assignedBy: 'usr_admin',
+        active: true
+      },
+      {
+        id: 'cpa_200_1',
+        producerId: 'prd_200',
+        userId: 'usr_comercial_1',
+        userName: 'Mariana Souza',
+        userEmail: 'mariana.souza@diskingressos.com.br',
+        role: 'PRIMARY',
+        assignedAt: new Date('2026-02-15T11:30:00Z'),
+        assignedBy: 'usr_admin',
+        active: true
+      },
+      {
+        id: 'cpa_300_1',
+        producerId: 'prd_300',
+        userId: 'usr_comercial_2',
+        userName: 'Carlos Lima',
+        userEmail: 'carlos.lima@diskingressos.com.br',
+        role: 'PRIMARY',
+        assignedAt: new Date('2026-04-01T09:00:00Z'),
+        assignedBy: 'usr_admin',
+        active: true
+      }
+    );
+
+    // 6. Contatos Comerciais do Produtor (Interlocutores B2B)
+    this.producerContacts.push(
+      {
+        id: 'pcon_100_1',
+        producerId: 'prd_100',
+        name: 'Roberto Viana',
+        roleTitle: 'Diretor de Produção e Novos Negócios',
+        email: 'roberto.viana@opus.com.br',
+        phone: '(41) 98877-6655',
+        isPrimary: true,
+        canNegotiate: true,
+        notes: 'Decisor comercial direto para eventos na Região Sul.',
+        active: true,
+        createdAt: new Date('2026-01-10T10:00:00Z'),
+        updatedAt: new Date('2026-01-10T10:00:00Z')
+      },
+      {
+        id: 'pcon_100_2',
+        producerId: 'prd_100',
+        name: 'Luciana Freitas',
+        roleTitle: 'Gerente Financeira de Turnês',
+        email: 'luciana.freitas@opus.com.br',
+        phone: '(41) 99123-4567',
+        isPrimary: false,
+        canNegotiate: false,
+        notes: 'Contato para alinhamento de taxas e prazos de repasse.',
+        active: true,
+        createdAt: new Date('2026-01-15T14:00:00Z'),
+        updatedAt: new Date('2026-01-15T14:00:00Z')
+      },
+      {
+        id: 'pcon_200_1',
+        producerId: 'prd_200',
+        name: 'Fernando Guimarães',
+        roleTitle: 'Head de Parcerias e Ticketing',
+        email: 'fernando.g@livenation.com.br',
+        phone: '(11) 97654-3210',
+        isPrimary: true,
+        canNegotiate: true,
+        notes: 'Responsável pela contratação de tiqueteiras nos grandes estádios.',
+        active: true,
+        createdAt: new Date('2026-02-15T11:30:00Z'),
+        updatedAt: new Date('2026-02-15T11:30:00Z')
+      }
+    );
+
+    // 7. Prospecções Comerciais / Leads B2B
+    this.commercialLeads.push(
+      {
+        id: 'lead_1',
+        companyName: 'Mega Entretenimento Brasil Ltda',
+        tradeName: 'Mega Entretenimento',
+        cnpj: '33.444.555/0001-66',
+        city: 'Florianópolis',
+        state: 'SC',
+        segmentId: 'FESTIVAIS_SHOWS',
+        contactName: 'Guilherme Toledo',
+        contactEmail: 'guilherme@megaentretenimento.com.br',
+        contactPhone: '(48) 99888-7711',
+        origin: 'INDIRECTION',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        status: 'QUALIFIED',
+        convertedProducerId: null,
+        convertedAt: null,
+        convertedBy: null,
+        notes: 'Produtor em prospecção para festival eletrônico de réveillon 2027.',
+        createdAt: new Date('2026-08-01T10:00:00Z'),
+        updatedAt: new Date('2026-09-15T16:00:00Z')
+      }
+    );
+
+    // 8. Oportunidades Comerciais (Negociações)
+    this.commercialOpportunities.push(
+      {
+        id: 'opc_101',
+        publicCode: 'OPC-2026-000101',
+        producerId: 'prd_100',
+        leadId: null,
+        pipelineId: 'pip_main',
+        stageId: 'stage_neg',
+        title: 'Festival de Inverno Curitiba 2027 — Renovação Exclusiva',
+        description: 'Renovação do contrato de bilheteria oficial para a edição 2027 com exclusividade física e digital.',
+        typeId: 'RENEWAL',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        estimatedValue: 240000.00,
+        expectedDecisionAt: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000),
+        status: 'OPEN',
+        wonAt: null,
+        wonBy: null,
+        closedAt: null,
+        closedBy: null,
+        closeReasonId: null,
+        closeNotes: null,
+        nextActionAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Enviar minuta revisada de aditivo contratual',
+        version: 1,
+        createdAt: new Date('2026-09-01T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T14:00:00Z')
+      },
+      {
+        id: 'opc_201',
+        publicCode: 'OPC-2026-000201',
+        producerId: 'prd_200',
+        leadId: null,
+        pipelineId: 'pip_main',
+        stageId: 'stage_prop',
+        title: 'Turnê Internacional Pop 2027 — Couto Pereira',
+        description: 'Negociação da operação de bilheteria para 2 apresentações em estádio.',
+        typeId: 'NEW_EVENT',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        estimatedValue: 500000.00,
+        expectedDecisionAt: new Date(Date.now() + 25 * 24 * 60 * 60 * 1000),
+        status: 'OPEN',
+        wonAt: null,
+        wonBy: null,
+        closedAt: null,
+        closedBy: null,
+        closeReasonId: null,
+        closeNotes: null,
+        nextActionAt: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Apresentar proposta de contingência offline para portarias',
+        version: 1,
+        createdAt: new Date('2026-09-05T14:30:00Z'),
+        updatedAt: new Date('2026-09-19T10:00:00Z')
+      }
+    );
+
+    // 9. Histórico de Estágios de Oportunidades
+    this.opportunityStageHistories.push(
+      {
+        id: 'osh_101_1',
+        opportunityId: 'opc_101',
+        fromStageId: 'stage_id',
+        toStageId: 'stage_qual',
+        changedBy: 'usr_comercial_1',
+        changedByName: 'Mariana Souza',
+        changedAt: new Date('2026-09-05T10:00:00Z'),
+        reason: 'Produtor confirmou intenção de renovação antecipada.',
+        durationSeconds: 345600
+      },
+      {
+        id: 'osh_101_2',
+        opportunityId: 'opc_101',
+        fromStageId: 'stage_qual',
+        toStageId: 'stage_neg',
+        changedBy: 'usr_comercial_1',
+        changedByName: 'Mariana Souza',
+        changedAt: new Date('2026-09-12T14:00:00Z'),
+        reason: 'Apresentada tabela de taxas diferenciadas para antecipação.',
+        durationSeconds: 619200
+      }
+    );
+
+    // 10. Atividades Comerciais (Histórico Real)
+    this.commercialActivities.push(
+      {
+        id: 'act_101_1',
+        producerId: 'prd_100',
+        leadId: null,
+        opportunityId: 'opc_101',
+        type: 'MEETING',
+        subject: 'Reunião de Alinhamento 2027 — Opus Entretenimento',
+        description: 'Reunião presencial na sede da Opus para revisar o desempenho do festival atual e alinhar termo aditivo.',
+        occurredAt: new Date('2026-09-18T14:00:00Z'),
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        nextActionAt: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Enviar minuta revisada de aditivo contratual',
+        taskId: null,
+        createdAt: new Date('2026-09-18T15:00:00Z')
+      },
+      {
+        id: 'act_200_1',
+        producerId: 'prd_200',
+        leadId: null,
+        opportunityId: 'opc_201',
+        type: 'VIDEO_CALL',
+        subject: 'Apresentação Comercial — Turnê Pop 2027',
+        description: 'Videoconferência com head de parcerias para demonstração da infraestrutura de controle de acesso da Disk.',
+        occurredAt: new Date('2026-09-19T10:00:00Z'),
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        nextActionAt: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000),
+        nextActionDescription: 'Apresentar proposta de contingência offline para portarias',
+        taskId: null,
+        createdAt: new Date('2026-09-19T11:00:00Z')
       }
     );
   }
@@ -7797,6 +8250,345 @@ export class InMemoryPrismaStore {
         if (args?.where?.userId) list = list.filter(nr => nr.userId === args.where.userId);
         if (args?.where?.status) list = list.filter(nr => nr.status === args.where.status);
         return list.length;
+      }
+    };
+  }
+
+  // Fase 1.3.3 & 1.3.4 — CRM B2B & Oportunidades
+  public get commercialAccount() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialAccounts.find(x => x.id === args.where?.id || x.producerId === args.where?.producerId) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialAccounts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialAccounts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cacc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, version: 1, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialAccounts.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialAccounts.find(x => x.id === args.where?.id || x.producerId === args.where?.producerId);
+        if (!item) throw new Error('CommercialAccount not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      upsert: async (args: any) => {
+        const item = this.commercialAccounts.find(x => x.id === args.where?.id || x.producerId === args.where?.producerId);
+        if (item) {
+          Object.assign(item, args.update, { updatedAt: new Date() });
+          return { ...item };
+        }
+        const created = { id: `cacc_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, version: 1, createdAt: new Date(), updatedAt: new Date(), ...args.create };
+        this.commercialAccounts.push(created);
+        return { ...created };
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialAccounts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialPortfolioAssignment() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialPortfolioAssignments.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialPortfolioAssignments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialPortfolioAssignments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cpa_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.commercialPortfolioAssignments.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialPortfolioAssignments.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialPortfolioAssignment not found');
+        Object.assign(item, args.data);
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialPortfolioAssignments.findIndex(x => x.id === args.where?.id);
+        if (idx !== -1) {
+          const removed = this.commercialPortfolioAssignments.splice(idx, 1);
+          return removed[0];
+        }
+        return null;
+      }
+    };
+  }
+
+  public get producerContact() {
+    return {
+      findUnique: async (args: any) => {
+        return this.producerContacts.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.producerContacts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pcon_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.producerContacts.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.producerContacts.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('ProducerContact not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.producerContacts.findIndex(x => x.id === args.where?.id);
+        if (idx !== -1) {
+          const removed = this.producerContacts.splice(idx, 1);
+          return removed[0];
+        }
+        return null;
+      }
+    };
+  }
+
+  public get commercialLead() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialLeads.find(x => x.id === args.where?.id || (args.where?.document && x.document === args.where?.document)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialLeads];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialLeads];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `lead_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, version: 1, status: args.data.status || 'NEW', createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialLeads.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialLeads.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialLead not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialLeads];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialActivity() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialActivities.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialActivities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.occurredAt || b.createdAt).getTime() - new Date(a.occurredAt || a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cact_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, occurredAt: args.data.occurredAt || new Date(), createdAt: new Date(), ...args.data };
+        this.commercialActivities.push(item);
+        return { ...item };
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialActivities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialPipeline() {
+    return {
+      findUnique: async (args: any) => {
+        const p = this.commercialPipelines.find(x => x.id === args.where?.id || (args.where?.isDefault && x.isDefault));
+        if (!p) return null;
+        const copy = { ...p };
+        if (args?.include?.stages) {
+          copy.stages = this.commercialPipelineStages
+            .filter(s => s.pipelineId === p.id && s.active)
+            .sort((a, b) => a.position - b.position);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.commercialPipelines];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        const p = list[0] || null;
+        if (!p) return null;
+        const copy = { ...p };
+        if (args?.include?.stages) {
+          copy.stages = this.commercialPipelineStages
+            .filter(s => s.pipelineId === p.id && s.active)
+            .sort((a, b) => a.position - b.position);
+        }
+        return copy;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialPipelines];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(p => {
+          const copy = { ...p };
+          if (args?.include?.stages) {
+            copy.stages = this.commercialPipelineStages
+              .filter(s => s.pipelineId === p.id && s.active)
+              .sort((a, b) => a.position - b.position);
+          }
+          return copy;
+        });
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pip_${Date.now()}`, version: 1, active: true, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialPipelines.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialPipelines.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialPipeline not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      }
+    };
+  }
+
+  public get commercialPipelineStage() {
+    return {
+      findUnique: async (args: any) => {
+        return this.commercialPipelineStages.find(x => x.id === args.where?.id || (args.where?.pipelineId && args.where?.code && x.pipelineId === args.where.pipelineId && x.code === args.where.code)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialPipelineStages];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialPipelineStages];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.position - b.position);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `stg_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, active: true, createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialPipelineStages.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialPipelineStages.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialPipelineStage not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      }
+    };
+  }
+
+  public get commercialOpportunity() {
+    return {
+      findUnique: async (args: any) => {
+        const o = this.commercialOpportunities.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        return o ? { ...o } : null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialOpportunities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialOpportunities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `opp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, version: 1, status: args.data.status || 'OPEN', createdAt: new Date(), updatedAt: new Date(), ...args.data };
+        this.commercialOpportunities.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialOpportunities.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) throw new Error('CommercialOpportunity not found');
+        if (args.where?.version !== undefined && item.version !== args.where.version) {
+          throw new Error('Conflito de versão (409)');
+        }
+        Object.assign(item, args.data, { version: (item.version || 1) + 1, updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialOpportunities.findIndex(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (idx >= 0) return this.commercialOpportunities.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialOpportunities];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get opportunityStageHistory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.opportunityStageHistories];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(a.changedAt).getTime() - new Date(b.changedAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `osh_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, changedAt: new Date(), ...args.data };
+        this.opportunityStageHistories.push(item);
+        return { ...item };
+      }
+    };
+  }
+
+  public get opportunityCloseReason() {
+    return {
+      findUnique: async (args: any) => {
+        return this.opportunityCloseReasons.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.opportunityCloseReasons];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.sortOrder - b.sortOrder);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `cr_${Date.now()}`, active: true, sortOrder: args.data.sortOrder || 0, ...args.data };
+        this.opportunityCloseReasons.push(item);
+        return { ...item };
       }
     };
   }
