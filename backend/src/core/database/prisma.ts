@@ -107,6 +107,19 @@ export class InMemoryPrismaStore {
   public jobScheduleModels: any[] = [];
   public jobWorkerModels: any[] = [];
   public jobDeadLetterModels: any[] = [];
+  // Central de Importação, Migração e Qualidade (Fase 1.1.5.15)
+  public importRequestModels: any[] = [];
+  public importMappingModels: any[] = [];
+  public importValidationErrorModels: any[] = [];
+  public importDuplicateModels: any[] = [];
+  public mergePlanModels: any[] = [];
+  public dataQualityRuleModels: any[] = [];
+  public dataQualityIssueModels: any[] = [];
+  public migrationProjectModels: any[] = [];
+  public legacyIdMappingModels: any[] = [];
+  public migrationReconciliationModels: any[] = [];
+  public suppliers: any[] = [];
+  public financialTransactions: any[] = [];
 
   constructor() {
     this.seedDefaults();
@@ -216,6 +229,19 @@ export class InMemoryPrismaStore {
     this.jobScheduleModels = [];
     this.jobWorkerModels = [];
     this.jobDeadLetterModels = [];
+    // Central de Importação, Migração e Qualidade (Fase 1.1.5.15)
+    this.importRequestModels = [];
+    this.importMappingModels = [];
+    this.importValidationErrorModels = [];
+    this.importDuplicateModels = [];
+    this.mergePlanModels = [];
+    this.dataQualityRuleModels = [];
+    this.dataQualityIssueModels = [];
+    this.migrationProjectModels = [];
+    this.legacyIdMappingModels = [];
+    this.migrationReconciliationModels = [];
+    this.suppliers = [];
+    this.financialTransactions = [];
 
     // 1. Catálogo Inicial de Perfis (Roles)
     const initialRoles = [
@@ -383,7 +409,28 @@ export class InMemoryPrismaStore {
       { id: 'p-prc-14', module: 'processamentos', resource: 'fila', action: 'visualizar', code: 'processamentos.fila.visualizar', description: 'Visualizar métricas e status das filas' },
       { id: 'p-prc-15', module: 'processamentos', resource: 'worker', action: 'visualizar', code: 'processamentos.worker.visualizar', description: 'Visualizar workers e telemetria' },
       { id: 'p-prc-16', module: 'processamentos', resource: 'dead_letter', action: 'visualizar', code: 'processamentos.dead_letter.visualizar', description: 'Visualizar processamentos em Dead Letter' },
-      { id: 'p-prc-17', module: 'processamentos', resource: 'dead_letter', action: 'reprocessar', code: 'processamentos.dead_letter.reprocessar', description: 'Reprocessar processamentos da Dead Letter' }
+      { id: 'p-prc-17', module: 'processamentos', resource: 'dead_letter', action: 'reprocessar', code: 'processamentos.dead_letter.reprocessar', description: 'Reprocessar processamentos da Dead Letter' },
+      // Dados, Importações, Migração e Qualidade (Fase 1.1.5.15)
+      { id: 'p-dat-1', module: 'dados', resource: 'central', action: 'visualizar', code: 'dados.central.visualizar', description: 'Visualizar Central de Dados e Importações' },
+      { id: 'p-dat-2', module: 'dados', resource: 'importacao', action: 'visualizar', code: 'dados.importacao.visualizar', description: 'Visualizar importações de dados' },
+      { id: 'p-dat-3', module: 'dados', resource: 'importacao', action: 'criar', code: 'dados.importacao.criar', description: 'Criar novas importações' },
+      { id: 'p-dat-4', module: 'dados', resource: 'importacao', action: 'executar', code: 'dados.importacao.executar', description: 'Executar importações de dados' },
+      { id: 'p-dat-5', module: 'dados', resource: 'importacao', action: 'cancelar', code: 'dados.importacao.cancelar', description: 'Cancelar importações' },
+      { id: 'p-dat-6', module: 'dados', resource: 'importacao', action: 'reprocessar', code: 'dados.importacao.reprocessar', description: 'Reprocessar erros de importação' },
+      { id: 'p-dat-7', module: 'dados', resource: 'mapeamento', action: 'visualizar', code: 'dados.mapeamento.visualizar', description: 'Visualizar mapeamentos de colunas' },
+      { id: 'p-dat-8', module: 'dados', resource: 'mapeamento', action: 'criar', code: 'dados.mapeamento.criar', description: 'Criar mapeamentos de colunas' },
+      { id: 'p-dat-9', module: 'dados', resource: 'mapeamento', action: 'editar', code: 'dados.mapeamento.editar', description: 'Editar mapeamentos de colunas' },
+      { id: 'p-dat-10', module: 'dados', resource: 'modelo', action: 'visualizar', code: 'dados.modelo.visualizar', description: 'Visualizar modelos de importação' },
+      { id: 'p-dat-11', module: 'dados', resource: 'modelo', action: 'baixar', code: 'dados.modelo.baixar', description: 'Baixar modelos de importação' },
+      { id: 'p-dat-12', module: 'dados', resource: 'qualidade', action: 'visualizar', code: 'dados.qualidade.visualizar', description: 'Visualizar qualidade de dados' },
+      { id: 'p-dat-13', module: 'dados', resource: 'qualidade', action: 'gerenciar', code: 'dados.qualidade.gerenciar', description: 'Gerenciar regras de qualidade' },
+      { id: 'p-dat-14', module: 'dados', resource: 'duplicidade', action: 'visualizar', code: 'dados.duplicidade.visualizar', description: 'Visualizar duplicidades' },
+      { id: 'p-dat-15', module: 'dados', resource: 'duplicidade', action: 'resolver', code: 'dados.duplicidade.resolver', description: 'Resolver duplicidades e merge' },
+      { id: 'p-dat-16', module: 'dados', resource: 'migracao', action: 'visualizar', code: 'dados.migracao.visualizar', description: 'Visualizar projetos de migração' },
+      { id: 'p-dat-17', module: 'dados', resource: 'migracao', action: 'criar', code: 'dados.migracao.criar', description: 'Criar projetos de migração' },
+      { id: 'p-dat-18', module: 'dados', resource: 'migracao', action: 'executar', code: 'dados.migracao.executar', description: 'Executar projetos de migração' },
+      { id: 'p-dat-19', module: 'dados', resource: 'rollback', action: 'executar', code: 'dados.rollback.executar', description: 'Executar rollback e compensações' },
+      { id: 'p-dat-20', module: 'dados', resource: 'historico', action: 'visualizar', code: 'dados.historico.visualizar', description: 'Visualizar histórico de dados' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -651,6 +698,26 @@ export class InMemoryPrismaStore {
     associate('AUDITOR', 'processamentos.fila.visualizar');
     associate('AUDITOR', 'processamentos.worker.visualizar');
     associate('AUDITOR', 'processamentos.dead_letter.visualizar');
+
+    // Dados, Importação, Migração & Qualidade (Fase 1.1.5.15)
+    this.permissions.filter(p => p.code.startsWith('dados.')).forEach(p => {
+      associate('ADMINISTRADOR_GERAL', p.code);
+    });
+    associate('FINANCEIRO', 'dados.central.visualizar');
+    associate('FINANCEIRO', 'dados.importacao.visualizar');
+    associate('FINANCEIRO', 'dados.importacao.criar');
+    associate('FINANCEIRO', 'dados.importacao.executar');
+    associate('FINANCEIRO', 'dados.mapeamento.visualizar');
+    associate('FINANCEIRO', 'dados.modelo.visualizar');
+    associate('FINANCEIRO', 'dados.modelo.baixar');
+    associate('FINANCEIRO', 'dados.qualidade.visualizar');
+    associate('FINANCEIRO', 'dados.duplicidade.visualizar');
+
+    associate('PRODUTOR', 'dados.central.visualizar');
+    associate('PRODUTOR', 'dados.importacao.visualizar');
+    associate('PRODUTOR', 'dados.importacao.criar');
+    associate('PRODUTOR', 'dados.modelo.visualizar');
+    associate('PRODUTOR', 'dados.modelo.baixar');
 
     // 4. Produtores Iniciais
     this.producers.push(
@@ -6025,6 +6092,576 @@ export class InMemoryPrismaStore {
       },
       count: async (args?: any) => {
         let list = [...this.jobDeadLetterModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get importRequestModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.importRequestModels.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.importRequestModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.importRequestModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `imp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.importRequestModels.unshift(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.importRequestModels.findIndex(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (idx >= 0) {
+          this.importRequestModels[idx] = {
+            ...this.importRequestModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.importRequestModels[idx];
+        }
+        throw new Error(`ImportRequest not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.importRequestModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.importRequestModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`ImportRequest not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.importRequestModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get importMappingModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.importMappingModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.importMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.importMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `map_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.importMappingModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.importMappingModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.importMappingModels[idx] = {
+            ...this.importMappingModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.importMappingModels[idx];
+        }
+        throw new Error(`ImportMapping not found for update`);
+      },
+      delete: async (args: any) => {
+        const idx = this.importMappingModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          const [removed] = this.importMappingModels.splice(idx, 1);
+          return removed;
+        }
+        throw new Error(`ImportMapping not found for deletion`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.importMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get importValidationErrorModel() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.importValidationErrorModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `err_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.importValidationErrorModels.push(item);
+        return item;
+      },
+      createMany: async (args: any) => {
+        const created = (args.data || []).map((d: any) => ({
+          id: d.id || `err_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.importValidationErrorModels.push(...created);
+        return { count: created.length };
+      },
+      deleteMany: async (args?: any) => {
+        if (!args?.where) {
+          const count = this.importValidationErrorModels.length;
+          this.importValidationErrorModels = [];
+          return { count };
+        }
+        const initial = this.importValidationErrorModels.length;
+        this.importValidationErrorModels = this.importValidationErrorModels.filter(x => {
+          if (args.where.importId && x.importId === args.where.importId) return false;
+          return true;
+        });
+        return { count: initial - this.importValidationErrorModels.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.importValidationErrorModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get importDuplicateModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.importDuplicateModels.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.importDuplicateModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dup_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          resolved: false,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.importDuplicateModels.push(item);
+        return item;
+      },
+      createMany: async (args: any) => {
+        const created = (args.data || []).map((d: any) => ({
+          id: d.id || `dup_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          resolved: false,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.importDuplicateModels.push(...created);
+        return { count: created.length };
+      },
+      update: async (args: any) => {
+        const idx = this.importDuplicateModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.importDuplicateModels[idx] = {
+            ...this.importDuplicateModels[idx],
+            ...args.data
+          };
+          return this.importDuplicateModels[idx];
+        }
+        throw new Error(`ImportDuplicate not found for update`);
+      },
+      deleteMany: async (args?: any) => {
+        if (!args?.where) {
+          const count = this.importDuplicateModels.length;
+          this.importDuplicateModels = [];
+          return { count };
+        }
+        const initial = this.importDuplicateModels.length;
+        this.importDuplicateModels = this.importDuplicateModels.filter(x => {
+          if (args.where.importId && x.importId === args.where.importId) return false;
+          return true;
+        });
+        return { count: initial - this.importDuplicateModels.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.importDuplicateModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get mergePlanModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.mergePlanModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.mergePlanModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.mergePlanModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `mp_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.mergePlanModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.mergePlanModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.mergePlanModels[idx] = {
+            ...this.mergePlanModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.mergePlanModels[idx];
+        }
+        throw new Error(`MergePlan not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.mergePlanModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get dataQualityRuleModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.dataQualityRuleModels.find(x => x.id === args.where?.id || x.code === args.where?.code) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.dataQualityRuleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.dataQualityRuleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dqr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          active: args.data.active ?? true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.dataQualityRuleModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.dataQualityRuleModels.findIndex(x => x.id === args.where?.id || x.code === args.where?.code);
+        if (idx >= 0) {
+          this.dataQualityRuleModels[idx] = {
+            ...this.dataQualityRuleModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.dataQualityRuleModels[idx];
+        }
+        throw new Error(`DataQualityRule not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.dataQualityRuleModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get dataQualityIssueModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.dataQualityIssueModels.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.dataQualityIssueModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `dqi_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'OPEN',
+          detectedAt: new Date(),
+          ...args.data
+        };
+        this.dataQualityIssueModels.push(item);
+        return item;
+      },
+      createMany: async (args: any) => {
+        const created = (args.data || []).map((d: any) => ({
+          id: d.id || `dqi_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: d.status || 'OPEN',
+          detectedAt: new Date(),
+          ...d
+        }));
+        this.dataQualityIssueModels.push(...created);
+        return { count: created.length };
+      },
+      update: async (args: any) => {
+        const idx = this.dataQualityIssueModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.dataQualityIssueModels[idx] = {
+            ...this.dataQualityIssueModels[idx],
+            ...args.data
+          };
+          return this.dataQualityIssueModels[idx];
+        }
+        throw new Error(`DataQualityIssue not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.dataQualityIssueModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get migrationProjectModel() {
+    return {
+      findUnique: async (args: any) => {
+        return this.migrationProjectModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.migrationProjectModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.migrationProjectModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `mig_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'PLANNING',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.migrationProjectModels.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.migrationProjectModels.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.migrationProjectModels[idx] = {
+            ...this.migrationProjectModels[idx],
+            ...args.data,
+            updatedAt: new Date()
+          };
+          return this.migrationProjectModels[idx];
+        }
+        throw new Error(`MigrationProject not found for update`);
+      },
+      count: async (args?: any) => {
+        let list = [...this.migrationProjectModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get legacyIdMappingModel() {
+    return {
+      findUnique: async (args: any) => {
+        if (args.where?.migrationProjectId_entityType_legacyId) {
+          const { migrationProjectId, entityType, legacyId } = args.where.migrationProjectId_entityType_legacyId;
+          return this.legacyIdMappingModels.find(
+            x => (x.migrationProjectId === migrationProjectId || x.migrationId === migrationProjectId) &&
+                 x.entityType === entityType &&
+                 x.legacyId === legacyId
+          ) || null;
+        }
+        if (args.where?.sourceSystem_entityType_legacyId) {
+          const { sourceSystem, entityType, legacyId } = args.where.sourceSystem_entityType_legacyId;
+          return this.legacyIdMappingModels.find(
+            x => x.sourceSystem === sourceSystem && x.entityType === entityType && x.legacyId === legacyId
+          ) || null;
+        }
+        return this.legacyIdMappingModels.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.legacyIdMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.legacyIdMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `leg_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.legacyIdMappingModels.push(item);
+        return item;
+      },
+      createMany: async (args: any) => {
+        const created = (args.data || []).map((d: any) => ({
+          id: d.id || `leg_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.legacyIdMappingModels.push(...created);
+        return { count: created.length };
+      },
+      count: async (args?: any) => {
+        let list = [...this.legacyIdMappingModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get migrationReconciliationModel() {
+    return {
+      findFirst: async (args: any) => {
+        let list = [...this.migrationReconciliationModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.migrationReconciliationModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `rec_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          reconciledAt: new Date(),
+          ...args.data
+        };
+        this.migrationReconciliationModels.push(item);
+        return item;
+      },
+      count: async (args?: any) => {
+        let list = [...this.migrationReconciliationModels];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get supplier() {
+    return {
+      findUnique: async (args: any) => {
+        return this.suppliers.find(x => x.id === args.where?.id || (args.where?.document && x.document === args.where?.document)) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.suppliers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.suppliers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `sup_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.suppliers.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.suppliers.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.suppliers[idx] = { ...this.suppliers[idx], ...args.data };
+          return this.suppliers[idx];
+        }
+        throw new Error('Supplier not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.suppliers];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get financialTransaction() {
+    return {
+      findUnique: async (args: any) => {
+        return this.financialTransactions.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.financialTransactions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.financialTransactions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list;
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `tx_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          amount: args.data.amount || 0,
+          type: args.data.type || 'DEBIT',
+          status: args.data.status || 'PENDING',
+          createdAt: args.data.createdAt || new Date(),
+          ...args.data
+        };
+        this.financialTransactions.push(item);
+        return item;
+      },
+      update: async (args: any) => {
+        const idx = this.financialTransactions.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) {
+          this.financialTransactions[idx] = { ...this.financialTransactions[idx], ...args.data };
+          return this.financialTransactions[idx];
+        }
+        throw new Error('FinancialTransaction not found');
+      },
+      count: async (args?: any) => {
+        let list = [...this.financialTransactions];
         if (args?.where) list = this.filterEntities(list, args.where);
         return list.length;
       }

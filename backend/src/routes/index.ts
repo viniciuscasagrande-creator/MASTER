@@ -27,6 +27,14 @@ import {
   createJobSchedulesRoutes,
   createAdminProcessingRoutes
 } from '../modules/jobs/jobs.routes';
+import {
+  importRoutes,
+  templateRoutes,
+  dataQualityRoutes,
+  migrationRoutes,
+  mappingRoutes,
+  duplicateRoutes
+} from '../modules/data-management/data-management.routes';
 
 const router = Router();
 
@@ -64,5 +72,12 @@ router.use('/jobs', createJobsRoutes());
 router.use('/job-batches', createJobBatchesRoutes());
 router.use('/job-schedules', createJobSchedulesRoutes());
 router.use('/admin/processing', createAdminProcessingRoutes());
+router.use('/data/imports', importRoutes);
+router.use('/data/import-templates', templateRoutes);
+router.use('/data-quality', dataQualityRoutes);
+router.use('/data/migrations', migrationRoutes);
+router.use('/data/mappings', mappingRoutes);
+router.use('/data/duplicates', duplicateRoutes);
 
 export default router;
+

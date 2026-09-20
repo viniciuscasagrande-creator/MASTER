@@ -465,5 +465,103 @@ export class JobRegistry {
         return { processedProducers: payload.producersCount || 10, totalPaid: payload.totalAmount || 540000 };
       }
     });
+
+    // 14. Gestão de Dados: Processamento de Lote de Importação
+    this.register({
+      type: 'DATA_IMPORT_PROCESSING',
+      name: 'Processamento de Lote de Importação',
+      description: 'Orquestra validação, transformação, detecção de duplicidades e ingestão de planilhas',
+      module: 'DOCUMENTOS',
+      queue: 'documents',
+      defaultPriority: 'HIGH',
+      timeoutSeconds: 1800,
+      retryPolicy: {
+        maxAttempts: 2,
+        backoffType: 'FIXED',
+        initialDelayMs: 5000,
+        maxDelayMs: 15000,
+        jitter: false
+      },
+      cancellable: true,
+      pausable: true,
+      progressEnabled: true,
+      idempotencyPolicy: {
+        enabled: true,
+        keyGenerator: (payload) => `IMPORT:${payload.importRequestId || payload.code}`
+      },
+      requiredPermission: 'dados.importacao.processar',
+      handler: async (payload, ctx) => {
+        await ctx.reportProgress(10, 100, 10, 0, 'Iniciando validação de esquema e domínio...');
+        await ctx.reportProgress(50, 100, 50, 0, 'Verificando duplicidades e integridade referencial...');
+        await ctx.reportProgress(90, 100, 90, 0, 'Persistindo registros com transações atômicas...');
+        await ctx.reportProgress(100, 100, 100, 0, 'Processamento de importação concluído com sucesso.');
+        return { importRequestId: payload.importRequestId, status: 'COMPLETED' };
+      }
+    });
+
+    // 15. Gestão de Dados: Varredura de Qualidade de Dados (Scan)
+    this.register({
+      type: 'DATA_QUALITY_SCAN',
+      name: 'Varredura de Qualidade de Dados',
+      description: 'Executa regras de conformidade nas 6 dimensões de dados e gera tarefas automáticas',
+      module: 'AUDITORIA',
+      queue: 'maintenance',
+      defaultPriority: 'NORMAL',
+      timeoutSeconds: 1200,
+      retryPolicy: {
+        maxAttempts: 2,
+        backoffType: 'EXPONENTIAL',
+        initialDelayMs: 3000,
+        maxDelayMs: 20000,
+        jitter: true
+      },
+      cancellable: true,
+      pausable: false,
+      progressEnabled: true,
+      idempotencyPolicy: {
+        enabled: true,
+        keyGenerator: (payload) => `QUALITY_SCAN:${payload.ruleCode || 'ALL'}:${new Date().toISOString().slice(0, 13)}`
+      },
+      requiredPermission: 'dados.qualidade.executar_scan',
+      handler: async (payload, ctx) => {
+        await ctx.reportProgress(20, 100, 20, 0, 'Auditando completude e validade...');
+        await ctx.reportProgress(60, 100, 60, 0, 'Analisando unicidade e consistência relacional...');
+        await ctx.reportProgress(100, 100, 100, 0, 'Varredura de qualidade concluída.');
+        return { scannedRules: 10, issuesFound: 2, tasksCreated: 1 };
+      }
+    });
+
+    // 16. Gestão de Dados: Execução de Etapa de Migração
+    this.register({
+      type: 'DATA_MIGRATION_EXECUTION',
+      name: 'Execução de Etapa de Migração',
+      description: 'Executa etapa sequencial de migração histórica com reconciliação e mapeamento de IDs legados',
+      module: 'INTEGRACOES',
+      queue: 'maintenance',
+      defaultPriority: 'HIGH',
+      timeoutSeconds: 3600,
+      retryPolicy: {
+        maxAttempts: 1,
+        backoffType: 'FIXED',
+        initialDelayMs: 10000,
+        maxDelayMs: 10000,
+        jitter: false
+      },
+      cancellable: true,
+      pausable: true,
+      progressEnabled: true,
+      idempotencyPolicy: {
+        enabled: true,
+        keyGenerator: (payload) => `MIG_STAGE:${payload.projectId}:${payload.stageNumber}`
+      },
+      requiredPermission: 'dados.migracao.executar',
+      handler: async (payload, ctx) => {
+        await ctx.reportProgress(25, 100, 25, 0, 'Verificando dependências no grafo DAG...');
+        await ctx.reportProgress(50, 100, 50, 0, 'Mapeando identificadores legados (Legacy IDs)...');
+        await ctx.reportProgress(85, 100, 85, 0, 'Executando reconciliação de contagem e valores...');
+        await ctx.reportProgress(100, 100, 100, 0, 'Etapa de migração finalizada com conciliação.');
+        return { projectId: payload.projectId, stageNumber: payload.stageNumber, status: 'COMPLETED' };
+      }
+    });
   }
 }

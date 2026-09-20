@@ -67,6 +67,9 @@ import { AnalyticsCenterView } from './modules/analytics';
 // Central de Jobs, Agendamentos e Processamento em Lote (Fase 1.1.5.14)
 import { ProcessingCenterView } from './modules/jobs';
 
+// Central de Importação, Migração e Qualidade de Dados (Fase 1.1.5.15)
+import { DataManagementCenterView } from './modules/data-management';
+
 const MODULE_NAMES: Record<string, string> = {
   overview: 'Visão Geral',
   search: 'Central de Consulta',
@@ -80,7 +83,10 @@ const MODULE_NAMES: Record<string, string> = {
   reports: 'Relatórios & BI',
   jobs: 'Central de Processamentos',
   processamentos: 'Central de Processamentos',
+  'data-management': 'Importação & Qualidade',
+  dados: 'Importação & Qualidade',
   events: 'Eventos',
+
   commercial: 'Comercial',
   'event-support': 'Suporte Eventos',
   sac: 'Atendimento SAC',
@@ -317,7 +323,32 @@ const MainShell: React.FC = () => {
           </ProtectedRoute>
         );
 
+      case 'data-management':
+      case 'dados':
+        return (
+          <ProtectedRoute permission="dados.importacao.visualizar" onBack={() => handleNavigate('overview')}>
+            <DataManagementCenterView
+              initialTab={(() => {
+                switch (activeSubItem) {
+                  case 'data-imports': return 'IMPORTS';
+                  case 'data-wizard': return 'WIZARD';
+                  case 'data-templates': return 'TEMPLATES';
+                  case 'data-mappings': return 'MAPPINGS';
+                  case 'data-quality': return 'QUALITY';
+                  case 'data-duplicates': return 'DUPLICATES';
+                  case 'data-migrations': return 'MIGRATIONS';
+                  case 'data-history': return 'HISTORY';
+                  case 'data-overview':
+                  default:
+                    return 'OVERVIEW';
+                }
+              })()}
+            />
+          </ProtectedRoute>
+        );
+
       case 'admin':
+
         return (
           <ProtectedRoute permission="admin.usuarios.visualizar" onBack={() => handleNavigate('overview')}>
             {renderAdminSubContent()}

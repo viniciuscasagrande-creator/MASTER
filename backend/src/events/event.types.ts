@@ -83,7 +83,20 @@ export type DomainEventType =
   | 'JOB_DEAD_LETTER'
   | 'JOB_BATCH_COMPLETED'
   | 'JOB_BATCH_PARTIALLY_COMPLETED'
-  | 'JOB_BATCH_FAILED';
+  | 'JOB_BATCH_FAILED'
+  // Importação, Migração e Qualidade de Dados (Fase 1.1.5.15)
+  | 'DATA_IMPORT_CREATED'
+  | 'DATA_IMPORT_VALIDATED'
+  | 'DATA_IMPORT_CONFIRMED'
+  | 'DATA_IMPORT_STARTED'
+  | 'DATA_IMPORT_PROGRESS'
+  | 'DATA_IMPORT_COMPLETED'
+  | 'DATA_IMPORT_FAILED'
+  | 'DATA_IMPORT_CANCELLED'
+  | 'DATA_IMPORT_ROLLED_BACK'
+  | 'DATA_QUALITY_ISSUE_DETECTED'
+  | 'DATA_MERGE_EXECUTED'
+  | 'DATA_MIGRATION_COMPLETED';
 
 export interface DomainEvent<T = any> {
   id: string; // Unique event ID for Idempotency

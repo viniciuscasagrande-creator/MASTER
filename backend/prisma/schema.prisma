@@ -2067,3 +2067,197 @@ model JobDeadLetterModel {
   @@index([investigated])
   @@index([reprocessed])
 }
+
+// ==============================================================================
+// 17. CENTRAL DE IMPORTAÇÃO, VALIDAÇÃO, MIGRAÇÃO E QUALIDADE (FASE 1.1.5.15)
+// ==============================================================================
+
+model ImportRequestModel {
+  id                String    @id @default(uuid())
+  code              String    @unique
+  importType        String
+  producerId        String?
+  eventId           String?
+  documentId        String
+  fileName          String
+  fileSize          Int
+  fileFormat        String
+  fileChecksum      String
+  mappingId         String?
+  status            String    @default("DRAFT")
+  duplicateStrategy String    @default("IGNORE")
+  atomicityPolicy   String    @default("ALL_OR_NOTHING")
+  templateVersion   Int       @default(1)
+  summary           String?   // JSON stringified summary
+  jobId             String?
+  batchId           String?
+  approvalId        String?
+  beforeSnapshot    String?   // JSON stringified snapshot for rollback/compensation
+  errorMessage      String?
+  creatorUserId     String
+  creatorUserName   String
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+  startedAt         DateTime?
+  completedAt       DateTime?
+
+  @@index([status])
+  @@index([importType])
+  @@index([producerId])
+  @@index([fileChecksum])
+  @@index([creatorUserId])
+}
+
+model ImportMappingModel {
+  id          String   @id @default(uuid())
+  name        String
+  importType  String
+  partnerName String?
+  producerId  String?
+  fields      String   // JSON stringified fields array
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([importType])
+  @@index([producerId])
+}
+
+model ImportValidationErrorModel {
+  id           String   @id @default(uuid())
+  importId     String
+  rowNumber    Int
+  columnName   String
+  cellValue    String?
+  severity     String   @default("ERROR")
+  ruleCode     String
+  message      String
+  suggestedFix String?
+  createdAt    DateTime @default(now())
+
+  @@index([importId])
+  @@index([severity])
+}
+
+model ImportDuplicateModel {
+  id               String    @id @default(uuid())
+  importId         String
+  rowNumber        Int
+  matchField       String
+  matchValue       String
+  existingEntityId String
+  existingData     String    // JSON
+  incomingData     String    // JSON
+  strategy         String    @default("IGNORE")
+  resolved         Boolean   @default(false)
+  resolvedAction   String?
+  resolvedBy       String?
+  resolvedAt       DateTime?
+  createdAt        DateTime  @default(now())
+
+  @@index([importId])
+  @@index([resolved])
+}
+
+model MergePlanModel {
+  id                  String   @id @default(uuid())
+  entityType          String
+  primaryId           String
+  duplicateId         String
+  primaryData         String   // JSON
+  duplicateData       String   // JSON
+  mergedData          String   // JSON
+  reassignedRelations String   // JSON
+  requiresApproval    Boolean  @default(false)
+  approvalId          String?
+  status              String   @default("DRAFT")
+  createdAt           DateTime @default(now())
+  updatedAt           DateTime @updatedAt
+
+  @@index([entityType])
+  @@index([status])
+}
+
+model DataQualityRuleModel {
+  id                String   @id @default(uuid())
+  code              String   @unique
+  name              String
+  description       String
+  entity            String
+  field             String?
+  dimension         String   // COMPLETENESS, VALIDITY, etc.
+  severity          String   @default("WARNING")
+  condition         String
+  recommendedAction String
+  active            Boolean  @default(true)
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([entity])
+  @@index([dimension])
+  @@index([active])
+}
+
+model DataQualityIssueModel {
+  id              String    @id @default(uuid())
+  ruleId          String
+  ruleCode        String
+  entity          String
+  entityId        String
+  field           String?
+  dimension       String
+  severity        String
+  description     String
+  suggestedAction String
+  taskId          String?
+  status          String    @default("OPEN")
+  detectedAt      DateTime  @default(now())
+  resolvedAt      DateTime?
+
+  @@index([ruleCode])
+  @@index([entity, entityId])
+  @@index([status])
+}
+
+model MigrationProjectModel {
+  id           String   @id @default(uuid())
+  name         String
+  sourceSystem String
+  description  String?
+  status       String   @default("PLANNING")
+  stages       String   // JSON
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+}
+
+model LegacyIdMappingModel {
+  id           String   @id @default(uuid())
+  migrationId  String
+  sourceSystem String
+  entityType   String
+  legacyId     String
+  newId        String
+  createdAt    DateTime @default(now())
+
+  @@unique([sourceSystem, entityType, legacyId])
+  @@index([migrationId])
+  @@index([newId])
+}
+
+model MigrationReconciliationModel {
+  id           String   @id @default(uuid())
+  migrationId  String
+  entityType   String
+  sourceCount  Int
+  destCount    Int
+  countMatched Boolean
+  sourceSum    Float?
+  destSum      Float?
+  sumMatched   Boolean?
+  divergentIds String   // JSON
+  reconciledAt DateTime @default(now())
+
+  @@index([migrationId])
+}
+

@@ -24,8 +24,10 @@ import {
   Sliders,
   Activity,
   BarChart3,
-  Layers
+  Layers,
+  Database
 } from 'lucide-react';
+
 import { useAuth } from '../../core/auth/AuthContext';
 import { useCoreData } from '../../core/context/CoreDataContext';
 import { useNotifications } from '../../core/context/NotificationContext';
@@ -319,7 +321,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
       ]
     },
     {
+      id: 'data-management',
+      label: 'Importação & Qualidade',
+      icon: <Database className="h-4 w-4 text-emerald-400" />,
+      requiredPermission: 'dados.importacao.visualizar',
+      subItems: [
+        { id: 'data-overview', label: 'Visão Geral' },
+        { id: 'data-imports', label: 'Lotes de Importação' },
+        { id: 'data-wizard', label: 'Assistente (Wizard)', requiredPermission: 'dados.importacao.criar' },
+        { id: 'data-templates', label: 'Modelos Oficiais', requiredPermission: 'dados.modelo.baixar' },
+        { id: 'data-mappings', label: 'Mapeamentos Salvos', requiredPermission: 'dados.mapeamento.visualizar' },
+        { id: 'data-quality', label: 'Qualidade de Dados', requiredPermission: 'dados.qualidade.visualizar' },
+        { id: 'data-duplicates', label: 'Duplicidades & Mesclagens', requiredPermission: 'dados.duplicidade.visualizar' },
+        { id: 'data-migrations', label: 'Projetos de Migração', requiredPermission: 'dados.migracao.visualizar' },
+        { id: 'data-history', label: 'Trilha & Auditoria' }
+
+      ]
+    },
+    {
       id: 'settings',
+
       label: 'Configurações',
       icon: <Settings className="h-4 w-4" />,
       requiredPermission: 'admin.configuracoes.editar'

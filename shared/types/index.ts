@@ -224,7 +224,28 @@ export type PermissionString =
   | 'processamentos.fila.visualizar'
   | 'processamentos.worker.visualizar'
   | 'processamentos.dead_letter.visualizar'
-  | 'processamentos.dead_letter.reprocessar';
+  | 'processamentos.dead_letter.reprocessar'
+  // Dados, Importações, Migração e Qualidade (Fase 1.1.5.15)
+  | 'dados.central.visualizar'
+  | 'dados.importacao.visualizar'
+  | 'dados.importacao.criar'
+  | 'dados.importacao.executar'
+  | 'dados.importacao.cancelar'
+  | 'dados.importacao.reprocessar'
+  | 'dados.mapeamento.visualizar'
+  | 'dados.mapeamento.criar'
+  | 'dados.mapeamento.editar'
+  | 'dados.modelo.visualizar'
+  | 'dados.modelo.baixar'
+  | 'dados.qualidade.visualizar'
+  | 'dados.qualidade.gerenciar'
+  | 'dados.duplicidade.visualizar'
+  | 'dados.duplicidade.resolver'
+  | 'dados.migracao.visualizar'
+  | 'dados.migracao.criar'
+  | 'dados.migracao.executar'
+  | 'dados.rollback.executar'
+  | 'dados.historico.visualizar';
 
 export type DocumentStatus =
   | 'PROCESSING'
@@ -1596,3 +1617,306 @@ export interface JobRegistryEntry {
   };
   requiredPermission: string;
 }
+
+// ============================================================================
+// FASE 1.1.5.15: CENTRAL DE IMPORTAÇÃO, VALIDAÇÃO, MIGRAÇÃO E QUALIDADE
+// ============================================================================
+
+export type ImportType =
+  | 'CUSTOMERS'
+  | 'EVENT_PARTICIPANTS'
+  | 'SUPPLIERS'
+  | 'ACCOUNTS_PAYABLE'
+  | 'ACCOUNTS_RECEIVABLE'
+  | 'FINANCIAL_TRANSACTIONS'
+  | 'MARKETING_CONTACTS'
+  | 'LEGACY_ORDERS';
+
+export type ImportStatus =
+  | 'DRAFT'
+  | 'MAPPING'
+  | 'VALIDATING'
+  | 'VALIDATED'
+  | 'WAITING_APPROVAL'
+  | 'QUEUED'
+  | 'PROCESSING'
+  | 'COMPLETED'
+  | 'PARTIALLY_COMPLETED'
+  | 'FAILED'
+  | 'CANCELLED'
+  | 'ROLLED_BACK';
+
+export type ImportSeverity = 'INFO' | 'WARNING' | 'ERROR' | 'BLOCKING';
+
+export type DuplicateStrategy =
+  | 'IGNORE'
+  | 'UPDATE'
+  | 'CREATE_NEW'
+  | 'MANUAL_DECISION'
+  | 'BLOCK';
+
+export type AtomicityPolicy =
+  | 'ALL_OR_NOTHING'
+  | 'PARTIAL'
+  | 'CHUNK_ATOMIC';
+
+export type TransformationType =
+  | 'TRIM'
+  | 'NORMALIZE_PHONE'
+  | 'NORMALIZE_DOCUMENT'
+  | 'PARSE_DATE'
+  | 'PARSE_CURRENCY'
+  | 'UPPERCASE'
+  | 'LOWERCASE'
+  | 'DEFAULT_VALUE'
+  | 'CONCAT'
+  | 'MAP_ENUM';
+
+export interface ImportColumnDefinition {
+  name: string;
+  label: string;
+  required: boolean;
+  type: 'STRING' | 'NUMBER' | 'DATE' | 'CURRENCY' | 'PHONE' | 'DOCUMENT' | 'EMAIL' | 'BOOLEAN' | 'ENUM';
+  description?: string;
+  example?: string;
+  aliases?: string[];
+  isProtected?: boolean;
+  isSensitive?: boolean;
+  allowedValues?: string[];
+}
+
+export interface ImportDefinition {
+  type: ImportType;
+  name: string;
+  description: string;
+  module: JobModule;
+  requiredPermission: PermissionString;
+  allowedScopes: ScopeType[];
+  columns: ImportColumnDefinition[];
+  protectedFields: string[];
+  defaultDuplicateStrategy: DuplicateStrategy;
+  allowedDuplicateStrategies: DuplicateStrategy[];
+  atomicityPolicy: AtomicityPolicy;
+  requiresApprovalThreshold?: number;
+  templateVersion: number;
+}
+
+export interface ImportMappingField {
+  fileColumn: string;
+  targetColumn: string;
+  transformation?: TransformationType;
+  transformationArg?: string;
+  defaultValue?: any;
+}
+
+export interface ImportMapping {
+  id: string;
+  name: string;
+  importType: ImportType;
+  partnerName?: string | null;
+  producerId?: string | null;
+  fields: ImportMappingField[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ImportValidationError {
+  id: string;
+  importId: string;
+  rowNumber: number;
+  columnName: string;
+  cellValue?: any;
+  severity: ImportSeverity;
+  ruleCode: string;
+  message: string;
+  suggestedFix?: string;
+}
+
+export interface ImportDuplicate {
+  id: string;
+  importId: string;
+  rowNumber: number;
+  matchField: string;
+  matchValue: string;
+  existingEntityId: string;
+  existingData: Record<string, any>;
+  incomingData: Record<string, any>;
+  strategy: DuplicateStrategy;
+  resolved: boolean;
+  resolvedAction?: DuplicateStrategy;
+  resolvedBy?: string;
+  resolvedAt?: string;
+}
+
+export interface MergePlan {
+  id: string;
+  entityType: string;
+  primaryId: string;
+  duplicateId: string;
+  primaryData: Record<string, any>;
+  duplicateData: Record<string, any>;
+  mergedData: Record<string, any>;
+  reassignedRelations: { relationName: string; count: number }[];
+  requiresApproval: boolean;
+  approvalId?: string | null;
+  status: 'DRAFT' | 'WAITING_APPROVAL' | 'APPROVED' | 'EXECUTING' | 'COMPLETED' | 'REJECTED';
+  createdAt: string;
+}
+
+export interface ImportSummary {
+  totalRows: number;
+  validRows: number;
+  warningRows: number;
+  invalidRows: number;
+  duplicateRows: number;
+  createdCount: number;
+  updatedCount: number;
+  ignoredCount: number;
+  failedCount: number;
+}
+
+export interface ImportRequest {
+  id: string;
+  code: string;
+  importType: ImportType;
+  producerId?: string | null;
+  eventId?: string | null;
+  documentId: string;
+  fileName: string;
+  fileSize: number;
+  fileFormat: 'CSV' | 'XLSX';
+  fileChecksum: string;
+  mappingId?: string | null;
+  mapping?: ImportMapping;
+  status: ImportStatus;
+  duplicateStrategy: DuplicateStrategy;
+  atomicityPolicy: AtomicityPolicy;
+  templateVersion: number;
+  summary: ImportSummary;
+  jobId?: string | null;
+  batchId?: string | null;
+  approvalId?: string | null;
+  beforeSnapshot?: any;
+  errorMessage?: string | null;
+  creatorUserId: string;
+  creatorUserName: string;
+  createdAt: string;
+  updatedAt: string;
+  startedAt?: string | null;
+  completedAt?: string | null;
+}
+
+export interface ImportTemplate {
+  id: string;
+  name: string;
+  importType: ImportType;
+  description: string;
+  version: number;
+  fileName: string;
+  format: 'CSV' | 'XLSX';
+  columns: ImportColumnDefinition[];
+  downloadUrl: string;
+  updatedAt: string;
+}
+
+export type DataQualityDimension =
+  | 'COMPLETENESS'
+  | 'VALIDITY'
+  | 'UNIQUENESS'
+  | 'CONSISTENCY'
+  | 'TIMELINESS'
+  | 'REFERENTIAL_INTEGRITY';
+
+export interface DataQualityRule {
+  id: string;
+  code: string;
+  name: string;
+  description: string;
+  entity: string;
+  field?: string;
+  dimension: DataQualityDimension;
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  condition: string;
+  recommendedAction: string;
+  active: boolean;
+}
+
+export interface DataQualityIssue {
+  id: string;
+  ruleId: string;
+  ruleCode: string;
+  entity: string;
+  entityId: string;
+  field?: string;
+  dimension: DataQualityDimension;
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'CRITICAL';
+  description: string;
+  suggestedAction: string;
+  taskId?: string | null;
+  status: 'OPEN' | 'IN_PROGRESS' | 'RESOLVED' | 'IGNORED';
+  detectedAt: string;
+  resolvedAt?: string | null;
+}
+
+export interface DataQualityStats {
+  totalRecordsAudited: number;
+  totalIssues: number;
+  issuesByDimension: Record<DataQualityDimension, number>;
+  issuesBySeverity: Record<string, number>;
+  domainHealth: Record<string, 'HEALTHY' | 'WARNING' | 'CRITICAL'>;
+}
+
+export interface MigrationStage {
+  stageNumber: number;
+  entityType: string;
+  dependsOn: string[];
+  status: 'PENDING' | 'RUNNING' | 'COMPLETED' | 'FAILED';
+  totalRecords: number;
+  migratedRecords: number;
+  divergentRecords: number;
+  jobId?: string | null;
+}
+
+export interface MigrationProject {
+  id: string;
+  name: string;
+  sourceSystem: string;
+  description?: string | null;
+  status: 'PLANNING' | 'STAGING' | 'VALIDATING' | 'EXECUTING' | 'RECONCILING' | 'COMPLETED' | 'FAILED';
+  stages: MigrationStage[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface LegacyIdMapping {
+  id: string;
+  migrationId: string;
+  sourceSystem: string;
+  entityType: string;
+  legacyId: string;
+  newId: string;
+  createdAt: string;
+}
+
+export interface MigrationReconciliation {
+  id: string;
+  migrationId: string;
+  entityType: string;
+  sourceCount: number;
+  destCount: number;
+  countMatched: boolean;
+  sourceSum?: number;
+  destSum?: number;
+  sumMatched?: boolean;
+  divergentIds: string[];
+  reconciledAt: string;
+}
+
+export interface RollbackEligibility {
+  importId: string;
+  eligible: boolean;
+  reason?: string;
+  blockingDependencies: { relation: string; count: number }[];
+  compensatingActionRecommended?: string;
+}
+

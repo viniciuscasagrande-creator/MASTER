@@ -33,8 +33,17 @@ export const INITIAL_USERS: UserAccount[] = [
       'documentos.central.visualizar', 'documentos.arquivo.visualizar', 'documentos.arquivo.enviar', 'documentos.arquivo.baixar',
       'documentos.versao.criar', 'documentos.versao.visualizar', 'documentos.arquivo.arquivar', 'documentos.arquivo.excluir',
       'documentos.categoria.visualizar', 'documentos.categoria.editar', 'documentos.auditoria.visualizar',
-      'processamentos.central.visualizar', 'processamentos.job.visualizar', 'processamentos.job.cancelar', 'processamentos.job.pausar', 'processamentos.job.retomar', 'processamentos.job.reprocessar', 'processamentos.lote.visualizar', 'processamentos.lote.executar', 'processamentos.lote.cancelar', 'processamentos.agendamento.visualizar', 'processamentos.agendamento.criar', 'processamentos.agendamento.editar', 'processamentos.agendamento.desativar', 'processamentos.fila.visualizar', 'processamentos.worker.visualizar', 'processamentos.dead_letter.visualizar', 'processamentos.dead_letter.reprocessar'
+      'processamentos.central.visualizar', 'processamentos.job.visualizar', 'processamentos.job.cancelar', 'processamentos.job.pausar', 'processamentos.job.retomar', 'processamentos.job.reprocessar', 'processamentos.lote.visualizar', 'processamentos.lote.executar', 'processamentos.lote.cancelar', 'processamentos.agendamento.visualizar', 'processamentos.agendamento.criar', 'processamentos.agendamento.editar', 'processamentos.agendamento.desativar', 'processamentos.fila.visualizar', 'processamentos.worker.visualizar', 'processamentos.dead_letter.visualizar', 'processamentos.dead_letter.reprocessar',
+      'dados.central.visualizar', 'dados.importacao.visualizar', 'dados.importacao.criar', 'dados.importacao.executar', 'dados.importacao.cancelar', 'dados.importacao.reprocessar',
+      'dados.mapeamento.visualizar', 'dados.mapeamento.criar', 'dados.mapeamento.editar',
+      'dados.modelo.visualizar', 'dados.modelo.baixar',
+      'dados.qualidade.visualizar', 'dados.qualidade.gerenciar',
+      'dados.duplicidade.visualizar', 'dados.duplicidade.resolver',
+      'dados.migracao.visualizar', 'dados.migracao.criar', 'dados.migracao.executar',
+      'dados.rollback.executar', 'dados.historico.visualizar'
     ],
+
+
     lastLoginAt: '2026-09-18T14:30:00Z',
     lastIpAddress: '189.44.120.19',
     createdAt: '2024-01-01T00:00:00Z'
@@ -317,7 +326,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       case 'jobs':
       case 'processamentos':
         return currentUser.permissions.some(p => p.startsWith('processamentos.'));
+      case 'data-management':
+      case 'dados':
+      case 'importacao':
+        return currentUser.permissions.some(p => p.startsWith('dados.'));
       case 'admin':
+
         return currentUser.permissions.some(p => p.startsWith('admin.usuarios') || p.startsWith('admin.perfis'));
       case 'settings':
         return currentUser.permissions.includes('admin.configuracoes.editar');
