@@ -7,12 +7,14 @@ import { formatNumber, formatDateTime } from '../../../shared/utils/formatters';
 interface EventTableProps {
   events: EventListItemDTO[];
   onSelectEvent: (eventId: string) => void;
+  onConfigureDraft?: (eventId: string) => void;
   selectedEventId?: string;
 }
 
 export const EventTable: React.FC<EventTableProps> = ({
   events,
   onSelectEvent,
+  onConfigureDraft,
   selectedEventId
 }) => {
   return (
@@ -115,16 +117,33 @@ export const EventTable: React.FC<EventTableProps> = ({
 
                 {/* Action */}
                 <td className="py-3 px-4 text-right">
-                  <button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      onSelectEvent(event.id);
-                    }}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300 cursor-pointer"
-                  >
-                    Acessar
-                    <ArrowRight className="h-3.5 w-3.5" />
-                  </button>
+                  {event.status === 'DRAFT' ? (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (onConfigureDraft) {
+                          onConfigureDraft(event.id);
+                        } else {
+                          onSelectEvent(event.id);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2 py-1 rounded border border-amber-500/30 transition-colors cursor-pointer"
+                    >
+                      Configurar
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  ) : (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onSelectEvent(event.id);
+                      }}
+                      className="inline-flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300 cursor-pointer"
+                    >
+                      Acessar
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  )}
                 </td>
               </tr>
             );

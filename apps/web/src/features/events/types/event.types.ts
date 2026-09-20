@@ -3,7 +3,22 @@ import {
   EventListItemDTO,
   EventDetailDTO,
   EventSummaryDTO,
-  ListEventsFilter
+  ListEventsFilter,
+  EventFormat,
+  EventVisibility,
+  EventAgeRating,
+  EventCategoryDTO,
+  EventMediaDTO,
+  EventResponsibilityDTO,
+  EventResponsibilityType,
+  EventWizardStepId,
+  StepValidationStatus,
+  StepIssue,
+  StepValidationDetail,
+  EventWizardValidationResult,
+  EventWizardStateDTO,
+  CreateEventDraftInput,
+  PatchEventDraftInput
 } from '@shared/types/index';
 
 export type {
@@ -11,7 +26,22 @@ export type {
   EventListItemDTO,
   EventDetailDTO,
   EventSummaryDTO,
-  ListEventsFilter
+  ListEventsFilter,
+  EventFormat,
+  EventVisibility,
+  EventAgeRating,
+  EventCategoryDTO,
+  EventMediaDTO,
+  EventResponsibilityDTO,
+  EventResponsibilityType,
+  EventWizardStepId,
+  StepValidationStatus,
+  StepIssue,
+  StepValidationDetail,
+  EventWizardValidationResult,
+  EventWizardStateDTO,
+  CreateEventDraftInput,
+  PatchEventDraftInput
 };
 
 export type EventsViewMode = 'cards' | 'table';

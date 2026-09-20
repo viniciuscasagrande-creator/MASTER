@@ -8,8 +8,8 @@ export class EventAccessPolicy {
    */
   public static buildScopeWhere(user: AuthenticatedUser, requestedProducerId?: string): Record<string, any> {
     const isGlobal = user.isSuperAdmin ||
-      user.roles.includes('ADMINISTRADOR_GERAL') ||
-      user.roles.includes('admin_geral') ||
+      user.roles?.includes('ADMINISTRADOR_GERAL') ||
+      user.roles?.includes('admin_geral') ||
       user.scope?.isGlobal === true;
 
     if (isGlobal) {
@@ -65,8 +65,8 @@ export class EventAccessPolicy {
    */
   public static verifyEventAccess(user: AuthenticatedUser, event: { id: string; producerId: string }): boolean {
     const isGlobal = user.isSuperAdmin ||
-      user.roles.includes('ADMINISTRADOR_GERAL') ||
-      user.roles.includes('admin_geral') ||
+      user.roles?.includes('ADMINISTRADOR_GERAL') ||
+      user.roles?.includes('admin_geral') ||
       user.scope?.isGlobal === true;
 
     if (isGlobal) return true;
@@ -90,8 +90,8 @@ export class EventAccessPolicy {
    */
   public static verifyProducerAccess(user: AuthenticatedUser, producerId: string): boolean {
     const isGlobal = user.isSuperAdmin ||
-      user.roles.includes('ADMINISTRADOR_GERAL') ||
-      user.roles.includes('admin_geral') ||
+      user.roles?.includes('ADMINISTRADOR_GERAL') ||
+      user.roles?.includes('admin_geral') ||
       user.scope?.isGlobal === true;
 
     if (isGlobal) return true;

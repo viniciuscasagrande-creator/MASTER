@@ -11,6 +11,10 @@ export class InMemoryPrismaStore {
   public userPermissions: any[] = [];
   public producers: any[] = [];
   public events: any[] = [];
+  public eventCategoryRecords: any[] = [];
+  public eventMediaRecords: any[] = [];
+  public eventResponsibilityRecords: any[] = [];
+  public eventWizardStateRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -134,6 +138,10 @@ export class InMemoryPrismaStore {
     this.userPermissions = [];
     this.producers = [];
     this.events = [];
+    this.eventCategoryRecords = [];
+    this.eventMediaRecords = [];
+    this.eventResponsibilityRecords = [];
+    this.eventWizardStateRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -266,6 +274,10 @@ export class InMemoryPrismaStore {
       { id: 'p-evt-1', module: 'eventos', resource: 'evento', action: 'visualizar', code: 'eventos.evento.visualizar', description: 'Visualizar eventos' },
       { id: 'p-evt-2', module: 'eventos', resource: 'evento', action: 'criar', code: 'eventos.evento.criar', description: 'Criar eventos' },
       { id: 'p-evt-3', module: 'eventos', resource: 'evento', action: 'editar', code: 'eventos.evento.editar', description: 'Editar eventos' },
+      { id: 'p-evt-4', module: 'eventos', resource: 'evento', action: 'identidade.editar', code: 'eventos.evento.identidade.editar', description: 'Editar identidade visual e mídias do evento' },
+      { id: 'p-evt-5', module: 'eventos', resource: 'evento', action: 'responsaveis.visualizar', code: 'eventos.evento.responsaveis.visualizar', description: 'Visualizar responsáveis pelo evento' },
+      { id: 'p-evt-6', module: 'eventos', resource: 'evento', action: 'responsaveis.editar', code: 'eventos.evento.responsaveis.editar', description: 'Editar responsáveis pelo evento' },
+      { id: 'p-evt-7', module: 'eventos', resource: 'evento', action: 'rascunho.descartar', code: 'eventos.evento.rascunho.descartar', description: 'Descartar rascunho de evento' },
       // Financeiro
       { id: 'p-fin-0', module: 'financeiro', resource: 'dashboard', action: 'visualizar', code: 'financeiro.dashboard.visualizar', description: 'Visualizar dashboard financeiro' },
       { id: 'p-fin-1', module: 'financeiro', resource: 'saldo', action: 'visualizar', code: 'financeiro.saldo.visualizar', description: 'Visualizar saldos' },
@@ -508,6 +520,10 @@ export class InMemoryPrismaStore {
     associate('PRODUTOR', 'eventos.evento.visualizar');
     associate('PRODUTOR', 'eventos.evento.criar');
     associate('PRODUTOR', 'eventos.evento.editar');
+    associate('PRODUTOR', 'eventos.evento.identidade.editar');
+    associate('PRODUTOR', 'eventos.evento.responsaveis.visualizar');
+    associate('PRODUTOR', 'eventos.evento.responsaveis.editar');
+    associate('PRODUTOR', 'eventos.evento.rascunho.descartar');
     associate('PRODUTOR', 'busca.global.utilizar');
     associate('PRODUTOR', 'busca.evento.visualizar');
     associate('PRODUTOR', 'busca.ingresso.visualizar');
@@ -724,6 +740,29 @@ export class InMemoryPrismaStore {
       { id: 'prd_100', name: 'Opus Entretenimento', cnpj: '12.345.678/0001-90', status: 'ACTIVE' },
       { id: 'prd_200', name: 'Live Nation Brasil', cnpj: '98.765.432/0001-11', status: 'ACTIVE' },
       { id: 'prd_300', name: 'CWB Brasil Produções', cnpj: '45.123.890/0001-55', status: 'ACTIVE' }
+    );
+
+    // 4.1 Categorias de Eventos (Fase 1.2.2)
+    this.eventCategoryRecords.push(
+      { id: 'cat-musica', name: 'Música', slug: 'musica', parentId: null, active: true, sortOrder: 1 },
+      { id: 'cat-musica-show', name: 'Show', slug: 'show', parentId: 'cat-musica', active: true, sortOrder: 1 },
+      { id: 'cat-musica-festival', name: 'Festival', slug: 'festival', parentId: 'cat-musica', active: true, sortOrder: 2 },
+      { id: 'cat-musica-concerto', name: 'Concerto', slug: 'concerto', parentId: 'cat-musica', active: true, sortOrder: 3 },
+      { id: 'cat-esportes', name: 'Esportes', slug: 'esportes', parentId: null, active: true, sortOrder: 2 },
+      { id: 'cat-esportes-futebol', name: 'Futebol', slug: 'futebol', parentId: 'cat-esportes', active: true, sortOrder: 1 },
+      { id: 'cat-esportes-corrida', name: 'Corrida', slug: 'corrida', parentId: 'cat-esportes', active: true, sortOrder: 2 },
+      { id: 'cat-esportes-outros', name: 'Outros Esportes', slug: 'outros-esportes', parentId: 'cat-esportes', active: true, sortOrder: 3 },
+      { id: 'cat-teatro', name: 'Teatro e Cultura', slug: 'teatro-e-cultura', parentId: null, active: true, sortOrder: 3 },
+      { id: 'cat-teatro-peca', name: 'Peça Teatral', slug: 'peca-teatral', parentId: 'cat-teatro', active: true, sortOrder: 1 },
+      { id: 'cat-teatro-musical', name: 'Musical', slug: 'musical', parentId: 'cat-teatro', active: true, sortOrder: 2 },
+      { id: 'cat-teatro-danca', name: 'Dança', slug: 'danca', parentId: 'cat-teatro', active: true, sortOrder: 3 },
+      { id: 'cat-congressos', name: 'Congressos e Palestras', slug: 'congressos-e-palestras', parentId: null, active: true, sortOrder: 4 },
+      { id: 'cat-congressos-conf', name: 'Conferência', slug: 'conferencia', parentId: 'cat-congressos', active: true, sortOrder: 1 },
+      { id: 'cat-congressos-seminario', name: 'Seminário', slug: 'seminario', parentId: 'cat-congressos', active: true, sortOrder: 2 },
+      { id: 'cat-congressos-feira', name: 'Feira de Negócios', slug: 'feira-de-negocios', parentId: 'cat-congressos', active: true, sortOrder: 3 },
+      { id: 'cat-festas', name: 'Festas e Baladas', slug: 'festas-e-baladas', parentId: null, active: true, sortOrder: 5 },
+      { id: 'cat-gastronomia', name: 'Gastronomia', slug: 'gastronomia', parentId: null, active: true, sortOrder: 6 },
+      { id: 'cat-comedia', name: 'Comédia e Stand-up', slug: 'comedia-e-stand-up', parentId: null, active: true, sortOrder: 7 }
     );
 
     // 5. Eventos Iniciais (Fase 1.2)
@@ -2587,8 +2626,9 @@ export class InMemoryPrismaStore {
     return {
       findUnique: async (args: any) => {
         if (!args?.where) return null;
-        if (args.where.id) return this.events.find(e => e.id === args.where.id) || null;
-        if (args.where.publicCode) return this.events.find(e => e.publicCode === args.where.publicCode) || null;
+        if (args.where.id) return this.events.find(e => e.id === args.where.id && !e.deletedAt) || null;
+        if (args.where.publicCode) return this.events.find(e => e.publicCode === args.where.publicCode && !e.deletedAt) || null;
+        if (args.where.slug) return this.events.find(e => e.slug === args.where.slug && !e.deletedAt) || null;
         return null;
       },
       findFirst: async (args?: any) => {
@@ -2596,7 +2636,7 @@ export class InMemoryPrismaStore {
         return matches.length > 0 ? matches[0] : null;
       },
       findMany: async (args?: any) => {
-        let list = [...this.events];
+        let list = [...this.events].filter(e => !e.deletedAt);
 
         const matchFilter = (item: any, where: any): boolean => {
           if (!where) return true;
@@ -2622,6 +2662,7 @@ export class InMemoryPrismaStore {
           if (where.id) {
             if (typeof where.id === 'string' && item.id !== where.id) return false;
             if (where.id?.in && Array.isArray(where.id.in) && !where.id.in.includes(item.id)) return false;
+            if (where.id?.not && item.id === where.id.not) return false;
           }
 
           if (where.publicCode) {
@@ -2629,6 +2670,9 @@ export class InMemoryPrismaStore {
             if (where.publicCode?.in && Array.isArray(where.publicCode.in) && !where.publicCode.in.includes(item.publicCode)) return false;
           }
 
+          if (where.slug) {
+            if (typeof where.slug === 'string' && item.slug !== where.slug) return false;
+          }
 
           if (where.status) {
             if (typeof where.status === 'string' && item.status !== where.status) return false;
@@ -2701,6 +2745,11 @@ export class InMemoryPrismaStore {
           country: 'BR',
           status: 'DRAFT',
           soldTickets: 0,
+          version: 1,
+          currency: 'BRL',
+          locale: 'pt-BR',
+          visibility: 'PRIVATE',
+          allowSearchIndexing: false,
           ...args.data,
           createdAt: new Date(),
           updatedAt: new Date()
@@ -2712,15 +2761,164 @@ export class InMemoryPrismaStore {
         const index = this.events.findIndex(e => e.id === args.where?.id);
         if (index === -1) throw new Error(`Evento "${args.where?.id}" não encontrado.`);
         const existing = this.events[index];
+
+        // Optimistic concurrency control (409 Conflict)
+        if (args.where?.version !== undefined && existing.version !== undefined && existing.version !== args.where.version) {
+          const conflictError: any = new Error('Este evento foi atualizado por outro usuário. Há uma versão mais recente disponível.');
+          conflictError.code = 'P2025_CONFLICT';
+          conflictError.status = 409;
+          throw conflictError;
+        }
+
+        const newVersion = (existing.version || 1) + 1;
         const updated = {
           ...existing,
           ...args.data,
-          name: args.data.name || existing.name,
-          title: args.data.name || args.data.title || existing.title,
+          name: args.data.name !== undefined ? args.data.name : existing.name,
+          title: args.data.name !== undefined ? args.data.name : (args.data.title || existing.title),
+          version: newVersion,
           updatedAt: new Date()
         };
         this.events[index] = updated;
         return updated;
+      },
+      delete: async (args: any) => {
+        const index = this.events.findIndex(e => e.id === args.where?.id);
+        if (index !== -1) {
+          return this.events.splice(index, 1)[0];
+        }
+        return null;
+      }
+    };
+  }
+
+  public get eventCategory() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventCategoryRecords];
+        if (args?.where?.active !== undefined) {
+          list = list.filter(c => c.active === args.where.active);
+        }
+        if (args?.where?.parentId !== undefined) {
+          list = list.filter(c => c.parentId === args.where.parentId);
+        }
+        list.sort((a, b) => a.sortOrder - b.sortOrder);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        if (args.where.id) return this.eventCategoryRecords.find(c => c.id === args.where.id) || null;
+        if (args.where.slug) return this.eventCategoryRecords.find(c => c.slug === args.where.slug) || null;
+        return null;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.eventCategory.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      }
+    };
+  }
+
+  public get eventMedia() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventMediaRecords];
+        if (args?.where?.eventId) {
+          list = list.filter(m => m.eventId === args.where.eventId);
+        }
+        if (args?.where?.type) {
+          list = list.filter(m => m.type === args.where.type);
+        }
+        list.sort((a, b) => a.sortOrder - b.sortOrder);
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `med_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.eventMediaRecords.push(record);
+        return record;
+      },
+      delete: async (args: any) => {
+        const idx = this.eventMediaRecords.findIndex(m => m.id === args.where?.id);
+        if (idx !== -1) {
+          return this.eventMediaRecords.splice(idx, 1)[0];
+        }
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventMediaRecords.length;
+        if (args?.where?.eventId) {
+          this.eventMediaRecords = this.eventMediaRecords.filter(m => m.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventMediaRecords.length };
+      }
+    };
+  }
+
+  public get eventResponsibility() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventResponsibilityRecords];
+        if (args?.where?.eventId) {
+          list = list.filter(r => r.eventId === args.where.eventId);
+        }
+        return list;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `resp_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventResponsibilityRecords.push(record);
+        return record;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventResponsibilityRecords.length;
+        if (args?.where?.eventId) {
+          this.eventResponsibilityRecords = this.eventResponsibilityRecords.filter(r => r.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventResponsibilityRecords.length };
+      }
+    };
+  }
+
+  public get eventWizardState() {
+    return {
+      findUnique: async (args: any) => {
+        if (!args?.where?.eventId) return null;
+        return this.eventWizardStateRecords.find(w => w.eventId === args.where.eventId) || null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `wiz_${Date.now()}`,
+          ...args.data,
+          updatedAt: new Date()
+        };
+        this.eventWizardStateRecords.push(record);
+        return record;
+      },
+      update: async (args: any) => {
+        const idx = this.eventWizardStateRecords.findIndex(w => w.eventId === args.where?.eventId || w.id === args.where?.id);
+        if (idx === -1) throw new Error('Estado do wizard não encontrado');
+        const updated = {
+          ...this.eventWizardStateRecords[idx],
+          ...args.data,
+          updatedAt: new Date()
+        };
+        this.eventWizardStateRecords[idx] = updated;
+        return updated;
+      },
+      upsert: async (args: any) => {
+        const existing = await this.eventWizardState.findUnique({ where: args.where });
+        if (existing) {
+          return this.eventWizardState.update({ where: args.where, data: args.update });
+        } else {
+          return this.eventWizardState.create({ data: { ...args.create, eventId: args.where.eventId } });
+        }
       }
     };
   }

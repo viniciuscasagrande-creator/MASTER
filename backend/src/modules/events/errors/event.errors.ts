@@ -20,3 +20,17 @@ export class EventInvalidStatusError extends AppError {
     this.name = 'EventInvalidStatusError';
   }
 }
+
+export class EventConcurrencyError extends AppError {
+  constructor(message = 'Este evento foi atualizado por outro usuário. Há uma versão mais recente disponível.') {
+    super(message, 409);
+    this.name = 'EventConcurrencyError';
+  }
+}
+
+export class EventValidationError extends AppError {
+  constructor(message = 'Dados inválidos para a configuração do evento.') {
+    super(message, 400);
+    this.name = 'EventValidationError';
+  }
+}

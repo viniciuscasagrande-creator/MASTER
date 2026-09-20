@@ -59,6 +59,10 @@ export type PermissionString =
   | 'eventos.evento.pausar_vendas'
   | 'eventos.evento.encerrar'
   | 'eventos.evento.arquivar'
+  | 'eventos.evento.identidade.editar'
+  | 'eventos.evento.responsaveis.visualizar'
+  | 'eventos.evento.responsaveis.editar'
+  | 'eventos.evento.rascunho.descartar'
   | 'eventos.local.visualizar'
   | 'eventos.local.gerenciar'
   | 'eventos.sessao.visualizar'
@@ -1987,11 +1991,188 @@ export interface EventDetailDTO extends EventListItemDTO {
   description?: string | null;
   categoryId?: string | null;
   categoryName?: string;
+  subcategoryId?: string | null;
+  subcategoryName?: string;
+  format?: EventFormat;
+  ageRating?: string | null;
+  ageRatingDescription?: string | null;
+  onlinePlatform?: string | null;
+  onlineUrl?: string | null;
+  onlineInstructions?: string | null;
+  hasMultipleSessions?: boolean;
+  currency?: string;
+  locale?: string;
+  visibility?: EventVisibility;
+  allowSearchIndexing?: boolean;
+  publicOrganizerName?: string | null;
+  operationalContact?: string | null;
+  operationalEmail?: string | null;
+  internalResponsibleUserId?: string | null;
+  internalResponsibleUserName?: string | null;
+  address?: string | null;
+  addressNumber?: string | null;
+  complement?: string | null;
+  neighborhood?: string | null;
+  zipCode?: string | null;
+  estimatedCapacity?: number | null;
+  version?: number;
   createdBy?: string | null;
   updatedBy?: string | null;
   archivedAt?: string | null;
+  deletedAt?: string | null;
+  deletedBy?: string | null;
   readinessScore?: number;
   pendingItemsCount?: number;
+  wizardState?: EventWizardStateDTO | null;
+  media?: EventMediaDTO[];
+  responsibilities?: EventResponsibilityDTO[];
+}
+
+export type EventFormat = 'IN_PERSON' | 'ONLINE' | 'HYBRID';
+export type EventVisibility = 'PRIVATE' | 'UNLISTED' | 'PUBLIC';
+export type EventAgeRating = 'Livre' | '10 anos' | '12 anos' | '14 anos' | '16 anos' | '18 anos';
+
+export interface EventCategoryDTO {
+  id: string;
+  name: string;
+  slug: string;
+  parentId?: string | null;
+  active: boolean;
+  sortOrder: number;
+  subcategories?: EventCategoryDTO[];
+}
+
+export interface EventMediaDTO {
+  id: string;
+  eventId: string;
+  documentId: string;
+  type: 'MAIN' | 'COVER' | 'SHARE' | 'GALLERY';
+  sortOrder: number;
+  caption?: string | null;
+  url?: string;
+  createdAt: string;
+}
+
+export type EventResponsibilityType =
+  | 'PRIMARY'
+  | 'OPERATIONS'
+  | 'COMMERCIAL'
+  | 'FINANCE'
+  | 'MARKETING'
+  | 'SUPPORT';
+
+export interface EventResponsibilityDTO {
+  id: string;
+  eventId: string;
+  responsibilityType: EventResponsibilityType;
+  userId?: string | null;
+  userName?: string | null;
+  userEmail?: string | null;
+  teamId?: string | null;
+  teamName?: string | null;
+  notes?: string | null;
+  createdAt: string;
+}
+
+export type EventWizardStepId =
+  | 'STEP_INFORMATION'
+  | 'STEP_ORGANIZATION'
+  | 'STEP_LOCATION'
+  | 'STEP_DATES'
+  | 'STEP_MEDIA'
+  | 'STEP_SETTINGS'
+  | 'STEP_RESPONSIBILITIES'
+  | 'STEP_REVIEW';
+
+export type StepValidationStatus = 'COMPLETED' | 'IN_PROGRESS' | 'WARNING' | 'ERROR' | 'PENDING';
+
+export interface StepIssue {
+  stepId: EventWizardStepId;
+  field?: string;
+  message: string;
+  severity: 'BLOCKING' | 'WARNING';
+}
+
+export interface StepValidationDetail {
+  stepId: EventWizardStepId;
+  stepNumber: number;
+  title: string;
+  status: StepValidationStatus;
+  issues: StepIssue[];
+}
+
+export interface EventWizardValidationResult {
+  valid: boolean;
+  blockingIssues: number;
+  warnings: number;
+  steps: StepValidationDetail[];
+}
+
+export interface EventWizardStateDTO {
+  id: string;
+  eventId: string;
+  currentStep: number;
+  completedSteps: number[];
+  lastVisitedStep: number;
+  stepStatuses: Record<string, StepValidationStatus>;
+  updatedAt: string;
+}
+
+export interface CreateEventDraftInput {
+  producerId?: string;
+  name?: string;
+  categoryId?: string;
+  format?: EventFormat;
+  startAt?: string;
+  endAt?: string;
+  timezone?: string;
+  venue?: string;
+  city?: string;
+  state?: string;
+}
+
+export interface PatchEventDraftInput {
+  version: number;
+  // Step 1: Info
+  name?: string;
+  slug?: string;
+  categoryId?: string;
+  subcategoryId?: string;
+  format?: EventFormat;
+  ageRating?: string;
+  ageRatingDescription?: string;
+  description?: string;
+  // Step 2: Org
+  publicOrganizerName?: string;
+  operationalContact?: string;
+  operationalEmail?: string;
+  internalResponsibleUserId?: string;
+  // Step 3: Local
+  venue?: string;
+  address?: string;
+  addressNumber?: string;
+  complement?: string;
+  neighborhood?: string;
+  zipCode?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  estimatedCapacity?: number;
+  onlinePlatform?: string;
+  onlineUrl?: string;
+  onlineInstructions?: string;
+  // Step 4: Datas
+  startAt?: string | null;
+  endAt?: string | null;
+  timezone?: string;
+  hasMultipleSessions?: boolean;
+  // Step 5: Visual
+  coverDocumentId?: string | null;
+  // Step 6: Configs
+  currency?: string;
+  locale?: string;
+  visibility?: EventVisibility;
+  allowSearchIndexing?: boolean;
 }
 
 export interface EventSummaryDTO {

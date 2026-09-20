@@ -6,18 +6,22 @@ import { EventCard } from '../components/EventCard';
 import { EventTable } from '../components/EventTable';
 import { EventsEmptyState } from '../components/EventsEmptyState';
 import { CreateEventModal } from '../components/CreateEventModal';
+import { EventWizardPage } from '../wizard/EventWizardPage';
 import { useEvents } from '../hooks/useEvents';
+import { createEventDraft } from '../api/events.api';
 import { EventDetailDTO } from '../types/event.types';
 import { AlertCircle } from 'lucide-react';
 
 interface EventsPageProps {
   onSelectEvent: (eventId: string) => void;
   selectedEventId?: string | null;
+  onOpenWizard?: (eventId: string) => void;
 }
 
 export const EventsPage: React.FC<EventsPageProps> = ({
   onSelectEvent,
-  selectedEventId
+  selectedEventId,
+  onOpenWizard
 }) => {
   const {
     events,
@@ -34,13 +38,55 @@ export const EventsPage: React.FC<EventsPageProps> = ({
     refresh
   } = useEvents();
 
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [activeWizardEventId, setActiveWizardEventId] = useState<string | null>(null);
+  const [isStartingDraft, setIsStartingDraft] = useState<boolean>(false);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState<boolean>(false);
+
+  // Flow: + Criar evento creates an early draft and opens the Intelligent Wizard
+  const handleStartNewDraft = async () => {
+    try {
+      setIsStartingDraft(true);
+      const result = await createEventDraft({});
+      refresh();
+      if (onOpenWizard) {
+        onOpenWizard(result.event.id);
+      } else {
+        setActiveWizardEventId(result.event.id);
+      }
+    } catch (err: any) {
+      console.error('Erro ao iniciar rascunho:', err);
+      // Fallback to traditional modal if needed
+      setIsCreateModalOpen(true);
+    } finally {
+      setIsStartingDraft(false);
+    }
+  };
+
+  const handleOpenDraftConfig = (eventId: string) => {
+    if (onOpenWizard) {
+      onOpenWizard(eventId);
+    } else {
+      setActiveWizardEventId(eventId);
+    }
+  };
 
   const handleEventCreated = (newEvent: EventDetailDTO) => {
     refresh();
-    // Automatically select newly created event
     onSelectEvent(newEvent.id);
   };
+
+  // If the wizard is currently active, render it directly
+  if (activeWizardEventId) {
+    return (
+      <EventWizardPage
+        eventId={activeWizardEventId}
+        onExit={() => {
+          setActiveWizardEventId(null);
+          refresh();
+        }}
+      />
+    );
+  }
 
   const hasActiveFilters = Boolean(
     filters.search ||
@@ -53,8 +99,8 @@ export const EventsPage: React.FC<EventsPageProps> = ({
       {/* 1. Header with dynamic title, producer scope badge & actions */}
       <EventsHeader
         onRefresh={refresh}
-        onOpenCreateModal={() => setIsCreateModalOpen(true)}
-        isLoading={isLoading || isSummaryLoading}
+        onOpenCreateModal={handleStartNewDraft}
+        isLoading={isLoading || isSummaryLoading || isStartingDraft}
       />
 
       {/* 2. Top Summary KPI Cards (Total, Em Venda, Próximos, Em Configuração) */}
@@ -108,7 +154,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
         <EventsEmptyState
           hasFilters={hasActiveFilters}
           onClearFilters={handleClearFilters}
-          onOpenCreateModal={() => setIsCreateModalOpen(true)}
+          onOpenCreateModal={handleStartNewDraft}
         />
       ) : viewMode === 'cards' ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -117,6 +163,7 @@ export const EventsPage: React.FC<EventsPageProps> = ({
               key={event.id}
               event={event}
               onSelectEvent={onSelectEvent}
+              onConfigureDraft={handleOpenDraftConfig}
               isSelected={selectedEventId === event.id}
             />
           ))}
@@ -125,11 +172,12 @@ export const EventsPage: React.FC<EventsPageProps> = ({
         <EventTable
           events={events}
           onSelectEvent={onSelectEvent}
+          onConfigureDraft={handleOpenDraftConfig}
           selectedEventId={selectedEventId || undefined}
         />
       )}
 
-      {/* 6. Modal for registering new draft events */}
+      {/* 6. Fallback Modal for registering new draft events */}
       <CreateEventModal
         isOpen={isCreateModalOpen}
         onClose={() => setIsCreateModalOpen(false)}

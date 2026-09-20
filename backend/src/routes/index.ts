@@ -35,6 +35,8 @@ import {
   mappingRoutes,
   duplicateRoutes
 } from '../modules/data-management/data-management.routes';
+import { EventCategoryController } from '../modules/events/categories/event-category.controller';
+import { authenticate } from '../core/middleware/authenticate';
 
 const router = Router();
 
@@ -61,6 +63,7 @@ router.use('/admin/roles', rolesRoutes);
 router.use('/admin/approval-rules', approvalRulesAdminRouter);
 router.use('/admin/approval-thresholds', approvalThresholdsAdminRouter);
 router.use('/events', eventsRoutes);
+router.get('/event-categories', authenticate, EventCategoryController.listCategories);
 router.use('/finance', financeRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/audit', auditRoutes);

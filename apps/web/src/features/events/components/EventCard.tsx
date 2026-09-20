@@ -16,12 +16,14 @@ import { formatNumber, formatDateTime } from '../../../shared/utils/formatters';
 interface EventCardProps {
   event: EventListItemDTO;
   onSelectEvent: (eventId: string) => void;
+  onConfigureDraft?: (eventId: string) => void;
   isSelected?: boolean;
 }
 
 export const EventCard: React.FC<EventCardProps> = ({
   event,
   onSelectEvent,
+  onConfigureDraft,
   isSelected = false
 }) => {
   const [copiedCode, setCopiedCode] = useState(false);
@@ -149,16 +151,33 @@ export const EventCard: React.FC<EventCardProps> = ({
             Fuso: {event.timezone || 'America/Sao_Paulo'}
           </span>
 
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              onSelectEvent(event.id);
-            }}
-            className="flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors group-hover:translate-x-0.5 cursor-pointer"
-          >
-            Acessar Evento
-            <ArrowRight className="h-3.5 w-3.5" />
-          </button>
+          {event.status === 'DRAFT' ? (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                if (onConfigureDraft) {
+                  onConfigureDraft(event.id);
+                } else {
+                  onSelectEvent(event.id);
+                }
+              }}
+              className="flex items-center gap-1.5 text-xs font-bold text-amber-400 hover:text-amber-300 bg-amber-500/10 hover:bg-amber-500/20 px-2.5 py-1 rounded-lg border border-amber-500/30 transition-all group-hover:translate-x-0.5 cursor-pointer"
+            >
+              <span>Continuar configuração</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                onSelectEvent(event.id);
+              }}
+              className="flex items-center gap-1 text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors group-hover:translate-x-0.5 cursor-pointer"
+            >
+              Acessar Evento
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+          )}
         </div>
       </div>
     </div>

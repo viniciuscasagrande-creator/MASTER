@@ -115,3 +115,163 @@ export async function selectEventContext(
 
   return response.json();
 }
+
+// ============================================================================
+// FASE 1.2.2 — WIZARD INTELIGENTE E RASCUNHOS
+// ============================================================================
+
+export async function createEventDraft(
+  input: { name?: string; producerId?: string },
+  customFetch: typeof fetch = fetch
+): Promise<{ event: EventDetailDTO; wizardState: any }> {
+  const response = await customFetch(`${BASE_URL}/drafts`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao criar rascunho de evento');
+  }
+
+  const data = await response.json();
+  return {
+    event: data.data,
+    wizardState: data.wizardState
+  };
+}
+
+export async function patchEventDraft(
+  eventId: string,
+  input: Record<string, any>,
+  customFetch: typeof fetch = fetch
+): Promise<{ event: EventDetailDTO; version: number }> {
+  const response = await customFetch(`${BASE_URL}/${encodeURIComponent(eventId)}/draft`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(input)
+  });
+
+  if (response.status === 409) {
+    const errorData = await response.json().catch(() => ({}));
+    const err = new Error(errorData.error || 'Conflito de versão detectado. Suas alterações não foram salvas.');
+    (err as any).status = 409;
+    throw err;
+  }
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao atualizar rascunho');
+  }
+
+  const data = await response.json();
+  return {
+    event: data.data,
+    version: data.version
+  };
+}
+
+export async function discardEventDraft(
+  eventId: string,
+  customFetch: typeof fetch = fetch
+): Promise<{ success: boolean; message: string }> {
+  const response = await customFetch(`${BASE_URL}/${encodeURIComponent(eventId)}/draft`, {
+    method: 'DELETE'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao descartar rascunho');
+  }
+
+  return response.json();
+}
+
+export async function checkSlugAvailability(
+  slug: string,
+  excludeEventId?: string,
+  customFetch: typeof fetch = fetch
+): Promise<{ available: boolean; slug: string; suggestedSlug?: string }> {
+  const params = new URLSearchParams({ slug });
+  if (excludeEventId) params.set('excludeEventId', excludeEventId);
+
+  const response = await customFetch(`${BASE_URL}/slug-availability?${params.toString()}`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao verificar disponibilidade de slug');
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function fetchEventWizardData(
+  eventId: string,
+  customFetch: typeof fetch = fetch
+): Promise<any> {
+  const response = await customFetch(`${BASE_URL}/${encodeURIComponent(eventId)}/wizard`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao carregar dados do wizard');
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function updateWizardStep(
+  eventId: string,
+  payload: {
+    currentStep?: number;
+    completedSteps?: number[];
+    lastVisitedStep?: number;
+    stepStatuses?: Record<string, string>;
+  },
+  customFetch: typeof fetch = fetch
+): Promise<any> {
+  const response = await customFetch(`${BASE_URL}/${encodeURIComponent(eventId)}/wizard/step`, {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao atualizar etapa do wizard');
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function validateEventWizard(
+  eventId: string,
+  customFetch: typeof fetch = fetch
+): Promise<any> {
+  const response = await customFetch(`${BASE_URL}/${encodeURIComponent(eventId)}/wizard/validate`, {
+    method: 'POST'
+  });
+
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao validar wizard');
+  }
+
+  const data = await response.json();
+  return data.data;
+}
+
+export async function fetchEventCategories(
+  customFetch: typeof fetch = fetch
+): Promise<any[]> {
+  const response = await customFetch(`${BASE_URL}/categories`);
+  if (!response.ok) {
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(errorData.error || errorData.message || 'Erro ao carregar categorias');
+  }
+
+  const data = await response.json();
+  return data.data || [];
+}
+

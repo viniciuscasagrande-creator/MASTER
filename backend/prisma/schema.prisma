@@ -157,49 +157,145 @@ model Producer {
 }
 
 model Event {
-  id              String            @id @default(uuid())
-  publicCode      String            @unique
-  producerId      String
+  id                         String            @id @default(uuid())
+  publicCode                 String            @unique
+  producerId                 String
 
-  name            String
-  title           String?           // For backwards compatibility
-  slug            String?
-  description     String?
+  name                       String
+  title                      String?           // For backwards compatibility
+  slug                       String?
+  description                String?
 
-  status          String            @default("DRAFT")
+  status                     String            @default("DRAFT")
 
-  categoryId      String?
+  categoryId                 String?
+  subcategoryId              String?
+  format                     String?           @default("IN_PERSON") // IN_PERSON, ONLINE, HYBRID
+  ageRating                  String?           @default("Livre")
+  ageRatingDescription       String?
 
-  startAt         DateTime?
-  endAt           DateTime?
-  eventDate       DateTime?         // Backwards compatibility
-  timezone        String            @default("America/Sao_Paulo")
+  startAt                    DateTime?
+  endAt                      DateTime?
+  eventDate                  DateTime?         // Backwards compatibility
+  timezone                   String            @default("America/Sao_Paulo")
+  hasMultipleSessions        Boolean           @default(false)
 
-  venue           String?
-  city            String?
-  state           String?
-  country         String            @default("BR")
+  venue                      String?
+  address                    String?
+  addressNumber              String?
+  complement                 String?
+  neighborhood               String?
+  zipCode                    String?
+  city                       String?
+  state                      String?
+  country                    String            @default("BR")
 
-  capacity        Int?
-  soldTickets     Int?              @default(0)
+  onlinePlatform             String?
+  onlineUrl                  String?
+  onlineInstructions         String?
 
-  coverDocumentId String?
+  capacity                   Int?
+  estimatedCapacity          Int?
+  soldTickets                Int?              @default(0)
 
-  createdBy       String?
-  createdAt       DateTime          @default(now())
+  currency                   String            @default("BRL")
+  locale                     String            @default("pt-BR")
+  visibility                 String            @default("PRIVATE") // PRIVATE, UNLISTED, PUBLIC
+  allowSearchIndexing        Boolean           @default(false)
 
-  updatedBy       String?
-  updatedAt       DateTime          @updatedAt
+  publicOrganizerName        String?
+  operationalContact         String?
+  operationalEmail           String?
+  internalResponsibleUserId  String?
 
-  archivedAt      DateTime?
+  coverDocumentId            String?
 
-  producer        Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
-  userAccesses    UserEventAccess[]
+  version                    Int               @default(1)
+
+  createdBy                  String?
+  createdAt                  DateTime          @default(now())
+
+  updatedBy                  String?
+  updatedAt                  DateTime          @updatedAt
+
+  archivedAt                 DateTime?
+  deletedAt                  DateTime?
+  deletedBy                  String?
+
+  producer                   Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
+  userAccesses               UserEventAccess[]
+  media                      EventMedia[]
+  responsibilities           EventResponsibility[]
+  wizardState                EventWizardState?
 
   @@index([producerId])
   @@index([producerId, status])
   @@index([startAt])
   @@index([name])
+}
+
+model EventCategory {
+  id        String          @id @default(uuid())
+  name      String
+  slug      String          @unique
+  parentId  String?
+  active    Boolean         @default(true)
+  sortOrder Int             @default(0)
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+
+  parent        EventCategory?  @relation("CategoryHierarchy", fields: [parentId], references: [id])
+  subcategories EventCategory[] @relation("CategoryHierarchy")
+
+  @@index([parentId])
+  @@index([slug])
+}
+
+model EventMedia {
+  id         String   @id @default(uuid())
+  eventId    String
+  documentId String
+  type       String   // MAIN, COVER, SHARE, GALLERY
+  sortOrder  Int      @default(0)
+  caption    String?
+  createdAt  DateTime @default(now())
+
+  event      Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([documentId])
+}
+
+model EventResponsibility {
+  id                 String   @id @default(uuid())
+  eventId            String
+  responsibilityType String   // PRIMARY, OPERATIONS, COMMERCIAL, FINANCE, MARKETING, SUPPORT
+  userId             String?
+  teamId             String?
+  notes              String?
+  createdBy          String?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  event              Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+  @@index([userId])
+}
+
+model EventWizardState {
+  id              String   @id @default(uuid())
+  eventId         String   @unique
+  currentStep     Int      @default(1)
+  completedSteps  String   @default("[]") // JSON stringified array of step numbers
+  lastVisitedStep Int      @default(1)
+  stepStatuses    String?  @default("{}") // JSON stringified map
+  updatedBy       String?
+  updatedAt       DateTime @updatedAt
+
+  event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
 }
 
 
