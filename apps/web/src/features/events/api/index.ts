@@ -15,3 +15,4 @@ export * from './readiness.api';
 export * from './lifecycle.api';
 export * from './changes.api';
 export * from './dashboard.api';
+export * from './operation.api';

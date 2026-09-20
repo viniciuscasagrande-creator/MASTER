@@ -23,6 +23,7 @@ import eventReadinessRoutes from './readiness/event-readiness.routes';
 import eventLifecycleRoutes from './lifecycle/event-lifecycle.routes';
 import eventChangeRoutes from './changes/event-change.routes';
 import eventDashboardRoutes from './dashboard/event-dashboard.routes';
+import eventOperationRoutes from './operation/event-operation.routes';
 
 const router = Router();
 
@@ -102,6 +103,10 @@ router.use('/:eventId/changes', eventChangeRoutes);
 
 // 5.16 Dashboard Executivo e Operacional (Fase 1.2.11)
 router.use('/:eventId/dashboard', eventDashboardRoutes);
+
+// 5.17 Central de Operação em Tempo Real (Fase 1.2.12)
+router.use('/:eventId/operation', eventOperationRoutes);
+router.use('/:eventId/sessions/:sessionId/operation', eventOperationRoutes);
 
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);

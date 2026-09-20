@@ -165,6 +165,19 @@ export type PermissionString =
   | 'eventos.dashboard.marketing.visualizar'
   | 'eventos.dashboard.financeiro.visualizar'
   | 'eventos.dashboard.alertas.visualizar'
+  // Central de Operação do Evento em Tempo Real (Fase 1.2.12)
+  | 'eventos.operacao.iniciar'
+  | 'eventos.operacao.encerrar'
+  | 'eventos.operacao.areas.visualizar'
+  | 'eventos.operacao.acessos.visualizar'
+  | 'eventos.operacao.acessos.operar'
+  | 'eventos.operacao.equipe.visualizar'
+  | 'eventos.operacao.equipe.gerenciar'
+  | 'eventos.operacao.incidentes.visualizar'
+  | 'eventos.operacao.incidentes.criar'
+  | 'eventos.operacao.comunicados.enviar'
+  | 'eventos.operacao.comandos.executar'
+  | 'eventos.operacao.handoff.realizar'
   // Comercial
 
   | 'comercial.produtores.visualizar'
@@ -3926,4 +3939,233 @@ export interface EventDashboardDTO {
   alerts: DashboardAlertDTO[];
   freshness: DataFreshnessDTO;
 }
+
+// ==============================================================================
+// FASE 1.2.12: CENTRAL DE OPERAÇÃO DO EVENTO EM TEMPO REAL
+// ==============================================================================
+
+export type OperationStatus = 'PREPARATION' | 'READY' | 'OPENING' | 'ACTIVE' | 'CLOSING' | 'CLOSED';
+
+export type OperationReadinessStatus = 'READY' | 'WARNING' | 'BLOCKED';
+
+export interface OperationReadinessItemDTO {
+  code: string;
+  label: string;
+  category: 'SESSION' | 'TEAM' | 'ACCESS' | 'DEVICES' | 'DOCS' | 'TASKS' | 'CHECKIN' | 'INFRA';
+  status: OperationReadinessStatus;
+  message: string;
+  details?: string;
+  isOverridable: boolean;
+  isOverridden?: boolean;
+  overrideReason?: string;
+  overriddenBy?: string;
+}
+
+export interface OperationReadinessDTO {
+  status: OperationReadinessStatus;
+  canOpen: boolean;
+  items: OperationReadinessItemDTO[];
+  blockingCount: number;
+  warningCount: number;
+  lastCheckedAt: string;
+}
+
+export interface EventOperationSessionDTO {
+  id: string;
+  eventId: string;
+  sessionId: string;
+  sessionName?: string;
+  sessionDate?: string;
+  venueName?: string;
+  status: OperationStatus;
+  plannedOpeningAt: string;
+  actualOpeningAt?: string | null;
+  startedAt?: string | null;
+  closingStartedAt?: string | null;
+  closedAt?: string | null;
+  openedBy?: string | null;
+  closedBy?: string | null;
+  version: number;
+  sequence: number;
+  notes?: string | null;
+}
+
+export type OperationAreaCode =
+  | 'ACESSOS'
+  | 'CHECKIN'
+  | 'BILHETERIA'
+  | 'SEGURANCA'
+  | 'SUPORTE'
+  | 'PRODUCAO'
+  | 'ATENDIMENTO'
+  | 'CREDENCIAMENTO';
+
+export interface OperationAreaDTO {
+  id: string;
+  eventId: string;
+  sessionId?: string | null;
+  areaCode: string;
+  name: string;
+  description?: string;
+  leadUserId?: string | null;
+  leadUserName?: string | null;
+  active: boolean;
+  staffPresentCount: number;
+  staffTotalCount: number;
+  openIncidentsCount: number;
+}
+
+export type OperationShiftStatus = 'SCHEDULED' | 'PRESENT' | 'LATE' | 'ABSENT' | 'FINISHED';
+
+export interface OperationShiftDTO {
+  id: string;
+  operationId: string;
+  memberId: string;
+  memberName: string;
+  areaId: string;
+  areaCode: string;
+  startsAt: string;
+  endsAt: string;
+  role: string;
+  status: OperationShiftStatus;
+  checkInAt?: string | null;
+  checkOutAt?: string | null;
+  notes?: string | null;
+}
+
+export interface SessionAccessPointDTO {
+  id: string;
+  operationId: string;
+  sessionId: string;
+  accessPointId: string;
+  name: string;
+  type: 'ENTRY' | 'EXIT' | 'EMERGENCY' | 'VIP';
+  status: 'OPEN' | 'CLOSED' | 'PAUSED';
+  executionMode: 'LOGICAL' | 'INTEGRATION';
+  openedAt?: string | null;
+  closedAt?: string | null;
+  validatedCount: number;
+  rejectedCount: number;
+  lastActivityAt?: string | null;
+}
+
+export type OperationCommandType =
+  | 'OPEN_OPERATION'
+  | 'START_CLOSING'
+  | 'CLOSE_OPERATION'
+  | 'OPEN_ACCESS_POINT'
+  | 'CLOSE_ACCESS_POINT'
+  | 'PAUSE_ACCESS_POINT'
+  | 'RESUME_ACCESS_POINT'
+  | 'START_CHECKIN'
+  | 'PAUSE_CHECKIN'
+  | 'RESUME_CHECKIN'
+  | 'ACKNOWLEDGE_ALERT'
+  | 'OVERRIDE_BLOCKER';
+
+export interface OperationCommandDTO {
+  id: string;
+  operationId: string;
+  sessionId: string;
+  commandType: OperationCommandType;
+  targetType: string;
+  targetId?: string | null;
+  status: 'SUCCESS' | 'FAILED' | 'REJECTED';
+  requestedBy: string;
+  requestedByName?: string;
+  requestedAt: string;
+  executionMode: 'LOGICAL' | 'INTEGRATION';
+  executedAt: string;
+  idempotencyKey?: string | null;
+  reason?: string | null;
+  payload?: any;
+}
+
+export interface OperationTimelineEventDTO {
+  id: string;
+  sequence: number;
+  timestamp: string;
+  category: 'COMMAND' | 'INCIDENT' | 'CHECKIN' | 'ACCESS' | 'SYSTEM' | 'BROADCAST';
+  severity: 'INFO' | 'WARNING' | 'ERROR' | 'SUCCESS';
+  title: string;
+  description: string;
+  actorName?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface OperationBroadcastDTO {
+  id: string;
+  operationId: string;
+  targetAreaId?: string | null;
+  targetAreaName?: string;
+  priority: 'INFO' | 'WARNING' | 'CRITICAL';
+  title: string;
+  message: string;
+  sentBy: string;
+  sentByName: string;
+  sentAt: string;
+  requiresAck: boolean;
+  acknowledgementsCount: number;
+}
+
+export interface OperationHandoffDTO {
+  id: string;
+  operationId: string;
+  areaId?: string | null;
+  areaName?: string;
+  fromUserId: string;
+  fromUserName: string;
+  toUserId: string;
+  toUserName: string;
+  notes: string;
+  openIncidentsCount: number;
+  openTasksCount: number;
+  createdAt: string;
+}
+
+export interface DeviceHealthDTO {
+  id: string;
+  name: string;
+  type: 'POS' | 'TURNSTILE' | 'SCANNER' | 'PRINTER';
+  status: 'ONLINE' | 'DEGRADED' | 'OFFLINE' | 'SYNC_PENDING' | 'DISABLED';
+  areaCode: string;
+  batteryLevel?: number;
+  lastPingAt: string;
+}
+
+export interface OperationKPIs {
+  attendeesCheckedIn: number;
+  expectedAttendees: number;
+  checkInPercentage: number;
+  checkInSpeedPerMinute: number;
+  openAccessPointsCount: number;
+  totalAccessPointsCount: number;
+  staffPresentCount: number;
+  staffTotalCount: number;
+  activeIncidentsCount: number;
+  criticalIncidentsCount: number;
+  activeAlertsCount: number;
+  devicesOnlineCount: number;
+  devicesTotalCount: number;
+}
+
+export interface OperationSnapshotDTO {
+  operation: EventOperationSessionDTO;
+  readiness: OperationReadinessDTO;
+  kpis: OperationKPIs;
+  areas: OperationAreaDTO[];
+  accessPoints: SessionAccessPointDTO[];
+  teamShifts: OperationShiftDTO[];
+  activeIncidents: any[];
+  activeAlerts: any[];
+  openTasks: any[];
+  recentBroadcasts: OperationBroadcastDTO[];
+  recentHandoffs: OperationHandoffDTO[];
+  devicesHealth: DeviceHealthDTO[];
+  timeline: OperationTimelineEventDTO[];
+  sequence: number;
+  generatedAt: string;
+  isRealtimeConnected: boolean;
+}
+
 

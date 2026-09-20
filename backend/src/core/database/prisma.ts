@@ -72,6 +72,15 @@ export class InMemoryPrismaStore {
   public eventChangeRequestRecords: any[] = [];
   // Fase 1.2.11 — Dashboard Executivo e Operacional
   public eventDashboardSnapshotRecords: any[] = [];
+  // Fase 1.2.12 — Central de Operação do Evento em Tempo Real
+  public eventOperationSessionRecords: any[] = [];
+  public eventOperationAreaRecords: any[] = [];
+  public operationShiftRecords: any[] = [];
+  public sessionAccessPointRecords: any[] = [];
+  public operationCommandRecords: any[] = [];
+  public operationBroadcastRecords: any[] = [];
+  public operationBroadcastReceiptRecords: any[] = [];
+  public operationHandoffRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -251,6 +260,14 @@ export class InMemoryPrismaStore {
     this.eventPublicationScheduleRecords = [];
     this.eventChangeRequestRecords = [];
     this.eventDashboardSnapshotRecords = [];
+    this.eventOperationSessionRecords = [];
+    this.eventOperationAreaRecords = [];
+    this.operationShiftRecords = [];
+    this.sessionAccessPointRecords = [];
+    this.operationCommandRecords = [];
+    this.operationBroadcastRecords = [];
+    this.operationBroadcastReceiptRecords = [];
+    this.operationHandoffRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -6084,6 +6101,394 @@ export class InMemoryPrismaStore {
           this.eventDashboardSnapshotRecords.push(record);
           return { ...record };
         }
+      }
+    };
+  }
+
+  public get eventOperationSession() {
+    return {
+      findUnique: async (args: any) => {
+        if (args?.where?.id) {
+          const x = this.eventOperationSessionRecords.find(item => item.id === args.where.id);
+          return x ? { ...x } : null;
+        }
+        if (args?.where?.eventId_sessionId) {
+          const x = this.eventOperationSessionRecords.find(item =>
+            item.eventId === args.where.eventId_sessionId.eventId &&
+            item.sessionId === args.where.eventId_sessionId.sessionId
+          );
+          return x ? { ...x } : null;
+        }
+        return null;
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventOperationSessionRecords];
+        if (args?.where?.id) list = list.filter(x => x.id === args.where.id);
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.eventOperationSessionRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ops_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'PREPARATION',
+          version: args.data.version || 1,
+          sequence: args.data.sequence || 1,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.eventOperationSessionRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventOperationSessionRecords.findIndex(x =>
+          x.id === args.where?.id ||
+          (args.where?.eventId_sessionId && x.eventId === args.where.eventId_sessionId.eventId && x.sessionId === args.where.eventId_sessionId.sessionId)
+        );
+        if (idx === -1) throw new Error('Sessão operacional não encontrada');
+        const updated = { ...this.eventOperationSessionRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventOperationSessionRecords[idx] = updated;
+        return { ...updated };
+      },
+      upsert: async (args: any) => {
+        const idx = this.eventOperationSessionRecords.findIndex(x =>
+          x.id === args.where?.id ||
+          (args.where?.eventId_sessionId && x.eventId === args.where.eventId_sessionId.eventId && x.sessionId === args.where.eventId_sessionId.sessionId)
+        );
+        if (idx !== -1) {
+          const updated = { ...this.eventOperationSessionRecords[idx], ...args.update, updatedAt: new Date() };
+          this.eventOperationSessionRecords[idx] = updated;
+          return { ...updated };
+        } else {
+          const record = {
+            id: args.create.id || `ops_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            status: args.create.status || 'PREPARATION',
+            version: args.create.version || 1,
+            sequence: args.create.sequence || 1,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            ...args.create
+          };
+          this.eventOperationSessionRecords.push(record);
+          return { ...record };
+        }
+      }
+    };
+  }
+
+  public get eventOperationArea() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventOperationAreaRecords];
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.sessionId) list = list.filter(x => !x.sessionId || x.sessionId === args.where.sessionId);
+        if (args?.where?.active !== undefined) list = list.filter(x => x.active === args.where.active);
+        return list.map(x => ({ ...x }));
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.eventOperationAreaRecords];
+        if (args?.where?.id) list = list.filter(x => x.id === args.where.id);
+        if (args?.where?.eventId) list = list.filter(x => x.eventId === args.where.eventId);
+        if (args?.where?.areaCode) list = list.filter(x => x.areaCode === args.where.areaCode);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      findUnique: async (args: any) => {
+        const x = this.eventOperationAreaRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `area_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: args.data.active ?? true,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.eventOperationAreaRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventOperationAreaRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Área operacional não encontrada');
+        const updated = { ...this.eventOperationAreaRecords[idx], ...args.data, updatedAt: new Date() };
+        this.eventOperationAreaRecords[idx] = updated;
+        return { ...updated };
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.eventOperationAreaRecords.length;
+        if (args?.where?.eventId) {
+          this.eventOperationAreaRecords = this.eventOperationAreaRecords.filter(x => x.eventId !== args.where.eventId);
+        }
+        return { count: before - this.eventOperationAreaRecords.length };
+      }
+    };
+  }
+
+  public get operationShift() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.operationShiftRecords];
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.memberId) list = list.filter(x => x.memberId === args.where.memberId);
+        if (args?.where?.areaId) list = list.filter(x => x.areaId === args.where.areaId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.map(x => ({ ...x }));
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.operationShiftRecords];
+        if (args?.where?.id) list = list.filter(x => x.id === args.where.id);
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.memberId) list = list.filter(x => x.memberId === args.where.memberId);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      findUnique: async (args: any) => {
+        const x = this.operationShiftRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `shift_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'SCHEDULED',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.operationShiftRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.operationShiftRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Turno operacional não encontrado');
+        const updated = { ...this.operationShiftRecords[idx], ...args.data, updatedAt: new Date() };
+        this.operationShiftRecords[idx] = updated;
+        return { ...updated };
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.operationShiftRecords.length;
+        if (args?.where?.operationId) {
+          this.operationShiftRecords = this.operationShiftRecords.filter(x => x.operationId !== args.where.operationId);
+        }
+        return { count: before - this.operationShiftRecords.length };
+      }
+    };
+  }
+
+  public get sessionAccessPoint() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.sessionAccessPointRecords];
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        if (args?.where?.status) list = list.filter(x => x.status === args.where.status);
+        return list.map(x => ({ ...x }));
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.sessionAccessPointRecords];
+        if (args?.where?.id) list = list.filter(x => x.id === args.where.id);
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.accessPointId) list = list.filter(x => x.accessPointId === args.where.accessPointId);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      findUnique: async (args: any) => {
+        const x = this.sessionAccessPointRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `sap_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'CLOSED',
+          executionMode: args.data.executionMode || 'LOGICAL',
+          validatedCount: args.data.validatedCount || 0,
+          rejectedCount: args.data.rejectedCount || 0,
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.sessionAccessPointRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.sessionAccessPointRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Ponto de acesso da sessão não encontrado');
+        const updated = { ...this.sessionAccessPointRecords[idx], ...args.data, updatedAt: new Date() };
+        this.sessionAccessPointRecords[idx] = updated;
+        return { ...updated };
+      },
+      deleteMany: async (args?: any) => {
+        const before = this.sessionAccessPointRecords.length;
+        if (args?.where?.operationId) {
+          this.sessionAccessPointRecords = this.sessionAccessPointRecords.filter(x => x.operationId !== args.where.operationId);
+        }
+        return { count: before - this.sessionAccessPointRecords.length };
+      }
+    };
+  }
+
+  public get operationCommand() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.operationCommandRecords];
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.sessionId) list = list.filter(x => x.sessionId === args.where.sessionId);
+        if (args?.where?.commandType) list = list.filter(x => x.commandType === args.where.commandType);
+        if (args?.orderBy?.executedAt === 'desc' || args?.orderBy?.requestedAt === 'desc') {
+          list.sort((a, b) => new Date(b.executedAt || b.requestedAt).getTime() - new Date(a.executedAt || a.requestedAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      findFirst: async (args?: any) => {
+        let list = [...this.operationCommandRecords];
+        if (args?.where?.idempotencyKey) list = list.filter(x => x.idempotencyKey === args.where.idempotencyKey);
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        return list.length > 0 ? { ...list[0] } : null;
+      },
+      findUnique: async (args: any) => {
+        const x = this.operationCommandRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `cmd_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: args.data.status || 'SUCCESS',
+          executionMode: args.data.executionMode || 'LOGICAL',
+          requestedAt: new Date(),
+          executedAt: new Date(),
+          ...args.data
+        };
+        this.operationCommandRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.operationCommandRecords.findIndex(x => x.id === args.where?.id);
+        if (idx === -1) throw new Error('Comando operacional não encontrado');
+        const updated = { ...this.operationCommandRecords[idx], ...args.data };
+        this.operationCommandRecords[idx] = updated;
+        return { ...updated };
+      }
+    };
+  }
+
+  public get operationBroadcast() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.operationBroadcastRecords];
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.targetAreaId) list = list.filter(x => !x.targetAreaId || x.targetAreaId === args.where.targetAreaId);
+        if (args?.orderBy?.sentAt === 'desc') {
+          list.sort((a, b) => new Date(b.sentAt).getTime() - new Date(a.sentAt).getTime());
+        }
+        return list.map(x => ({
+          ...x,
+          receipts: this.operationBroadcastReceiptRecords.filter(r => r.broadcastId === x.id)
+        }));
+      },
+      findUnique: async (args: any) => {
+        const x = this.operationBroadcastRecords.find(item => item.id === args?.where?.id);
+        if (!x) return null;
+        return {
+          ...x,
+          receipts: this.operationBroadcastReceiptRecords.filter(r => r.broadcastId === x.id)
+        };
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `bcast_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          priority: args.data.priority || 'INFO',
+          requiresAck: args.data.requiresAck ?? false,
+          sentAt: new Date(),
+          ...args.data
+        };
+        this.operationBroadcastRecords.push(record);
+        return { ...record, receipts: [] };
+      }
+    };
+  }
+
+  public get operationBroadcastReceipt() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.operationBroadcastReceiptRecords];
+        if (args?.where?.broadcastId) list = list.filter(x => x.broadcastId === args.where.broadcastId);
+        if (args?.where?.userId) list = list.filter(x => x.userId === args.where.userId);
+        return list.map(x => ({ ...x }));
+      },
+      findUnique: async (args: any) => {
+        if (args?.where?.broadcastId_userId) {
+          const x = this.operationBroadcastReceiptRecords.find(item =>
+            item.broadcastId === args.where.broadcastId_userId.broadcastId &&
+            item.userId === args.where.broadcastId_userId.userId
+          );
+          return x ? { ...x } : null;
+        }
+        const x = this.operationBroadcastReceiptRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `rcpt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          acknowledgedAt: new Date(),
+          ...args.data
+        };
+        this.operationBroadcastReceiptRecords.push(record);
+        return { ...record };
+      },
+      upsert: async (args: any) => {
+        const idx = this.operationBroadcastReceiptRecords.findIndex(item =>
+          args.where?.broadcastId_userId &&
+          item.broadcastId === args.where.broadcastId_userId.broadcastId &&
+          item.userId === args.where.broadcastId_userId.userId
+        );
+        if (idx !== -1) {
+          const updated = { ...this.operationBroadcastReceiptRecords[idx], ...args.update, acknowledgedAt: new Date() };
+          this.operationBroadcastReceiptRecords[idx] = updated;
+          return { ...updated };
+        } else {
+          const record = {
+            id: args.create.id || `rcpt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+            acknowledgedAt: new Date(),
+            ...args.create
+          };
+          this.operationBroadcastReceiptRecords.push(record);
+          return { ...record };
+        }
+      }
+    };
+  }
+
+  public get operationHandoff() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.operationHandoffRecords];
+        if (args?.where?.operationId) list = list.filter(x => x.operationId === args.where.operationId);
+        if (args?.where?.areaId) list = list.filter(x => x.areaId === args.where.areaId);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        }
+        return list.map(x => ({ ...x }));
+      },
+      findUnique: async (args: any) => {
+        const x = this.operationHandoffRecords.find(item => item.id === args?.where?.id);
+        return x ? { ...x } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `hnd_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          openIncidentsCount: args.data.openIncidentsCount || 0,
+          openTasksCount: args.data.openTasksCount || 0,
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.operationHandoffRecords.push(record);
+        return { ...record };
       }
     };
   }

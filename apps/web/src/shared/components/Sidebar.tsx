@@ -152,7 +152,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'events-changes', label: 'Central de Alterações', requiredPermission: 'eventos.alteracoes.visualizar' },
         { id: 'events-review-publication', label: 'Revisão & Publicação', requiredPermission: 'eventos.lifecycle.review' },
         { id: 'events-checkin', label: 'Check-in e Portaria', requiredPermission: 'eventos.checkin.operar' },
-        { id: 'events-realtime', label: 'Operação em Tempo Real' }
+        { id: 'events-operation', label: 'Central de Operação', requiredPermission: 'eventos.operacao.visualizar' }
       ]
     },
     {

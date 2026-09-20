@@ -22,6 +22,7 @@ import { EventTasksPage } from '../../features/events/tasks/EventTasksPage';
 import { EventReadinessPage } from '../../features/events/readiness/EventReadinessPage';
 import { EventReviewPublicationPage } from '../../features/events/publication/EventReviewPublicationPage';
 import { EventChangeManagementPage } from '../../features/events/changes/EventChangeManagementPage';
+import { EventOperationPage } from '../../features/events/operation/EventOperationPage';
 import { useEventSelection } from '../../features/events/hooks/useEventSelection';
 import { useEvents } from '../../features/events/hooks/useEvents';
 import { createEventDraft } from '../../features/events/api/events.api';
@@ -357,6 +358,18 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
       <EventReviewPublicationPage
         eventId={activeEvent.id}
         eventName={activeEvent.name || (activeEvent as any).title}
+      />
+    );
+  }
+
+  // --- SUB-ROTA: CENTRAL DE OPERAÇÃO EM TEMPO REAL (FASE 1.2.12) ---
+  if (initialSubItem === 'events-operation' || initialSubItem === 'events-realtime') {
+    if (!activeEvent) return renderNoEventSelected('acessar a central de operação em tempo real');
+    return (
+      <EventOperationPage
+        eventId={activeEvent.id}
+        eventName={activeEvent.name || (activeEvent as any).title}
+        onNavigate={(subId) => onNavigate?.('events', subId)}
       />
     );
   }

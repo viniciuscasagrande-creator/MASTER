@@ -70,3 +70,6 @@ export * from './documents/UploadDocumentModal';
 export * from './tasks/EventTasksPage';
 export * from './tasks/CreateTaskModal';
 export * from './readiness/EventReadinessPage';
+export * from './publication/EventReviewPublicationPage';
+export * from './changes/EventChangeManagementPage';
+export * from './operation/EventOperationPage';

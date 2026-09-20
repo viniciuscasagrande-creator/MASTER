@@ -3430,3 +3430,161 @@ model MigrationReconciliationModel {
   @@index([migrationId])
 }
 
+// ==============================================================================
+// FASE 1.2.12: CENTRAL DE OPERAÇÃO DO EVENTO EM TEMPO REAL
+// ==============================================================================
+
+model EventOperationSession {
+  id               String    @id @default(uuid())
+  eventId          String
+  sessionId        String
+  status           String    @default("PREPARATION") // PREPARATION, READY, OPENING, ACTIVE, CLOSING, CLOSED
+  plannedOpeningAt DateTime
+  actualOpeningAt  DateTime?
+  startedAt        DateTime?
+  closingStartedAt DateTime?
+  closedAt         DateTime?
+  openedBy         String?
+  closedBy         String?
+  version          Int       @default(1)
+  sequence         Int       @default(1)
+  notes            String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  @@unique([eventId, sessionId])
+  @@index([eventId])
+  @@index([sessionId])
+  @@index([status])
+}
+
+model EventOperationArea {
+  id           String   @id @default(uuid())
+  eventId      String
+  sessionId    String?
+  areaCode     String   // ACESSOS, CHECKIN, BILHETERIA, SEGURANCA, SUPORTE, etc.
+  name         String
+  description  String?
+  leadUserId   String?
+  leadUserName String?
+  active       Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([eventId])
+  @@index([sessionId])
+}
+
+model OperationShift {
+  id          String    @id @default(uuid())
+  operationId String
+  memberId    String
+  memberName  String
+  areaId      String
+  areaCode    String
+  startsAt    DateTime
+  endsAt      DateTime
+  role        String
+  status      String    @default("SCHEDULED") // SCHEDULED, PRESENT, LATE, ABSENT, FINISHED
+  checkInAt   DateTime?
+  checkOutAt  DateTime?
+  notes       String?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([operationId])
+  @@index([memberId])
+  @@index([areaId])
+  @@index([status])
+}
+
+model SessionAccessPoint {
+  id             String    @id @default(uuid())
+  operationId    String
+  sessionId      String
+  accessPointId  String
+  name           String
+  type           String    @default("ENTRY") // ENTRY, EXIT, EMERGENCY, VIP
+  status         String    @default("CLOSED") // OPEN, CLOSED, PAUSED
+  executionMode  String    @default("LOGICAL") // LOGICAL, INTEGRATION
+  openedAt       DateTime?
+  closedAt       DateTime?
+  validatedCount Int       @default(0)
+  rejectedCount  Int       @default(0)
+  lastActivityAt DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  @@index([operationId])
+  @@index([sessionId])
+  @@index([accessPointId])
+}
+
+model OperationCommand {
+  id              String   @id @default(uuid())
+  operationId     String
+  sessionId       String
+  commandType     String
+  targetType      String
+  targetId        String?
+  status          String   @default("SUCCESS")
+  requestedBy     String
+  requestedByName String?
+  requestedAt     DateTime @default(now())
+  executionMode   String   @default("LOGICAL")
+  executedAt      DateTime @default(now())
+  idempotencyKey  String?
+  reason          String?
+  payload         String?  // JSON
+
+  @@index([operationId])
+  @@index([sessionId])
+  @@index([commandType])
+  @@index([idempotencyKey])
+}
+
+model OperationBroadcast {
+  id           String   @id @default(uuid())
+  operationId  String
+  targetAreaId String?
+  priority     String   @default("INFO") // INFO, WARNING, CRITICAL
+  title        String
+  message      String
+  sentBy       String
+  sentByName   String
+  sentAt       DateTime @default(now())
+  requiresAck  Boolean  @default(false)
+
+  @@index([operationId])
+  @@index([targetAreaId])
+}
+
+model OperationBroadcastReceipt {
+  id             String   @id @default(uuid())
+  broadcastId    String
+  userId         String
+  userName       String
+  acknowledgedAt DateTime @default(now())
+
+  @@unique([broadcastId, userId])
+  @@index([broadcastId])
+}
+
+model OperationHandoff {
+  id                 String   @id @default(uuid())
+  operationId        String
+  areaId             String?
+  areaName           String?
+  fromUserId         String
+  fromUserName       String
+  toUserId           String
+  toUserName         String
+  notes              String
+  openIncidentsCount Int      @default(0)
+  openTasksCount     Int      @default(0)
+  createdAt          DateTime @default(now())
+
+  @@index([operationId])
+}
+
+
