@@ -37,7 +37,7 @@ const ALL_PERMISSIONS: PermissionEntry[] = [
   { code: 'financeiro.conciliacao.executar', module: 'Financeiro', action: 'Conciliação', description: 'Executar conciliação bancária automática', defaultRoles: ['ADMIN_GERAL', 'FINANCEIRO'] },
 
   // SAC & Estorno
-  { code: 'sac.consulta.acessar', module: 'SAC', action: 'Consulta 360°', description: 'Acessar painel consolidado do cliente', defaultRoles: ['ADMIN_GERAL', 'ATENDIMENTO_SAC'] },
+  { code: 'sac.consulta.acessar', module: 'SAC', action: 'Central de Consulta', description: 'Acessar painel consolidado do cliente', defaultRoles: ['ADMIN_GERAL', 'ATENDIMENTO_SAC'] },
   { code: 'sac.pedido.visualizar', module: 'SAC', action: 'Ver Pedido', description: 'Inspecionar ingressos e cobranças do cliente', defaultRoles: ['ADMIN_GERAL', 'ATENDIMENTO_SAC'] },
   { code: 'sac.voucher.reenviar', module: 'SAC', action: 'Reenviar Voucher', description: 'Disparar QR Code por e-mail ou WhatsApp', defaultRoles: ['ADMIN_GERAL', 'ATENDIMENTO_SAC'] },
   { code: 'estorno.solicitacao.criar', module: 'Estorno', action: 'Solicitar', description: 'Abrir solicitação de estorno de ingresso', defaultRoles: ['ADMIN_GERAL', 'ATENDIMENTO_SAC', 'ESTORNO'] },

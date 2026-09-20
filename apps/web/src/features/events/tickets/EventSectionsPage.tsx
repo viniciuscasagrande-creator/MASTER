@@ -164,7 +164,7 @@ export const EventSectionsPage: React.FC<EventSectionsPageProps> = ({
               className="px-3.5 py-1.5 text-xs font-medium bg-brand-600/20 hover:bg-brand-600/30 border border-brand-500/30 text-brand-300 rounded-xl flex items-center gap-1.5 transition-colors"
             >
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Visão de Capacidade 360°</span>
+              <span>Visão Integrada de Capacidade</span>
             </button>
           )}
           <button

@@ -262,7 +262,7 @@ export const UserDetailsModal: React.FC<UserDetailsModalProps> = ({
                   { slug: 'eventos.evento.visualizar', label: 'Eventos: Visualizar Eventos' },
                   { slug: 'eventos.evento.criar', label: 'Eventos: Criar Eventos' },
                   { slug: 'eventos.checkin.operar', label: 'Eventos: Operar Portaria' },
-                  { slug: 'sac.consulta.acessar', label: 'SAC: Central 360°' },
+                  { slug: 'sac.consulta.acessar', label: 'SAC: Central de Consulta' },
                   { slug: 'sac.voucher.reenviar', label: 'SAC: Reenviar Vouchers' },
                   { slug: 'estorno.solicitacao.criar', label: 'Estorno: Criar Solicitação' },
                   { slug: 'estorno.solicitacao.aprovar', label: 'Estorno: Aprovar Estorno' },

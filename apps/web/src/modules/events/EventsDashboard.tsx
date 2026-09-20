@@ -447,8 +447,14 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
       <EventDashboardPage
         event={selectedEvent}
         availableEvents={events}
-        onSelectAnotherEvent={(id) => selectEvent(id)}
-        onClearEventContext={deselectEvent}
+        onSelectAnotherEvent={(id) => {
+          selectEvent(id);
+          onNavigate?.('events', 'events-dashboard');
+        }}
+        onClearEventContext={() => {
+          deselectEvent();
+          onNavigate?.('events', 'events-all');
+        }}
         onNavigateModule={onNavigate}
       />
     );
@@ -457,7 +463,10 @@ export const EventsDashboard: React.FC<EventsDashboardProps> = ({
   // Otherwise, show the full catalog of events
   return (
     <EventsPage
-      onSelectEvent={(id) => selectEvent(id)}
+      onSelectEvent={(id) => {
+        selectEvent(id);
+        onNavigate?.('events', 'events-dashboard');
+      }}
       selectedEventId={selectedEventId}
       onOpenWizard={(id) => setWizardEventId(id)}
     />

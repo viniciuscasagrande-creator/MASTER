@@ -30,7 +30,7 @@ const OFFICIAL_ROLES = [
   { slug: 'admin_operacional', name: 'Administrador Operacional', desc: 'Operação de campo, bilheteria física e suporte a portas.', badge: 'Operações', internalOnly: true },
   { slug: 'financeiro', name: 'Financeiro', desc: 'Gestão de fluxo de caixa, repasses, saldos e conciliação bancária.', badge: 'Finanças', internalOnly: true },
   { slug: 'contabilidade', name: 'Contabilidade', desc: 'Livro diário, balancetes e DRE gerencial em tempo real.', badge: 'Fiscal', internalOnly: true },
-  { slug: 'sac', name: 'Atendimento SAC', desc: 'Central 360°, pedidos, reenviar vouchers e abertura de chamados.', badge: 'Atendimento', internalOnly: true },
+  { slug: 'sac', name: 'Atendimento SAC', desc: 'Central de Consulta, pedidos, reenviar vouchers e abertura de chamados.', badge: 'Atendimento', internalOnly: true },
   { slug: 'estorno', name: 'Estorno & Chargeback', desc: 'Análise e aprovação de devoluções e contestações de cartão.', badge: 'Disputas', internalOnly: true },
   { slug: 'comercial', name: 'Comercial', desc: 'Prospecção de produtores, pipeline de eventos e metas de faturamento.', badge: 'Vendas', internalOnly: true },
   { slug: 'suporte_eventos', name: 'Suporte Eventos', desc: 'War room presencial, catracas e contingência de rede.', badge: 'Campo', internalOnly: true },
@@ -70,7 +70,7 @@ const DEFAULT_PERMISSIONS_BY_MODULE: Record<string, { slug: PermissionString; la
     { slug: 'eventos.checkin.operar', label: 'Operar Portaria' }
   ],
   sac: [
-    { slug: 'sac.consulta.acessar', label: 'Central 360°' },
+    { slug: 'sac.consulta.acessar', label: 'Central de Consulta' },
     { slug: 'sac.pedido.visualizar', label: 'Visualizar Pedidos' },
     { slug: 'sac.voucher.reenviar', label: 'Reenviar Vouchers' },
     { slug: 'estorno.solicitacao.criar', label: 'Solicitar Estorno' }

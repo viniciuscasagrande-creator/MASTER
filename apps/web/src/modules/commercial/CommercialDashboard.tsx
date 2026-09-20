@@ -126,7 +126,7 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
     );
   }
 
-  if (currentView === 'commercial-sales') {
+  if (currentView === 'commercial-sales' || currentView === 'commercial-performance') {
     return (
       <CommercialSalesPage
         onNavigateToOrders={() => setCurrentView('commercial-orders')}

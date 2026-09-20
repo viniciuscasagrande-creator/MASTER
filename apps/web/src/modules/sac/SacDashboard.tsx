@@ -68,7 +68,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({ onNavigateToRefunds 
               ATENDIMENTO SAC & CENTRAL DE CONSULTA
             </h1>
             <Badge variant="cyan" size="sm">
-              Visão 360° do Comprador
+              Ficha Consolidada do Comprador
             </Badge>
           </div>
           <p className="text-xs text-slate-400 mt-1">
@@ -297,7 +297,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({ onNavigateToRefunds 
             </div>
           ) : (
             <div className="lg:col-span-2 py-20 text-center text-xs text-slate-500">
-              Selecione um pedido para visualizar a ficha 360° do comprador.
+              Selecione um pedido para visualizar a ficha consolidada do comprador.
             </div>
           )}
         </div>

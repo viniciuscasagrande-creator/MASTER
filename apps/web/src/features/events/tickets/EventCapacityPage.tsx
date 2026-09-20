@@ -110,7 +110,7 @@ export const EventCapacityPage: React.FC<EventCapacityPageProps> = ({
         <div>
           <div className="flex items-center gap-2 text-xs text-brand-400 font-medium mb-1">
             <PieChart className="w-3.5 h-3.5" />
-            <span>Fase 1.2.5 — Decomposição 360° de Capacidade</span>
+            <span>Fase 1.2.5 — Decomposição Operacional de Capacidade</span>
           </div>
           <h1 className="text-xl sm:text-2xl font-bold text-slate-100">
             Decomposição de Capacidade Real

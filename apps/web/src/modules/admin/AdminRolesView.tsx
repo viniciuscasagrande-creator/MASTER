@@ -63,7 +63,7 @@ const OFFICIAL_ROLES: RoleDetail[] = [
     code: 'ATENDIMENTO_SAC',
     name: 'Atendimento SAC',
     category: 'Atendimento',
-    description: 'Central de Consulta 360°, pedidos, histórico de compras de clientes e reenvio de vouchers.',
+    description: 'Central de Consulta, pedidos, histórico de compras de clientes e reenvio de vouchers.',
     defaultScope: 'GLOBAL',
     isProtected: false,
     permissions: ['sac.consulta.acessar', 'sac.pedido.*', 'sac.voucher.reenviar', 'sac.ticket.*']
