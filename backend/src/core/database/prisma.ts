@@ -726,12 +726,136 @@ export class InMemoryPrismaStore {
       { id: 'prd_300', name: 'CWB Brasil Produções', cnpj: '45.123.890/0001-55', status: 'ACTIVE' }
     );
 
-    // 5. Eventos Iniciais
+    // 5. Eventos Iniciais (Fase 1.2)
     this.events.push(
-      { id: 'evt_1001', producerId: 'prd_100', title: 'Festival de Inverno Curitiba 2026', venue: 'Pedreira Paulo Leminski', status: 'PUBLISHED' },
-      { id: 'evt_1002', producerId: 'prd_100', title: 'Teatro Musical Broadway Curitiba', venue: 'Teatro Positivo', status: 'PUBLISHED' },
-      { id: 'evt_2001', producerId: 'prd_200', title: 'Coldplay Experience World Tour', venue: 'Estádio Couto Pereira', status: 'PUBLISHED' }
+      {
+        id: 'evt_1001',
+        publicCode: 'EVT-2026-001001',
+        producerId: 'prd_100',
+        name: 'Festival de Inverno Curitiba 2026',
+        title: 'Festival de Inverno Curitiba 2026',
+        slug: 'festival-de-inverno-curitiba-2026',
+        description: 'Maior festival musical de inverno do sul do país com atrações nacionais.',
+        status: 'ON_SALE',
+        venue: 'Pedreira Paulo Leminski',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-10-19T18:00:00-03:00'),
+        endAt: new Date('2026-10-20T04:00:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 25000,
+        soldTickets: 18421,
+        createdAt: new Date('2026-01-15T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T14:20:00Z')
+      },
+      {
+        id: 'evt_1002',
+        publicCode: 'EVT-2026-001002',
+        producerId: 'prd_100',
+        name: 'Teatro Musical Broadway Curitiba',
+        title: 'Teatro Musical Broadway Curitiba',
+        slug: 'teatro-musical-broadway-curitiba',
+        description: 'Espetáculo clássico da Broadway em temporada especial de 3 semanas.',
+        status: 'CONFIGURING',
+        venue: 'Teatro Positivo',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-10-22T20:00:00-03:00'),
+        endAt: new Date('2026-10-22T22:30:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 2400,
+        soldTickets: 0,
+        createdAt: new Date('2026-02-01T11:00:00Z'),
+        updatedAt: new Date('2026-09-18T16:45:00Z')
+      },
+      {
+        id: 'evt_2001',
+        publicCode: 'EVT-2026-002001',
+        producerId: 'prd_200',
+        name: 'Coldplay Experience World Tour',
+        title: 'Coldplay Experience World Tour',
+        slug: 'coldplay-experience-world-tour',
+        description: 'Megaespetáculo com pulseiras de LED e cenografia futurista.',
+        status: 'ON_SALE',
+        venue: 'Estádio Couto Pereira',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-11-15T21:00:00-03:00'),
+        endAt: new Date('2026-11-16T00:30:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 45000,
+        soldTickets: 39810,
+        createdAt: new Date('2026-03-10T09:30:00Z'),
+        updatedAt: new Date('2026-09-19T11:15:00Z')
+      },
+      {
+        id: 'evt_1003',
+        publicCode: 'EVT-2026-001003',
+        producerId: 'prd_100',
+        name: 'Congresso Sul Brasileiro de Inovação',
+        title: 'Congresso Sul Brasileiro de Inovação',
+        slug: 'congresso-sul-brasileiro-de-inovacao',
+        description: 'Keynotes, startups, feira de negócios e rodadas de investimento.',
+        status: 'SCHEDULED',
+        venue: 'Viasoft Experience',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-11-28T08:00:00-03:00'),
+        endAt: new Date('2026-11-29T18:00:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 3500,
+        soldTickets: 1200,
+        createdAt: new Date('2026-04-05T14:00:00Z'),
+        updatedAt: new Date('2026-09-17T09:00:00Z')
+      },
+      {
+        id: 'evt_1004',
+        publicCode: 'EVT-2026-001004',
+        producerId: 'prd_100',
+        name: 'Noite de Stand-Up Comedy Curitiba',
+        title: 'Noite de Stand-Up Comedy Curitiba',
+        slug: 'noite-de-stand-up-comedy-curitiba',
+        description: 'Grandes nomes do humor nacional em apresentação única.',
+        status: 'DRAFT',
+        venue: 'Curitiba Comedy Club',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-12-05T21:00:00-03:00'),
+        endAt: new Date('2026-12-05T23:00:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 450,
+        soldTickets: 0,
+        createdAt: new Date('2026-05-12T16:30:00Z'),
+        updatedAt: new Date('2026-09-19T08:00:00Z')
+      },
+      {
+        id: 'evt_1005',
+        publicCode: 'EVT-2026-001005',
+        producerId: 'prd_100',
+        name: 'Show Acústico na Ópera de Arame',
+        title: 'Show Acústico na Ópera de Arame',
+        slug: 'show-acustico-na-opera-de-arame',
+        description: 'Apresentação acústica intimista com orquestra de câmara.',
+        status: 'IN_PROGRESS',
+        venue: 'Ópera de Arame',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        startAt: new Date('2026-09-19T20:00:00-03:00'),
+        endAt: new Date('2026-09-19T23:30:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        capacity: 1800,
+        soldTickets: 1780,
+        createdAt: new Date('2026-02-20T10:00:00Z'),
+        updatedAt: new Date('2026-09-19T20:15:00Z')
+      }
     );
+
 
     // 6. Regras Padrão de Notificação (Fase 1.1.5.5)
     this.notificationRules.push(
@@ -2462,33 +2586,145 @@ export class InMemoryPrismaStore {
   public get event() {
     return {
       findUnique: async (args: any) => {
-        return this.events.find(e => e.id === args.where?.id) || null;
+        if (!args?.where) return null;
+        if (args.where.id) return this.events.find(e => e.id === args.where.id) || null;
+        if (args.where.publicCode) return this.events.find(e => e.publicCode === args.where.publicCode) || null;
+        return null;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.event.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
       },
       findMany: async (args?: any) => {
         let list = [...this.events];
-        if (args?.where?.producerId) {
-          if (typeof args.where.producerId === 'string') {
-            list = list.filter(e => e.producerId === args.where.producerId);
-          } else if (args.where.producerId?.in && Array.isArray(args.where.producerId.in)) {
-            list = list.filter(e => args.where.producerId.in.includes(e.producerId));
+
+        const matchFilter = (item: any, where: any): boolean => {
+          if (!where) return true;
+
+          // AND condition
+          if (where.AND && Array.isArray(where.AND)) {
+            for (const sub of where.AND) {
+              if (!matchFilter(item, sub)) return false;
+            }
           }
-        }
-        if (args?.where?.id) {
-          if (typeof args.where.id === 'string') {
-            list = list.filter(e => e.id === args.where.id);
-          } else if (args.where.id?.in && Array.isArray(args.where.id.in)) {
-            list = list.filter(e => args.where.id.in.includes(e.id));
+
+          // OR condition
+          if (where.OR && Array.isArray(where.OR)) {
+            const orMatched = where.OR.some((sub: any) => matchFilter(item, sub));
+            if (!orMatched) return false;
           }
+
+          if (where.producerId) {
+            if (typeof where.producerId === 'string' && item.producerId !== where.producerId) return false;
+            if (where.producerId?.in && Array.isArray(where.producerId.in) && !where.producerId.in.includes(item.producerId)) return false;
+          }
+
+          if (where.id) {
+            if (typeof where.id === 'string' && item.id !== where.id) return false;
+            if (where.id?.in && Array.isArray(where.id.in) && !where.id.in.includes(item.id)) return false;
+          }
+
+          if (where.publicCode) {
+            if (typeof where.publicCode === 'string' && item.publicCode !== where.publicCode) return false;
+            if (where.publicCode?.in && Array.isArray(where.publicCode.in) && !where.publicCode.in.includes(item.publicCode)) return false;
+          }
+
+
+          if (where.status) {
+            if (typeof where.status === 'string' && item.status !== where.status) return false;
+            if (where.status?.in && Array.isArray(where.status.in) && !where.status.in.includes(item.status)) return false;
+          }
+
+          if (where.city) {
+            const cityQuery = typeof where.city === 'string' ? where.city : where.city?.contains;
+            if (cityQuery && !item.city?.toLowerCase().includes(cityQuery.toLowerCase())) return false;
+          }
+
+          if (where.startAt) {
+            const itemTime = item.startAt ? new Date(item.startAt).getTime() : 0;
+            if (where.startAt.gte && itemTime < new Date(where.startAt.gte).getTime()) return false;
+            if (where.startAt.lte && itemTime > new Date(where.startAt.lte).getTime()) return false;
+            if (where.startAt.gt && itemTime <= new Date(where.startAt.gt).getTime()) return false;
+            if (where.startAt.lt && itemTime >= new Date(where.startAt.lt).getTime()) return false;
+          }
+
+          if (where.name?.contains) {
+            const q = String(where.name.contains).toLowerCase();
+            const matchName = (item.name || item.title || '').toLowerCase().includes(q);
+            const matchCode = (item.publicCode || '').toLowerCase().includes(q);
+            const matchVenue = (item.venue || '').toLowerCase().includes(q);
+            const matchCity = (item.city || '').toLowerCase().includes(q);
+            if (!matchName && !matchCode && !matchVenue && !matchCity) return false;
+          }
+
+          return true;
+        };
+
+        if (args?.where) {
+          list = list.filter(e => matchFilter(e, args.where));
         }
-        return list;
+
+        // Sorting
+        if (args?.orderBy) {
+          const sortKey = Object.keys(args.orderBy)[0];
+          const sortDir = args.orderBy[sortKey] === 'desc' ? -1 : 1;
+          list.sort((a: any, b: any) => {
+            const valA = a[sortKey] instanceof Date ? a[sortKey].getTime() : (a[sortKey] || '');
+            const valB = b[sortKey] instanceof Date ? b[sortKey].getTime() : (b[sortKey] || '');
+            if (valA < valB) return -1 * sortDir;
+            if (valA > valB) return 1 * sortDir;
+            return 0;
+          });
+        }
+
+        // Pagination: skip / take
+        const skip = args?.skip || 0;
+        const take = args?.take !== undefined ? args.take : list.length;
+        return list.slice(skip, skip + take);
+      },
+      count: async (args?: any) => {
+        const matches = await this.event.findMany({ where: args?.where });
+        return matches.length;
       },
       create: async (args: any) => {
-        const newEvt = { id: args.data.id || `evt_${Date.now()}`, ...args.data, createdAt: new Date(), updatedAt: new Date() };
+        const id = args.data.id || `evt_${Date.now()}`;
+        const year = new Date().getFullYear();
+        const rand = Math.floor(100000 + Math.random() * 900000);
+        const publicCode = args.data.publicCode || `EVT-${year}-${rand}`;
+        const name = args.data.name || args.data.title || 'Novo Evento';
+        const newEvt = {
+          id,
+          publicCode,
+          name,
+          title: name,
+          timezone: 'America/Sao_Paulo',
+          country: 'BR',
+          status: 'DRAFT',
+          soldTickets: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
         this.events.push(newEvt);
         return newEvt;
+      },
+      update: async (args: any) => {
+        const index = this.events.findIndex(e => e.id === args.where?.id);
+        if (index === -1) throw new Error(`Evento "${args.where?.id}" não encontrado.`);
+        const existing = this.events[index];
+        const updated = {
+          ...existing,
+          ...args.data,
+          name: args.data.name || existing.name,
+          title: args.data.name || args.data.title || existing.title,
+          updatedAt: new Date()
+        };
+        this.events[index] = updated;
+        return updated;
       }
     };
   }
+
 
   public get userProducerAccess() {
     return {

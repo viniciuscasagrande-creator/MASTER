@@ -1,32 +1,27 @@
 import { Router } from 'express';
-import { EventsRealController } from './events.controller';
+import { EventController } from './event.controller';
 import { authenticate } from '../../core/middleware/authenticate';
 import { contextMiddleware } from '../context/context.middleware';
 import { requirePermission } from '../../core/middleware/requirePermission';
-import { requireScope } from '../../core/middleware/requireScope';
 
 const router = Router();
 
 router.use(authenticate);
 router.use(contextMiddleware);
 
-// List events with automatic query filtering based on user scope
-router.get('/', requirePermission('eventos.evento.visualizar'), EventsRealController.listEvents);
+// 1. Resumo e KPIs de Eventos (respeitando o mesmo escopo)
+router.get('/summary', requirePermission('eventos.evento.visualizar'), EventController.getEventSummary);
 
-// Get event by ID with strict scope validation (Producer A cannot access Event of Producer B)
-router.get(
-  '/:eventId',
-  requirePermission('eventos.evento.visualizar'),
-  requireScope({ eventParam: 'eventId' }),
-  EventsRealController.getEvent
-);
+// 2. Listagem com busca, filtros e paginação
+router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);
 
-// Create event with producer scope check
-router.post(
-  '/',
-  requirePermission('eventos.evento.criar'),
-  requireScope({ producerParam: 'producerId' }),
-  EventsRealController.createEvent
-);
+// 3. Detalhes de um Evento (por ID ou publicCode)
+router.get('/:eventId', requirePermission('eventos.evento.visualizar'), EventController.getEvent);
+
+// 4. Criação de Evento (Rascunho)
+router.post('/', requirePermission('eventos.evento.criar'), EventController.createEvent);
+
+// 5. Seleção de Contexto Operacional
+router.put('/:eventId/context', requirePermission('eventos.evento.visualizar'), EventController.selectEventContext);
 
 export default router;

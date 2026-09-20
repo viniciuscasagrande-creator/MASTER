@@ -48,15 +48,36 @@ export type PermissionAction = 'visualizar' | 'criar' | 'editar' | 'aprovar' | '
 
 // Granular Permission String format: "module.resource.action"
 export type PermissionString =
-  // Eventos
+  // Eventos (Fase 1.2)
+  | 'eventos.central.visualizar'
   | 'eventos.evento.visualizar'
   | 'eventos.evento.criar'
   | 'eventos.evento.editar'
   | 'eventos.evento.cancelar'
+  | 'eventos.evento.historico.visualizar'
+  | 'eventos.evento.publicar'
+  | 'eventos.evento.pausar_vendas'
+  | 'eventos.evento.encerrar'
+  | 'eventos.evento.arquivar'
+  | 'eventos.local.visualizar'
+  | 'eventos.local.gerenciar'
+  | 'eventos.sessao.visualizar'
+  | 'eventos.sessao.gerenciar'
+  | 'eventos.setor.visualizar'
+  | 'eventos.setor.gerenciar'
+  | 'eventos.ingresso.visualizar'
+  | 'eventos.ingresso.gerenciar'
+  | 'eventos.lote.visualizar'
+  | 'eventos.lote.gerenciar'
+  | 'eventos.cortesia.visualizar'
+  | 'eventos.cortesia.emitir'
+  | 'eventos.cortesias.emitir'
+  | 'eventos.checkin.visualizar'
   | 'eventos.checkin.operar'
   | 'eventos.setores.configurar'
-  | 'eventos.cortesias.emitir'
+  | 'eventos.operacao.visualizar'
   // Comercial
+
   | 'comercial.produtores.visualizar'
   | 'comercial.produtores.criar'
   | 'comercial.produtores.editar'
@@ -1919,4 +1940,81 @@ export interface RollbackEligibility {
   blockingDependencies: { relation: string; count: number }[];
   compensatingActionRecommended?: string;
 }
+
+// ==========================================
+// FASE 1.2 — MÓDULO EVENTOS
+// ==========================================
+
+export type EventStatus =
+  | 'DRAFT'
+  | 'CONFIGURING'
+  | 'REVIEW'
+  | 'APPROVAL_PENDING'
+  | 'SCHEDULED'
+  | 'ON_SALE'
+  | 'SALES_PAUSED'
+  | 'SOLD_OUT'
+  | 'IN_PROGRESS'
+  | 'FINISHED'
+  | 'CANCELLED'
+  | 'ARCHIVED';
+
+export interface EventListItemDTO {
+  id: string;
+  publicCode: string;
+  producerId: string;
+  producerName?: string;
+  name: string;
+  title?: string;
+  slug?: string | null;
+  status: EventStatus;
+  startAt?: string | null;
+  endAt?: string | null;
+  timezone: string;
+  venue?: string | null;
+  city?: string | null;
+  state?: string | null;
+  country: string;
+  capacity?: number | null;
+  soldTickets?: number;
+  occupancyPercentage?: number | null;
+  coverDocumentId?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface EventDetailDTO extends EventListItemDTO {
+  description?: string | null;
+  categoryId?: string | null;
+  categoryName?: string;
+  createdBy?: string | null;
+  updatedBy?: string | null;
+  archivedAt?: string | null;
+  readinessScore?: number;
+  pendingItemsCount?: number;
+}
+
+export interface EventSummaryDTO {
+  total: number;
+  onSale: number;
+  upcoming: number;
+  configuring: number;
+  inProgress?: number;
+  draft?: number;
+}
+
+export interface ListEventsFilter {
+  search?: string;
+  status?: EventStatus | 'ALL';
+  producerId?: string;
+  city?: string;
+  state?: string;
+  from?: string | Date;
+  to?: string | Date;
+  period?: 'all' | 'today' | 'next7days' | 'next30days' | 'thisMonth' | 'upcoming' | 'past' | 'custom';
+  cursor?: string;
+  limit?: number;
+  sortBy?: 'date_asc' | 'date_desc' | 'name_asc' | 'name_desc' | 'created_recent' | 'updated_recent';
+}
+
 

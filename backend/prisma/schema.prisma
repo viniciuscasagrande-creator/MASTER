@@ -157,22 +157,51 @@ model Producer {
 }
 
 model Event {
-  id           String            @id @default(uuid())
-  producerId   String
-  title        String
-  venue        String?
-  city         String?
-  state        String?
-  eventDate    DateTime?
-  status       String            @default("PUBLISHED")
-  createdAt    DateTime          @default(now())
-  updatedAt    DateTime          @updatedAt
+  id              String            @id @default(uuid())
+  publicCode      String            @unique
+  producerId      String
 
-  producer     Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
-  userAccesses UserEventAccess[]
+  name            String
+  title           String?           // For backwards compatibility
+  slug            String?
+  description     String?
+
+  status          String            @default("DRAFT")
+
+  categoryId      String?
+
+  startAt         DateTime?
+  endAt           DateTime?
+  eventDate       DateTime?         // Backwards compatibility
+  timezone        String            @default("America/Sao_Paulo")
+
+  venue           String?
+  city            String?
+  state           String?
+  country         String            @default("BR")
+
+  capacity        Int?
+  soldTickets     Int?              @default(0)
+
+  coverDocumentId String?
+
+  createdBy       String?
+  createdAt       DateTime          @default(now())
+
+  updatedBy       String?
+  updatedAt       DateTime          @updatedAt
+
+  archivedAt      DateTime?
+
+  producer        Producer          @relation(fields: [producerId], references: [id], onDelete: Restrict)
+  userAccesses    UserEventAccess[]
 
   @@index([producerId])
+  @@index([producerId, status])
+  @@index([startAt])
+  @@index([name])
 }
+
 
 model UserProducerAccess {
   id         String   @id @default(uuid())

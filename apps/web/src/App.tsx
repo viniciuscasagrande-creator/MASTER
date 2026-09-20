@@ -198,7 +198,7 @@ const MainShell: React.FC = () => {
       case 'events':
         return (
           <ProtectedRoute permission="eventos.evento.visualizar" onBack={() => handleNavigate('overview')}>
-            <EventsDashboard />
+            <EventsDashboard onNavigate={handleNavigate} initialSubItem={activeSubItem} />
           </ProtectedRoute>
         );
 

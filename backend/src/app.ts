@@ -26,12 +26,10 @@ app.get('/api/health', (req: Request, res: Response) => {
 
 // Primary API v1 Router
 app.use('/api/v1', apiV1Routes);
-
-// Compatibility aliases for direct endpoints
-app.use('/api/auth', apiV1Routes);
-app.use('/api/admin', apiV1Routes);
+app.use('/api', apiV1Routes);
 
 // Centralized error handler
+
 app.use(errorHandler);
 
 export default app;
