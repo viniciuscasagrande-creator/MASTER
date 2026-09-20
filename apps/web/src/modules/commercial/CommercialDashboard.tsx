@@ -11,6 +11,8 @@ import { OpportunitiesPage } from '../../features/commercial/opportunities/Oppor
 import { OpportunityDetailsPage } from '../../features/commercial/opportunities/OpportunityDetailsPage';
 import { ProposalsPage } from '../../features/commercial/proposals/ProposalsPage';
 import { ProposalDetailsPage } from '../../features/commercial/proposals/ProposalDetailsPage';
+import { ContractsPage } from '../../features/commercial/contracts/ContractsPage';
+import { ContractDetailsPage } from '../../features/commercial/contracts/ContractDetailsPage';
 
 interface CommercialDashboardProps {
   initialSubItem?: string;
@@ -26,6 +28,8 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const [selectedProducerId, setSelectedProducerId] = useState<string | null>(null);
   const [selectedOpportunityId, setSelectedOpportunityId] = useState<string | null>(null);
   const [selectedProposalId, setSelectedProposalId] = useState<string | null>(null);
+  const [selectedContractId, setSelectedContractId] = useState<string | null>(null);
+  const [proposalForContractId, setProposalForContractId] = useState<string | null>(null);
 
   useEffect(() => {
     if (initialSubItem) {
@@ -71,6 +75,22 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
   const handleBackToProposals = () => {
     setSelectedProposalId(null);
     setCurrentView('commercial-proposals');
+  };
+
+  const handleSelectContract = (contractId: string) => {
+    setSelectedContractId(contractId);
+    setCurrentView('commercial-contract-detail');
+  };
+
+  const handleBackToContracts = () => {
+    setSelectedContractId(null);
+    setProposalForContractId(null);
+    setCurrentView('commercial-contracts');
+  };
+
+  const handleGenerateContractFromProposal = (proposalId: string) => {
+    setProposalForContractId(proposalId);
+    setCurrentView('commercial-contracts');
   };
 
   // Route switcher
@@ -171,6 +191,7 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
         onBack={handleBackToProposals}
         onSelectProducer={handleSelectProducer}
         onSelectOpportunity={handleSelectOpportunity}
+        onGenerateContract={handleGenerateContractFromProposal}
       />
     );
   }
@@ -182,6 +203,30 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
         onSelectProposal={handleSelectProposal}
         onSelectProducer={handleSelectProducer}
         onSelectOpportunity={handleSelectOpportunity}
+        onGenerateContract={handleGenerateContractFromProposal}
+      />
+    );
+  }
+
+  // Detalhes do Contrato Comercial (Fase 1.3.6)
+  if (currentView === 'commercial-contract-detail' && selectedContractId) {
+    return (
+      <ContractDetailsPage
+        contractId={selectedContractId}
+        onBack={handleBackToContracts}
+        onSelectProducer={handleSelectProducer}
+        onSelectProposal={handleSelectProposal}
+      />
+    );
+  }
+
+  // Central de Contratos Comerciais (Fase 1.3.6)
+  if (currentView === 'commercial-contracts') {
+    return (
+      <ContractsPage
+        onSelectContract={handleSelectContract}
+        onSelectProducer={handleSelectProducer}
+        initialProposalIdForCreate={proposalForContractId || undefined}
       />
     );
   }

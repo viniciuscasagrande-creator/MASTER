@@ -134,6 +134,15 @@ export class InMemoryPrismaStore {
   public proposalEventReferences: any[] = [];
   public proposalAcceptances: any[] = [];
   public proposalDeliveries: any[] = [];
+  // Fase 1.3.6 — Contratos Comerciais, Assinatura, Vigência, Aditivos e Renovação
+  public commercialContracts: any[] = [];
+  public commercialContractVersions: any[] = [];
+  public contractCommercialTerms: any[] = [];
+  public contractParties: any[] = [];
+  public contractAmendments: any[] = [];
+  public contractRenewals: any[] = [];
+  public signatureEnvelopes: any[] = [];
+  public signatureSigners: any[] = [];
   public tickets: any[] = [];
   public payments: any[] = [];
   public refunds: any[] = [];
@@ -362,6 +371,24 @@ export class InMemoryPrismaStore {
     this.commercialOpportunities = [];
     this.opportunityStageHistories = [];
     this.opportunityCloseReasons = [];
+    // Fase 1.3.5
+    this.commercialOfferingCategories = [];
+    this.commercialOfferings = [];
+    this.commercialProposals = [];
+    this.commercialProposalVersions = [];
+    this.proposalCommercialTerms = [];
+    this.proposalEventReferences = [];
+    this.proposalAcceptances = [];
+    this.proposalDeliveries = [];
+    // Fase 1.3.6
+    this.commercialContracts = [];
+    this.commercialContractVersions = [];
+    this.contractCommercialTerms = [];
+    this.contractParties = [];
+    this.contractAmendments = [];
+    this.contractRenewals = [];
+    this.signatureEnvelopes = [];
+    this.signatureSigners = [];
     this.tickets = [];
     this.payments = [];
     this.refunds = [];
@@ -712,7 +739,22 @@ export class InMemoryPrismaStore {
       { id: 'p-com-41', module: 'comercial', resource: 'propostas', action: 'documentos.visualizar', code: 'comercial.propostas.documentos.visualizar', description: 'Visualizar documento PDF/HTML gerado da proposta' },
       { id: 'p-com-42', module: 'comercial', resource: 'propostas', action: 'documentos.gerar', code: 'comercial.propostas.documentos.gerar', description: 'Gerar documento formal imutável da versão da proposta' },
       { id: 'p-com-43', module: 'comercial', resource: 'propostas', action: 'versoes.visualizar', code: 'comercial.propostas.versoes.visualizar', description: 'Visualizar histórico e diff de versões da proposta' },
-      { id: 'p-com-44', module: 'comercial', resource: 'ofertas', action: 'gerenciar', code: 'comercial.ofertas.gerenciar', description: 'Gerenciar catálogo de serviços e ofertas comerciais' }
+      { id: 'p-com-44', module: 'comercial', resource: 'ofertas', action: 'gerenciar', code: 'comercial.ofertas.gerenciar', description: 'Gerenciar catálogo de serviços e ofertas comerciais' },
+      // Fase 1.3.6: Contratos Comerciais
+      { id: 'p-com-45', module: 'comercial', resource: 'contratos', action: 'visualizar', code: 'comercial.contratos.visualizar', description: 'Visualizar contratos comerciais' },
+      { id: 'p-com-46', module: 'comercial', resource: 'contratos', action: 'criar', code: 'comercial.contratos.criar', description: 'Criar contrato comercial direto ou a partir de proposta aceita' },
+      { id: 'p-com-47', module: 'comercial', resource: 'contratos', action: 'editar', code: 'comercial.contratos.editar', description: 'Editar rascunho de contrato comercial' },
+      { id: 'p-com-48', module: 'comercial', resource: 'contratos', action: 'condicoes.visualizar', code: 'comercial.contratos.condicoes.visualizar', description: 'Visualizar condições comerciais efetivas do contrato' },
+      { id: 'p-com-49', module: 'comercial', resource: 'contratos', action: 'condicoes.editar', code: 'comercial.contratos.condicoes.editar', description: 'Editar condições comerciais em rascunho ou via aditivo' },
+      { id: 'p-com-50', module: 'comercial', resource: 'contratos', action: 'enviar_aprovacao', code: 'comercial.contratos.enviar_aprovacao', description: 'Submeter minuta de contrato para aprovação interna' },
+      { id: 'p-com-51', module: 'comercial', resource: 'contratos', action: 'preparar_assinatura', code: 'comercial.contratos.preparar_assinatura', description: 'Configurar partes, signatários e preparar envelope' },
+      { id: 'p-com-52', module: 'comercial', resource: 'contratos', action: 'enviar_assinatura', code: 'comercial.contratos.enviar_assinatura', description: 'Disparar envelope para assinatura digital' },
+      { id: 'p-com-53', module: 'comercial', resource: 'contratos', action: 'aditivos.gerenciar', code: 'comercial.contratos.aditivos.gerenciar', description: 'Criar e gerenciar aditivos contratuais' },
+      { id: 'p-com-54', module: 'comercial', resource: 'contratos', action: 'renovacoes.gerenciar', code: 'comercial.contratos.renovacoes.gerenciar', description: 'Gerenciar renovações e renegociações de contratos' },
+      { id: 'p-com-55', module: 'comercial', resource: 'contratos', action: 'suspender', code: 'comercial.contratos.suspender', description: 'Suspender vigência de contrato comercial' },
+      { id: 'p-com-56', module: 'comercial', resource: 'contratos', action: 'rescindir', code: 'comercial.contratos.rescindir', description: 'Rescindir contrato comercial' },
+      { id: 'p-com-57', module: 'comercial', resource: 'contratos', action: 'documentos.gerar', code: 'comercial.contratos.documentos.gerar', description: 'Gerar documento formal e minuta de contrato' },
+      { id: 'p-com-58', module: 'comercial', resource: 'contratos', action: 'documentos.visualizar', code: 'comercial.contratos.documentos.visualizar', description: 'Visualizar minutas e documentos assinados' }
     ];
     this.permissions.push(...initialPermissions);
 
@@ -4184,6 +4226,260 @@ export class InMemoryPrismaStore {
       registeredByName: 'Carlos Lima',
       createdAt: new Date('2026-09-14T15:35:00Z')
     });
+
+    // ==============================================================================
+    // FASE 1.3.6 — SEED DE CONTRATOS COMERCIAIS, VIGÊNCIA, ADITIVOS E ASSINATURA
+    // ==============================================================================
+    const effectivePast = new Date('2026-03-01T00:00:00Z');
+    const effectiveUntilDec = new Date('2026-12-31T23:59:59Z');
+
+    this.commercialContracts.push(
+      {
+        id: 'ctr_101',
+        publicCode: 'CTR-2026-000101',
+        producerId: 'prd_100',
+        sourceOpportunityId: 'opc_101',
+        sourceProposalId: 'prop_101',
+        sourceProposalVersionId: 'ver_101_1',
+        sourceProposalContentHash: 'a1b2c3d4e5f67890123456789abcdef0123456789abcdef0123456789abcdef0',
+        title: 'Contrato de Prestação de Serviços de Gestão e Venda de Ingressos — Festival de Inverno 2026',
+        description: 'Contrato comercial de exclusividade e prestação de serviços de bilheteria e controle de acesso.',
+        status: 'ACTIVE',
+        currentVersionNumber: 1,
+        currentVersionId: 'ctr_ver_101_1',
+        ownerId: 'usr_comercial_1',
+        ownerName: 'Mariana Souza',
+        effectiveFrom: effectivePast,
+        effectiveUntil: effectiveUntilDec,
+        signedAt: new Date('2026-02-15T14:30:00Z'),
+        activatedAt: effectivePast,
+        suspendedAt: null,
+        suspensionReason: null,
+        terminatedAt: null,
+        terminationReason: null,
+        notes: 'Contrato formalizado com sucesso via Autentique.',
+        internalNotes: 'Margem de 7.5% e 4 coletores garantidos.',
+        version: 1,
+        createdAt: new Date('2026-02-10T10:00:00Z'),
+        updatedAt: effectivePast
+      }
+    );
+
+    this.commercialContractVersions.push(
+      {
+        id: 'ctr_ver_101_1',
+        contractId: 'ctr_101',
+        versionNumber: 1,
+        status: 'ACTIVE',
+        contentHash: 'hash_ctr_101_v1_sha256_canonical_test',
+        title: 'Contrato de Prestação de Serviços — Festival de Inverno 2026 (Minuta Aprovada e Assinada)',
+        summary: 'Comissão 7.5% + 4 coletores handheld',
+        effectiveFrom: effectivePast,
+        effectiveUntil: effectiveUntilDec,
+        termsSnapshotJson: JSON.stringify([
+          { offeringId: 'off_plat_std', termType: 'PLATFORM_COMMISSION', name: 'Comissão de Plataforma', calculationType: 'PERCENTAGE', percentage: 7.5, payer: 'PRODUCER', conditions: 'Vendas online e PDV' },
+          { offeringId: 'off_acc_device', termType: 'ACCESS_CONTROL', name: 'Coletores Handheld (4 aparelhos)', calculationType: 'FIXED_AMOUNT', amount: 480.0, payer: 'PRODUCER', conditions: 'Inclusos no pacote' }
+        ]),
+        partiesSnapshotJson: JSON.stringify([
+          { partyType: 'DISK_INGRESSOS', legalName: 'Disk Ingressos Serviços de Informática Ltda.', document: '05.123.456/0001-78', representativeName: 'Vinicius Casagrande' },
+          { partyType: 'PRODUCER', legalName: 'Curitiba Live Entretenimento e Eventos S/A', document: '12.345.678/0001-90', representativeName: 'Eduardo Guimarães' }
+        ]),
+        approvalRequestId: null,
+        approvalStatus: 'APPROVED',
+        approvedAt: new Date('2026-02-12T11:00:00Z'),
+        approvedBy: 'usr_admin',
+        approvedByName: 'Administrador Geral',
+        rejectionReason: null,
+        documentId: 'doc_ctr_101_1',
+        documentChecksum: 'checksum_ctr_101_v1',
+        signedDocumentId: 'doc_signed_ctr_101_1',
+        signedDocumentChecksum: 'signed_checksum_ctr_101_v1',
+        signatureEvidenceDocumentId: 'evi_ctr_101_1',
+        signedAt: new Date('2026-02-15T14:30:00Z'),
+        changeSummary: 'Minuta original gerada a partir da proposta aprovada PROP-2026-000101.',
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        createdAt: new Date('2026-02-10T10:00:00Z'),
+        updatedAt: new Date('2026-02-15T14:30:00Z')
+      }
+    );
+
+    this.contractCommercialTerms.push(
+      {
+        id: 'ctr_trm_101_1',
+        contractVersionId: 'ctr_ver_101_1',
+        offeringId: 'off_plat_std',
+        offeringName: 'Comissão Padrão DiskIngressos',
+        termType: 'PLATFORM_COMMISSION',
+        name: 'Comissão de Plataforma',
+        calculationType: 'PERCENTAGE',
+        percentage: 7.5,
+        amount: null,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Válido para vendas online e PDV.',
+        sortOrder: 1,
+        createdAt: new Date('2026-02-10T10:00:00Z')
+      },
+      {
+        id: 'ctr_trm_101_2',
+        contractVersionId: 'ctr_ver_101_1',
+        offeringId: 'off_acc_device',
+        offeringName: 'Locação de Validador QR Handheld',
+        termType: 'ACCESS_CONTROL',
+        name: 'Coletores Handheld (4 aparelhos)',
+        calculationType: 'FIXED_AMOUNT',
+        percentage: null,
+        amount: 480.0,
+        minimumAmount: null,
+        payer: 'PRODUCER',
+        splitProducerPercentage: null,
+        splitBuyerPercentage: null,
+        conditions: 'Inclusos no pacote operacional.',
+        sortOrder: 2,
+        createdAt: new Date('2026-02-10T10:00:00Z')
+      }
+    );
+
+    this.contractParties.push(
+      {
+        id: 'pty_101_disk',
+        contractId: 'ctr_101',
+        partyType: 'DISK_INGRESSOS',
+        legalName: 'Disk Ingressos Serviços de Informática Ltda.',
+        tradeName: 'Disk Ingressos',
+        document: '05.123.456/0001-78',
+        stateRegistration: '10293847-5',
+        address: 'Rua Marechal Deodoro, 500 - Centro, Curitiba - PR',
+        representativeName: 'Vinicius Casagrande',
+        representativeRole: 'Diretor Geral',
+        representativeCpf: '123.456.789-00',
+        representativeEmail: 'vinicius.casagrande@diskingressos.com.br',
+        representativePhone: '(41) 3315-0808',
+        createdAt: new Date('2026-02-10T10:00:00Z')
+      },
+      {
+        id: 'pty_101_prod',
+        contractId: 'ctr_101',
+        partyType: 'PRODUCER',
+        legalName: 'Curitiba Live Entretenimento e Eventos S/A',
+        tradeName: 'Curitiba Live',
+        document: '12.345.678/0001-90',
+        stateRegistration: '98765432-1',
+        address: 'Av. Sete de Setembro, 2000 - Batel, Curitiba - PR',
+        representativeName: 'Eduardo Guimarães',
+        representativeRole: 'Sócio-Diretor',
+        representativeCpf: '987.654.321-99',
+        representativeEmail: 'eduardo@curitibalive.com.br',
+        representativePhone: '(41) 99123-4567',
+        createdAt: new Date('2026-02-10T10:00:00Z')
+      }
+    );
+
+    this.contractAmendments.push(
+      {
+        id: 'adt_101_1',
+        publicCode: 'ADT-2026-000101-01',
+        contractId: 'ctr_101',
+        amendmentNumber: 1,
+        type: 'COMMERCIAL_TERMS',
+        status: 'ACTIVE',
+        effectiveFrom: new Date('2026-06-01T00:00:00Z'),
+        reason: 'Inclusão de ponto de venda presencial e bilheteria física credenciada.',
+        summary: 'Aditivo para fornecimento de Kit PDV com taxa de locação de R$ 350,00.',
+        contentHash: 'hash_adt_101_1_sha256',
+        termsSnapshotJson: JSON.stringify([
+          { offeringId: 'off_box_pdv', termType: 'BOX_OFFICE', name: 'Kit PDV Bilheteria Física', calculationType: 'FIXED_AMOUNT', amount: 350.0, payer: 'PRODUCER', conditions: 'Por ponto de venda ativo' }
+        ]),
+        documentId: 'doc_adt_101_1',
+        documentChecksum: 'checksum_adt_101_1',
+        signedDocumentId: 'doc_signed_adt_101_1',
+        signedAt: new Date('2026-05-25T16:00:00Z'),
+        approvedAt: new Date('2026-05-20T10:00:00Z'),
+        approvedBy: 'usr_admin',
+        approvedByName: 'Administrador Geral',
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        createdAt: new Date('2026-05-18T10:00:00Z'),
+        updatedAt: new Date('2026-05-25T16:00:00Z')
+      }
+    );
+
+    this.contractRenewals.push(
+      {
+        id: 'rnw_101_1',
+        contractId: 'ctr_101',
+        renewalType: 'SIMPLE',
+        status: 'IN_NEGOTIATION',
+        targetEffectiveFrom: new Date('2027-01-01T00:00:00Z'),
+        targetEffectiveUntil: new Date('2027-12-31T23:59:59Z'),
+        sourceOpportunityId: null,
+        sourceProposalId: null,
+        newContractId: null,
+        notes: 'Início de tratativas para extensão do prazo por mais 12 meses mantendo as condições do aditivo 1.',
+        createdBy: 'usr_comercial_1',
+        createdByName: 'Mariana Souza',
+        createdAt: new Date('2026-09-01T10:00:00Z'),
+        completedAt: null
+      }
+    );
+
+    this.signatureEnvelopes.push(
+      {
+        id: 'env_101_1',
+        contractId: 'ctr_101',
+        contractVersionId: 'ctr_ver_101_1',
+        amendmentId: null,
+        provider: 'AUTENTIQUE',
+        providerReference: 'aut_env_101_festival',
+        status: 'COMPLETED',
+        documentChecksum: 'checksum_ctr_101_v1',
+        sentAt: new Date('2026-02-13T10:00:00Z'),
+        completedAt: new Date('2026-02-15T14:30:00Z'),
+        cancelledAt: null,
+        createdAt: new Date('2026-02-13T09:30:00Z'),
+        updatedAt: new Date('2026-02-15T14:30:00Z')
+      }
+    );
+
+    this.signatureSigners.push(
+      {
+        id: 'sgn_101_1',
+        envelopeId: 'env_101_1',
+        partyType: 'DISK_INGRESSOS',
+        contactId: null,
+        name: 'Vinicius Casagrande',
+        email: 'vinicius.casagrande@diskingressos.com.br',
+        document: '123.456.789-00',
+        role: 'Diretor Geral',
+        signingOrder: 1,
+        status: 'SIGNED',
+        signedAt: new Date('2026-02-14T09:15:00Z'),
+        providerSignerId: 'aut_sgn_disk_1',
+        signatureUrl: 'https://autentique.com.br/sign/sgn_101_1',
+        evidenceIp: '177.105.88.12',
+        createdAt: new Date('2026-02-13T09:30:00Z')
+      },
+      {
+        id: 'sgn_101_2',
+        envelopeId: 'env_101_1',
+        partyType: 'PRODUCER',
+        contactId: null,
+        name: 'Eduardo Guimarães',
+        email: 'eduardo@curitibalive.com.br',
+        document: '987.654.321-99',
+        role: 'Sócio-Diretor',
+        signingOrder: 2,
+        status: 'SIGNED',
+        signedAt: new Date('2026-02-15T14:30:00Z'),
+        providerSignerId: 'aut_sgn_prod_1',
+        signatureUrl: 'https://autentique.com.br/sign/sgn_101_2',
+        evidenceIp: '187.54.12.99',
+        createdAt: new Date('2026-02-13T09:30:00Z')
+      }
+    );
   }
 
   // Model Emulators with relational hydration
@@ -9300,6 +9596,417 @@ export class InMemoryPrismaStore {
     };
   }
 
+  // ==============================================================================
+  // FASE 1.3.6 — CONTRATOS COMERCIAIS + ASSINATURA + VIGÊNCIA + ADITIVOS + RENOVAÇÃO
+  // ==============================================================================
+
+  public get commercialContract() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.commercialContracts.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) return null;
+        return this.hydrateContract(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialContracts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateContract(list[0], args.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialContracts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (args?.orderBy?.createdAt === 'desc') {
+          list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        } else if (args?.orderBy?.updatedAt === 'desc') {
+          list.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime());
+        }
+        return list.map(x => this.hydrateContract(x, args?.include));
+      },
+      create: async (args: any) => {
+        const now = new Date();
+        const year = now.getFullYear();
+        const count = this.commercialContracts.length + 101;
+        const publicCode = args.data.publicCode || `CTR-${year}-${String(count).padStart(6, '0')}`;
+        const item = {
+          id: args.data.id || `ctr_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          publicCode,
+          version: 1,
+          currentVersionNumber: 1,
+          status: args.data.status || 'DRAFT',
+          createdAt: now,
+          updatedAt: now,
+          ...args.data
+        };
+        this.commercialContracts.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialContracts.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) throw new Error('CommercialContract not found');
+        if (args.where?.version !== undefined && item.version !== args.where.version) {
+          const err: any = new Error('Conflito de versão (409): o contrato foi alterado concorrentemente.');
+          err.statusCode = 409;
+          throw err;
+        }
+        Object.assign(item, args.data, { version: (item.version || 1) + 1, updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialContracts.findIndex(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (idx >= 0) return this.commercialContracts.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialContracts];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get commercialContractVersion() {
+    return {
+      findUnique: async (args: any) => {
+        let item: any = null;
+        if (args.where?.id) {
+          item = this.commercialContractVersions.find(x => x.id === args.where.id);
+        } else if (args.where?.contractId_versionNumber) {
+          item = this.commercialContractVersions.find(
+            x => x.contractId === args.where.contractId_versionNumber.contractId &&
+                 x.versionNumber === args.where.contractId_versionNumber.versionNumber
+          );
+        }
+        if (!item) return null;
+        return this.hydrateContractVersion(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.commercialContractVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateContractVersion(list[0], args?.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.commercialContractVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.versionNumber - b.versionNumber);
+        return list.map(x => this.hydrateContractVersion(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `ctr_ver_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          approvalStatus: args.data.approvalStatus || 'NOT_REQUIRED',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.commercialContractVersions.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.commercialContractVersions.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('CommercialContractVersion not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.commercialContractVersions.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.commercialContractVersions.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.commercialContractVersions];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get contractCommercialTerm() {
+    return {
+      findUnique: async (args: any) => {
+        return this.contractCommercialTerms.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.contractCommercialTerms];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `ctr_trm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.contractCommercialTerms.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `ctr_trm_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.contractCommercialTerms.push(...items);
+        return { count: items.length };
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.contractCommercialTerms.length;
+        if (args?.where?.contractVersionId) {
+          this.contractCommercialTerms = this.contractCommercialTerms.filter(x => x.contractVersionId !== args.where.contractVersionId);
+        }
+        return { count: initial - this.contractCommercialTerms.length };
+      }
+    };
+  }
+
+  public get contractParty() {
+    return {
+      findUnique: async (args: any) => {
+        return this.contractParties.find(x => x.id === args.where?.id) || null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.contractParties];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `pty_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.contractParties.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `pty_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.contractParties.push(...items);
+        return { count: items.length };
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.contractParties.length;
+        if (args?.where?.contractId) {
+          this.contractParties = this.contractParties.filter(x => x.contractId !== args.where.contractId);
+        }
+        return { count: initial - this.contractParties.length };
+      }
+    };
+  }
+
+  public get contractAmendment() {
+    return {
+      findUnique: async (args: any) => {
+        let item: any = null;
+        if (args.where?.id) {
+          item = this.contractAmendments.find(x => x.id === args.where.id);
+        } else if (args.where?.publicCode) {
+          item = this.contractAmendments.find(x => x.publicCode === args.where.publicCode);
+        } else if (args.where?.contractId_amendmentNumber) {
+          item = this.contractAmendments.find(
+            x => x.contractId === args.where.contractId_amendmentNumber.contractId &&
+                 x.amendmentNumber === args.where.contractId_amendmentNumber.amendmentNumber
+          );
+        }
+        if (!item) return null;
+        return this.hydrateContractAmendment(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.contractAmendments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateContractAmendment(list[0], args.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.contractAmendments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => a.amendmentNumber - b.amendmentNumber);
+        return list.map(x => this.hydrateContractAmendment(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `adt_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'DRAFT',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.contractAmendments.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.contractAmendments.find(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (!item) throw new Error('ContractAmendment not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.contractAmendments.findIndex(x => x.id === args.where?.id || x.publicCode === args.where?.publicCode);
+        if (idx >= 0) return this.contractAmendments.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.contractAmendments];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get contractRenewal() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.contractRenewals.find(x => x.id === args.where?.id);
+        if (!item) return null;
+        const res = { ...item };
+        if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === item.contractId) || null;
+        return res;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.contractRenewals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        const res = { ...list[0] };
+        if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === res.contractId) || null;
+        return res;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.contractRenewals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list.map(x => {
+          const res = { ...x };
+          if (args?.include?.contract) res.contract = this.commercialContracts.find(c => c.id === x.contractId) || null;
+          return res;
+        });
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `rnw_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'IN_NEGOTIATION',
+          createdAt: new Date(),
+          ...args.data
+        };
+        this.contractRenewals.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.contractRenewals.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('ContractRenewal not found');
+        Object.assign(item, args.data);
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.contractRenewals.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.contractRenewals.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.contractRenewals];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get signatureEnvelope() {
+    return {
+      findUnique: async (args: any) => {
+        const item = this.signatureEnvelopes.find(x => x.id === args.where?.id || (args.where?.providerReference && x.providerReference === args.where.providerReference));
+        if (!item) return null;
+        return this.hydrateSignatureEnvelope(item, args.include);
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.signatureEnvelopes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        if (!list[0]) return null;
+        return this.hydrateSignatureEnvelope(list[0], args.include);
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.signatureEnvelopes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+        return list.map(x => this.hydrateSignatureEnvelope(x, args?.include));
+      },
+      create: async (args: any) => {
+        const item = {
+          id: args.data.id || `env_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          status: args.data.status || 'PENDING',
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          ...args.data
+        };
+        this.signatureEnvelopes.push(item);
+        return { ...item };
+      },
+      update: async (args: any) => {
+        const item = this.signatureEnvelopes.find(x => x.id === args.where?.id || (args.where?.providerReference && x.providerReference === args.where.providerReference));
+        if (!item) throw new Error('SignatureEnvelope not found');
+        Object.assign(item, args.data, { updatedAt: new Date() });
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.signatureEnvelopes.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.signatureEnvelopes.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        let list = [...this.signatureEnvelopes];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list.length;
+      }
+    };
+  }
+
+  public get signatureSigner() {
+    return {
+      findUnique: async (args: any) => {
+        return this.signatureSigners.find(x => x.id === args.where?.id) || null;
+      },
+      findFirst: async (args: any) => {
+        let list = [...this.signatureSigners];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        return list[0] ? { ...list[0] } : null;
+      },
+      findMany: async (args?: any) => {
+        let list = [...this.signatureSigners];
+        if (args?.where) list = this.filterEntities(list, args.where);
+        list.sort((a, b) => (a.signingOrder || 0) - (b.signingOrder || 0));
+        return list.map(x => ({ ...x }));
+      },
+      create: async (args: any) => {
+        const item = { id: args.data.id || `sgn_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`, createdAt: new Date(), ...args.data };
+        this.signatureSigners.push(item);
+        return { ...item };
+      },
+      createMany: async (args: any) => {
+        const items = args.data.map((d: any) => ({
+          id: d.id || `sgn_${Date.now()}_${Math.random().toString(36).substr(2, 6)}`,
+          createdAt: new Date(),
+          ...d
+        }));
+        this.signatureSigners.push(...items);
+        return { count: items.length };
+      },
+      update: async (args: any) => {
+        const item = this.signatureSigners.find(x => x.id === args.where?.id);
+        if (!item) throw new Error('SignatureSigner not found');
+        Object.assign(item, args.data);
+        return { ...item };
+      },
+      delete: async (args: any) => {
+        const idx = this.signatureSigners.findIndex(x => x.id === args.where?.id);
+        if (idx >= 0) return this.signatureSigners.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args?: any) => {
+        const initial = this.signatureSigners.length;
+        if (args?.where?.envelopeId) {
+          this.signatureSigners = this.signatureSigners.filter(x => x.envelopeId !== args.where.envelopeId);
+        }
+        return { count: initial - this.signatureSigners.length };
+      }
+    };
+  }
+
   public get notificationPreference() {
     return {
       findUnique: async (args: any) => {
@@ -13704,6 +14411,81 @@ export class InMemoryPrismaStore {
     }
     if (include?.proposal) {
       res.proposal = this.commercialProposals.find(p => p.id === version.proposalId) || null;
+    }
+    return res;
+  }
+
+  private hydrateContract(contract: any, include?: any): any {
+    if (!contract) return null;
+    const res = { ...contract };
+    if (include?.producer) {
+      res.producer = this.producers.find(p => p.id === contract.producerId) || null;
+    }
+    if (include?.versions) {
+      let vers = this.commercialContractVersions.filter(v => v.contractId === contract.id);
+      vers.sort((a, b) => a.versionNumber - b.versionNumber);
+      if (include?.versions === true || typeof include?.versions === 'object') {
+        vers = vers.map(v => this.hydrateContractVersion(v, include?.versions?.include));
+      }
+      res.versions = vers;
+    }
+    if (include?.parties) {
+      res.parties = this.contractParties.filter(p => p.contractId === contract.id);
+    }
+    if (include?.amendments) {
+      let ams = this.contractAmendments.filter(a => a.contractId === contract.id);
+      ams.sort((a, b) => a.amendmentNumber - b.amendmentNumber);
+      res.amendments = ams;
+    }
+    if (include?.renewals) {
+      let rws = this.contractRenewals.filter(r => r.contractId === contract.id);
+      rws.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      res.renewals = rws;
+    }
+    if (include?.envelopes) {
+      let envs = this.signatureEnvelopes.filter(e => e.contractId === contract.id);
+      envs.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      if (include?.envelopes === true || typeof include?.envelopes === 'object') {
+        envs = envs.map(e => this.hydrateSignatureEnvelope(e, include?.envelopes?.include));
+      }
+      res.envelopes = envs;
+    }
+    return res;
+  }
+
+  private hydrateContractVersion(version: any, include?: any): any {
+    if (!version) return null;
+    const res = { ...version };
+    if (include?.terms) {
+      let terms = this.contractCommercialTerms.filter(t => t.contractVersionId === version.id);
+      terms.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+      res.terms = terms;
+    }
+    if (include?.contract) {
+      res.contract = this.commercialContracts.find(c => c.id === version.contractId) || null;
+    }
+    return res;
+  }
+
+  private hydrateContractAmendment(amendment: any, include?: any): any {
+    if (!amendment) return null;
+    const res = { ...amendment };
+    if (include?.contract) {
+      res.contract = this.commercialContracts.find(c => c.id === amendment.contractId) || null;
+    }
+    return res;
+  }
+
+  private hydrateSignatureEnvelope(envelope: any, include?: any): any {
+    if (!envelope) return null;
+    const res = { ...envelope };
+    if (include?.signers || include?.signers === undefined) {
+      let signers = this.signatureSigners.filter(s => s.envelopeId === envelope.id);
+      signers.sort((a, b) => a.signingOrder - b.signingOrder);
+      res.signers = signers;
+    }
+    if (include?.contract) {
+      res.contract = this.commercialContracts.find(c => c.id === envelope.contractId) || null;
     }
     return res;
   }

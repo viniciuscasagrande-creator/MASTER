@@ -152,6 +152,7 @@ model Producer {
 
   events         Event[]
   userAccesses   UserProducerAccess[]
+  contracts      CommercialContract[]
 
   @@index([cnpj])
 }
@@ -4397,6 +4398,240 @@ model ProposalDelivery {
   @@index([proposalId])
   @@index([proposalVersionId])
 }
+
+// ==============================================================================
+// FASE 1.3.6 — CONTRATOS COMERCIAIS + ASSINATURA + VIGÊNCIA + ADITIVOS + RENOVAÇÃO
+// ==============================================================================
+
+model CommercialContract {
+  id                         String    @id @default(uuid())
+  publicCode                 String    @unique // CTR-YYYY-XXXXXX
+  producerId                 String
+  sourceOpportunityId        String?
+  sourceProposalId           String?
+  sourceProposalVersionId    String?
+  sourceProposalContentHash  String?
+  title                      String
+  description                String?
+  status                     String    @default("DRAFT") // DRAFT, IN_REVIEW, APPROVAL_PENDING, APPROVED, SIGNATURE_PENDING, PARTIALLY_SIGNED, SIGNED, ACTIVE, EXPIRED, SUSPENDED, TERMINATED, CANCELLED
+  currentVersionNumber       Int       @default(1)
+  currentVersionId           String?
+  ownerId                    String
+  ownerName                  String?
+  effectiveFrom              DateTime?
+  effectiveUntil             DateTime?
+  signedAt                   DateTime?
+  activatedAt                DateTime?
+  suspendedAt                DateTime?
+  suspensionReason           String?
+  terminatedAt               DateTime?
+  terminationReason          String?
+  notes                      String?
+  internalNotes              String?
+  version                    Int       @default(1)
+  createdAt                  DateTime  @default(now())
+  updatedAt                  DateTime  @updatedAt
+
+  producer                   Producer  @relation(fields: [producerId], references: [id])
+  versions                   CommercialContractVersion[]
+  parties                    ContractParty[]
+  amendments                 ContractAmendment[]
+  renewals                   ContractRenewal[]
+  envelopes                  SignatureEnvelope[]
+
+  @@index([producerId])
+  @@index([sourceOpportunityId])
+  @@index([sourceProposalId])
+  @@index([status])
+  @@index([ownerId])
+  @@index([publicCode])
+}
+
+model CommercialContractVersion {
+  id                          String    @id @default(uuid())
+  contractId                  String
+  versionNumber               Int       @default(1)
+  status                      String    @default("DRAFT")
+  contentHash                 String
+  title                       String
+  summary                     String?
+  effectiveFrom               DateTime?
+  effectiveUntil              DateTime?
+  termsSnapshotJson           String
+  partiesSnapshotJson         String?
+  approvalRequestId           String?
+  approvalStatus              String    @default("NOT_REQUIRED") // NOT_REQUIRED, PENDING, APPROVED, REJECTED
+  approvedAt                  DateTime?
+  approvedBy                  String?
+  approvedByName              String?
+  rejectionReason             String?
+  documentId                  String?
+  documentChecksum            String?
+  signedDocumentId            String?
+  signedDocumentChecksum      String?
+  signatureEvidenceDocumentId String?
+  signedAt                    DateTime?
+  changeSummary               String?
+  createdBy                   String
+  createdByName               String?
+  createdAt                   DateTime  @default(now())
+  updatedAt                   DateTime  @updatedAt
+
+  contract                    CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  terms                       ContractCommercialTerm[]
+
+  @@unique([contractId, versionNumber])
+  @@index([contractId])
+  @@index([status])
+  @@index([contentHash])
+  @@index([approvalRequestId])
+}
+
+model ContractCommercialTerm {
+  id                      String   @id @default(uuid())
+  contractVersionId       String
+  offeringId              String?
+  offeringName            String?
+  termType                String   // PLATFORM_COMMISSION, ACCESS_CONTROL, BOX_OFFICE, MARKETING, EQUIPMENT, REBATE, MINIMUM_GUARANTEE, SETUP_FEE, CUSTOM
+  name                    String
+  calculationType         String   @default("PERCENTAGE") // PERCENTAGE, FIXED_AMOUNT, PER_TICKET, SUBSCRIPTION, HYBRID, CUSTOM
+  percentage              Float?
+  amount                  Float?
+  minimumAmount           Float?
+  payer                   String   @default("PRODUCER") // PRODUCER, BUYER, SPLIT
+  splitProducerPercentage Float?
+  splitBuyerPercentage    Float?
+  conditions              String?
+  sortOrder               Int      @default(0)
+  createdAt               DateTime @default(now())
+
+  version                 CommercialContractVersion @relation(fields: [contractVersionId], references: [id], onDelete: Cascade)
+
+  @@index([contractVersionId])
+  @@index([offeringId])
+}
+
+model ContractParty {
+  id                  String   @id @default(uuid())
+  contractId          String
+  partyType           String   // DISK_INGRESSOS, PRODUCER
+  legalName           String
+  tradeName           String?
+  document            String   // CNPJ
+  stateRegistration   String?
+  address             String?
+  representativeName  String
+  representativeRole  String
+  representativeCpf   String
+  representativeEmail String
+  representativePhone String?
+  createdAt           DateTime @default(now())
+
+  contract            CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+}
+
+model ContractAmendment {
+  id                     String    @id @default(uuid())
+  publicCode             String    @unique // ADT-YYYY-XXXXXX-NN
+  contractId             String
+  amendmentNumber        Int       @default(1)
+  type                   String    @default("COMMERCIAL_TERMS") // COMMERCIAL_TERMS, SCOPE_CHANGE, VALIDITY_EXTENSION, SERVICE_INCLUSION, SERVICE_REMOVAL, LEGAL_CLAUSE, OTHER
+  status                 String    @default("DRAFT") // DRAFT, APPROVAL_PENDING, APPROVED, SIGNATURE_PENDING, SIGNED, ACTIVE, CANCELLED
+  effectiveFrom          DateTime
+  reason                 String
+  summary                String
+  contentHash            String
+  termsSnapshotJson      String?
+  documentId             String?
+  documentChecksum       String?
+  signedDocumentId       String?
+  signedAt               DateTime?
+  approvedAt             DateTime?
+  approvedBy             String?
+  approvedByName         String?
+  createdBy              String
+  createdByName          String?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  contract               CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@unique([contractId, amendmentNumber])
+  @@index([contractId])
+  @@index([status])
+  @@index([effectiveFrom])
+}
+
+model ContractRenewal {
+  id                  String    @id @default(uuid())
+  contractId          String
+  renewalType         String    @default("SIMPLE") // SIMPLE, RENEGOTIATION
+  status              String    @default("IN_NEGOTIATION") // IN_NEGOTIATION, PENDING_APPROVAL, PENDING_SIGNATURE, COMPLETED, CANCELLED
+  targetEffectiveFrom DateTime?
+  targetEffectiveUntil DateTime?
+  sourceOpportunityId String?
+  sourceProposalId    String?
+  newContractId       String?
+  notes               String?
+  createdBy           String
+  createdByName       String?
+  createdAt           DateTime  @default(now())
+  completedAt         DateTime?
+
+  contract            CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+
+  @@index([contractId])
+  @@index([status])
+}
+
+model SignatureEnvelope {
+  id                String    @id @default(uuid())
+  contractId        String
+  contractVersionId String?
+  amendmentId       String?
+  provider          String    @default("AUTENTIQUE") // AUTENTIQUE, INTERNAL_FALLBACK
+  providerReference String?
+  status            String    @default("PENDING") // PREPARING, PENDING, PARTIALLY_SIGNED, COMPLETED, REJECTED, CANCELLED
+  documentChecksum  String
+  sentAt            DateTime?
+  completedAt       DateTime?
+  cancelledAt       DateTime?
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  contract          CommercialContract @relation(fields: [contractId], references: [id], onDelete: Cascade)
+  signers           SignatureSigner[]
+
+  @@index([contractId])
+  @@index([providerReference])
+  @@index([status])
+}
+
+model SignatureSigner {
+  id                String    @id @default(uuid())
+  envelopeId        String
+  partyType         String    // DISK_INGRESSOS, PRODUCER
+  contactId         String?
+  name              String
+  email             String
+  document          String?   // CPF
+  role              String?
+  signingOrder      Int       @default(1)
+  status            String    @default("PENDING") // PENDING, SIGNED, REJECTED
+  signedAt          DateTime?
+  providerSignerId  String?
+  signatureUrl      String?
+  evidenceIp        String?
+  createdAt         DateTime  @default(now())
+
+  envelope          SignatureEnvelope @relation(fields: [envelopeId], references: [id], onDelete: Cascade)
+
+  @@index([envelopeId])
+  @@index([email])
+}
+
 
 
 

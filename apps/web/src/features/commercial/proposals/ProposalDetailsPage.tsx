@@ -20,7 +20,8 @@ import {
   DollarSign,
   Info,
   Check,
-  Hash
+  Hash,
+  FileSignature
 } from 'lucide-react';
 import {
   CommercialProposalDTO,
@@ -49,6 +50,7 @@ interface ProposalDetailsPageProps {
   onBack: () => void;
   onSelectProducer?: (producerId: string) => void;
   onSelectOpportunity?: (opportunityId: string) => void;
+  onGenerateContract?: (proposalId: string) => void;
 }
 
 type TabType = 'overview' | 'terms' | 'events' | 'versions' | 'document' | 'approvals' | 'deliveries';
@@ -57,7 +59,8 @@ export const ProposalDetailsPage: React.FC<ProposalDetailsPageProps> = ({
   proposalId,
   onBack,
   onSelectProducer,
-  onSelectOpportunity
+  onSelectOpportunity,
+  onGenerateContract
 }) => {
   const [proposal, setProposal] = useState<CommercialProposalDTO | null>(null);
   const [loading, setLoading] = useState(true);
@@ -374,6 +377,18 @@ export const ProposalDetailsPage: React.FC<ProposalDetailsPageProps> = ({
                   Recusa
                 </Button>
               </>
+            )}
+
+            {/* Accepted Actions: Generate Contract */}
+            {proposal.status === 'ACCEPTED' && (
+              <Button
+                size="sm"
+                onClick={() => onGenerateContract?.(proposal.id)}
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/20"
+              >
+                <FileSignature className="h-4 w-4 mr-1.5" />
+                Gerar Contrato Comercial
+              </Button>
             )}
 
             {/* Document Generation */}

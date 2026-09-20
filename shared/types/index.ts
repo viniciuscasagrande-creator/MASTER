@@ -254,6 +254,19 @@ export type PermissionString =
   | 'comercial.ofertas.gerenciar'
   | 'comercial.propostas.gerenciar'
   | 'comercial.metas.visualizar'
+  // Contratos Comerciais (Fase 1.3.6)
+  | 'comercial.contratos.visualizar'
+  | 'comercial.contratos.criar'
+  | 'comercial.contratos.editar'
+  | 'comercial.contratos.enviar_aprovacao'
+  | 'comercial.contratos.documentos.gerar'
+  | 'comercial.contratos.preparar_assinatura'
+  | 'comercial.contratos.enviar_assinatura'
+  | 'comercial.contratos.aditivos.gerenciar'
+  | 'comercial.contratos.renovacoes.gerenciar'
+  | 'comercial.contratos.suspender'
+  | 'comercial.contratos.rescindir'
+  | 'comercial.contratos.condicoes.visualizar'
   // Suporte Eventos
   | 'suporte.incidentes.visualizar'
   | 'suporte.incidentes.criar'
@@ -5582,6 +5595,392 @@ export interface DeclineProposalDTO {
   reason: string;
   notes?: string;
   expectedVersion: number;
+}
+
+// ==============================================================================
+// FASE 1.3.6 — CONTRATOS COMERCIAIS + ASSINATURA + VIGÊNCIA + ADITIVOS + RENOVAÇÃO
+// ==============================================================================
+
+export type CommercialContractStatus =
+  | 'DRAFT'
+  | 'IN_REVIEW'
+  | 'APPROVAL_PENDING'
+  | 'APPROVED'
+  | 'SIGNATURE_PENDING'
+  | 'PARTIALLY_SIGNED'
+  | 'SIGNED'
+  | 'ACTIVE'
+  | 'EXPIRED'
+  | 'SUSPENDED'
+  | 'TERMINATED'
+  | 'CANCELLED';
+
+export type ContractPartyType = 'DISK_INGRESSOS' | 'PRODUCER';
+
+export type ContractAmendmentType =
+  | 'COMMERCIAL_TERMS'
+  | 'SCOPE_CHANGE'
+  | 'VALIDITY_EXTENSION'
+  | 'SERVICE_INCLUSION'
+  | 'SERVICE_REMOVAL'
+  | 'LEGAL_CLAUSE'
+  | 'OTHER';
+
+export type ContractAmendmentStatus =
+  | 'DRAFT'
+  | 'APPROVAL_PENDING'
+  | 'APPROVED'
+  | 'SIGNATURE_PENDING'
+  | 'SIGNED'
+  | 'ACTIVE'
+  | 'CANCELLED';
+
+export type ContractRenewalType = 'SIMPLE' | 'RENEGOTIATION';
+
+export type ContractRenewalStatus =
+  | 'IN_NEGOTIATION'
+  | 'PENDING_APPROVAL'
+  | 'PENDING_SIGNATURE'
+  | 'COMPLETED'
+  | 'CANCELLED';
+
+export type SignatureProviderType = 'AUTENTIQUE' | 'INTERNAL_FALLBACK';
+
+export type SignatureEnvelopeStatus =
+  | 'PREPARING'
+  | 'PENDING'
+  | 'PARTIALLY_SIGNED'
+  | 'COMPLETED'
+  | 'REJECTED'
+  | 'CANCELLED';
+
+export type SignatureSignerStatus = 'PENDING' | 'SIGNED' | 'REJECTED';
+
+export interface ContractPartyDTO {
+  id: string;
+  contractId: string;
+  partyType: ContractPartyType;
+  legalName: string;
+  tradeName?: string | null;
+  document: string; // CNPJ
+  stateRegistration?: string | null;
+  address?: string | null;
+  representativeName: string;
+  representativeRole: string;
+  representativeCpf: string;
+  representativeEmail: string;
+  representativePhone?: string | null;
+  createdAt: string;
+}
+
+export interface ContractCommercialTermDTO {
+  id: string;
+  contractVersionId: string;
+  offeringId?: string | null;
+  offeringName?: string | null;
+  termType: ProposalTermType;
+  name: string;
+  calculationType: CommercialPricingModel;
+  percentage?: number | null;
+  amount?: number | null;
+  minimumAmount?: number | null;
+  payer: ProposalPayer;
+  splitProducerPercentage?: number | null;
+  splitBuyerPercentage?: number | null;
+  conditions?: string | null;
+  sortOrder: number;
+  createdAt: string;
+}
+
+export interface CommercialContractVersionDTO {
+  id: string;
+  contractId: string;
+  versionNumber: number;
+  status: string;
+  contentHash: string;
+  title: string;
+  summary?: string | null;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  termsSnapshotJson: string;
+  partiesSnapshotJson?: string | null;
+  approvalRequestId?: string | null;
+  approvalStatus: 'NOT_REQUIRED' | 'PENDING' | 'APPROVED' | 'REJECTED';
+  approvedAt?: string | null;
+  approvedBy?: string | null;
+  approvedByName?: string | null;
+  rejectionReason?: string | null;
+  documentId?: string | null;
+  documentChecksum?: string | null;
+  signedDocumentId?: string | null;
+  signedDocumentChecksum?: string | null;
+  signatureEvidenceDocumentId?: string | null;
+  signedAt?: string | null;
+  changeSummary?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  terms?: ContractCommercialTermDTO[];
+}
+
+export interface ContractAmendmentDTO {
+  id: string;
+  publicCode: string; // ADT-YYYY-XXXXXX-NN
+  contractId: string;
+  amendmentNumber: number;
+  type: ContractAmendmentType;
+  status: ContractAmendmentStatus;
+  effectiveFrom: string;
+  reason: string;
+  summary: string;
+  contentHash: string;
+  termsSnapshotJson?: string | null;
+  documentId?: string | null;
+  documentChecksum?: string | null;
+  signedDocumentId?: string | null;
+  signedAt?: string | null;
+  approvedAt?: string | null;
+  approvedBy?: string | null;
+  approvedByName?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContractRenewalDTO {
+  id: string;
+  contractId: string;
+  renewalType: ContractRenewalType;
+  status: ContractRenewalStatus;
+  targetEffectiveFrom?: string | null;
+  targetEffectiveUntil?: string | null;
+  sourceOpportunityId?: string | null;
+  sourceProposalId?: string | null;
+  newContractId?: string | null;
+  notes?: string | null;
+  createdBy: string;
+  createdByName?: string | null;
+  createdAt: string;
+  completedAt?: string | null;
+}
+
+export interface SignatureSignerDTO {
+  id: string;
+  envelopeId: string;
+  partyType: ContractPartyType;
+  contactId?: string | null;
+  name: string;
+  email: string;
+  document?: string | null;
+  role?: string | null;
+  signingOrder: number;
+  status: SignatureSignerStatus;
+  signedAt?: string | null;
+  providerSignerId?: string | null;
+  signatureUrl?: string | null;
+  evidenceIp?: string | null;
+  createdAt: string;
+}
+
+export interface SignatureEnvelopeDTO {
+  id: string;
+  contractId: string;
+  contractVersionId?: string | null;
+  amendmentId?: string | null;
+  provider: SignatureProviderType;
+  providerReference?: string | null;
+  status: SignatureEnvelopeStatus;
+  documentChecksum: string;
+  sentAt?: string | null;
+  completedAt?: string | null;
+  cancelledAt?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  signers?: SignatureSignerDTO[];
+}
+
+export interface CommercialContractDTO {
+  id: string;
+  publicCode: string; // CTR-YYYY-XXXXXX
+  producerId: string;
+  producerName?: string;
+  sourceOpportunityId?: string | null;
+  sourceProposalId?: string | null;
+  sourceProposalPublicCode?: string | null;
+  sourceProposalVersionId?: string | null;
+  sourceProposalContentHash?: string | null;
+  title: string;
+  description?: string | null;
+  status: CommercialContractStatus;
+  currentVersionNumber: number;
+  currentVersionId?: string | null;
+  currentVersion?: CommercialContractVersionDTO | null;
+  ownerId: string;
+  ownerName?: string | null;
+  effectiveFrom?: string | null;
+  effectiveUntil?: string | null;
+  signedAt?: string | null;
+  activatedAt?: string | null;
+  suspendedAt?: string | null;
+  suspensionReason?: string | null;
+  terminatedAt?: string | null;
+  terminationReason?: string | null;
+  notes?: string | null;
+  internalNotes?: string | null;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+  parties?: ContractPartyDTO[];
+  versions?: CommercialContractVersionDTO[];
+  amendments?: ContractAmendmentDTO[];
+  renewals?: ContractRenewalDTO[];
+  envelopes?: SignatureEnvelopeDTO[];
+}
+
+export interface EffectiveCommercialTermsDTO {
+  producerId: string;
+  contractId: string;
+  contractPublicCode: string;
+  contractTitle: string;
+  atDate: string;
+  isContractActive: boolean;
+  activeAmendmentsCount: number;
+  terms: Array<{
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string | null;
+    source: 'BASE_CONTRACT' | 'AMENDMENT';
+    sourceAmendmentCode?: string | null;
+  }>;
+}
+
+export interface CommercialContractMetricsDTO {
+  totalContracts: number;
+  draftCount: number;
+  signaturePendingCount: number;
+  signedCount: number;
+  activeCount: number;
+  expiredCount: number;
+  suspendedCount: number;
+  terminatedCount: number;
+  activeAmendmentsCount: number;
+  pendingRenewalsCount: number;
+}
+
+// Request / Input DTOs
+export interface CreateContractFromProposalDTO {
+  proposalId: string;
+  title?: string;
+  description?: string;
+  effectiveFrom?: string;
+  effectiveUntil?: string;
+  notes?: string;
+  internalNotes?: string;
+}
+
+export interface CreateContractDTO {
+  producerId: string;
+  sourceOpportunityId?: string | null;
+  title: string;
+  description?: string;
+  effectiveFrom: string;
+  effectiveUntil: string;
+  terms: Array<{
+    offeringId?: string | null;
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string;
+  }>;
+  parties?: Array<{
+    partyType: ContractPartyType;
+    legalName: string;
+    tradeName?: string;
+    document: string;
+    stateRegistration?: string;
+    address?: string;
+    representativeName: string;
+    representativeRole: string;
+    representativeCpf: string;
+    representativeEmail: string;
+    representativePhone?: string;
+  }>;
+  notes?: string;
+  internalNotes?: string;
+}
+
+export interface UpdateContractDTO {
+  title?: string;
+  description?: string;
+  effectiveFrom?: string;
+  effectiveUntil?: string;
+  notes?: string;
+  internalNotes?: string;
+  expectedVersion: number;
+}
+
+export interface PrepareSignatureDTO {
+  provider?: SignatureProviderType;
+  signers?: Array<{
+    partyType: ContractPartyType;
+    name: string;
+    email: string;
+    document?: string;
+    role?: string;
+    signingOrder?: number;
+  }>;
+}
+
+export interface CreateContractAmendmentDTO {
+  type: ContractAmendmentType;
+  effectiveFrom: string;
+  reason: string;
+  summary: string;
+  terms?: Array<{
+    offeringId?: string | null;
+    termType: ProposalTermType;
+    name: string;
+    calculationType: CommercialPricingModel;
+    percentage?: number | null;
+    amount?: number | null;
+    minimumAmount?: number | null;
+    payer: ProposalPayer;
+    splitProducerPercentage?: number | null;
+    splitBuyerPercentage?: number | null;
+    conditions?: string;
+  }>;
+}
+
+export interface CreateContractRenewalDTO {
+  renewalType: ContractRenewalType;
+  targetEffectiveFrom: string;
+  targetEffectiveUntil: string;
+  notes?: string;
+}
+
+export interface SuspendContractDTO {
+  reason: string;
+  notes?: string;
+}
+
+export interface TerminateContractDTO {
+  reason: string;
+  notes?: string;
 }
 
 

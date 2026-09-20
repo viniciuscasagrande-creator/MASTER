@@ -15,7 +15,8 @@ import {
   Filter,
   Building2,
   Calendar,
-  Layers
+  Layers,
+  FileSignature
 } from 'lucide-react';
 import {
   CommercialProposalDTO,
@@ -34,6 +35,7 @@ interface ProposalsPageProps {
   onSelectProposal: (proposalId: string) => void;
   onSelectProducer?: (producerId: string) => void;
   onSelectOpportunity?: (opportunityId: string) => void;
+  onGenerateContract?: (proposalId: string) => void;
 }
 
 type TabType = 'ALL' | 'MINE' | 'PENDING_APPROVAL' | 'SENT' | 'ACCEPTED' | 'DRAFTS';
@@ -41,7 +43,8 @@ type TabType = 'ALL' | 'MINE' | 'PENDING_APPROVAL' | 'SENT' | 'ACCEPTED' | 'DRAF
 export const ProposalsPage: React.FC<ProposalsPageProps> = ({
   onSelectProposal,
   onSelectProducer,
-  onSelectOpportunity
+  onSelectOpportunity,
+  onGenerateContract
 }) => {
   const [proposals, setProposals] = useState<CommercialProposalDTO[]>([]);
   const [metrics, setMetrics] = useState<CommercialProposalMetricsDTO | null>(null);
@@ -524,6 +527,19 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                               title="Registrar Aceite Comercial"
                             >
                               <CheckCircle2 className="h-4 w-4" />
+                            </Button>
+                          )}
+
+                          {/* Ação de gerar contrato (se aceita) */}
+                          {proposal.status === 'ACCEPTED' && (
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => onGenerateContract?.(proposal.id)}
+                              className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-8 px-2"
+                              title="Gerar Contrato Comercial a partir desta Proposta"
+                            >
+                              <FileSignature className="h-4 w-4" />
                             </Button>
                           )}
                         </div>

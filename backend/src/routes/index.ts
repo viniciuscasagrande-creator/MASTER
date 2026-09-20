@@ -38,6 +38,7 @@ import {
 import { EventCategoryController } from '../modules/events/categories/event-category.controller';
 import venueRoutes from '../modules/events/venues/venue.routes';
 import commercialRoutes from '../modules/commercial/commercial.routes';
+import contractRoutes from '../modules/commercial/contracts/contract.routes';
 import { authenticate } from '../core/middleware/authenticate';
 
 const router = Router();
@@ -68,6 +69,7 @@ router.use('/events', eventsRoutes);
 router.use('/venues', venueRoutes);
 router.get('/event-categories', authenticate, EventCategoryController.listCategories);
 router.use('/finance', financeRoutes);
+router.use('/commercial/contracts', contractRoutes);
 router.use('/commercial', commercialRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/audit', auditRoutes);
