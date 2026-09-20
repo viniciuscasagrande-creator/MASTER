@@ -14,19 +14,7 @@ app.use(cors());
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Root & Health Check
-app.get('/', (req: Request, res: Response) => {
-  res.json({
-    status: 'online',
-    system: 'Disk Interno Core Node.js Real',
-    version: '1.1.5.1',
-    message: 'Backend API Disk Interno PDT operacional',
-    healthCheck: '/api/health',
-    endpoints: '/api/v1',
-    timestamp: new Date().toISOString()
-  });
-});
-
+// Health Check
 app.get('/api/health', (req: Request, res: Response) => {
   res.json({
     status: 'online',
@@ -36,9 +24,35 @@ app.get('/api/health', (req: Request, res: Response) => {
   });
 });
 
+import path from 'path';
+import fs from 'fs';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 // Primary API v1 Router
 app.use('/api/v1', apiV1Routes);
 app.use('/api', apiV1Routes);
+
+// Servir Frontend SPA (React / Vite) diretamente pelo Express
+const possiblePaths = [
+  path.resolve(process.cwd(), 'dist'),
+  path.resolve(process.cwd(), 'apps/web/dist'),
+  path.resolve(__dirname, '../../dist'),
+  path.resolve(__dirname, '../../apps/web/dist')
+];
+const clientPath = possiblePaths.find(p => fs.existsSync(path.join(p, 'index.html')));
+
+if (clientPath) {
+  app.use(express.static(clientPath));
+  app.get('*', (req: Request, res: Response) => {
+    if (req.path.startsWith('/api')) {
+      return res.status(404).json({ error: 'Endpoint não encontrado' });
+    }
+    res.sendFile(path.join(clientPath, 'index.html'));
+  });
+}
 
 // Centralized error handler
 
