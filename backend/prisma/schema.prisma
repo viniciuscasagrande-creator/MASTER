@@ -227,6 +227,9 @@ model Event {
   media                      EventMedia[]
   responsibilities           EventResponsibility[]
   wizardState                EventWizardState?
+  eventVenues                EventVenue[]
+  eventSections              EventSection[]
+  sessions                   EventSession[]
 
   @@index([producerId])
   @@index([producerId, status])
@@ -294,6 +297,316 @@ model EventWizardState {
   updatedAt       DateTime @updatedAt
 
   event           Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@index([eventId])
+}
+
+// ------------------------------------------------------------------------------
+// 4.1 LOCAIS, MAPAS E ESTRUTURA FÍSICA (FASE 1.2.3)
+// ------------------------------------------------------------------------------
+
+model Venue {
+  id                String             @id @default(uuid())
+  publicCode        String             @unique
+  name              String
+  type              String             // ARENA, STADIUM, THEATER, CONCERT_HALL, CONVENTION_CENTER, CLUB, BAR_RESTAURANT, OPEN_AIR, RACETRACK, GYMNASIUM, OTHER
+  scope             String             @default("GLOBAL") // GLOBAL, PRODUCER
+  producerId        String?
+  status            String             @default("ACTIVE") // ACTIVE, ARCHIVED, DRAFT
+  postalCode        String?
+  street            String?
+  number            String?
+  complement        String?
+  district          String?
+  city              String
+  state             String
+  country           String             @default("BR")
+  latitude          Float?
+  longitude         Float?
+  capacity          Int?               // Capacidade de referência do local
+  phone             String?
+  email             String?
+  website           String?
+  notes             String?
+  version           Int                @default(1)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  deletedAt         DateTime?
+  deletedBy         String?
+
+  sections          VenueSection[]
+  maps              VenueMap[]
+  accessPoints      VenueAccessPoint[]
+  eventVenues       EventVenue[]
+  sessions          EventSession[]
+
+  @@index([name])
+  @@index([city, state])
+  @@index([scope, producerId])
+}
+
+model VenueSection {
+  id                String             @id @default(uuid())
+  venueId           String
+  name              String
+  code              String
+  type              String             // GENERAL_ADMISSION, SEATED, TABLE, BOX, VIP, TECHNICAL, ACCESS_ONLY
+  capacity          Int
+  parentSectionId   String?
+  active            Boolean            @default(true)
+  sortOrder         Int                @default(0)
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  venue             Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  parentSection     VenueSection?      @relation("SectionHierarchy", fields: [parentSectionId], references: [id])
+  childSections     VenueSection[]     @relation("SectionHierarchy")
+  rows              VenueRow[]
+  seats             VenueSeat[]
+  eventSections     EventSection[]
+
+  @@index([venueId])
+  @@index([parentSectionId])
+}
+
+model VenueMap {
+  id                String             @id @default(uuid())
+  venueId           String
+  name              String
+  description       String?
+  activeVersionId   String?
+  status            String             @default("ACTIVE") // ACTIVE, ARCHIVED
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+
+  venue             Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+  versions          VenueMapVersion[]
+
+  @@index([venueId])
+}
+
+model VenueMapVersion {
+  id                   String             @id @default(uuid())
+  mapId                String
+  versionNumber        Int
+  name                 String
+  status               String             @default("DRAFT") // DRAFT, ACTIVE, ARCHIVED
+  backgroundDocumentId String?
+  svgData              String?
+  scale                Float?             @default(1.0)
+  width                Float?
+  height               Float?
+  version              Int                @default(1)
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  map                  VenueMap           @relation(fields: [mapId], references: [id], onDelete: Cascade)
+  elements             VenueMapElement[]
+  rows                 VenueRow[]
+  seats                VenueSeat[]
+  eventVenues          EventVenue[]
+  sessions             EventSession[]
+
+  @@index([mapId])
+  @@index([mapId, versionNumber])
+}
+
+model VenueMapElement {
+  id                String             @id @default(uuid())
+  mapVersionId      String
+  type              String             // SECTION, ROW, SEAT, TABLE, STAGE, ENTRANCE, EXIT, TEXT, SHAPE, RESTROOM, BAR, OBSTACLE
+  x                 Float
+  y                 Float
+  width             Float
+  height            Float
+  rotation          Float              @default(0)
+  geometry          String?            // JSON stringified geometry data
+  linkedSectionId   String?
+  label             String?
+  metadata          String?            // JSON stringified metadata
+  sortOrder         Int                @default(0)
+  createdAt         DateTime           @default(now())
+
+  mapVersion        VenueMapVersion    @relation(fields: [mapVersionId], references: [id], onDelete: Cascade)
+
+  @@index([mapVersionId])
+  @@index([linkedSectionId])
+}
+
+model VenueRow {
+  id                String             @id @default(uuid())
+  sectionId         String
+  mapVersionId      String
+  code              String
+  name              String
+  sortOrder         Int                @default(0)
+  createdAt         DateTime           @default(now())
+
+  section           VenueSection       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  mapVersion        VenueMapVersion    @relation(fields: [mapVersionId], references: [id], onDelete: Cascade)
+  seats             VenueSeat[]
+
+  @@index([sectionId])
+  @@index([mapVersionId])
+}
+
+model VenueSeat {
+  id                String             @id @default(uuid())
+  rowId             String?
+  sectionId         String
+  mapVersionId      String
+  code              String
+  label             String
+  x                 Float?
+  y                 Float?
+  seatType          String             @default("STANDARD") // STANDARD, VIP, BOX, TABLE_SEAT
+  accessible        Boolean            @default(false)
+  companionSeat     Boolean            @default(false)
+  restrictedView    Boolean            @default(false)
+  active            Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+
+  row               VenueRow?          @relation(fields: [rowId], references: [id], onDelete: Cascade)
+  section           VenueSection       @relation(fields: [sectionId], references: [id], onDelete: Cascade)
+  mapVersion        VenueMapVersion    @relation(fields: [mapVersionId], references: [id], onDelete: Cascade)
+
+  @@index([rowId])
+  @@index([sectionId])
+  @@index([mapVersionId])
+}
+
+model VenueAccessPoint {
+  id                String             @id @default(uuid())
+  venueId           String
+  name              String
+  code              String
+  type              String             // MAIN_ENTRANCE, GATE, VIP_GATE, CREDENTIALS, STAFF, EMERGENCY_EXIT
+  active            Boolean            @default(true)
+  createdAt         DateTime           @default(now())
+
+  venue             Venue              @relation(fields: [venueId], references: [id], onDelete: Cascade)
+
+  @@index([venueId])
+}
+
+model EventVenue {
+  id                    String             @id @default(uuid())
+  eventId               String
+  venueId               String
+  venueMapId            String?
+  venueMapVersionId     String?
+  configurationSnapshot String?            // JSON snapshot of venue & map when linked
+  createdAt             DateTime           @default(now())
+
+  event                 Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  venue                 Venue              @relation(fields: [venueId], references: [id], onDelete: Restrict)
+  mapVersion            VenueMapVersion?   @relation(fields: [venueMapVersionId], references: [id], onDelete: SetNull)
+
+  @@unique([eventId, venueId])
+  @@index([eventId])
+  @@index([venueId])
+}
+
+model EventSection {
+  id                   String             @id @default(uuid())
+  eventId              String
+  venueSectionId       String
+  name                 String             // Custom event name (e.g. "Arquibancada Ouro")
+  capacity             Int                // Capacity used by this event
+  technicalReservation Int                @default(0)
+  enabled              Boolean            @default(true)
+  configuration        String?            // JSON configuration
+  createdAt            DateTime           @default(now())
+  updatedAt            DateTime           @updatedAt
+
+  event                Event              @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  venueSection         VenueSection       @relation(fields: [venueSectionId], references: [id], onDelete: Restrict)
+  sessionSections      SessionSection[]
+
+  @@unique([eventId, venueSectionId])
+  @@index([eventId])
+  @@index([venueSectionId])
+}
+
+// ------------------------------------------------------------------------------
+// 4.2 DATAS, SESSÕES E CAPACIDADE OPERACIONAL (FASE 1.2.4)
+// ------------------------------------------------------------------------------
+
+model EventSession {
+  id                   String                       @id @default(uuid())
+  eventId              String
+  publicCode           String                       @unique
+  name                 String?
+  doorsOpenAt          DateTime?
+  startAt              DateTime
+  endAt                DateTime?
+  timezone             String                       @default("America/Sao_Paulo")
+  venueId              String?
+  venueMapVersionId    String?
+  status               String                       @default("CONFIGURED") // DRAFT, CONFIGURED, SCHEDULED, OPEN, IN_PROGRESS, FINISHED, CANCELLED, ARCHIVED
+  capacity             Int
+  reservedCapacity     Int                          @default(0)
+  isPrimary            Boolean                      @default(false)
+  recurrenceGroupId    String?
+  version              Int                          @default(1)
+  createdBy            String?
+  createdAt            DateTime                     @default(now())
+  updatedBy            String?
+  updatedAt            DateTime                     @updatedAt
+  archivedAt           DateTime?
+
+  event                Event                        @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  venue                Venue?                       @relation(fields: [venueId], references: [id], onDelete: SetNull)
+  mapVersion           VenueMapVersion?             @relation(fields: [venueMapVersionId], references: [id], onDelete: SetNull)
+  sessionSections      SessionSection[]
+  reservations         SessionCapacityReservation[]
+
+  @@index([eventId])
+  @@index([startAt])
+  @@index([status])
+  @@index([recurrenceGroupId])
+}
+
+model SessionSection {
+  id                   String                       @id @default(uuid())
+  sessionId            String
+  eventSectionId       String
+  enabled              Boolean                      @default(true)
+  capacity             Int
+  reservedCapacity     Int                          @default(0)
+  configuration        String?                      // JSON
+  createdAt            DateTime                     @default(now())
+  updatedAt            DateTime                     @updatedAt
+
+  session              EventSession                 @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  eventSection         EventSection                 @relation(fields: [eventSectionId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, eventSectionId])
+  @@index([sessionId])
+  @@index([eventSectionId])
+}
+
+model SessionCapacityReservation {
+  id                   String                       @id @default(uuid())
+  sessionId            String
+  sectionId            String?
+  type                 String                       // PRODUCTION, SECURITY, SPONSOR, ARTIST, ACCESSIBILITY, TECHNICAL, OTHER
+  quantity             Int
+  reason               String?
+  createdAt            DateTime                     @default(now())
+
+  session              EventSession                 @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+
+  @@index([sessionId])
+  @@index([sectionId])
+}
+
+model SessionRecurrenceGroup {
+  id                   String                       @id @default(uuid())
+  eventId              String
+  rule                 String                       // JSON rule definition
+  totalSessions        Int
+  createdAt            DateTime                     @default(now())
 
   @@index([eventId])
 }

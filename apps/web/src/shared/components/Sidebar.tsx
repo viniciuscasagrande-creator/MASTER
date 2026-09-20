@@ -135,6 +135,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
         { id: 'events-dashboard', label: isProducer ? 'Painel do Produtor' : 'Painel de Eventos' },
         { id: 'events-all', label: isProducer ? 'Eventos Cadastrados' : 'Todos os Eventos' },
         { id: 'events-create', label: 'Criar Evento', requiredPermission: 'eventos.evento.criar' },
+        { id: 'events-sessions', label: 'Sessões & Agenda', requiredPermission: 'eventos.sessoes.visualizar' },
+        { id: 'events-venues', label: 'Locais & Plantas', requiredPermission: 'eventos.locais.visualizar' },
         { id: 'events-lots', label: 'Lotes e Ingressos', requiredPermission: 'eventos.setores.configurar' },
         { id: 'events-checkin', label: 'Check-in e Portaria', requiredPermission: 'eventos.checkin.operar' },
         { id: 'events-realtime', label: 'Operação em Tempo Real' }

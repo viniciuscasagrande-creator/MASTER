@@ -48,27 +48,27 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
     },
     {
       id: '1.2.2',
-      title: 'Configurações Gerais',
-      desc: 'Parâmetros, canais de venda autorizados e dados complementares.',
-      status: 'NEXT'
+      title: 'Cadastro Completo & Wizard',
+      desc: 'Wizard inteligente de 8 etapas, autosave, slug único e rascunhos.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.3',
-      title: 'Sessões & Locais',
-      desc: 'Múltiplas datas, horários de abertura e parametrização do venue.',
-      status: 'UPCOMING'
+      title: 'Central de Locais & Mapas',
+      desc: 'Venues reutilizáveis, setores físicos, portões e editor gráfico de layout.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.4',
-      title: 'Setores & Mapas',
-      desc: 'Pista, camarote, cadeiras numeradas e divisão de capacidade.',
-      status: 'UPCOMING'
+      title: 'Datas, Sessões & Capacidade',
+      desc: 'Múltiplas sessões, motor de recorrência, reservas técnicas e conflitos.',
+      status: 'COMPLETED'
     },
     {
       id: '1.2.5',
       title: 'Tipos de Ingresso',
       desc: 'Inteira, meia-entrada legal, promocional e cortesias.',
-      status: 'UPCOMING'
+      status: 'NEXT'
     },
     {
       id: '1.2.6',
@@ -194,6 +194,20 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
         {onNavigateModule && (
           <div className="flex flex-wrap items-center gap-2 shrink-0">
             <button
+              onClick={() => onNavigateModule('events', 'events-sessions')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-orange-500/10 hover:bg-orange-500/20 border border-orange-500/30 text-xs text-orange-300 font-semibold transition-colors"
+            >
+              <Calendar className="h-3.5 w-3.5 text-orange-400" />
+              Sessões & Capacidade
+            </button>
+            <button
+              onClick={() => onNavigateModule('events', 'events-venues')}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 border border-purple-500/30 text-xs text-purple-300 font-semibold transition-colors"
+            >
+              <MapPin className="h-3.5 w-3.5 text-purple-400" />
+              Locais & Mapas
+            </button>
+            <button
               onClick={() => onNavigateModule('documents')}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-xs text-slate-200 font-medium transition-colors"
             >
@@ -230,8 +244,8 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
               Requisitos operacionais obrigatórios antes do envio para aprovação e abertura de vendas
             </p>
           </div>
-          <Badge variant="cyan" size="sm">
-            1 de 6 Etapas Concluídas
+          <Badge variant="emerald" size="sm">
+            3 de 6 Etapas Concluídas
           </Badge>
         </div>
 
@@ -248,26 +262,26 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
             </div>
           </div>
 
-          <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-start gap-3">
-            <Clock className="h-4 w-4 text-amber-400 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <div className="text-xs font-semibold text-slate-300">
+              <div className="text-xs font-semibold text-emerald-300">
                 2. Sessões & Locais
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Configuração de datas, horários e venue.
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Venue <span className="text-slate-200">{event.venue || 'Local Definido'}</span> e sessão principal vinculados.
               </div>
             </div>
           </div>
 
-          <div className="p-3 rounded-xl border border-slate-800 bg-slate-950/60 flex items-start gap-3">
-            <Clock className="h-4 w-4 text-slate-500 shrink-0 mt-0.5" />
+          <div className="p-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 flex items-start gap-3">
+            <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <div className="text-xs font-semibold text-slate-300">
+              <div className="text-xs font-semibold text-emerald-300">
                 3. Setores & Capacidade
               </div>
-              <div className="text-[11px] text-slate-500 mt-0.5">
-                Divisão de pista, camarote e assentos.
+              <div className="text-[11px] text-slate-400 mt-0.5">
+                Capacidade de <span className="font-mono text-slate-200">{formatNumber(capacity)}</span> lugares e estrutura física.
               </div>
             </div>
           </div>

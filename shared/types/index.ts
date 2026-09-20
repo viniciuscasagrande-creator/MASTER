@@ -65,8 +65,36 @@ export type PermissionString =
   | 'eventos.evento.rascunho.descartar'
   | 'eventos.local.visualizar'
   | 'eventos.local.gerenciar'
+  // Locais e Estruturas Físicas (Fase 1.2.3)
+  | 'eventos.locais.visualizar'
+  | 'eventos.locais.criar'
+  | 'eventos.locais.editar'
+  | 'eventos.locais.arquivar'
+  | 'eventos.locais.estrutura.visualizar'
+  | 'eventos.locais.estrutura.editar'
+  | 'eventos.mapas.visualizar'
+  | 'eventos.mapas.criar'
+  | 'eventos.mapas.editar'
+  | 'eventos.mapas.versionar'
+  | 'eventos.assentos.visualizar'
+  | 'eventos.assentos.editar'
+  | 'eventos.acessos.visualizar'
+  | 'eventos.acessos.editar'
+  | 'eventos.evento.local.editar'
+  | 'eventos.evento.estrutura.editar'
+  // Datas, Sessões e Capacidade (Fase 1.2.4)
   | 'eventos.sessao.visualizar'
   | 'eventos.sessao.gerenciar'
+  | 'eventos.sessoes.visualizar'
+  | 'eventos.sessoes.criar'
+  | 'eventos.sessoes.editar'
+  | 'eventos.sessoes.duplicar'
+  | 'eventos.sessoes.cancelar'
+  | 'eventos.sessoes.capacidade.visualizar'
+  | 'eventos.sessoes.capacidade.editar'
+  | 'eventos.sessoes.reservas.visualizar'
+  | 'eventos.sessoes.reservas.editar'
+  | 'eventos.sessoes.recorrencia.criar'
   | 'eventos.setor.visualizar'
   | 'eventos.setor.gerenciar'
   | 'eventos.ingresso.visualizar'
@@ -2014,6 +2042,8 @@ export interface EventDetailDTO extends EventListItemDTO {
   complement?: string | null;
   neighborhood?: string | null;
   zipCode?: string | null;
+  venueId?: string | null;
+  doorsOpenAt?: string | null;
   estimatedCapacity?: number | null;
   version?: number;
   createdBy?: string | null;
@@ -2197,5 +2227,438 @@ export interface ListEventsFilter {
   limit?: number;
   sortBy?: 'date_asc' | 'date_desc' | 'name_asc' | 'name_desc' | 'created_recent' | 'updated_recent';
 }
+
+// ==============================================================================
+// FASE 1.2.3 — CENTRAL DE LOCAIS, MAPAS E ESTRUTURA FÍSICA
+// ==============================================================================
+
+export type VenueType =
+  | 'ARENA'
+  | 'STADIUM'
+  | 'THEATER'
+  | 'CONCERT_HALL'
+  | 'CONVENTION_CENTER'
+  | 'CLUB'
+  | 'BAR_RESTAURANT'
+  | 'OPEN_AIR'
+  | 'RACETRACK'
+  | 'GYMNASIUM'
+  | 'OTHER';
+
+export type VenueScope = 'GLOBAL' | 'PRODUCER';
+export type VenueStatus = 'ACTIVE' | 'ARCHIVED' | 'DRAFT';
+
+export interface VenueDTO {
+  id: string;
+  publicCode: string;
+  name: string;
+  type: VenueType;
+  scope: VenueScope;
+  producerId?: string | null;
+  producerName?: string | null;
+  status: VenueStatus;
+  postalCode?: string | null;
+  street?: string | null;
+  number?: string | null;
+  complement?: string | null;
+  district?: string | null;
+  city: string;
+  state: string;
+  country: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  capacity?: number | null;
+  phone?: string | null;
+  email?: string | null;
+  website?: string | null;
+  notes?: string | null;
+  documentUrl?: string | null;
+  sectionsCount?: number;
+  mapsCount?: number;
+  eventsCount?: number;
+  accessPointsCount?: number;
+  sections?: VenueSectionDTO[];
+  maps?: VenueMapDTO[];
+  accessPoints?: VenueAccessPointDTO[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VenueSummaryDTO {
+  total: number;
+  active: number;
+  withMaps: number;
+  citiesCount: number;
+  totalPhysicalCapacity?: number;
+}
+
+export interface CreateVenueInput {
+  name: string;
+  type: VenueType;
+  scope?: VenueScope;
+  producerId?: string | null;
+  postalCode?: string;
+  street?: string;
+  number?: string;
+  complement?: string;
+  district?: string;
+  city: string;
+  state: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+  capacity?: number;
+  phone?: string;
+  email?: string;
+  website?: string;
+  notes?: string;
+  documentUrl?: string;
+}
+
+export interface UpdateVenueInput extends Partial<CreateVenueInput> {
+  status?: VenueStatus;
+  version?: number;
+}
+
+export interface ListVenuesFilter {
+  search?: string;
+  city?: string;
+  state?: string;
+  type?: VenueType | 'ALL';
+  status?: VenueStatus | 'ALL';
+  scope?: VenueScope | 'ALL';
+  producerId?: string;
+  limit?: number;
+  page?: number;
+  cursor?: string;
+}
+
+export type VenueSectionType =
+  | 'GENERAL_ADMISSION'
+  | 'SEATED'
+  | 'TABLE'
+  | 'BOX'
+  | 'VIP'
+  | 'TECHNICAL'
+  | 'ACCESS_ONLY';
+
+export interface VenueSectionDTO {
+  id: string;
+  venueId: string;
+  name: string;
+  code: string;
+  type: VenueSectionType;
+  capacity: number;
+  parentSectionId?: string | null;
+  parentSectionName?: string | null;
+  description?: string | null;
+  color?: string | null;
+  active: boolean;
+  sortOrder: number;
+  rowsCount?: number;
+  seatsCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateVenueSectionInput {
+  name: string;
+  code?: string;
+  type: VenueSectionType;
+  capacity: number;
+  description?: string;
+  color?: string;
+  parentSectionId?: string | null;
+  active?: boolean;
+  sortOrder?: number;
+}
+
+export interface VenueMapDTO {
+  id: string;
+  venueId: string;
+  name: string;
+  description?: string | null;
+  activeVersionId?: string | null;
+  activeVersionNumber?: number | null;
+  status: 'ACTIVE' | 'ARCHIVED';
+  versionsCount: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface VenueMapVersionDTO {
+  id: string;
+  mapId: string;
+  versionNumber: number;
+  name: string;
+  status: 'DRAFT' | 'ACTIVE' | 'ARCHIVED';
+  backgroundDocumentId?: string | null;
+  svgData?: string | null;
+  scale?: number;
+  width?: number;
+  height?: number;
+  elementsCount: number;
+  totalCapacity: number;
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export type VenueMapElementType =
+  | 'SECTION'
+  | 'ROW'
+  | 'SEAT'
+  | 'TABLE'
+  | 'STAGE'
+  | 'ENTRANCE'
+  | 'EXIT'
+  | 'TEXT'
+  | 'SHAPE'
+  | 'RESTROOM'
+  | 'BAR'
+  | 'OBSTACLE';
+
+export interface VenueMapElementDTO {
+  id: string;
+  mapVersionId: string;
+  type: VenueMapElementType;
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  rotation: number;
+  geometry?: any;
+  linkedSectionId?: string | null;
+  label?: string | null;
+  metadata?: any;
+  sortOrder: number;
+}
+
+export interface VenueRowDTO {
+  id: string;
+  sectionId: string;
+  mapVersionId: string;
+  code: string;
+  name: string;
+  sortOrder: number;
+  seatsCount?: number;
+}
+
+export interface VenueSeatDTO {
+  id: string;
+  rowId?: string | null;
+  rowCode?: string | null;
+  sectionId: string;
+  sectionName?: string | null;
+  mapVersionId: string;
+  code: string;
+  label: string;
+  x?: number;
+  y?: number;
+  seatType: 'STANDARD' | 'VIP' | 'BOX' | 'TABLE_SEAT';
+  accessible: boolean;
+  companionSeat: boolean;
+  restrictedView: boolean;
+  active: boolean;
+}
+
+export type VenueAccessPointType =
+  | 'MAIN_ENTRANCE'
+  | 'GATE'
+  | 'VIP_GATE'
+  | 'CREDENTIALS'
+  | 'STAFF'
+  | 'EMERGENCY_EXIT';
+
+export interface VenueAccessPointDTO {
+  id: string;
+  venueId: string;
+  name: string;
+  code: string;
+  type: VenueAccessPointType;
+  active: boolean;
+  createdAt: string;
+}
+
+export interface EventVenueDTO {
+  id: string;
+  eventId: string;
+  venueId: string;
+  venueName: string;
+  venueType: VenueType;
+  venueCity: string;
+  venueState: string;
+  venueMapId?: string | null;
+  venueMapName?: string | null;
+  venueMapVersionId?: string | null;
+  venueMapVersionNumber?: number | null;
+  configurationSnapshot?: any;
+  createdAt: string;
+}
+
+export interface EventSectionDTO {
+  id: string;
+  eventId: string;
+  venueSectionId: string;
+  physicalName: string;
+  physicalCode: string;
+  physicalType: VenueSectionType;
+  physicalCapacity: number;
+  name: string; // Event-specific name (e.g., "Arquibancada Ouro")
+  capacity: number; // Operational capacity for this event
+  technicalReservation: number;
+  enabled: boolean;
+  configuration?: any;
+}
+
+// ==============================================================================
+// FASE 1.2.4 — DATAS, SESSÕES E CAPACIDADE OPERACIONAL
+// ==============================================================================
+
+export type EventSessionStatus =
+  | 'DRAFT'
+  | 'CONFIGURED'
+  | 'SCHEDULED'
+  | 'OPEN'
+  | 'IN_PROGRESS'
+  | 'FINISHED'
+  | 'CANCELLED'
+  | 'ARCHIVED';
+
+export interface EventSessionDTO {
+  id: string;
+  eventId: string;
+  publicCode: string;
+  name?: string | null;
+  doorsOpenAt?: string | null;
+  startAt: string;
+  endAt?: string | null;
+  timezone: string;
+  venueId?: string | null;
+  venueName?: string | null;
+  venueMapVersionId?: string | null;
+  venueMapName?: string | null;
+  status: EventSessionStatus;
+  capacity: number;
+  reservedCapacity: number;
+  isPrimary: boolean;
+  recurrenceGroupId?: string | null;
+  sessionSections?: SessionSectionDTO[];
+  reservations?: SessionCapacityReservationDTO[];
+  version: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateEventSessionInput {
+  name?: string;
+  doorsOpenAt?: string;
+  startAt: string;
+  endAt?: string;
+  timezone?: string;
+  venueId?: string;
+  venueMapVersionId?: string;
+  status?: EventSessionStatus;
+  capacity?: number;
+  isPrimary?: boolean;
+}
+
+export interface UpdateEventSessionInput extends Partial<CreateEventSessionInput> {
+  status?: EventSessionStatus;
+  version?: number;
+}
+
+export interface DuplicateEventSessionInput {
+  startAt: string;
+  doorsOpenAt?: string;
+  endAt?: string;
+  name?: string;
+  copyCapacity?: boolean;
+  replicateSections?: boolean;
+}
+
+export interface SessionSectionDTO {
+  id: string;
+  sessionId: string;
+  eventSectionId: string;
+  name: string;
+  enabled: boolean;
+  physicalCapacity: number;
+  eventCapacity: number;
+  capacity: number; // Session-specific capacity
+  reservedCapacity: number;
+  configuration?: any;
+}
+
+export type SessionReservationType =
+  | 'PRODUCTION'
+  | 'SECURITY'
+  | 'SPONSOR'
+  | 'ARTIST'
+  | 'ACCESSIBILITY'
+  | 'TECHNICAL'
+  | 'OTHER';
+
+export interface SessionCapacityReservationDTO {
+  id: string;
+  sessionId: string;
+  sectionId?: string | null;
+  sectionName?: string | null;
+  type: SessionReservationType;
+  quantity: number;
+  reason?: string | null;
+  createdAt: string;
+}
+
+export interface SessionConflictDTO {
+  hasConflicts: boolean;
+  conflicts: Array<{
+    type: 'VENUE_TIME_CONFLICT' | 'SECTION_OVERCAPACITY' | 'SETUP_TEARDOWN_OVERLAP';
+    severity: 'BLOCKING' | 'WARNING';
+    message: string;
+    conflictingSessionId?: string;
+    conflictingSessionName?: string;
+  }>;
+}
+
+export interface BulkSessionsPreviewInput {
+  pattern?: 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'CUSTOM_DATES';
+  startDate: string;
+  endDate?: string;
+  occurrencesCount?: number;
+  interval?: number;
+  daysOfWeek?: number[]; // 0 = Sunday, 1 = Monday, ... 6 = Saturday
+  doorsOpenTime?: string;
+  startTime?: string;
+  endTime?: string;
+  times?: Array<{
+    doorsOpenTime?: string; // "16:30"
+    startTime: string;      // "18:00"
+    endTime?: string;       // "23:00"
+  }>;
+  venueId?: string;
+  venueMapVersionId?: string;
+  capacity?: number;
+  namePrefix?: string;
+  customDates?: string[];
+}
+
+export interface BulkSessionsPreviewResult {
+  totalCount: number;
+  hasConflicts?: boolean;
+  sessions: Array<{
+    index?: number;
+    name?: string;
+    date: string;
+    doorsOpenAt?: string;
+    startAt: string;
+    endAt?: string;
+    hasConflict?: boolean;
+    conflictMessage?: string;
+    conflicts?: any[];
+  }>;
+}
+
 
 

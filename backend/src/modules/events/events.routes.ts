@@ -7,6 +7,9 @@ import { authenticate } from '../../core/middleware/authenticate';
 import { contextMiddleware } from '../context/context.middleware';
 import { requirePermission } from '../../core/middleware/requirePermission';
 
+import { EventVenueController } from './event-venue/event-venue.controller';
+import eventSessionRoutes from './sessions/event-session.routes';
+
 const router = Router();
 
 router.use(authenticate);
@@ -34,6 +37,16 @@ router.post('/:eventId/wizard/validate', requirePermission('eventos.evento.visua
 router.patch('/:eventId/draft', requirePermission('eventos.evento.editar'), EventDraftController.patchDraft);
 router.delete('/:eventId/draft', requirePermission('eventos.evento.rascunho.descartar'), EventDraftController.discardDraft);
 
+// 5.1 Vínculo Evento-Local e Estrutura Operacional (Fase 1.2.3)
+router.post('/:eventId/venues', requirePermission('eventos.locais.vincular'), EventVenueController.linkVenue);
+router.get('/:eventId/venues', requirePermission('eventos.locais.visualizar'), EventVenueController.getEventVenues);
+router.delete('/:eventId/venues/:venueId', requirePermission('eventos.locais.vincular'), EventVenueController.unlinkVenue);
+router.get('/:eventId/sections', requirePermission('eventos.locais.visualizar'), EventVenueController.listEventSections);
+router.put('/:eventId/sections/:id', requirePermission('eventos.locais.editar'), EventVenueController.updateEventSection);
+
+// 5.2 Datas, Sessões e Capacidade (Fase 1.2.4)
+router.use('/:eventId/sessions', eventSessionRoutes);
+
 // 6. Listagem com busca, filtros e paginação
 router.get('/', requirePermission('eventos.evento.visualizar'), EventController.listEvents);
 
@@ -47,3 +60,4 @@ router.post('/', requirePermission('eventos.evento.criar'), EventController.crea
 router.put('/:eventId/context', requirePermission('eventos.evento.visualizar'), EventController.selectEventContext);
 
 export default router;
+

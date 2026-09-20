@@ -15,6 +15,20 @@ export class InMemoryPrismaStore {
   public eventMediaRecords: any[] = [];
   public eventResponsibilityRecords: any[] = [];
   public eventWizardStateRecords: any[] = [];
+  public venueRecords: any[] = [];
+  public venueSectionRecords: any[] = [];
+  public venueMapRecords: any[] = [];
+  public venueMapVersionRecords: any[] = [];
+  public venueMapElementRecords: any[] = [];
+  public venueRowRecords: any[] = [];
+  public venueSeatRecords: any[] = [];
+  public venueAccessPointRecords: any[] = [];
+  public eventVenueRecords: any[] = [];
+  public eventSectionRecords: any[] = [];
+  public eventSessionRecords: any[] = [];
+  public sessionSectionRecords: any[] = [];
+  public sessionCapacityReservationRecords: any[] = [];
+  public sessionRecurrenceGroupRecords: any[] = [];
   public userProducerAccesses: any[] = [];
   public userEventAccesses: any[] = [];
   public sessions: any[] = [];
@@ -142,6 +156,20 @@ export class InMemoryPrismaStore {
     this.eventMediaRecords = [];
     this.eventResponsibilityRecords = [];
     this.eventWizardStateRecords = [];
+    this.venueRecords = [];
+    this.venueSectionRecords = [];
+    this.venueMapRecords = [];
+    this.venueMapVersionRecords = [];
+    this.venueMapElementRecords = [];
+    this.venueRowRecords = [];
+    this.venueSeatRecords = [];
+    this.venueAccessPointRecords = [];
+    this.eventVenueRecords = [];
+    this.eventSectionRecords = [];
+    this.eventSessionRecords = [];
+    this.sessionSectionRecords = [];
+    this.sessionCapacityReservationRecords = [];
+    this.sessionRecurrenceGroupRecords = [];
     this.configurationDefinitions = [];
     this.configurationValues = [];
     this.configurationVersions = [];
@@ -895,6 +923,178 @@ export class InMemoryPrismaStore {
       }
     );
 
+    // 5.1 Locais e Estruturas Físicas (Fase 1.2.3)
+    this.venueRecords.push(
+      {
+        id: 'ven_arena_curitiba',
+        publicCode: 'VEN-2026-000001',
+        name: 'Arena Disk Curitiba',
+        type: 'ARENA',
+        scope: 'GLOBAL',
+        status: 'ACTIVE',
+        postalCode: '80000-000',
+        street: 'Av. das Américas',
+        number: '1000',
+        district: 'Tarumã',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        capacity: 22500,
+        phone: '(41) 3333-1000',
+        email: 'operacoes@arenadisk.com.br',
+        version: 1,
+        createdAt: new Date('2026-01-10T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T10:00:00Z')
+      },
+      {
+        id: 'ven_teatro_positivo',
+        publicCode: 'VEN-2026-000002',
+        name: 'Teatro Positivo',
+        type: 'THEATER',
+        scope: 'GLOBAL',
+        status: 'ACTIVE',
+        postalCode: '81280-330',
+        street: 'Rua Prof. Pedro Viriato Parigot de Souza',
+        number: '5300',
+        district: 'Campo Comprido',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        capacity: 2400,
+        phone: '(41) 3317-3000',
+        email: 'eventos@teatropositivo.com.br',
+        version: 1,
+        createdAt: new Date('2026-01-15T11:00:00Z'),
+        updatedAt: new Date('2026-09-18T11:00:00Z')
+      },
+      {
+        id: 'ven_pedreira',
+        publicCode: 'VEN-2026-000003',
+        name: 'Pedreira Paulo Leminski',
+        type: 'OPEN_AIR',
+        scope: 'GLOBAL',
+        status: 'ACTIVE',
+        postalCode: '82130-010',
+        street: 'Rua João Gava',
+        number: '970',
+        district: 'Abranches',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        capacity: 25000,
+        phone: '(41) 3354-2000',
+        version: 1,
+        createdAt: new Date('2026-01-20T09:00:00Z'),
+        updatedAt: new Date('2026-09-18T09:00:00Z')
+      },
+      {
+        id: 'ven_couto_pereira',
+        publicCode: 'VEN-2026-000004',
+        name: 'Estádio Couto Pereira',
+        type: 'STADIUM',
+        scope: 'GLOBAL',
+        status: 'ACTIVE',
+        postalCode: '80060-000',
+        street: 'Rua Ubaldino do Amaral',
+        number: '37',
+        district: 'Alto da Glória',
+        city: 'Curitiba',
+        state: 'PR',
+        country: 'BR',
+        capacity: 45000,
+        version: 1,
+        createdAt: new Date('2026-02-01T14:00:00Z'),
+        updatedAt: new Date('2026-09-18T14:00:00Z')
+      }
+    );
+
+    // Seções / Estruturas da Arena Disk Curitiba
+    this.venueSectionRecords.push(
+      { id: 'vsec_pista', venueId: 'ven_arena_curitiba', name: 'Pista', code: 'PISTA', type: 'GENERAL_ADMISSION', capacity: 8000, active: true, sortOrder: 1, createdAt: new Date() },
+      { id: 'vsec_pista_premium', venueId: 'ven_arena_curitiba', name: 'Pista Premium', code: 'PREMIUM', type: 'VIP', capacity: 4000, active: true, sortOrder: 2, createdAt: new Date() },
+      { id: 'vsec_camarote', venueId: 'ven_arena_curitiba', name: 'Camarote', code: 'CAMAROTE', type: 'BOX', capacity: 1500, active: true, sortOrder: 3, createdAt: new Date() },
+      { id: 'vsec_arq_inf', venueId: 'ven_arena_curitiba', name: 'Arquibancada Inferior', code: 'ARQ_INF', type: 'SEATED', capacity: 5000, active: true, sortOrder: 4, createdAt: new Date() },
+      { id: 'vsec_arq_sup', venueId: 'ven_arena_curitiba', name: 'Arquibancada Superior', code: 'ARQ_SUP', type: 'SEATED', capacity: 4000, active: true, sortOrder: 5, createdAt: new Date() },
+      { id: 'vsec_vip', venueId: 'ven_arena_curitiba', name: 'Área VIP', code: 'VIP', type: 'VIP', capacity: 500, active: true, sortOrder: 6, createdAt: new Date() },
+      { id: 'vsec_tecnica', venueId: 'ven_arena_curitiba', name: 'Área Técnica', code: 'TEC', type: 'TECHNICAL', capacity: 200, active: true, sortOrder: 7, createdAt: new Date() }
+    );
+
+    // Mapas da Arena Disk Curitiba
+    this.venueMapRecords.push(
+      { id: 'vmap_frontal', venueId: 'ven_arena_curitiba', name: 'Show Frontal', activeVersionId: 'vmapv_frontal_3', status: 'ACTIVE', createdAt: new Date() },
+      { id: 'vmap_central', venueId: 'ven_arena_curitiba', name: 'Palco Central', activeVersionId: 'vmapv_central_1', status: 'ACTIVE', createdAt: new Date() }
+    );
+
+    this.venueMapVersionRecords.push(
+      { id: 'vmapv_frontal_3', mapId: 'vmap_frontal', versionNumber: 3, name: 'Versão Oficial 2026', status: 'ACTIVE', totalCapacity: 22500, version: 1, createdAt: new Date() },
+      { id: 'vmapv_central_1', mapId: 'vmap_central', versionNumber: 1, name: 'Versão 360 Graus', status: 'ACTIVE', totalCapacity: 24000, version: 1, createdAt: new Date() }
+    );
+
+    // Acessos da Arena
+    this.venueAccessPointRecords.push(
+      { id: 'vpt_1', venueId: 'ven_arena_curitiba', name: 'Portão A - Pista', code: 'PT_A', type: 'GATE', active: true, createdAt: new Date() },
+      { id: 'vpt_2', venueId: 'ven_arena_curitiba', name: 'Portão B - Arquibancadas', code: 'PT_B', type: 'GATE', active: true, createdAt: new Date() },
+      { id: 'vpt_3', venueId: 'ven_arena_curitiba', name: 'Portão VIP - Pista Premium e Camarotes', code: 'PT_VIP', type: 'VIP_GATE', active: true, createdAt: new Date() },
+      { id: 'vpt_4', venueId: 'ven_arena_curitiba', name: 'Entrada Principal e Bilheteria', code: 'PT_MAIN', type: 'MAIN_ENTRANCE', active: true, createdAt: new Date() }
+    );
+
+    // 5.2 Sessões Operacionais Iniciais (Fase 1.2.4)
+    this.eventSessionRecords.push(
+      {
+        id: 'ses_1001_1',
+        eventId: 'evt_1001',
+        publicCode: 'SES-2026-001001',
+        name: 'Sessão Principal - 19 Outubro',
+        doorsOpenAt: new Date('2026-10-19T16:30:00-03:00'),
+        startAt: new Date('2026-10-19T18:00:00-03:00'),
+        endAt: new Date('2026-10-20T04:00:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        venueId: 'ven_pedreira',
+        status: 'OPEN',
+        capacity: 25000,
+        reservedCapacity: 500,
+        isPrimary: true,
+        version: 1,
+        createdAt: new Date('2026-01-15T10:00:00Z'),
+        updatedAt: new Date('2026-09-18T14:20:00Z')
+      },
+      {
+        id: 'ses_1002_1',
+        eventId: 'evt_1002',
+        publicCode: 'SES-2026-001002',
+        name: 'Temporada Estreia - Quinta',
+        doorsOpenAt: new Date('2026-10-22T19:00:00-03:00'),
+        startAt: new Date('2026-10-22T20:00:00-03:00'),
+        endAt: new Date('2026-10-22T22:30:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        venueId: 'ven_teatro_positivo',
+        status: 'CONFIGURED',
+        capacity: 2400,
+        reservedCapacity: 50,
+        isPrimary: true,
+        version: 1,
+        createdAt: new Date('2026-02-01T11:00:00Z'),
+        updatedAt: new Date('2026-09-18T16:45:00Z')
+      },
+      {
+        id: 'ses_2001_1',
+        eventId: 'evt_2001',
+        publicCode: 'SES-2026-002001',
+        name: 'Noite Única - Show Mundial',
+        doorsOpenAt: new Date('2026-11-15T17:00:00-03:00'),
+        startAt: new Date('2026-11-15T21:00:00-03:00'),
+        endAt: new Date('2026-11-16T00:30:00-03:00'),
+        timezone: 'America/Sao_Paulo',
+        venueId: 'ven_couto_pereira',
+        status: 'OPEN',
+        capacity: 45000,
+        reservedCapacity: 1000,
+        isPrimary: true,
+        version: 1,
+        createdAt: new Date('2026-03-10T09:30:00Z'),
+        updatedAt: new Date('2026-09-19T11:15:00Z')
+      }
+    );
 
     // 6. Regras Padrão de Notificação (Fase 1.1.5.5)
     this.notificationRules.push(
@@ -2626,10 +2826,12 @@ export class InMemoryPrismaStore {
     return {
       findUnique: async (args: any) => {
         if (!args?.where) return null;
-        if (args.where.id) return this.events.find(e => e.id === args.where.id && !e.deletedAt) || null;
-        if (args.where.publicCode) return this.events.find(e => e.publicCode === args.where.publicCode && !e.deletedAt) || null;
-        if (args.where.slug) return this.events.find(e => e.slug === args.where.slug && !e.deletedAt) || null;
-        return null;
+        let evt: any = null;
+        if (args.where.id) evt = this.events.find(e => e.id === args.where.id && !e.deletedAt) || null;
+        if (!evt && args.where.publicCode) evt = this.events.find(e => e.publicCode === args.where.publicCode && !e.deletedAt) || null;
+        if (!evt && args.where.slug) evt = this.events.find(e => e.slug === args.where.slug && !e.deletedAt) || null;
+        if (evt && args.include) return this.hydrateEvent(evt, args.include);
+        return evt ? { ...evt } : null;
       },
       findFirst: async (args?: any) => {
         const matches = await this.event.findMany(args);
@@ -2724,7 +2926,11 @@ export class InMemoryPrismaStore {
         // Pagination: skip / take
         const skip = args?.skip || 0;
         const take = args?.take !== undefined ? args.take : list.length;
-        return list.slice(skip, skip + take);
+        const result = list.slice(skip, skip + take);
+        if (args?.include) {
+          return result.map(e => this.hydrateEvent(e, args.include));
+        }
+        return result;
       },
       count: async (args?: any) => {
         const matches = await this.event.findMany({ where: args?.where });
@@ -2923,6 +3129,846 @@ export class InMemoryPrismaStore {
     };
   }
 
+  public get venue() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueRecords];
+        if (args?.where) {
+          const w = args.where;
+          if (w.status) list = list.filter(v => v.status === w.status);
+          if (w.type) list = list.filter(v => v.type === w.type);
+          if (w.scope) list = list.filter(v => v.scope === w.scope);
+          if (w.producerId !== undefined) {
+            if (w.producerId === null) {
+              list = list.filter(v => !v.producerId);
+            } else {
+              list = list.filter(v => v.producerId === w.producerId || v.scope === 'GLOBAL');
+            }
+          }
+          if (w.city) list = list.filter(v => v.city.toLowerCase() === w.city.toLowerCase());
+          if (w.state) list = list.filter(v => v.state.toLowerCase() === w.state.toLowerCase());
+          if (w.id && typeof w.id === 'string') list = list.filter(v => v.id === w.id);
+          if (w.id && Array.isArray(w.id.in)) list = list.filter(v => w.id.in.includes(v.id));
+        }
+        if (args?.include) {
+          list = list.map(v => this.hydrateVenue(v, args.include));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let v: any = null;
+        if (args.where.id) v = this.venueRecords.find(x => x.id === args.where.id) || null;
+        if (!v && args.where.publicCode) v = this.venueRecords.find(x => x.publicCode === args.where.publicCode) || null;
+        if (v && args.include) return this.hydrateVenue(v, args.include);
+        return v ? { ...v } : null;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.venue.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const rand = Math.floor(100000 + Math.random() * 900000);
+        const year = new Date().getFullYear();
+        const record = {
+          id: args.data.id || `ven_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          publicCode: args.data.publicCode || `VEN-${year}-${rand}`,
+          scope: args.data.scope || 'GLOBAL',
+          status: args.data.status || 'ACTIVE',
+          version: args.data.version || 1,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.venueRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.venueRecords.findIndex(v => v.id === args.where?.id);
+        if (idx === -1) throw new Error('Local não encontrado');
+        const updated = {
+          ...this.venueRecords[idx],
+          ...args.data,
+          version: (this.venueRecords[idx].version || 1) + 1,
+          updatedAt: new Date()
+        };
+        this.venueRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueRecords.findIndex(v => v.id === args.where?.id);
+        if (idx !== -1) return this.venueRecords.splice(idx, 1)[0];
+        return null;
+      },
+      count: async (args?: any) => {
+        const matches = await this.venue.findMany(args);
+        return matches.length;
+      }
+    };
+  }
+
+  public get venueSection() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueSectionRecords];
+        if (args?.where) {
+          const w = args.where;
+          if (w.venueId) list = list.filter(s => s.venueId === w.venueId);
+          if (w.active !== undefined) list = list.filter(s => s.active === w.active);
+          if (w.id && typeof w.id === 'string') list = list.filter(s => s.id === w.id);
+          if (w.id && Array.isArray(w.id.in)) list = list.filter(s => w.id.in.includes(s.id));
+        }
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const s = this.venueSectionRecords.find(x => x.id === args.where.id);
+        return s ? { ...s } : null;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.venueSection.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vsec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          sortOrder: 0,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueSectionRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        const count = args.data.length;
+        for (const item of args.data) {
+          await this.venueSection.create({ data: item });
+        }
+        return { count };
+      },
+      update: async (args: any) => {
+        const idx = this.venueSectionRecords.findIndex(s => s.id === args.where?.id);
+        if (idx === -1) throw new Error('Setor físico não encontrado');
+        const updated = {
+          ...this.venueSectionRecords[idx],
+          ...args.data
+        };
+        this.venueSectionRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueSectionRecords.findIndex(s => s.id === args.where?.id);
+        if (idx !== -1) return this.venueSectionRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.venueSectionRecords.length;
+        if (args?.where?.venueId) {
+          this.venueSectionRecords = this.venueSectionRecords.filter(s => s.venueId !== args.where.venueId);
+        }
+        return { count: initial - this.venueSectionRecords.length };
+      }
+    };
+  }
+
+  public get venueMap() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueMapRecords];
+        if (args?.where?.venueId) list = list.filter(m => m.venueId === args.where.venueId);
+        if (args?.where?.status) list = list.filter(m => m.status === args.where.status);
+        if (args?.include?.versions) {
+          list = list.map(m => ({
+            ...m,
+            versions: this.venueMapVersionRecords.filter(v => v.mapId === m.id)
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const m = this.venueMapRecords.find(x => x.id === args.where.id);
+        if (!m) return null;
+        const copy = { ...m };
+        if (args?.include?.versions) {
+          copy.versions = this.venueMapVersionRecords.filter(v => v.mapId === m.id);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.venueMap.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vmap_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          status: 'ACTIVE',
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueMapRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.venueMapRecords.findIndex(m => m.id === args.where?.id);
+        if (idx === -1) throw new Error('Mapa não encontrado');
+        const updated = { ...this.venueMapRecords[idx], ...args.data };
+        this.venueMapRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueMapRecords.findIndex(m => m.id === args.where?.id);
+        if (idx !== -1) return this.venueMapRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  public get venueMapVersion() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueMapVersionRecords];
+        if (args?.where?.mapId) list = list.filter(v => v.mapId === args.where.mapId);
+        if (args?.where?.status) list = list.filter(v => v.status === args.where.status);
+        if (args?.include) {
+          list = list.map(v => this.hydrateVenueMapVersion(v, args.include));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const v = this.venueMapVersionRecords.find(x => x.id === args.where.id);
+        if (!v) return null;
+        return args?.include ? this.hydrateVenueMapVersion(v, args.include) : { ...v };
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.venueMapVersion.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vmapv_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          versionNumber: args.data.versionNumber || 1,
+          status: 'DRAFT',
+          totalCapacity: args.data.totalCapacity || 0,
+          version: 1,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueMapVersionRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.venueMapVersionRecords.findIndex(v => v.id === args.where?.id);
+        if (idx === -1) throw new Error('Versão de mapa não encontrada');
+        const updated = {
+          ...this.venueMapVersionRecords[idx],
+          ...args.data,
+          version: (this.venueMapVersionRecords[idx].version || 1) + 1
+        };
+        this.venueMapVersionRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueMapVersionRecords.findIndex(v => v.id === args.where?.id);
+        if (idx !== -1) return this.venueMapVersionRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
+
+  public get venueMapElement() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueMapElementRecords];
+        if (args?.where?.mapVersionId) list = list.filter(e => e.mapVersionId === args.where.mapVersionId);
+        if (args?.where?.linkedSectionId) list = list.filter(e => e.linkedSectionId === args.where.linkedSectionId);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const e = this.venueMapElementRecords.find(x => x.id === args.where.id);
+        return e ? { ...e } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vme_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          sortOrder: 0,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueMapElementRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.venueMapElement.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      update: async (args: any) => {
+        const idx = this.venueMapElementRecords.findIndex(e => e.id === args.where?.id);
+        if (idx === -1) throw new Error('Elemento não encontrado');
+        const updated = { ...this.venueMapElementRecords[idx], ...args.data };
+        this.venueMapElementRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueMapElementRecords.findIndex(e => e.id === args.where?.id);
+        if (idx !== -1) return this.venueMapElementRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.venueMapElementRecords.length;
+        if (args?.where?.mapVersionId) {
+          this.venueMapElementRecords = this.venueMapElementRecords.filter(e => e.mapVersionId !== args.where.mapVersionId);
+        }
+        return { count: initial - this.venueMapElementRecords.length };
+      }
+    };
+  }
+
+  public get venueRow() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueRowRecords];
+        if (args?.where?.mapVersionId) list = list.filter(r => r.mapVersionId === args.where.mapVersionId);
+        if (args?.where?.sectionId) list = list.filter(r => r.sectionId === args.where.sectionId);
+        list.sort((a, b) => (a.sortOrder || 0) - (b.sortOrder || 0));
+        if (args?.include?.seats) {
+          list = list.map(r => ({
+            ...r,
+            seats: this.venueSeatRecords.filter(s => s.rowId === r.id)
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const r = this.venueRowRecords.find(x => x.id === args.where.id);
+        if (!r) return null;
+        const copy = { ...r };
+        if (args?.include?.seats) {
+          copy.seats = this.venueSeatRecords.filter(s => s.rowId === r.id);
+        }
+        return copy;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vrow_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          sortOrder: 0,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueRowRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.venueRowRecords.findIndex(r => r.id === args.where?.id);
+        if (idx === -1) throw new Error('Fileira não encontrada');
+        const updated = { ...this.venueRowRecords[idx], ...args.data };
+        this.venueRowRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueRowRecords.findIndex(r => r.id === args.where?.id);
+        if (idx !== -1) return this.venueRowRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.venueRowRecords.length;
+        if (args?.where?.mapVersionId) {
+          this.venueRowRecords = this.venueRowRecords.filter(r => r.mapVersionId !== args.where.mapVersionId);
+        }
+        return { count: initial - this.venueRowRecords.length };
+      }
+    };
+  }
+
+  public get venueSeat() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueSeatRecords];
+        if (args?.where?.mapVersionId) list = list.filter(s => s.mapVersionId === args.where.mapVersionId);
+        if (args?.where?.sectionId) list = list.filter(s => s.sectionId === args.where.sectionId);
+        if (args?.where?.rowId) list = list.filter(s => s.rowId === args.where.rowId);
+        if (args?.where?.active !== undefined) list = list.filter(s => s.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const s = this.venueSeatRecords.find(x => x.id === args.where.id);
+        return s ? { ...s } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vst_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          accessible: false,
+          companionSeat: false,
+          restrictedView: false,
+          seatType: 'STANDARD',
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueSeatRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.venueSeat.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      update: async (args: any) => {
+        const idx = this.venueSeatRecords.findIndex(s => s.id === args.where?.id);
+        if (idx === -1) throw new Error('Assento não encontrado');
+        const updated = { ...this.venueSeatRecords[idx], ...args.data };
+        this.venueSeatRecords[idx] = updated;
+        return { ...updated };
+      },
+      updateMany: async (args: any) => {
+        let count = 0;
+        for (let i = 0; i < this.venueSeatRecords.length; i++) {
+          const s = this.venueSeatRecords[i];
+          let matches = true;
+          if (args?.where?.mapVersionId && s.mapVersionId !== args.where.mapVersionId) matches = false;
+          if (args?.where?.sectionId && s.sectionId !== args.where.sectionId) matches = false;
+          if (args?.where?.rowId && s.rowId !== args.where.rowId) matches = false;
+          if (args?.where?.id && Array.isArray(args.where.id.in) && !args.where.id.in.includes(s.id)) matches = false;
+          if (matches) {
+            this.venueSeatRecords[i] = { ...s, ...args.data };
+            count++;
+          }
+        }
+        return { count };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueSeatRecords.findIndex(s => s.id === args.where?.id);
+        if (idx !== -1) return this.venueSeatRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.venueSeatRecords.length;
+        if (args?.where?.mapVersionId) {
+          this.venueSeatRecords = this.venueSeatRecords.filter(s => s.mapVersionId !== args.where.mapVersionId);
+        }
+        return { count: initial - this.venueSeatRecords.length };
+      },
+      count: async (args?: any) => {
+        const list = await this.venueSeat.findMany(args);
+        return list.length;
+      }
+    };
+  }
+
+  public get venueAccessPoint() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.venueAccessPointRecords];
+        if (args?.where?.venueId) list = list.filter(p => p.venueId === args.where.venueId);
+        if (args?.where?.active !== undefined) list = list.filter(p => p.active === args.where.active);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const p = this.venueAccessPointRecords.find(x => x.id === args.where.id);
+        return p ? { ...p } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `vpt_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          active: true,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.venueAccessPointRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.venueAccessPointRecords.findIndex(p => p.id === args.where?.id);
+        if (idx === -1) throw new Error('Ponto de acesso não encontrado');
+        const updated = { ...this.venueAccessPointRecords[idx], ...args.data };
+        this.venueAccessPointRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.venueAccessPointRecords.findIndex(p => p.id === args.where?.id);
+        if (idx !== -1) return this.venueAccessPointRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.venueAccessPointRecords.length;
+        if (args?.where?.venueId) {
+          this.venueAccessPointRecords = this.venueAccessPointRecords.filter(p => p.venueId !== args.where.venueId);
+        }
+        return { count: initial - this.venueAccessPointRecords.length };
+      }
+    };
+  }
+
+  public get eventVenue() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventVenueRecords];
+        if (args?.where?.eventId) list = list.filter(ev => ev.eventId === args.where.eventId);
+        if (args?.where?.venueId) list = list.filter(ev => ev.venueId === args.where.venueId);
+        if (args?.include) {
+          list = list.map(ev => ({
+            ...ev,
+            venue: args.include.venue ? this.venueRecords.find(v => v.id === ev.venueId) : undefined,
+            mapVersion: args.include.mapVersion ? this.venueMapVersionRecords.find(mv => mv.id === ev.venueMapVersionId) : undefined
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        let ev: any = null;
+        if (args?.where?.id) ev = this.eventVenueRecords.find(x => x.id === args.where.id);
+        if (!ev && args?.where?.eventId_venueId) {
+          ev = this.eventVenueRecords.find(x => x.eventId === args.where.eventId_venueId.eventId && x.venueId === args.where.eventId_venueId.venueId);
+        }
+        if (!ev) return null;
+        const copy = { ...ev };
+        if (args?.include?.venue) copy.venue = this.venueRecords.find(v => v.id === ev.venueId);
+        if (args?.include?.mapVersion) copy.mapVersion = this.venueMapVersionRecords.find(mv => mv.id === ev.venueMapVersionId);
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.eventVenue.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ev_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.eventVenueRecords.push(record);
+        return { ...record };
+      },
+      delete: async (args: any) => {
+        const idx = this.eventVenueRecords.findIndex(ev => ev.id === args.where?.id);
+        if (idx !== -1) return this.eventVenueRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventVenueRecords.length;
+        if (args?.where?.eventId) {
+          this.eventVenueRecords = this.eventVenueRecords.filter(ev => ev.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventVenueRecords.length };
+      }
+    };
+  }
+
+  public get eventSection() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSectionRecords];
+        if (args?.where?.eventId) list = list.filter(es => es.eventId === args.where.eventId);
+        if (args?.where?.venueSectionId) list = list.filter(es => es.venueSectionId === args.where.venueSectionId);
+        if (args?.where?.enabled !== undefined) list = list.filter(es => es.enabled === args.where.enabled);
+        if (args?.include?.venueSection) {
+          list = list.map(es => ({
+            ...es,
+            venueSection: this.venueSectionRecords.find(vs => vs.id === es.venueSectionId)
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        let es: any = null;
+        if (args?.where?.id) es = this.eventSectionRecords.find(x => x.id === args.where.id);
+        if (!es && args?.where?.eventId_venueSectionId) {
+          es = this.eventSectionRecords.find(x => x.eventId === args.where.eventId_venueSectionId.eventId && x.venueSectionId === args.where.eventId_venueSectionId.venueSectionId);
+        }
+        if (!es) return null;
+        const copy = { ...es };
+        if (args?.include?.venueSection) {
+          copy.venueSection = this.venueSectionRecords.find(vs => vs.id === es.venueSectionId);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.eventSection.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `esec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          enabled: true,
+          technicalReservation: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventSectionRecords.push(record);
+        return { ...record };
+      },
+      update: async (args: any) => {
+        const idx = this.eventSectionRecords.findIndex(es => es.id === args.where?.id);
+        if (idx === -1) throw new Error('Setor do evento não encontrado');
+        const updated = {
+          ...this.eventSectionRecords[idx],
+          ...args.data,
+          updatedAt: new Date()
+        };
+        this.eventSectionRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.eventSectionRecords.findIndex(es => es.id === args.where?.id);
+        if (idx !== -1) return this.eventSectionRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventSectionRecords.length;
+        if (args?.where?.eventId) {
+          this.eventSectionRecords = this.eventSectionRecords.filter(es => es.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventSectionRecords.length };
+      }
+    };
+  }
+
+  public get eventSession() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.eventSessionRecords];
+        if (args?.where) {
+          const w = args.where;
+          if (w.eventId) list = list.filter(s => s.eventId === w.eventId);
+          if (w.venueId) list = list.filter(s => s.venueId === w.venueId);
+          if (w.status) list = list.filter(s => s.status === w.status);
+          if (w.isPrimary !== undefined) list = list.filter(s => s.isPrimary === w.isPrimary);
+          if (w.recurrenceGroupId) list = list.filter(s => s.recurrenceGroupId === w.recurrenceGroupId);
+          if (w.id && typeof w.id === 'string') list = list.filter(s => s.id === w.id);
+          if (w.id && Array.isArray(w.id.in)) list = list.filter(s => w.id.in.includes(s.id));
+          if (w.startAt && w.startAt.gte) {
+            list = list.filter(s => new Date(s.startAt) >= new Date(w.startAt.gte));
+          }
+          if (w.startAt && w.startAt.lte) {
+            list = list.filter(s => new Date(s.startAt) <= new Date(w.startAt.lte));
+          }
+        }
+        list.sort((a, b) => new Date(a.startAt).getTime() - new Date(b.startAt).getTime());
+        if (args?.include) {
+          list = list.map(s => this.hydrateEventSession(s, args.include));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where) return null;
+        let s: any = null;
+        if (args.where.id) s = this.eventSessionRecords.find(x => x.id === args.where.id);
+        if (!s && args.where.publicCode) s = this.eventSessionRecords.find(x => x.publicCode === args.where.publicCode);
+        if (!s) return null;
+        return args?.include ? this.hydrateEventSession(s, args.include) : { ...s };
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.eventSession.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const rand = Math.floor(100000 + Math.random() * 900000);
+        const year = new Date().getFullYear();
+        const record = {
+          id: args.data.id || `ses_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          publicCode: args.data.publicCode || `SES-${year}-${rand}`,
+          timezone: 'America/Sao_Paulo',
+          status: 'CONFIGURED',
+          reservedCapacity: 0,
+          isPrimary: false,
+          version: 1,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.eventSessionRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.eventSession.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      update: async (args: any) => {
+        const idx = this.eventSessionRecords.findIndex(s => s.id === args.where?.id);
+        if (idx === -1) throw new Error('Sessão não encontrada');
+        const updated = {
+          ...this.eventSessionRecords[idx],
+          ...args.data,
+          version: (this.eventSessionRecords[idx].version || 1) + 1,
+          updatedAt: new Date()
+        };
+        this.eventSessionRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.eventSessionRecords.findIndex(s => s.id === args.where?.id);
+        if (idx !== -1) return this.eventSessionRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.eventSessionRecords.length;
+        if (args?.where?.eventId) {
+          this.eventSessionRecords = this.eventSessionRecords.filter(s => s.eventId !== args.where.eventId);
+        }
+        return { count: initial - this.eventSessionRecords.length };
+      },
+      count: async (args?: any) => {
+        const list = await this.eventSession.findMany(args);
+        return list.length;
+      }
+    };
+  }
+
+  public get sessionSection() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.sessionSectionRecords];
+        if (args?.where?.sessionId) list = list.filter(ss => ss.sessionId === args.where.sessionId);
+        if (args?.where?.eventSectionId) list = list.filter(ss => ss.eventSectionId === args.where.eventSectionId);
+        if (args?.where?.enabled !== undefined) list = list.filter(ss => ss.enabled === args.where.enabled);
+        if (args?.include?.eventSection) {
+          list = list.map(ss => ({
+            ...ss,
+            eventSection: this.eventSectionRecords.find(es => es.id === ss.eventSectionId)
+          }));
+        }
+        return list;
+      },
+      findUnique: async (args: any) => {
+        let ss: any = null;
+        if (args?.where?.id) ss = this.sessionSectionRecords.find(x => x.id === args.where.id);
+        if (!ss && args?.where?.sessionId_eventSectionId) {
+          ss = this.sessionSectionRecords.find(x => x.sessionId === args.where.sessionId_eventSectionId.sessionId && x.eventSectionId === args.where.sessionId_eventSectionId.eventSectionId);
+        }
+        if (!ss) return null;
+        const copy = { ...ss };
+        if (args?.include?.eventSection) {
+          copy.eventSection = this.eventSectionRecords.find(es => es.id === ss.eventSectionId);
+        }
+        return copy;
+      },
+      findFirst: async (args?: any) => {
+        const matches = await this.sessionSection.findMany(args);
+        return matches.length > 0 ? matches[0] : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `ssec_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          enabled: true,
+          reservedCapacity: 0,
+          ...args.data,
+          createdAt: new Date(),
+          updatedAt: new Date()
+        };
+        this.sessionSectionRecords.push(record);
+        return { ...record };
+      },
+      createMany: async (args: any) => {
+        for (const item of args.data) {
+          await this.sessionSection.create({ data: item });
+        }
+        return { count: args.data.length };
+      },
+      update: async (args: any) => {
+        const idx = this.sessionSectionRecords.findIndex(ss => ss.id === args.where?.id);
+        if (idx === -1) throw new Error('Setor de sessão não encontrado');
+        const updated = {
+          ...this.sessionSectionRecords[idx],
+          ...args.data,
+          updatedAt: new Date()
+        };
+        this.sessionSectionRecords[idx] = updated;
+        return { ...updated };
+      },
+      delete: async (args: any) => {
+        const idx = this.sessionSectionRecords.findIndex(ss => ss.id === args.where?.id);
+        if (idx !== -1) return this.sessionSectionRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.sessionSectionRecords.length;
+        if (args?.where?.sessionId) {
+          this.sessionSectionRecords = this.sessionSectionRecords.filter(ss => ss.sessionId !== args.where.sessionId);
+        }
+        return { count: initial - this.sessionSectionRecords.length };
+      }
+    };
+  }
+
+  public get sessionCapacityReservation() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.sessionCapacityReservationRecords];
+        if (args?.where?.sessionId) list = list.filter(r => r.sessionId === args.where.sessionId);
+        if (args?.where?.sectionId) list = list.filter(r => r.sectionId === args.where.sectionId);
+        if (args?.where?.type) list = list.filter(r => r.type === args.where.type);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const r = this.sessionCapacityReservationRecords.find(x => x.id === args.where.id);
+        return r ? { ...r } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `scres_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.sessionCapacityReservationRecords.push(record);
+        return { ...record };
+      },
+      delete: async (args: any) => {
+        const idx = this.sessionCapacityReservationRecords.findIndex(r => r.id === args.where?.id);
+        if (idx !== -1) return this.sessionCapacityReservationRecords.splice(idx, 1)[0];
+        return null;
+      },
+      deleteMany: async (args: any) => {
+        const initial = this.sessionCapacityReservationRecords.length;
+        if (args?.where?.sessionId) {
+          this.sessionCapacityReservationRecords = this.sessionCapacityReservationRecords.filter(r => r.sessionId !== args.where.sessionId);
+        }
+        return { count: initial - this.sessionCapacityReservationRecords.length };
+      }
+    };
+  }
+
+  public get sessionRecurrenceGroup() {
+    return {
+      findMany: async (args?: any) => {
+        let list = [...this.sessionRecurrenceGroupRecords];
+        if (args?.where?.eventId) list = list.filter(rg => rg.eventId === args.where.eventId);
+        return list;
+      },
+      findUnique: async (args: any) => {
+        if (!args?.where?.id) return null;
+        const rg = this.sessionRecurrenceGroupRecords.find(x => x.id === args.where.id);
+        return rg ? { ...rg } : null;
+      },
+      create: async (args: any) => {
+        const record = {
+          id: args.data.id || `srg_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`,
+          ...args.data,
+          createdAt: new Date()
+        };
+        this.sessionRecurrenceGroupRecords.push(record);
+        return { ...record };
+      },
+      delete: async (args: any) => {
+        const idx = this.sessionRecurrenceGroupRecords.findIndex(rg => rg.id === args.where?.id);
+        if (idx !== -1) return this.sessionRecurrenceGroupRecords.splice(idx, 1)[0];
+        return null;
+      }
+    };
+  }
 
   public get userProducerAccess() {
     return {
@@ -7361,6 +8407,114 @@ export class InMemoryPrismaStore {
           ...rp,
           permission: this.permissions.find(p => p.id === rp.permissionId)
         }));
+    }
+    return copy;
+  }
+
+  private hydrateEvent(event: any, include?: any): any {
+    if (!event) return null;
+    const copy = { ...event };
+    if (include?.eventVenues) {
+      copy.eventVenues = this.eventVenueRecords.filter(ev => ev.eventId === event.id).map(ev => ({
+        ...ev,
+        venue: include.eventVenues.include?.venue ? this.venueRecords.find(v => v.id === ev.venueId) : undefined
+      }));
+    }
+    if (include?.eventSections) {
+      copy.eventSections = this.eventSectionRecords.filter(es => es.eventId === event.id).map(es => ({
+        ...es,
+        venueSection: include.eventSections.include?.venueSection ? this.venueSectionRecords.find(vs => vs.id === es.venueSectionId) : undefined
+      }));
+    }
+    if (include?.sessions) {
+      copy.sessions = this.eventSessionRecords.filter(s => s.eventId === event.id);
+    }
+    if (include?.category) {
+      copy.category = this.eventCategoryRecords.find(c => c.id === event.categoryId);
+    }
+    if (include?.media) {
+      copy.media = this.eventMediaRecords.filter(m => m.eventId === event.id);
+    }
+    if (include?.responsibilities) {
+      copy.responsibilities = this.eventResponsibilityRecords.filter(r => r.eventId === event.id);
+    }
+    return copy;
+  }
+
+  private hydrateVenue(venue: any, include?: any): any {
+    if (!venue) return null;
+    const copy = { ...venue };
+    if (include?.sections) {
+      copy.sections = this.venueSectionRecords.filter(s => s.venueId === venue.id);
+    }
+    if (include?.maps) {
+      copy.maps = this.venueMapRecords.filter(m => m.venueId === venue.id).map(m => {
+        const mCopy = { ...m };
+        if (include.maps.include?.versions) {
+          mCopy.versions = this.venueMapVersionRecords.filter(v => v.mapId === m.id);
+        }
+        return mCopy;
+      });
+    }
+    if (include?.accessPoints) {
+      copy.accessPoints = this.venueAccessPointRecords.filter(p => p.venueId === venue.id);
+    }
+    if (include?.eventVenues) {
+      copy.eventVenues = this.eventVenueRecords.filter(ev => ev.venueId === venue.id);
+    }
+    return copy;
+  }
+
+  private hydrateVenueMapVersion(version: any, include?: any): any {
+    if (!version) return null;
+    const copy = { ...version };
+    if (include?.map) {
+      copy.map = this.venueMapRecords.find(m => m.id === version.mapId);
+    }
+    if (include?.elements) {
+      copy.elements = this.venueMapElementRecords.filter(e => e.mapVersionId === version.id);
+    }
+    if (include?.rows) {
+      copy.rows = this.venueRowRecords.filter(r => r.mapVersionId === version.id).map(r => {
+        const rCopy = { ...r };
+        if (include.rows.include?.seats) {
+          rCopy.seats = this.venueSeatRecords.filter(s => s.rowId === r.id);
+        }
+        return rCopy;
+      });
+    }
+    if (include?.seats) {
+      copy.seats = this.venueSeatRecords.filter(s => s.mapVersionId === version.id);
+    }
+    return copy;
+  }
+
+  private hydrateEventSession(session: any, include?: any): any {
+    if (!session) return null;
+    const copy = { ...session };
+    if (include?.venue) {
+      copy.venue = this.venueRecords.find(v => v.id === session.venueId) || null;
+    }
+    if (include?.mapVersion) {
+      copy.mapVersion = this.venueMapVersionRecords.find(mv => mv.id === session.venueMapVersionId) || null;
+    }
+    if (include?.sessionSections) {
+      copy.sessionSections = this.sessionSectionRecords
+        .filter(ss => ss.sessionId === session.id)
+        .map(ss => {
+          const ssCopy = { ...ss };
+          if (include.sessionSections.include?.eventSection) {
+            const es = this.eventSectionRecords.find(e => e.id === ss.eventSectionId);
+            ssCopy.eventSection = es ? {
+              ...es,
+              venueSection: this.venueSectionRecords.find(vs => vs.id === es.venueSectionId)
+            } : null;
+          }
+          return ssCopy;
+        });
+    }
+    if (include?.reservations) {
+      copy.reservations = this.sessionCapacityReservationRecords.filter(r => r.sessionId === session.id);
     }
     return copy;
   }
