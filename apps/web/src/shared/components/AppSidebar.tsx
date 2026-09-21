@@ -279,8 +279,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               <span className="text-sm font-black tracking-tight text-white truncate">
                 DISK INTERNO
               </span>
-              <span className="text-[10px] font-semibold text-orange-400 tracking-wider">
-                PDT CORE
+              <span className="text-[10px] font-medium text-slate-400 tracking-wider">
+                Gestão Operacional
               </span>
             </div>
           )}

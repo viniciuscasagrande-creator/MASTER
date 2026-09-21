@@ -4,7 +4,6 @@ import {
   Ticket,
   Calendar,
   Percent,
-  Sparkles,
   ArrowRight,
   Briefcase,
   Headphones,
@@ -29,12 +28,11 @@ import { formatCurrency, formatNumber } from '../../shared/utils/formatters';
 
 interface OverviewDashboardProps {
   onNavigate: (moduleId: string, subItemId?: string) => void;
-  onOpenNewSale: () => void;
+  onOpenNewSale?: () => void;
 }
 
 export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
-  onNavigate,
-  onOpenNewSale
+  onNavigate
 }) => {
   const {
     events,
@@ -60,6 +58,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
   const pendingRefundsCount = refunds.filter((r) => r.status === 'pending_approval').length;
   const activeIncidentsCount = incidents.filter((i) => i.status !== 'resolved').length;
+  const openSacCount = 0; // Sac tickets awaiting resolution
 
   // Module access list per Section 15
   const MODULE_ITEMS = [
@@ -69,7 +68,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Gestão de eventos, locais e sessões de vendas',
       icon: <Calendar className="h-5 w-5 text-cyan-600" />,
       iconBg: 'bg-cyan-50 text-cyan-600 border-cyan-200',
-      badge: `${filteredEvents.length} no escopo`,
+      badge: `${filteredEvents.length} eventos`,
       badgeVariant: 'cyan' as const,
       requiredPermission: 'eventos.evento.visualizar'
     },
@@ -79,8 +78,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Canais, pedidos, vendas e condições de produtores',
       icon: <Briefcase className="h-5 w-5 text-amber-600" />,
       iconBg: 'bg-amber-50 text-amber-600 border-amber-200',
-      badge: `${producers.length} produtores`,
-      badgeVariant: 'amber' as const,
+      badge: undefined,
       requiredPermission: 'comercial.dashboard.visualizar'
     },
     {
@@ -89,8 +87,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Incidentes operacionais e war room em tempo real',
       icon: <Headphones className="h-5 w-5 text-emerald-600" />,
       iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-      badge: activeIncidentsCount > 0 ? `${activeIncidentsCount} alertas` : 'Operando',
-      badgeVariant: activeIncidentsCount > 0 ? ('amber' as const) : ('emerald' as const),
+      badge: activeIncidentsCount > 0 ? `${activeIncidentsCount} alertas` : undefined,
+      badgeVariant: 'amber' as const,
       requiredPermission: 'suporte.incidentes.visualizar'
     },
     {
@@ -99,7 +97,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Consultas de ingressos, clientes e tickets de suporte',
       icon: <MessageSquare className="h-5 w-5 text-cyan-600" />,
       iconBg: 'bg-cyan-50 text-cyan-600 border-cyan-200',
-      badge: 'Ativo',
+      badge: openSacCount > 0 ? `${openSacCount} fila` : undefined,
       badgeVariant: 'cyan' as const,
       requiredPermission: 'sac.consulta.acessar'
     },
@@ -109,8 +107,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Aprovação de reembolsos, chargebacks e disputas',
       icon: <RotateCcw className="h-5 w-5 text-rose-600" />,
       iconBg: 'bg-rose-50 text-rose-600 border-rose-200',
-      badge: pendingRefundsCount > 0 ? `${pendingRefundsCount} pendentes` : 'Zero fila',
-      badgeVariant: pendingRefundsCount > 0 ? ('rose' as const) : ('emerald' as const),
+      badge: pendingRefundsCount > 0 ? `${pendingRefundsCount} pendentes` : undefined,
+      badgeVariant: 'rose' as const,
       requiredPermission: 'estorno.solicitacao.visualizar'
     },
     {
@@ -119,8 +117,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Saldos, repasses, extratos bancários e conciliação',
       icon: <DollarSign className="h-5 w-5 text-emerald-600" />,
       iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200',
-      badge: 'Hub Ativo',
-      badgeVariant: 'emerald' as const,
+      badge: undefined,
       requiredPermission: 'financeiro.saldo.visualizar'
     },
     {
@@ -129,8 +126,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Livro diário, lançamentos e DRE gerencial',
       icon: <FileSpreadsheet className="h-5 w-5 text-blue-600" />,
       iconBg: 'bg-blue-50 text-blue-600 border-blue-200',
-      badge: 'Integrado',
-      badgeVariant: 'slate' as const,
+      badge: undefined,
       requiredPermission: 'contabilidade.diario.visualizar'
     },
     {
@@ -139,8 +135,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Campanhas publicitárias, análise de ROAS e pixels',
       icon: <Megaphone className="h-5 w-5 text-pink-600" />,
       iconBg: 'bg-pink-50 text-pink-600 border-pink-200',
-      badge: 'Campanhas',
-      badgeVariant: 'purple' as const,
+      badge: undefined,
       requiredPermission: 'marketing.campanha.visualizar'
     },
     {
@@ -149,8 +144,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Carrinhos abandonados e réguas automatizadas',
       icon: <TrendingUp className="h-5 w-5 text-purple-600" />,
       iconBg: 'bg-purple-50 text-purple-600 border-purple-200',
-      badge: 'Automação',
-      badgeVariant: 'purple' as const,
+      badge: undefined,
       requiredPermission: 'remarketing.carrinhos.visualizar'
     },
     {
@@ -159,8 +153,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Controle de usuários, perfis de acesso e auditoria',
       icon: <ShieldCheck className="h-5 w-5 text-indigo-600" />,
       iconBg: 'bg-indigo-50 text-indigo-600 border-indigo-200',
-      badge: 'RBAC',
-      badgeVariant: 'slate' as const,
+      badge: undefined,
       requiredPermission: 'admin.usuarios.visualizar'
     },
     {
@@ -169,8 +162,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       description: 'Parâmetros gerais do sistema e políticas operacionais',
       icon: <Settings className="h-5 w-5 text-slate-600" />,
       iconBg: 'bg-slate-100 text-slate-700 border-slate-200',
-      badge: 'Geral',
-      badgeVariant: 'slate' as const,
+      badge: undefined,
       requiredPermission: 'admin.configuracoes.editar'
     }
   ];
@@ -186,15 +178,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       {/* 1. Header da Página: Título e Descrição Aprovados */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
         <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-slate-900">
-              Visão Geral
-            </h1>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-orange-50 px-2.5 py-0.5 text-xs font-bold text-orange-700 border border-orange-200">
-              <span className="h-1.5 w-1.5 rounded-full bg-orange-500 animate-pulse" />
-              Core Ativo
-            </span>
-          </div>
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            Visão Geral
+          </h1>
           <p className="text-xs text-slate-500 mt-1">
             {currentProducer
               ? `Acompanhe seus eventos e acesse os principais módulos • Filtrado por: ${currentProducer.name} ${
@@ -202,16 +188,6 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 }`
               : 'Acompanhe seus eventos e acesse os principais módulos.'}
           </p>
-        </div>
-
-        <div className="flex items-center gap-2.5 shrink-0">
-          <button
-            onClick={onOpenNewSale}
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-orange-600 transition-all cursor-pointer"
-          >
-            <Sparkles className="h-4 w-4" />
-            Simular Venda Real
-          </button>
         </div>
       </div>
 
@@ -231,7 +207,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           value={formatNumber(totalTickets)}
           subtitle={`Capacidade: ${formatNumber(totalCapacity)}`}
           icon={<Ticket className="h-4 w-4 text-cyan-600" />}
-          badge="Emissão Real"
+          badge="Total Emitido"
           badgeVariant="cyan"
         />
 
@@ -249,7 +225,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           value={filteredEvents.length}
           subtitle={`${producers.length} produtores cadastrados`}
           icon={<Calendar className="h-4 w-4 text-amber-500" />}
-          badge="Escopo"
+          badge="No Escopo"
           badgeVariant="amber"
         />
       </div>
@@ -264,7 +240,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           </span>
         }
       >
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4 gap-4">
           {visibleModules.map((mod) => (
             <ModuleAccessCard
               key={mod.id}

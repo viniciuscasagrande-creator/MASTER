@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, ArrowUpRight } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { cn } from '../utils/cn';
 
 export interface ModuleAccessCardProps {
@@ -41,7 +41,7 @@ export const ModuleAccessCard: React.FC<ModuleAccessCardProps> = ({
         className
       )}
     >
-      <div className="flex items-center gap-3.5 min-w-0">
+      <div className="flex items-center gap-3.5 min-w-0 flex-1">
         {/* Icon container */}
         <div
           className={cn(
@@ -53,9 +53,9 @@ export const ModuleAccessCard: React.FC<ModuleAccessCardProps> = ({
         </div>
 
         {/* Text details */}
-        <div className="min-w-0 pr-2">
-          <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-slate-900 truncate group-hover:text-orange-600 transition-colors">
+        <div className="min-w-0 flex-1 pr-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h3 className="text-sm font-bold text-slate-900 group-hover:text-orange-600 transition-colors whitespace-nowrap">
               {title}
             </h3>
             {badge && (

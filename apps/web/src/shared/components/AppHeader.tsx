@@ -75,9 +75,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                 <span className="text-base font-black tracking-tight text-slate-900">
                   Disk Interno
                 </span>
-                <span className="hidden sm:inline-flex rounded-md bg-orange-50 px-1.5 py-0.5 text-[10px] font-bold text-orange-700 border border-orange-200">
-                  PDT CORE
-                </span>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                 <span
@@ -90,7 +87,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
                   }`}
                 />
                 <span className="truncate">
-                  {connectionStatus === 'CONNECTED' ? 'Realtime Conectado' : 'Node Core Real'} • v1.1.5
+                  {connectionStatus === 'CONNECTED' ? 'Sistema Online' : 'Conectando...'}
                 </span>
               </div>
             </div>
@@ -123,15 +120,6 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
             className="md:hidden flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 hover:bg-white transition-colors cursor-pointer"
           >
             <Search className="h-4 w-4" />
-          </button>
-
-          {/* Quick Action: Simular Venda */}
-          <button
-            onClick={onOpenNewSale}
-            className="hidden sm:inline-flex items-center gap-1.5 rounded-xl bg-orange-500 px-3 py-2 text-xs font-semibold text-white shadow-xs hover:bg-orange-600 transition-colors cursor-pointer"
-          >
-            <PlusCircle className="h-3.5 w-3.5" />
-            <span>Simular Venda</span>
           </button>
 
           {/* Audit Logs button */}
