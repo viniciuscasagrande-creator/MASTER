@@ -6,8 +6,7 @@ import {
   Search,
   Check,
   RotateCcw,
-  Lock,
-  Filter
+  Lock
 } from 'lucide-react';
 import { useDiskContext } from '../../core/context/DiskContext';
 import { cn } from '../utils/cn';
@@ -32,8 +31,6 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
     isLockedToSingleEvent,
     setProducer,
     setEvent,
-    clearProducer,
-    clearEvent,
     resetScope
   } = useDiskContext();
 
@@ -76,7 +73,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-2.5 bg-white border-b border-slate-200 select-none shadow-2xs',
+        'flex flex-wrap items-center justify-between gap-3 px-4 sm:px-6 py-2.5 bg-white dark:bg-slate-900 border-b border-slate-200/90 dark:border-slate-800 select-none shadow-2xs',
         className
       )}
     >
@@ -84,7 +81,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       <div className="flex flex-wrap items-center gap-3">
         {/* PRODUTOR SELECTOR */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
             PRODUTOR
           </span>
 
@@ -95,12 +92,12 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
               className={cn(
                 'flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer',
                 isProducerOpen
-                  ? 'border-orange-500 bg-orange-50/50 text-slate-900 shadow-xs ring-1 ring-orange-500/20'
-                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white',
+                  ? 'border-orange-500 bg-orange-50/50 text-slate-900 shadow-xs ring-1 ring-orange-500/20 dark:bg-orange-950/40 dark:text-slate-100'
+                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700',
                 isLockedToSingleProducer && 'cursor-default opacity-85'
               )}
             >
-              <Building2 className="h-3.5 w-3.5 text-orange-600 shrink-0" />
+              <Building2 className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400 shrink-0" />
               <span className="max-w-[150px] sm:max-w-[180px] truncate">
                 {activeProducer ? activeProducer.name : 'Todas as Produtoras'}
               </span>
@@ -112,7 +109,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
             </button>
 
             {isProducerOpen && !isLockedToSingleProducer && (
-              <div className="absolute left-0 top-full mt-1.5 w-72 sm:w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+              <div className="absolute left-0 top-full mt-1.5 w-72 sm:w-80 rounded-2xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
                 <div className="relative mb-2">
                   <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
                   <input
@@ -120,7 +117,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                     placeholder="Filtrar produtores..."
                     value={producerSearch}
                     onChange={(e) => setProducerSearch(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:bg-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
                     autoFocus
                   />
                 </div>
@@ -135,12 +132,12 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                     className={cn(
                       'flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors cursor-pointer',
                       selectedProducerId === 'all'
-                        ? 'bg-orange-50 text-orange-700 font-semibold'
-                        : 'text-slate-700 hover:bg-slate-100'
+                        ? 'bg-orange-50 text-orange-700 font-semibold dark:bg-orange-950/60 dark:text-orange-300'
+                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
                     )}
                   >
                     <span>Todas as Produtoras (Visão Global)</span>
-                    {selectedProducerId === 'all' && <Check className="h-3.5 w-3.5 text-orange-600" />}
+                    {selectedProducerId === 'all' && <Check className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400" />}
                   </button>
 
                   {filteredProducers.map((p) => (
@@ -154,15 +151,15 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                       className={cn(
                         'flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors cursor-pointer',
                         selectedProducerId === p.id
-                          ? 'bg-orange-50 text-orange-700 font-semibold'
-                          : 'text-slate-700 hover:bg-slate-100'
+                          ? 'bg-orange-50 text-orange-700 font-semibold dark:bg-orange-950/60 dark:text-orange-300'
+                          : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
                       )}
                     >
                       <div className="overflow-hidden pr-2">
-                        <div className="font-semibold text-slate-900 truncate">{p.name}</div>
-                        <div className="text-[10px] text-slate-500 font-mono">{p.cnpj}</div>
+                        <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">{p.name}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">{p.cnpj}</div>
                       </div>
-                      {selectedProducerId === p.id && <Check className="h-3.5 w-3.5 text-orange-600 shrink-0" />}
+                      {selectedProducerId === p.id && <Check className="h-3.5 w-3.5 text-orange-600 dark:text-orange-400 shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -171,11 +168,11 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
           </div>
         </div>
 
-        <div className="hidden sm:block h-5 w-px bg-slate-200" />
+        <div className="hidden sm:block h-5 w-px bg-slate-200 dark:bg-slate-700" />
 
         {/* EVENTO SELECTOR */}
         <div className="flex items-center gap-2">
-          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">
+          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
             EVENTO
           </span>
 
@@ -186,12 +183,12 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
               className={cn(
                 'flex items-center gap-2 px-3 py-1.5 text-xs font-semibold rounded-xl border transition-all cursor-pointer',
                 isEventOpen
-                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-900 shadow-xs ring-1 ring-cyan-500/20'
-                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white',
+                  ? 'border-cyan-500 bg-cyan-50/50 text-slate-900 shadow-xs ring-1 ring-cyan-500/20 dark:bg-cyan-950/40 dark:text-slate-100'
+                  : 'border-slate-200 bg-slate-50 text-slate-700 hover:border-slate-300 hover:bg-white dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700',
                 isLockedToSingleEvent && 'cursor-default opacity-85'
               )}
             >
-              <Calendar className="h-3.5 w-3.5 text-cyan-600 shrink-0" />
+              <Calendar className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />
               <span className="max-w-[160px] sm:max-w-[200px] truncate">
                 {activeEvent ? activeEvent.title : 'Todos os Eventos'}
               </span>
@@ -203,7 +200,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
             </button>
 
             {isEventOpen && !isLockedToSingleEvent && (
-              <div className="absolute left-0 top-full mt-1.5 w-72 sm:w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+              <div className="absolute left-0 top-full mt-1.5 w-72 sm:w-80 rounded-2xl border border-slate-200 bg-white dark:bg-slate-800 dark:border-slate-700 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
                 <div className="relative mb-2">
                   <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
                   <input
@@ -211,7 +208,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                     placeholder="Filtrar eventos..."
                     value={eventSearch}
                     onChange={(e) => setEventSearch(e.target.value)}
-                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-cyan-500 focus:bg-white"
+                    className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-cyan-500 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 dark:placeholder-slate-500"
                     autoFocus
                   />
                 </div>
@@ -226,12 +223,12 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                     className={cn(
                       'flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors cursor-pointer',
                       selectedEventId === 'all'
-                        ? 'bg-cyan-50 text-cyan-700 font-semibold'
-                        : 'text-slate-700 hover:bg-slate-100'
+                        ? 'bg-cyan-50 text-cyan-700 font-semibold dark:bg-cyan-950/60 dark:text-cyan-300'
+                        : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
                     )}
                   >
                     <span>Todos os Eventos do Produtor</span>
-                    {selectedEventId === 'all' && <Check className="h-3.5 w-3.5 text-cyan-600" />}
+                    {selectedEventId === 'all' && <Check className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400" />}
                   </button>
 
                   {filteredEvents.map((e) => (
@@ -245,15 +242,15 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
                       className={cn(
                         'flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors cursor-pointer',
                         selectedEventId === e.id
-                          ? 'bg-cyan-50 text-cyan-700 font-semibold'
-                          : 'text-slate-700 hover:bg-slate-100'
+                          ? 'bg-cyan-50 text-cyan-700 font-semibold dark:bg-cyan-950/60 dark:text-cyan-300'
+                          : 'text-slate-700 hover:bg-slate-100 dark:text-slate-300 dark:hover:bg-slate-700'
                       )}
                     >
                       <div className="overflow-hidden pr-2">
-                        <div className="font-semibold text-slate-900 truncate">{e.title}</div>
-                        <div className="text-[10px] text-slate-500 truncate">{e.venue}</div>
+                        <div className="font-semibold text-slate-900 dark:text-slate-100 truncate">{e.title}</div>
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate">{e.venue}</div>
                       </div>
-                      {selectedEventId === e.id && <Check className="h-3.5 w-3.5 text-cyan-600 shrink-0" />}
+                      {selectedEventId === e.id && <Check className="h-3.5 w-3.5 text-cyan-600 dark:text-cyan-400 shrink-0" />}
                     </button>
                   ))}
                 </div>
@@ -270,7 +267,7 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
               if (onNavigate) onNavigate('overview', 'overview-main');
             }}
             title="Limpar filtros operacionais"
-            className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
+            className="flex items-center gap-1 px-2.5 py-1 rounded-xl text-xs font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-slate-700"
           >
             <RotateCcw className="h-3 w-3" />
             <span className="hidden sm:inline">Limpar</span>
@@ -279,12 +276,12 @@ export const ContextSelector: React.FC<ContextSelectorProps> = ({
       </div>
 
       {/* Right: Operational Status & Counts */}
-      <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-slate-500">
-        <span>Produtores: <strong className="text-slate-700">{availableProducers.length}</strong></span>
+      <div className="hidden md:flex items-center gap-3 font-mono text-[11px] text-slate-500 dark:text-slate-400">
+        <span>Produtores: <strong className="text-slate-700 dark:text-slate-200">{availableProducers.length}</strong></span>
         <span>•</span>
-        <span>Eventos: <strong className="text-slate-700">{availableEvents.length}</strong></span>
+        <span>Eventos: <strong className="text-slate-700 dark:text-slate-200">{availableEvents.length}</strong></span>
         {isFiltered && (
-          <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200 text-[10px]">
+          <span className="text-orange-700 font-bold bg-orange-50 px-2 py-0.5 rounded-md border border-orange-200 text-[10px] dark:bg-orange-950/50 dark:text-orange-300 dark:border-orange-800">
             Filtro Ativo
           </span>
         )}

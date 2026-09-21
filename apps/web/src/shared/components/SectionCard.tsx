@@ -29,28 +29,28 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-slate-200/90 bg-white shadow-xs',
+        'rounded-xl border border-slate-200/90 bg-white shadow-xs dark:bg-slate-800 dark:border-slate-700',
         className
       )}
     >
       {hasHeader && (
         <div
           className={cn(
-            'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-5 border-b border-slate-100',
+            'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-700/80',
             headerClassName
           )}
         >
           <div>
             <div className="flex items-center gap-2">
               {typeof title === 'string' ? (
-                <h2 className="text-sm font-bold text-slate-900">{title}</h2>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-slate-100">{title}</h2>
               ) : (
                 title
               )}
               {badge}
             </div>
             {description && (
-              <p className="mt-0.5 text-xs text-slate-500">{description}</p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
             )}
           </div>
           {actions && (
@@ -59,7 +59,7 @@ export const SectionCard: React.FC<SectionCardProps> = ({
         </div>
       )}
 
-      <div className={cn(noPadding ? '' : 'p-5', bodyClassName)}>
+      <div className={cn(noPadding ? '' : 'p-4 sm:p-5', bodyClassName)}>
         {children}
       </div>
     </div>

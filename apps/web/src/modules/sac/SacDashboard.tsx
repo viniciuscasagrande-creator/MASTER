@@ -451,22 +451,22 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           </div>
 
           {/* Quick Query Search Banner */}
-          <div className="rounded-2xl border border-slate-800 bg-gradient-to-r from-slate-900 via-slate-900 to-slate-950 p-6 shadow-xl">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs dark:bg-slate-800 dark:border-slate-700">
             <div className="max-w-2xl space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-orange-500/10 text-orange-400 border border-orange-500/20">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-700 border border-orange-200 dark:bg-orange-950/40 dark:text-orange-300 dark:border-orange-800">
                 Atalho Central de Atendimento
               </span>
-              <h2 className="text-lg font-bold text-white tracking-tight">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 tracking-tight dark:text-white">
                 Localize rapidamente compradores, pedidos e ingressos
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Consulte por CPF, nome, e-mail, telefone, código do pedido (DK-...) ou voucher para abrir a ficha consolidada.
               </p>
             </div>
 
             <div className="mt-4 flex flex-col sm:flex-row gap-2 max-w-2xl">
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-3 h-4 w-4 text-slate-400" />
+                <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
                 <input
                   type="text"
                   placeholder="🔍 CPF, nome, telefone, e-mail, pedido ou ingresso..."
@@ -475,7 +475,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') setActiveSubTab('sac-query-center');
                   }}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2.5 pl-9 pr-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2 pl-9 pr-3 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 font-mono transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
                 />
               </div>
               <Button
@@ -489,40 +489,40 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           </div>
 
           {/* Recent Tickets Table */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3 dark:bg-slate-800 dark:border-slate-700">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/80">
+              <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider dark:text-white">
                 Atendimentos Recentes
               </h3>
               <button
                 onClick={() => setActiveSubTab('sac-queue')}
-                className="text-xs text-orange-400 hover:text-orange-300 font-semibold"
+                className="text-xs text-orange-600 hover:text-orange-700 font-semibold cursor-pointer dark:text-orange-400"
               >
                 Ver Fila Completa →
               </button>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-700">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                <thead className="bg-slate-50/80 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:bg-slate-900/60 dark:border-slate-700 dark:text-slate-400">
                   <tr>
-                    <th className="p-3">Código</th>
-                    <th className="p-3">Comprador</th>
-                    <th className="p-3">Assunto</th>
-                    <th className="p-3">Canal</th>
-                    <th className="p-3">Fila</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3 text-right">Ação</th>
+                    <th className="p-3 font-semibold">Código</th>
+                    <th className="p-3 font-semibold">Comprador</th>
+                    <th className="p-3 font-semibold">Assunto</th>
+                    <th className="p-3 font-semibold">Canal</th>
+                    <th className="p-3 font-semibold">Fila</th>
+                    <th className="p-3 font-semibold">Status</th>
+                    <th className="p-3 text-right font-semibold">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 bg-slate-900/50">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
                   {localTickets.slice(0, 5).map(t => (
-                    <tr key={t.id} className="hover:bg-slate-800/40 transition">
-                      <td className="p-3 font-mono font-bold text-orange-400">{t.ticketCode}</td>
-                      <td className="p-3 text-white font-medium">{t.customerName}</td>
-                      <td className="p-3 text-slate-300 truncate max-w-[240px]">{t.subject}</td>
-                      <td className="p-3 uppercase text-slate-400 text-[11px] font-mono">{t.channel}</td>
-                      <td className="p-3 text-slate-300">{t.queue}</td>
+                    <tr key={t.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-700/40">
+                      <td className="p-3 font-mono font-bold text-[#FF7A00]">{t.ticketCode}</td>
+                      <td className="p-3 text-slate-900 font-medium dark:text-white">{t.customerName}</td>
+                      <td className="p-3 text-slate-600 truncate max-w-[240px] dark:text-slate-300">{t.subject}</td>
+                      <td className="p-3 uppercase text-slate-500 text-[11px] font-mono dark:text-slate-400">{t.channel}</td>
+                      <td className="p-3 text-slate-600 dark:text-slate-300">{t.queue}</td>
                       <td className="p-3">
                         <Badge
                           variant={
@@ -539,7 +539,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                             setSelectedTicketForDetail(t);
                             setIsTicketDetailOpen(true);
                           }}
-                          className="px-2.5 py-1 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold transition"
+                          className="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 text-[11px] font-semibold transition-colors cursor-pointer dark:bg-slate-700 dark:text-slate-200 dark:hover:bg-slate-600"
                         >
                           Atender
                         </button>
@@ -557,25 +557,25 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       {activeSubTab === 'sac-query-center' && (
         <div className="space-y-6">
           {/* Universal Search Bar */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-5 space-y-3">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3 dark:bg-slate-800 dark:border-slate-700">
             <div>
-              <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+              <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider dark:text-white">
                 Central de Consulta de Compradores, Pedidos e Ingressos
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Digite CPF, nome, telefone, e-mail, número do pedido ou código do ingresso para investigação imediata.
               </p>
             </div>
 
             <div className="relative">
-              <Search className="absolute left-3.5 top-3 h-4 w-4 text-slate-400" />
+              <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="🔍 CPF, nome, telefone, e-mail, pedido ou ingresso..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 autoFocus
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 py-2.5 pl-10 pr-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-2.5 pl-10 pr-3 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 font-mono transition-colors dark:bg-slate-900 dark:border-slate-700 dark:text-white dark:placeholder:text-slate-500"
               />
             </div>
           </div>
@@ -584,17 +584,17 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             
             {/* Compradores Encontrados (Lista Não-Ambígua) */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <User className="w-4 h-4 text-orange-400" />
+            <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3 dark:bg-slate-800 dark:border-slate-700">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/80">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 dark:text-white">
+                  <User className="w-4 h-4 text-orange-500" />
                   Compradores ({matchedCustomers.length})
                 </h3>
                 <span className="text-[11px] text-slate-400">LGPD Minimizada</span>
               </div>
 
               {matchedCustomers.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs bg-slate-950 rounded-xl border border-slate-800">
+                <div className="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-slate-200 dark:bg-slate-900/50 dark:border-slate-700">
                   Nenhum comprador encontrado com o termo pesquisado.
                 </div>
               ) : (
@@ -607,16 +607,16 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                     return (
                       <div
                         key={c.id}
-                        className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-orange-500/50 transition flex items-center justify-between gap-3"
+                        className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 hover:border-orange-500/50 transition-colors flex items-center justify-between gap-3 dark:bg-slate-900/60 dark:border-slate-700"
                       >
                         <div className="space-y-1">
-                          <div className="font-bold text-white text-xs">{c.name}</div>
-                          <div className="text-[11px] text-slate-400 font-mono flex items-center gap-2">
+                          <div className="font-bold text-slate-900 text-xs dark:text-white">{c.name}</div>
+                          <div className="text-[11px] text-slate-500 font-mono flex items-center gap-2 dark:text-slate-400">
                             <span>CPF: {maskedCpf}</span>
                             <span>•</span>
                             <span>{c.email}</span>
                           </div>
-                          <div className="text-[10px] text-slate-500 flex items-center gap-2 pt-1">
+                          <div className="text-[10px] text-slate-400 flex items-center gap-2 pt-1">
                             <span>{custOrders.length} pedidos</span>
                             <span>•</span>
                             <span>{custOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0) > 0 ? formatCurrency(custOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0)) : 'R$ 0,00'}</span>
@@ -626,7 +626,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                         <div className="flex items-center gap-2 shrink-0">
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="secondary"
                             onClick={() => handleOpenCustomerDossier(c)}
                             icon={<ExternalLink className="w-3 h-3" />}
                           >
@@ -641,17 +641,17 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
             </div>
 
             {/* Pedidos Encontrados */}
-            <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-                  <ShoppingBag className="w-4 h-4 text-cyan-400" />
+            <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3 dark:bg-slate-800 dark:border-slate-700">
+              <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-700/80">
+                <h3 className="text-xs font-bold text-slate-900 uppercase tracking-wider flex items-center gap-1.5 dark:text-white">
+                  <ShoppingBag className="w-4 h-4 text-cyan-600 dark:text-cyan-400" />
                   Pedidos ({matchedOrders.length})
                 </h3>
                 <span className="text-[11px] text-slate-400">Origem: Comercial</span>
               </div>
 
               {matchedOrders.length === 0 ? (
-                <div className="p-8 text-center text-slate-500 text-xs bg-slate-950 rounded-xl border border-slate-800">
+                <div className="p-8 text-center text-slate-400 text-xs bg-slate-50 rounded-xl border border-slate-200 dark:bg-slate-900/50 dark:border-slate-700">
                   Nenhum pedido encontrado.
                 </div>
               ) : (
@@ -659,19 +659,19 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                   {matchedOrders.map(o => (
                     <div
                       key={o.id}
-                      className="p-4 rounded-xl bg-slate-950 border border-slate-800 hover:border-cyan-500/50 transition flex items-center justify-between gap-3"
+                      className="p-4 rounded-xl bg-slate-50/70 border border-slate-200/80 hover:border-cyan-500/50 transition-colors flex items-center justify-between gap-3 dark:bg-slate-900/60 dark:border-slate-700"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-bold text-white text-xs">{o.orderNumber}</span>
+                          <span className="font-mono font-bold text-slate-900 text-xs dark:text-white">{o.orderNumber}</span>
                           <Badge variant={o.status === 'paid' ? 'emerald' : 'rose'} size="sm">
                             {o.status?.toUpperCase()}
                           </Badge>
                           <span className="text-[10px] text-slate-400 font-mono">• {o.paymentMethod?.toUpperCase()}</span>
                         </div>
-                        <div className="text-xs text-slate-200 font-medium">{o.customerName}</div>
-                        <div className="text-[11px] text-slate-400 truncate max-w-[280px]">{o.eventName}</div>
-                        <div className="text-[11px] text-white font-mono font-bold pt-1">
+                        <div className="text-xs text-slate-800 font-medium dark:text-slate-200">{o.customerName}</div>
+                        <div className="text-[11px] text-slate-500 truncate max-w-[280px] dark:text-slate-400">{o.eventName}</div>
+                        <div className="text-[11px] text-slate-900 font-mono font-bold pt-1 dark:text-white">
                           {formatCurrency(o.totalAmount)}
                         </div>
                       </div>
@@ -712,12 +712,12 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       {activeSubTab === 'sac-queue' && (
         <div className="space-y-6">
           {/* Filters Bar */}
-          <div className="flex flex-wrap items-center justify-between gap-3 p-4 bg-slate-900 border border-slate-800 rounded-2xl">
+          <div className="flex flex-wrap items-center justify-between gap-3 p-3.5 bg-white border border-slate-200/90 rounded-xl shadow-2xs dark:bg-slate-800 dark:border-slate-700">
             <div className="flex flex-wrap items-center gap-2">
               <select
                 value={selectedQueueFilter}
                 onChange={(e) => setSelectedQueueFilter(e.target.value)}
-                className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-white outline-none focus:border-orange-500"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-orange-500 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               >
                 <option value="ALL">Todas as Filas</option>
                 <option value="Atendimento Geral">Atendimento Geral</option>
@@ -729,7 +729,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
               <select
                 value={selectedStatusFilter}
                 onChange={(e) => setSelectedStatusFilter(e.target.value)}
-                className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-white outline-none focus:border-orange-500"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-orange-500 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               >
                 <option value="ALL">Todos os Status</option>
                 <option value="OPEN">Abertos</option>
@@ -741,7 +741,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
               <select
                 value={selectedChannelFilter}
                 onChange={(e) => setSelectedChannelFilter(e.target.value)}
-                className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-white outline-none focus:border-orange-500"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 outline-none focus:border-orange-500 focus:bg-white dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
               >
                 <option value="ALL">Todos os Canais</option>
                 <option value="WHATSAPP">WhatsApp</option>
@@ -758,47 +758,47 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                 placeholder="Filtrar fila..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 font-mono dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
               />
             </div>
           </div>
 
           {/* Tickets Table */}
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-3 dark:bg-slate-800 dark:border-slate-700">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-700">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                <thead className="bg-slate-50/80 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:bg-slate-900/60 dark:border-slate-700 dark:text-slate-400">
                   <tr>
-                    <th className="p-3">Código</th>
-                    <th className="p-3">Comprador</th>
-                    <th className="p-3">Assunto</th>
-                    <th className="p-3">Canal</th>
-                    <th className="p-3">Fila</th>
-                    <th className="p-3">SLA</th>
-                    <th className="p-3">Status</th>
-                    <th className="p-3 text-right">Ação</th>
+                    <th className="p-3 font-semibold">Código</th>
+                    <th className="p-3 font-semibold">Comprador</th>
+                    <th className="p-3 font-semibold">Assunto</th>
+                    <th className="p-3 font-semibold">Canal</th>
+                    <th className="p-3 font-semibold">Fila</th>
+                    <th className="p-3 font-semibold">SLA</th>
+                    <th className="p-3 font-semibold">Status</th>
+                    <th className="p-3 text-right font-semibold">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 bg-slate-900/50">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
                   {filteredTickets.length === 0 ? (
                     <tr>
-                      <td colSpan={8} className="p-8 text-center text-slate-500">
+                      <td colSpan={8} className="p-8 text-center text-slate-400 dark:text-slate-500">
                         Nenhum atendimento corresponde aos filtros selecionados.
                       </td>
                     </tr>
                   ) : (
                     filteredTickets.map(t => (
-                      <tr key={t.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3 font-mono font-bold text-orange-400">{t.ticketCode}</td>
-                        <td className="p-3 text-white font-medium">{t.customerName}</td>
-                        <td className="p-3 text-slate-300 truncate max-w-[220px]">{t.subject}</td>
-                        <td className="p-3 uppercase text-slate-400 text-[11px] font-mono">{t.channel}</td>
-                        <td className="p-3 text-slate-300">{t.queue}</td>
+                      <tr key={t.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-700/40">
+                        <td className="p-3 font-mono font-bold text-[#FF7A00]">{t.ticketCode}</td>
+                        <td className="p-3 text-slate-900 font-medium dark:text-white">{t.customerName}</td>
+                        <td className="p-3 text-slate-600 truncate max-w-[220px] dark:text-slate-300">{t.subject}</td>
+                        <td className="p-3 uppercase text-slate-500 text-[11px] font-mono dark:text-slate-400">{t.channel}</td>
+                        <td className="p-3 text-slate-600 dark:text-slate-300">{t.queue}</td>
                         <td className="p-3">
                           {t.slaPaused ? (
-                            <span className="text-amber-400 font-semibold text-[10px]">Pausado</span>
+                            <span className="text-amber-600 font-semibold text-[10px] dark:text-amber-400">Pausado</span>
                           ) : (
-                            <span className="text-cyan-400 font-mono font-bold text-[11px]">{t.slaMinutesRemaining}m</span>
+                            <span className="text-cyan-600 font-mono font-bold text-[11px] dark:text-cyan-400">{t.slaMinutesRemaining}m</span>
                           )}
                         </td>
                         <td className="p-3">
@@ -836,13 +836,13 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       {/* VIEW 4: CLIENTES & INGRESSOS */}
       {activeSubTab === 'sac-customers' && (
         <div className="space-y-6">
-          <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4 dark:bg-slate-800 dark:border-slate-700">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-700/80">
               <div>
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider dark:text-white">
                   Diretório de Clientes & Participantes
                 </h2>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Consulte a base unificada de compradores cadastrados na plataforma
                 </p>
               </div>
@@ -854,36 +854,36 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                   placeholder="Buscar clientes..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full rounded-xl border border-slate-800 bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-white outline-none focus:border-orange-500 font-mono"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50/80 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 font-mono dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
                 />
               </div>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-700">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-950 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                <thead className="bg-slate-50/80 text-slate-500 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:bg-slate-900/60 dark:border-slate-700 dark:text-slate-400">
                   <tr>
-                    <th className="p-3">Nome</th>
-                    <th className="p-3">CPF (Mascarado)</th>
-                    <th className="p-3">E-mail</th>
-                    <th className="p-3">Telefone</th>
-                    <th className="p-3 text-right">Ficha</th>
+                    <th className="p-3 font-semibold">Nome</th>
+                    <th className="p-3 font-semibold">CPF (Mascarado)</th>
+                    <th className="p-3 font-semibold">E-mail</th>
+                    <th className="p-3 font-semibold">Telefone</th>
+                    <th className="p-3 text-right font-semibold">Ficha</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800 bg-slate-900/50">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
                   {matchedCustomers.map(c => {
                     const raw = c.cpf || '';
                     const masked = raw.length >= 11 ? `***.${raw.slice(3, 6)}.${raw.slice(6, 9)}-**` : '***.***.***-**';
                     return (
-                      <tr key={c.id} className="hover:bg-slate-800/40 transition">
-                        <td className="p-3 font-semibold text-white">{c.name}</td>
-                        <td className="p-3 font-mono text-slate-300">{masked}</td>
-                        <td className="p-3 text-slate-300 font-mono">{c.email}</td>
-                        <td className="p-3 text-slate-300 font-mono">{c.phone || 'Não informado'}</td>
+                      <tr key={c.id} className="hover:bg-slate-50/80 transition-colors dark:hover:bg-slate-700/40">
+                        <td className="p-3 font-semibold text-slate-900 dark:text-white">{c.name}</td>
+                        <td className="p-3 font-mono text-slate-600 dark:text-slate-300">{masked}</td>
+                        <td className="p-3 text-slate-600 font-mono dark:text-slate-300">{c.email}</td>
+                        <td className="p-3 text-slate-600 font-mono dark:text-slate-300">{c.phone || 'Não informado'}</td>
                         <td className="p-3 text-right">
                           <Button
                             size="sm"
-                            variant="outline"
+                            variant="secondary"
                             onClick={() => handleOpenCustomerDossier(c)}
                             icon={<ExternalLink className="w-3 h-3" />}
                           >

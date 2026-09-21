@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import {
-  FileSpreadsheet,
   Download,
-  Filter,
   ArrowUpRight,
   ArrowDownRight,
-  Calendar,
-  Building2,
-  DollarSign
+  Receipt,
+  TrendingUp,
+  TrendingDown,
+  Scale,
+  FileSpreadsheet
 } from 'lucide-react';
-import { Badge } from '../../shared/components/Badge';
+import { StatusBadge } from '../../shared/components/StatusBadge';
+import { MetricCard } from '../../shared/components/MetricCard';
+import { FilterBar } from '../../shared/components/FilterBar';
+import { DataTable, Column } from '../../shared/components/DataTable';
 import { Button } from '../../shared/components/Button';
-import { formatCurrency } from '../../shared/utils/formatters';
+import { formatCurrency, formatDateTime } from '../../shared/utils/formatters';
 
 export interface FinancialTransactionUI {
   id: string;
@@ -36,26 +39,38 @@ export const AccountStatementView: React.FC<AccountStatementViewProps> = ({
   isLoading
 }) => {
   const [filterType, setFilterType] = useState('ALL');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const filteredTransactions = transactions.filter((tx) => {
-    if (filterType === 'ALL') return true;
-    return tx.type === filterType;
+    const matchesType = filterType === 'ALL' || tx.type === filterType;
+    const matchesSearch =
+      !searchTerm.trim() ||
+      tx.description.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (tx.eventTitle && tx.eventTitle.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (tx.referenceId && tx.referenceId.toLowerCase().includes(searchTerm.toLowerCase()));
+
+    return matchesType && matchesSearch;
   });
+
+  // KPI Calculations
+  const totalEntries = transactions.filter(t => t.amount > 0).reduce((acc, t) => acc + t.amount, 0);
+  const totalExits = transactions.filter(t => t.amount < 0).reduce((acc, t) => acc + Math.abs(t.amount), 0);
+  const currentBalance = transactions.length > 0 ? transactions[0].balanceAfter : 0;
 
   const getTransactionBadge = (type: string) => {
     switch (type) {
       case 'SALE':
-        return <Badge variant="emerald">Venda</Badge>;
+        return <StatusBadge variant="success" label="Venda" />;
       case 'PAYOUT':
-        return <Badge variant="purple">Repasse</Badge>;
+        return <StatusBadge variant="purple" label="Repasse" />;
       case 'COMMISSION_FEE':
-        return <Badge variant="orange">Taxa Retida</Badge>;
+        return <StatusBadge variant="warning" label="Taxa Retida" />;
       case 'REFUND':
-        return <Badge variant="rose">Estorno</Badge>;
+        return <StatusBadge variant="danger" label="Estorno" />;
       case 'ADVANCE':
-        return <Badge variant="cyan">Adiantamento</Badge>;
+        return <StatusBadge variant="info" label="Adiantamento" />;
       default:
-        return <Badge variant="default">{type}</Badge>;
+        return <StatusBadge variant="neutral" label={type} />;
     }
   };
 
@@ -79,123 +94,155 @@ export const AccountStatementView: React.FC<AccountStatementViewProps> = ({
     document.body.removeChild(link);
   };
 
-  if (isLoading) {
-    return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-400">
-        <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-emerald-500 border-t-transparent mb-3" />
-        <p className="text-xs">Carregando extrato da conta corrente...</p>
-      </div>
-    );
-  }
+  const columns: Column<FinancialTransactionUI>[] = [
+    {
+      header: 'Data / Hora',
+      width: '180px',
+      accessor: (tx) => (
+        <span className="font-mono text-slate-600 font-medium">
+          {formatDateTime(tx.createdAt)}
+        </span>
+      )
+    },
+    {
+      header: 'Tipo',
+      width: '130px',
+      accessor: (tx) => getTransactionBadge(tx.type)
+    },
+    {
+      header: 'Descrição do Lançamento',
+      accessor: (tx) => (
+        <div>
+          <div className="font-semibold text-slate-900">{tx.description}</div>
+          {tx.eventTitle && (
+            <div className="text-[11px] text-slate-500 mt-0.5 font-medium">
+              {tx.eventTitle}
+            </div>
+          )}
+        </div>
+      )
+    },
+    {
+      header: 'Valor',
+      align: 'right',
+      width: '160px',
+      accessor: (tx) => {
+        const isPositive = tx.amount > 0;
+        return (
+          <span
+            className={`inline-flex items-center gap-1 font-mono font-bold ${
+              isPositive ? 'text-emerald-600' : 'text-rose-600'
+            }`}
+          >
+            {isPositive ? (
+              <ArrowUpRight className="h-3.5 w-3.5 shrink-0" />
+            ) : (
+              <ArrowDownRight className="h-3.5 w-3.5 shrink-0" />
+            )}
+            {formatCurrency(Math.abs(tx.amount))}
+          </span>
+        );
+      }
+    },
+    {
+      header: 'Saldo Resultante',
+      align: 'right',
+      width: '160px',
+      accessor: (tx) => (
+        <span className="font-mono font-bold text-slate-900">
+          {formatCurrency(tx.balanceAfter)}
+        </span>
+      )
+    }
+  ];
 
   return (
-    <div className="space-y-4">
-      {/* Filters & Export Toolbar */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <span className="text-xs text-slate-400 font-semibold flex items-center gap-1.5">
-            <Filter className="h-3.5 w-3.5 text-slate-500" />
-            Filtrar Lançamento:
-          </span>
-          <div className="flex items-center rounded-xl border border-slate-800 bg-slate-900 px-3 py-1.5 text-xs text-slate-300">
-            <select
-              value={filterType}
-              onChange={(e) => setFilterType(e.target.value)}
-              className="bg-transparent font-semibold text-white outline-none cursor-pointer"
-            >
-              <option value="ALL" className="bg-slate-900">Todos os Lançamentos</option>
-              <option value="SALE" className="bg-slate-900">Vendas (Créditos)</option>
-              <option value="PAYOUT" className="bg-slate-900">Repasses Pagos (Débitos)</option>
-              <option value="COMMISSION_FEE" className="bg-slate-900">Taxas Retidas DiskIngressos</option>
-              <option value="REFUND" className="bg-slate-900">Estornos Concedidos</option>
-            </select>
-          </div>
-        </div>
+    <div className="space-y-5 animate-fadeIn">
+      {/* KPI Cards Row (Standardized 120-140px Height) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="SALDO ATUAL EM CONTA"
+          value={formatCurrency(currentBalance)}
+          subtitle="Disponível para repasse ou transferência"
+          icon={<Scale className="h-4 w-4 text-emerald-600" />}
+          badge="Auditado"
+          badgeVariant="emerald"
+        />
 
-        <Button
-          size="sm"
-          variant="outline"
-          onClick={exportCSV}
-          icon={<Download className="h-3.5 w-3.5" />}
-        >
-          Exportar Extrato CSV
-        </Button>
+        <MetricCard
+          title="TOTAL DE ENTRADAS"
+          value={formatCurrency(totalEntries)}
+          trend={{ value: 'Créditos em bilheteria', isPositive: true }}
+          icon={<TrendingUp className="h-4 w-4 text-emerald-600" />}
+          badge="Vendas"
+          badgeVariant="emerald"
+        />
+
+        <MetricCard
+          title="TOTAL DE SAÍDAS"
+          value={formatCurrency(totalExits)}
+          subtitle="Repasses, taxas e estornos deduzidos"
+          icon={<TrendingDown className="h-4 w-4 text-rose-500" />}
+          badge="Débitos"
+          badgeVariant="rose"
+        />
+
+        <MetricCard
+          title="LANÇAMENTOS REGISTRADOS"
+          value={transactions.length}
+          subtitle="Extrato oficial do produtor"
+          icon={<Receipt className="h-4 w-4 text-slate-600" />}
+          badge="Em tempo real"
+          badgeVariant="slate"
+        />
       </div>
+
+      {/* FilterBar Toolbar */}
+      <FilterBar
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Buscar por descrição, evento ou documento..."
+        selects={[
+          {
+            id: 'filter-type',
+            value: filterType,
+            onChange: setFilterType,
+            options: [
+              { label: 'Todos os Lançamentos', value: 'ALL' },
+              { label: 'Vendas (Créditos)', value: 'SALE' },
+              { label: 'Repasses Pagos (Débitos)', value: 'PAYOUT' },
+              { label: 'Taxas Retidas', value: 'COMMISSION_FEE' },
+              { label: 'Estornos Concedidos', value: 'REFUND' },
+              { label: 'Adiantamentos', value: 'ADVANCE' }
+            ]
+          }
+        ]}
+        hasActiveFilters={filterType !== 'ALL' || Boolean(searchTerm)}
+        onClearFilters={() => {
+          setFilterType('ALL');
+          setSearchTerm('');
+        }}
+        actions={
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={exportCSV}
+            icon={<Download className="h-3.5 w-3.5" />}
+          >
+            Exportar CSV
+          </Button>
+        }
+      />
 
       {/* Analytical Ledger Table */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              <tr>
-                <th className="py-3.5 px-6">Data / Hora</th>
-                <th className="py-3.5 px-4">Tipo</th>
-                <th className="py-3.5 px-6">Descrição do Fato Contábil</th>
-                <th className="py-3.5 px-4 text-right">Valor do Lançamento</th>
-                <th className="py-3.5 px-6 text-right">Saldo da Conta</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {filteredTransactions.length === 0 ? (
-                <tr>
-                  <td colSpan={5} className="py-8 text-center text-slate-500 text-xs">
-                    Nenhum lançamento encontrado para o filtro selecionado.
-                  </td>
-                </tr>
-              ) : (
-                filteredTransactions.map((tx) => {
-                  const isPositive = tx.amount > 0;
-                  return (
-                    <tr key={tx.id} className="hover:bg-slate-800/30 transition-colors">
-                      <td className="py-3.5 px-6 font-mono text-slate-300">
-                        {new Date(tx.createdAt).toLocaleDateString('pt-BR', {
-                          day: '2-digit',
-                          month: '2-digit',
-                          year: 'numeric',
-                          hour: '2-digit',
-                          minute: '2-digit'
-                        })}
-                      </td>
-
-                      <td className="py-3.5 px-4">
-                        {getTransactionBadge(tx.type)}
-                      </td>
-
-                      <td className="py-3.5 px-6">
-                        <div className="font-medium text-white">{tx.description}</div>
-                        {tx.eventTitle && (
-                          <div className="text-[11px] text-slate-400 mt-0.5">
-                            {tx.eventTitle}
-                          </div>
-                        )}
-                      </td>
-
-                      <td className="py-3.5 px-4 text-right font-mono font-bold text-xs">
-                        <span
-                          className={`inline-flex items-center gap-1 ${
-                            isPositive ? 'text-emerald-400' : 'text-rose-400'
-                          }`}
-                        >
-                          {isPositive ? (
-                            <ArrowUpRight className="h-3.5 w-3.5" />
-                          ) : (
-                            <ArrowDownRight className="h-3.5 w-3.5" />
-                          )}
-                          {formatCurrency(Math.abs(tx.amount))}
-                        </span>
-                      </td>
-
-                      <td className="py-3.5 px-6 text-right font-mono font-bold text-white text-xs">
-                        {formatCurrency(tx.balanceAfter)}
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={columns}
+        data={filteredTransactions}
+        keyExtractor={(item) => item.id}
+        isLoading={isLoading}
+        emptyMessage="Nenhum lançamento contábil encontrado para o filtro selecionado."
+        emptyIcon={<Receipt className="h-8 w-8 text-slate-300" />}
+      />
     </div>
   );
 };

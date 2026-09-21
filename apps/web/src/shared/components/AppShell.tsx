@@ -56,7 +56,7 @@ export const AppShell: React.FC<AppShellProps> = ({
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
+    <div className="flex h-screen w-screen overflow-hidden bg-[#F8FAFC] font-sans text-slate-900 dark:bg-[#0B1120] dark:text-slate-100">
       {/* Desktop Sidebar */}
       <div className="hidden lg:flex h-full shrink-0">
         <AppSidebar
@@ -73,12 +73,12 @@ export const AppShell: React.FC<AppShellProps> = ({
         <div className="fixed inset-0 z-50 flex lg:hidden">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-slate-900/80 backdrop-blur-xs transition-opacity"
+            className="fixed inset-0 bg-slate-900/60 backdrop-blur-xs transition-opacity"
             onClick={() => setIsMobileSidebarOpen(false)}
           />
 
           {/* Drawer content */}
-          <div className="relative flex flex-col w-[280px] max-w-[85vw] h-full z-10 bg-[#0F172A] shadow-2xl animate-in slide-in-from-left duration-200">
+          <div className="relative flex flex-col w-[260px] max-w-[85vw] h-full z-10 bg-white dark:bg-slate-900 shadow-2xl animate-in slide-in-from-left duration-200">
             <AppSidebar
               activeModule={activeModule}
               activeSubItem={activeSubItem}
@@ -112,8 +112,8 @@ export const AppShell: React.FC<AppShellProps> = ({
           onNavigate={onNavigate}
         />
 
-        {/* Scrollable Light Workspace (padding ~24px / p-6) */}
-        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-slate-50">
+        {/* Scrollable Workspace */}
+        <main className="flex-1 overflow-y-auto p-4 sm:p-6 bg-[#F8FAFC] dark:bg-[#0B1120]">
           <div className="mx-auto max-w-7xl">
             <ErrorBoundary fallbackTitle="Erro ao renderizar conteúdo no workspace">
               {children}

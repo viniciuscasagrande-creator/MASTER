@@ -26,6 +26,11 @@ import {
 import { useDiskContext } from '../../core/context/DiskContext';
 import { useAuth } from '../../core/auth/AuthContext';
 import { StatCard } from '../../shared/components/StatCard';
+import { MetricCard } from '../../shared/components/MetricCard';
+import { PageHeader } from '../../shared/components/PageHeader';
+import { SectionCard } from '../../shared/components/SectionCard';
+import { StatusBadge } from '../../shared/components/StatusBadge';
+import { DataTable, Column } from '../../shared/components/DataTable';
 import { Badge } from '../../shared/components/Badge';
 import { Button } from '../../shared/components/Button';
 import { formatCurrency, formatCompactCurrency } from '../../shared/utils/formatters';
@@ -207,236 +212,97 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
   // 2. TELAS FUNCIONAIS OPERACIONAIS (COM BREADCRUMB E RETORNO AO HUB)
   return (
     <div className="space-y-6 animate-fadeIn">
-      {/* Top Breadcrumb Header with Return to Hub */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
-        <div className="flex items-center gap-3">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => {
-              setActiveTab('finance-hub');
-              onNavigate?.('finance', 'finance-hub');
-            }}
-            icon={<ArrowLeft className="h-3.5 w-3.5 text-emerald-400" />}
-          >
-            Hub Financeiro
-          </Button>
-          <div className="h-4 w-px bg-slate-800 hidden sm:block" />
-          <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-base font-bold tracking-tight text-white uppercase">
-                {activeTab === 'finance-dashboard' && 'Posição Geral & Indicadores'}
-                {activeTab === 'finance-event-balances' && 'Saldos Segregados por Evento'}
-                {activeTab === 'finance-transfers' && 'Transferências entre Eventos (SafeSaff)'}
-                {activeTab === 'finance-receivables-payables' && 'Contas a Pagar & Receber'}
-                {activeTab === 'finance-payouts' && 'Repasses Programados'}
-                {activeTab === 'finance-treasury' && 'Tesouraria, Fluxo de Caixa & DRE'}
-                {activeTab === 'finance-statement' && 'Extrato Analítico da Conta'}
-                {activeTab === 'finance-reconciliation' && 'Conciliação com Gateways'}
-                {activeTab === 'finance-advances' && 'Antecipações & Crédito Pro'}
-                {activeTab === 'finance-bordero' && 'Borderô Oficial de Fechamento'}
-              </h1>
-              <Badge variant="emerald" size="sm">
-                Disk Pro
-              </Badge>
-            </div>
-            <p className="text-xs text-slate-400 mt-0.5">
-              {producerName} • Gestão Factual Integrada
-            </p>
+      {/* Top Header with Return to Hub */}
+      <PageHeader
+        title={
+          activeTab === 'finance-dashboard' ? 'Posição Geral & Indicadores' :
+          activeTab === 'finance-event-balances' ? 'Saldos Segregados por Evento' :
+          activeTab === 'finance-transfers' ? 'Transferências entre Eventos' :
+          activeTab === 'finance-receivables-payables' ? 'Contas a Pagar & Receber' :
+          activeTab === 'finance-payouts' ? 'Repasses Programados' :
+          activeTab === 'finance-treasury' ? 'Tesouraria, Fluxo de Caixa & DRE' :
+          activeTab === 'finance-statement' ? 'Extrato Analítico da Conta' :
+          activeTab === 'finance-reconciliation' ? 'Conciliação com Gateways' :
+          activeTab === 'finance-advances' ? 'Antecipações & Crédito' :
+          activeTab === 'finance-bordero' ? 'Borderô Oficial de Fechamento' : 'Módulo Financeiro'
+        }
+        description={`${producerName} • Gestão Financeira Integrada`}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                setActiveTab('finance-hub');
+                onNavigate?.('finance', 'finance-hub');
+              }}
+              icon={<ArrowLeft className="h-3.5 w-3.5 text-orange-600" />}
+            >
+              Hub Financeiro
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={loadFinancialData}
+              disabled={isLoading}
+              icon={<RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
+            >
+              Atualizar
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setIsNewTransferModalOpen(true)}
+              icon={<ArrowRightLeft className="h-3.5 w-3.5 text-purple-600" />}
+            >
+              Transferir
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => {
+                setPreselectedEventId('');
+                setIsNewPayoutModalOpen(true);
+              }}
+              icon={<Send className="h-3.5 w-3.5" />}
+            >
+              Novo Repasse
+            </Button>
           </div>
-        </div>
-
-        {/* Global Actions */}
-        <div className="flex items-center gap-2">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={loadFinancialData}
-            disabled={isLoading}
-            icon={<RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
-          >
-            Atualizar
-          </Button>
-
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={() => setIsNewTransferModalOpen(true)}
-            icon={<ArrowRightLeft className="h-3.5 w-3.5 text-purple-400" />}
-          >
-            Transferir
-          </Button>
-
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => {
-              setPreselectedEventId('');
-              setIsNewPayoutModalOpen(true);
-            }}
-            icon={<Send className="h-3.5 w-3.5" />}
-          >
-            Novo Repasse
-          </Button>
-        </div>
-      </div>
+        }
+      />
 
       {/* Sub-Tabs Bar */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-medium">
-        <button
-          onClick={() => {
-            setActiveTab('finance-hub');
-            onNavigate?.('finance', 'finance-hub');
-          }}
-          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-hub'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          <LayoutGrid className="h-3.5 w-3.5 text-emerald-600" />
-          <span>Hub Principal</span>
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-dashboard');
-            onNavigate?.('finance', 'finance-dashboard');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-dashboard'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Visão Geral
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-event-balances');
-            onNavigate?.('finance', 'finance-event-balances');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-event-balances'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Saldos por Evento ({eventBalances.length})
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-transfers');
-            onNavigate?.('finance', 'finance-transfers');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-transfers'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Transferências entre Eventos
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-receivables-payables');
-            onNavigate?.('finance', 'finance-receivables-payables');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-receivables-payables'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Contas a Pagar & Receber
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-payouts');
-            onNavigate?.('finance', 'finance-payouts');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-payouts'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Repasses Programados ({payouts.length})
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-treasury');
-            onNavigate?.('finance', 'finance-treasury');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-treasury'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Tesouraria, Fluxo & DRE
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-statement');
-            onNavigate?.('finance', 'finance-reports');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-statement' || activeTab === 'finance-reports'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Extrato da Conta Corrente
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-reconciliation');
-            onNavigate?.('finance', 'finance-reconciliation');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-reconciliation'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Conciliação de Gateways
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-advances');
-            onNavigate?.('finance', 'finance-advances');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-advances'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Antecipações & Crédito
-        </button>
-
-        <button
-          onClick={() => {
-            setActiveTab('finance-bordero');
-            onNavigate?.('finance', 'finance-bordero');
-          }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
-            activeTab === 'finance-bordero'
-              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
-              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
-          }`}
-        >
-          Borderô de Fechamento
-        </button>
+      <div className="flex items-center gap-1.5 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-semibold">
+        {[
+          { id: 'finance-hub', label: 'Hub Principal', icon: <LayoutGrid className="h-3.5 w-3.5 text-orange-600" /> },
+          { id: 'finance-dashboard', label: 'Visão Geral' },
+          { id: 'finance-event-balances', label: `Saldos por Evento (${eventBalances.length})` },
+          { id: 'finance-transfers', label: 'Transferências' },
+          { id: 'finance-receivables-payables', label: 'Contas Pagar/Receber' },
+          { id: 'finance-payouts', label: `Repasses (${payouts.length})` },
+          { id: 'finance-treasury', label: 'Tesouraria & DRE' },
+          { id: 'finance-statement', label: 'Extrato da Conta' },
+          { id: 'finance-reconciliation', label: 'Conciliação' },
+          { id: 'finance-advances', label: 'Antecipações' },
+          { id: 'finance-bordero', label: 'Borderô' }
+        ].map((t) => (
+          <button
+            key={t.id}
+            onClick={() => {
+              setActiveTab(t.id);
+              onNavigate?.('finance', t.id);
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl transition-all cursor-pointer shrink-0 text-xs ${
+              activeTab === t.id
+                ? 'bg-orange-50 text-orange-700 border border-orange-200 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+            }`}
+          >
+            {t.icon}
+            <span>{t.label}</span>
+          </button>
+        ))}
       </div>
 
       {errorMessage && (
@@ -476,79 +342,79 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       {/* TAB 1: VISÃO GERAL */}
       {activeTab === 'finance-dashboard' && (
         <div className="space-y-6">
-          {/* Executive KPI Cards (100% Factual / Zero Fake Data) */}
+          {/* Executive KPI Cards (Standardized 120-140px Height) */}
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            <StatCard
+            <MetricCard
               title="VENDAS BRUTAS"
               value={summary ? formatCurrency(summary.grossSales) : 'R$ 0,00'}
               trend={{ value: 'Real', isPositive: true }}
-              icon={<DollarSign className="h-4 w-4 text-emerald-400" />}
-              badge="Volume Processado"
+              icon={<DollarSign className="h-4 w-4 text-emerald-600" />}
+              badge="Processado"
               badgeVariant="emerald"
             />
 
-            <StatCard
+            <MetricCard
               title="SALDO DISPONÍVEL"
               value={summary ? formatCurrency(summary.availableBalance) : 'R$ 0,00'}
               trend={{ value: 'Líquido', isPositive: true }}
-              icon={<TrendingUp className="h-4 w-4 text-emerald-400" />}
+              icon={<TrendingUp className="h-4 w-4 text-emerald-600" />}
               badge="Livre p/ Saque"
               badgeVariant="emerald"
             />
 
-            <StatCard
+            <MetricCard
               title="REPASSES PAGOS"
               value={summary ? formatCurrency(summary.payoutsPaid) : 'R$ 0,00'}
               subtitle="Transferências liquidadas via PIX/TED"
-              icon={<QrCode className="h-4 w-4 text-purple-400" />}
+              icon={<QrCode className="h-4 w-4 text-purple-600" />}
               badge="Concluídos"
               badgeVariant="purple"
             />
 
-            <StatCard
+            <MetricCard
               title="REPASSES PENDENTES"
               value={summary ? formatCurrency(summary.pendingPayouts) : 'R$ 0,00'}
               subtitle="Aguardando aprovação ou liquidação"
-              icon={<Clock className="h-4 w-4 text-amber-400" />}
+              icon={<Clock className="h-4 w-4 text-amber-500" />}
               badge="Em Aberto"
-              badgeVariant="orange"
+              badgeVariant="amber"
             />
           </div>
 
           {/* Middle Layout: Event Balances Quick Table + Payouts Table */}
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Event Balances Summary */}
-            <div className="lg:col-span-1 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg flex flex-col justify-between">
+            <div className="lg:col-span-1 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs flex flex-col justify-between">
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <h2 className="text-sm font-bold text-white tracking-wide uppercase">
+                  <h2 className="text-sm font-bold text-slate-900 tracking-wide uppercase">
                     SALDO POR EVENTO
                   </h2>
-                  <span className="text-xs text-emerald-400 font-semibold font-mono">
+                  <span className="text-xs text-emerald-600 font-bold font-mono">
                     {formatCompactCurrency(summary?.availableBalance || 0)}
                   </span>
                 </div>
-                <p className="text-xs text-slate-400 mb-4">
+                <p className="text-xs text-slate-500 mb-4">
                   Disponibilidade líquida individual por evento
                 </p>
 
-                <div className="space-y-3">
+                <div className="space-y-2.5">
                   {eventBalances.slice(0, 4).map((ev) => (
                     <div
                       key={ev.eventId}
                       onClick={() => handleOpenPayoutForEvent(ev.eventId)}
-                      className="rounded-xl border border-slate-800 bg-slate-950/60 p-3 hover:border-emerald-500/40 transition-colors cursor-pointer"
+                      className="rounded-xl border border-slate-200 bg-slate-50/60 p-3 hover:border-orange-500/40 hover:bg-orange-50/20 transition-all cursor-pointer"
                     >
                       <div className="flex items-center justify-between text-xs">
                         <div className="truncate max-w-[180px]">
-                          <div className="font-semibold text-white truncate">{ev.eventTitle}</div>
+                          <div className="font-semibold text-slate-900 truncate">{ev.eventTitle}</div>
                           <div className="text-[10px] text-slate-500">{ev.eventDate}</div>
                         </div>
                         <div className="text-right">
-                          <div className="text-xs font-bold font-mono text-emerald-400">
+                          <div className="text-xs font-bold font-mono text-emerald-600">
                             {formatCurrency(ev.availableBalance)}
                           </div>
-                          <span className="text-[10px] text-slate-500">solicitar</span>
+                          <span className="text-[10px] text-slate-400">solicitar</span>
                         </div>
                       </div>
                     </div>
@@ -556,77 +422,75 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                 </div>
               </div>
 
-              <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
-                <span className="text-slate-400">Total de Eventos:</span>
-                <span className="font-bold text-white font-mono">{eventBalances.length}</span>
+              <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
+                <span className="text-slate-500">Total de Eventos:</span>
+                <span className="font-bold text-slate-900 font-mono">{eventBalances.length}</span>
               </div>
             </div>
 
             {/* Payouts Overview Table */}
-            <div className="lg:col-span-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg">
+            <div className="lg:col-span-2 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
               <div className="flex items-center justify-between mb-4">
                 <div>
-                  <h2 className="text-sm font-bold text-white tracking-wide uppercase">
+                  <h2 className="text-sm font-bold text-slate-900 tracking-wide uppercase">
                     ÚLTIMOS REPASSES & PROGRAMAÇÕES
                   </h2>
-                  <p className="text-xs text-slate-400">
+                  <p className="text-xs text-slate-500">
                     Histórico de autorizações e liquidações bancárias
                   </p>
                 </div>
-                <Badge variant="purple" size="sm">
-                  {payouts.length} registros
-                </Badge>
+                <StatusBadge variant="purple" label={`${payouts.length} registros`} />
               </div>
 
               <div className="overflow-x-auto">
                 <table className="w-full text-left text-xs">
-                  <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                  <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                     <tr>
-                      <th className="pb-3">Código & Evento</th>
-                      <th className="pb-3">Valor</th>
-                      <th className="pb-3">Data</th>
-                      <th className="pb-3">Status</th>
-                      <th className="pb-3 text-right">Dossiê</th>
+                      <th className="py-2.5 px-3">Código & Evento</th>
+                      <th className="py-2.5 px-3">Valor</th>
+                      <th className="py-2.5 px-3">Data</th>
+                      <th className="py-2.5 px-3">Status</th>
+                      <th className="py-2.5 px-3 text-right">Dossiê</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-slate-100 font-mono">
                     {payouts.length === 0 ? (
                       <tr>
-                        <td colSpan={5} className="py-6 text-center text-slate-500 text-xs">
+                        <td colSpan={5} className="py-6 text-center text-slate-400 text-xs font-sans">
                           Nenhum repasse agendado para o produtor.
                         </td>
                       </tr>
                     ) : (
                       payouts.slice(0, 5).map((pay) => (
-                        <tr key={pay.id} className="hover:bg-slate-800/40 transition-colors">
-                          <td className="py-3">
-                            <div className="font-mono font-bold text-white">{pay.payoutNumber}</div>
-                            <div className="text-[11px] text-slate-400 truncate max-w-[220px]">
+                        <tr key={pay.id} className="hover:bg-slate-50/60 transition-colors">
+                          <td className="py-3 px-3 font-sans">
+                            <div className="font-mono font-bold text-slate-900">{pay.payoutNumber}</div>
+                            <div className="text-[11px] text-slate-500 truncate max-w-[220px]">
                               {pay.eventName}
                             </div>
                           </td>
 
-                          <td className="py-3 font-mono font-bold text-white">
+                          <td className="py-3 px-3 font-mono font-bold text-slate-900">
                             {formatCurrency(pay.amount)}
                           </td>
 
-                          <td className="py-3 font-mono text-slate-300">
+                          <td className="py-3 px-3 font-mono text-slate-600">
                             {pay.scheduledDate}
                           </td>
 
-                          <td className="py-3">
+                          <td className="py-3 px-3 font-sans">
                             {pay.status === 'COMPLETED' ? (
-                              <Badge variant="emerald">Liquidado</Badge>
+                              <StatusBadge variant="success" label="Liquidado" />
                             ) : pay.status === 'PROCESSING' ? (
-                              <Badge variant="cyan">Em Análise</Badge>
+                              <StatusBadge variant="info" label="Em Análise" />
                             ) : pay.status === 'SCHEDULED' ? (
-                              <Badge variant="purple">Agendado</Badge>
+                              <StatusBadge variant="purple" label="Agendado" />
                             ) : (
-                              <Badge variant="rose">{pay.status}</Badge>
+                              <StatusBadge variant="danger" label={pay.status} />
                             )}
                           </td>
 
-                          <td className="py-3 text-right">
+                          <td className="py-3 px-3 text-right font-sans">
                             <Button
                               size="sm"
                               variant="outline"
@@ -657,13 +521,13 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
       {/* TAB 3: REPASSES & SAQUES */}
       {activeTab === 'finance-payouts' && (
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-lg overflow-hidden">
-          <div className="px-6 py-4 border-b border-slate-800 flex items-center justify-between">
+        <div className="rounded-2xl border border-slate-200/90 bg-white shadow-xs overflow-hidden">
+          <div className="px-6 py-4 border-b border-slate-200 flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white tracking-wide uppercase">
+              <h3 className="text-sm font-bold text-slate-900 tracking-wide uppercase">
                 LISTA GERAL DE REPASSES OPERACIONAIS
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500">
                 Todos os repasses agendados, em processamento e liquidados no banco
               </p>
             </div>
@@ -682,7 +546,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-200 bg-slate-50 text-[11px] font-bold uppercase tracking-wider text-slate-500">
                 <tr>
                   <th className="py-3.5 px-6">Código do Repasse</th>
                   <th className="py-3.5 px-4">Evento de Destino</th>
@@ -693,28 +557,28 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
                   <th className="py-3.5 px-6 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 font-sans">
                 {payouts.map((pay) => (
-                  <tr key={pay.id} className="hover:bg-slate-800/30 transition-colors">
-                    <td className="py-4 px-6 font-mono font-bold text-white">
+                  <tr key={pay.id} className="hover:bg-slate-50/70 transition-colors">
+                    <td className="py-4 px-6 font-mono font-bold text-slate-900">
                       {pay.payoutNumber}
                     </td>
 
                     <td className="py-4 px-4">
-                      <div className="font-semibold text-white">{pay.eventName}</div>
+                      <div className="font-semibold text-slate-900">{pay.eventName}</div>
                       <div className="text-[11px] text-slate-500">Solicitado por: {pay.requestedBy}</div>
                     </td>
 
-                    <td className="py-4 px-4 text-right font-mono font-bold text-white">
+                    <td className="py-4 px-4 text-right font-mono font-bold text-slate-900">
                       {formatCurrency(pay.amount)}
                     </td>
 
-                    <td className="py-4 px-4 font-mono text-slate-300">
+                    <td className="py-4 px-4 font-mono text-slate-600">
                       {pay.scheduledDate}
                     </td>
 
                     <td className="py-4 px-4">
-                      <div className="text-white font-medium text-[11px]">{pay.bankInfo?.bankName}</div>
+                      <div className="text-slate-900 font-medium text-[11px]">{pay.bankInfo?.bankName}</div>
                       <div className="text-[10px] text-slate-500 font-mono">
                         Ag {pay.bankInfo?.agency} | CC {pay.bankInfo?.account}
                       </div>
@@ -722,13 +586,13 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
                     <td className="py-4 px-4 text-center">
                       {pay.status === 'COMPLETED' ? (
-                        <Badge variant="emerald">Liquidado</Badge>
+                        <StatusBadge variant="success" label="Liquidado" />
                       ) : pay.status === 'PROCESSING' ? (
-                        <Badge variant="cyan">Em Análise</Badge>
+                        <StatusBadge variant="info" label="Em Análise" />
                       ) : pay.status === 'SCHEDULED' ? (
-                        <Badge variant="purple">Agendado</Badge>
+                        <StatusBadge variant="purple" label="Agendado" />
                       ) : (
-                        <Badge variant="rose">{pay.status}</Badge>
+                        <StatusBadge variant="danger" label={pay.status} />
                       )}
                     </td>
 

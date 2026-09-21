@@ -5,6 +5,7 @@ import { ScopeProvider } from './core/context/ScopeContext';
 import { CoreDataProvider } from './core/context/CoreDataContext';
 import { ProtectedRoute } from './core/auth/ProtectedRoute';
 import { LoginView } from './core/auth/LoginView';
+import { ThemeProvider } from './core/context/ThemeContext';
 
 import { AppShell } from './shared/components/AppShell';
 import { CommandPalette } from './shared/components/CommandPalette';
@@ -270,21 +271,21 @@ const MainShell: React.FC = () => {
       case 'accounting':
         return (
           <ProtectedRoute permission="contabilidade.diario.visualizar" onBack={() => handleNavigate('overview')}>
-            <AccountingDashboard />
+            <AccountingDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 
       case 'marketing':
         return (
           <ProtectedRoute permission="marketing.campanha.visualizar" onBack={() => handleNavigate('overview')}>
-            <MarketingDashboard />
+            <MarketingDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 
       case 'remarketing':
         return (
           <ProtectedRoute permission="remarketing.carrinhos.visualizar" onBack={() => handleNavigate('overview')}>
-            <RemarketingDashboard />
+            <RemarketingDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 
@@ -463,16 +464,18 @@ const MainShell: React.FC = () => {
 
 export default function App() {
   return (
-    <AuthProvider>
-      <DiskContextProvider>
-        <ScopeProvider>
-          <NotificationProvider>
-            <CoreDataProvider>
-              <MainShell />
-            </CoreDataProvider>
-          </NotificationProvider>
-        </ScopeProvider>
-      </DiskContextProvider>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <DiskContextProvider>
+          <ScopeProvider>
+            <NotificationProvider>
+              <CoreDataProvider>
+                <MainShell />
+              </CoreDataProvider>
+            </NotificationProvider>
+          </ScopeProvider>
+        </DiskContextProvider>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

@@ -9,11 +9,13 @@ import {
   RefreshCw,
   Search,
   Filter,
-  FileSpreadsheet,
   ShieldCheck,
   X
 } from 'lucide-react';
-import { Badge } from '../../shared/components/Badge';
+import { StatusBadge } from '../../shared/components/StatusBadge';
+import { MetricCard } from '../../shared/components/MetricCard';
+import { FilterBar } from '../../shared/components/FilterBar';
+import { DataTable, Column } from '../../shared/components/DataTable';
 import { Button } from '../../shared/components/Button';
 import { formatCurrency, formatDateTime } from '../../shared/utils/formatters';
 import { EventBalanceItemUI } from './EventBalancesView';
@@ -135,7 +137,7 @@ export const TransfersView: React.FC<TransfersViewProps> = ({
       const json = await res.json();
       if (!res.ok) throw new Error(json.message || json.error || 'Falha ao reverter transferência.');
 
-      setActionSuccess(`Transferência ${reversingTransfer.transferNumber} revertida com emissão de compensação contábil.`);
+      setActionSuccess(`Transferência ${reversingTransfer.transferNumber} revertida com compensação contábil.`);
       setReversingTransfer(null);
       setReversalReason('');
       loadTransfers();
@@ -158,282 +160,296 @@ export const TransfersView: React.FC<TransfersViewProps> = ({
     return matchesSearch && matchesStatus;
   });
 
+  const totalTransferred = transfers
+    .filter(t => t.status === 'COMPLETED')
+    .reduce((acc, t) => acc + t.amount, 0);
+  const pendingCount = transfers.filter(t => t.status === 'PENDING_APPROVAL').length;
+  const completedCount = transfers.filter(t => t.status === 'COMPLETED').length;
+  const revertedCount = transfers.filter(t => t.status === 'REVERTED').length;
+
   const getStatusBadge = (status: EventTransferUI['status']) => {
     switch (status) {
       case 'COMPLETED':
-        return <Badge variant="emerald" size="sm">Concluída</Badge>;
+        return <StatusBadge variant="success" label="Concluída" />;
       case 'PENDING_APPROVAL':
-        return <Badge variant="orange" size="sm">Pendente Aprovação</Badge>;
+        return <StatusBadge variant="warning" label="Pendente Aprovação" />;
       case 'APPROVED':
-        return <Badge variant="cyan" size="sm">Aprovada</Badge>;
+        return <StatusBadge variant="info" label="Aprovada" />;
       case 'REVERTED':
-        return <Badge variant="purple" size="sm">Revertida (Compensada)</Badge>;
+        return <StatusBadge variant="purple" label="Revertida" />;
       case 'REJECTED':
-        return <Badge variant="rose" size="sm">Rejeitada</Badge>;
+        return <StatusBadge variant="danger" label="Rejeitada" />;
       default:
-        return <Badge variant="slate" size="sm">{status}</Badge>;
+        return <StatusBadge variant="neutral" label={status} />;
     }
   };
 
-  return (
-    <div className="space-y-6">
-      {/* Top Banner & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg">
+  const columns: Column<EventTransferUI>[] = [
+    {
+      header: 'Código',
+      width: '130px',
+      accessor: (t) => (
         <div>
-          <div className="flex items-center gap-2">
-            <h2 className="text-base font-bold text-white tracking-wide">
-              TRANSFERÊNCIAS ENTRE EVENTOS
-            </h2>
-            <Badge variant="emerald" size="sm">
-              SafeSaff Multi-Evento
-            </Badge>
-          </div>
-          <p className="text-xs text-slate-400 mt-1 max-w-2xl">
-            Remanejamento controlado de saldos entre eventos do mesmo produtor. As operações preservam a segregação contábil, histórico e alçadas de aprovação.
-          </p>
+          <span className="font-mono font-bold text-slate-900">{t.transferNumber}</span>
+          {t.reversalTransferId && (
+            <span className="block text-[10px] text-purple-600 font-mono">
+              Ref: {t.reversalTransferId}
+            </span>
+          )}
         </div>
-
-        <div className="flex items-center gap-2 shrink-0">
-          <Button
-            size="sm"
-            variant="outline"
-            onClick={loadTransfers}
-            disabled={isLoading}
-            icon={<RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
-          >
-            Atualizar
-          </Button>
-
-          <Button
-            size="sm"
-            variant="primary"
-            onClick={() => setIsNewModalOpen(true)}
-            icon={<Plus className="h-3.5 w-3.5" />}
-          >
-            Nova Transferência
-          </Button>
+      )
+    },
+    {
+      header: 'Origem (Débito)',
+      accessor: (t) => (
+        <div>
+          <span className="font-semibold text-slate-800 block">{t.fromEventTitle}</span>
+          <span className="text-[10px] text-slate-400">ID: {t.fromEventId}</span>
         </div>
-      </div>
+      )
+    },
+    {
+      header: 'Destino (Crédito)',
+      accessor: (t) => (
+        <div>
+          <span className="font-semibold text-emerald-700 block">{t.toEventTitle}</span>
+          <span className="text-[10px] text-slate-400">ID: {t.toEventId}</span>
+        </div>
+      )
+    },
+    {
+      header: 'Valor',
+      align: 'right',
+      width: '140px',
+      accessor: (t) => (
+        <span className="font-mono font-bold text-slate-900">
+          {formatCurrency(t.amount)}
+        </span>
+      )
+    },
+    {
+      header: 'Status',
+      width: '150px',
+      accessor: (t) => getStatusBadge(t.status)
+    },
+    {
+      header: 'Solicitante & Data',
+      width: '180px',
+      accessor: (t) => (
+        <div>
+          <span className="text-slate-800 block font-medium">{t.requestedBy}</span>
+          <span className="text-[10px] text-slate-400 font-mono">
+            {formatDateTime(t.createdAt)}
+          </span>
+        </div>
+      )
+    },
+    {
+      header: 'Ações',
+      align: 'right',
+      width: '150px',
+      accessor: (t) => (
+        <div className="flex items-center justify-end gap-1.5">
+          {t.status === 'PENDING_APPROVAL' && canApprove && (
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => handleApprove(t.id)}
+              icon={<CheckCircle2 className="h-3 w-3" />}
+            >
+              Aprovar
+            </Button>
+          )}
 
+          {t.status === 'COMPLETED' && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setReversingTransfer(t)}
+              icon={<RotateCcw className="h-3 w-3 text-purple-600" />}
+            >
+              Reverter
+            </Button>
+          )}
+        </div>
+      )
+    }
+  ];
+
+  return (
+    <div className="space-y-5 animate-fadeIn">
+      {/* Alerts */}
       {actionSuccess && (
-        <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{actionSuccess}</span>
         </div>
       )}
 
       {actionError && (
-        <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{actionError}</span>
         </div>
       )}
 
-      {/* Mini Event Balance Bar */}
+      {/* KPI Cards Row (120-140px Height) */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {eventBalances.slice(0, 4).map(ev => (
-          <div key={ev.eventId} className="p-4 rounded-xl border border-slate-800 bg-slate-900/40">
-            <span className="text-[11px] font-semibold text-slate-400 block truncate" title={ev.eventTitle}>
-              {ev.eventTitle}
-            </span>
-            <div className="mt-1 flex items-baseline justify-between">
-              <span className="text-lg font-bold text-white font-mono">
-                {formatCurrency(ev.availableBalance)}
-              </span>
-              <span className="text-[10px] text-emerald-400 font-medium">Disponível</span>
-            </div>
-            <div className="mt-2 text-[10px] text-slate-500 flex justify-between">
-              <span>Transf. Entradas: {formatCurrency(ev.transfersIn || 0)}</span>
-              <span>Saídas: {formatCurrency(ev.transfersOut || 0)}</span>
-            </div>
-          </div>
-        ))}
+        <MetricCard
+          title="TOTAL MOVIMENTADO"
+          value={formatCurrency(totalTransferred)}
+          subtitle="Remanejamentos concluídos"
+          icon={<ArrowRightLeft className="h-4 w-4 text-slate-700" />}
+          badge="Segregado"
+          badgeVariant="slate"
+        />
+
+        <MetricCard
+          title="TRANSFERÊNCIAS CONCLUÍDAS"
+          value={completedCount}
+          trend={{ value: 'Liquidadas entre saldos', isPositive: true }}
+          icon={<CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+          badge="Efetivadas"
+          badgeVariant="emerald"
+        />
+
+        <MetricCard
+          title="PENDENTES DE APROVAÇÃO"
+          value={pendingCount}
+          subtitle="Aguardando autorização de alçada"
+          icon={<Clock className="h-4 w-4 text-amber-500" />}
+          badge="Em Análise"
+          badgeVariant="amber"
+        />
+
+        <MetricCard
+          title="TRANSFERÊNCIAS REVERTIDAS"
+          value={revertedCount}
+          subtitle="Compensações contábeis emitidas"
+          icon={<RotateCcw className="h-4 w-4 text-purple-600" />}
+          badge="Histórico Salvo"
+          badgeVariant="purple"
+        />
       </div>
 
-      {/* Filter and Search Bar */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
-          <input
-            type="text"
-            placeholder="Buscar por código, evento ou motivo..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 text-xs rounded-xl bg-slate-900 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
-          />
-        </div>
-
-        <div className="flex items-center gap-2 w-full sm:w-auto">
-          <div className="flex items-center gap-1.5 text-xs text-slate-400 bg-slate-900 px-3 py-2 rounded-xl border border-slate-800">
-            <Filter className="h-3.5 w-3.5 text-slate-500" />
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-transparent text-white focus:outline-none cursor-pointer"
+      {/* FilterBar Toolbar */}
+      <FilterBar
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Buscar por código, evento ou motivo..."
+        selects={[
+          {
+            id: 'filter-status',
+            value: statusFilter,
+            onChange: setStatusFilter,
+            options: [
+              { label: 'Todos os Status', value: 'ALL' },
+              { label: 'Concluídas', value: 'COMPLETED' },
+              { label: 'Pendente Aprovação', value: 'PENDING_APPROVAL' },
+              { label: 'Revertidas', value: 'REVERTED' },
+              { label: 'Rejeitadas', value: 'REJECTED' }
+            ]
+          }
+        ]}
+        hasActiveFilters={statusFilter !== 'ALL' || Boolean(searchTerm)}
+        onClearFilters={() => {
+          setStatusFilter('ALL');
+          setSearchTerm('');
+        }}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={loadTransfers}
+              disabled={isLoading}
+              icon={<RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
             >
-              <option value="ALL" className="bg-slate-900">Todos os Status</option>
-              <option value="COMPLETED" className="bg-slate-900">Concluídas</option>
-              <option value="PENDING_APPROVAL" className="bg-slate-900">Pendente Aprovação</option>
-              <option value="REVERTED" className="bg-slate-900">Revertidas</option>
-              <option value="REJECTED" className="bg-slate-900">Rejeitadas</option>
-            </select>
+              Atualizar
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={() => setIsNewModalOpen(true)}
+              icon={<Plus className="h-3.5 w-3.5" />}
+            >
+              Nova Transferência
+            </Button>
           </div>
-        </div>
-      </div>
+        }
+      />
 
       {/* Transfers Data Table */}
-      <div className="overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-lg">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/70 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-              <tr>
-                <th className="px-4 py-3.5">Código</th>
-                <th className="px-4 py-3.5">Evento de Origem (Débito)</th>
-                <th className="px-4 py-3.5">Evento de Destino (Crédito)</th>
-                <th className="px-4 py-3.5">Valor (R$)</th>
-                <th className="px-4 py-3.5">Status</th>
-                <th className="px-4 py-3.5">Solicitante</th>
-                <th className="px-4 py-3.5">Data / Hora</th>
-                <th className="px-4 py-3.5 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60 text-slate-300">
-              {filteredTransfers.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-slate-500">
-                    Nenhuma transferência entre eventos registrada até o momento.
-                  </td>
-                </tr>
-              ) : (
-                filteredTransfers.map((t) => (
-                  <tr key={t.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-4 py-3 font-mono font-semibold text-white">
-                      {t.transferNumber}
-                      {t.reversalTransferId && (
-                        <span className="block text-[10px] text-purple-400 font-mono">
-                          Ref: {t.reversalTransferId}
-                        </span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-white block">{t.fromEventTitle}</span>
-                      <span className="text-[10px] text-slate-500">ID: {t.fromEventId}</span>
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="font-medium text-emerald-400 block">{t.toEventTitle}</span>
-                      <span className="text-[10px] text-slate-500">ID: {t.toEventId}</span>
-                    </td>
-                    <td className="px-4 py-3 font-mono font-bold text-white">
-                      {formatCurrency(t.amount)}
-                    </td>
-                    <td className="px-4 py-3">
-                      {getStatusBadge(t.status)}
-                    </td>
-                    <td className="px-4 py-3">
-                      <span className="text-white block">{t.requestedBy}</span>
-                      {t.approvedBy && (
-                        <span className="text-[10px] text-slate-500">Aprov: {t.approvedBy}</span>
-                      )}
-                      {t.revertedBy && (
-                        <span className="text-[10px] text-purple-400">Rev: {t.revertedBy}</span>
-                      )}
-                    </td>
-                    <td className="px-4 py-3 text-slate-400">
-                      {formatDateTime(t.createdAt)}
-                    </td>
-                    <td className="px-4 py-3 text-right">
-                      <div className="flex items-center justify-end gap-1.5">
-                        {t.status === 'PENDING_APPROVAL' && canApprove && (
-                          <Button
-                            size="sm"
-                            variant="primary"
-                            onClick={() => handleApprove(t.id)}
-                            icon={<CheckCircle2 className="h-3 w-3" />}
-                          >
-                            Aprovar
-                          </Button>
-                        )}
+      <DataTable
+        columns={columns}
+        data={filteredTransfers}
+        keyExtractor={(item) => item.id}
+        isLoading={isLoading}
+        emptyMessage="Nenhuma transferência entre eventos registrada até o momento."
+        emptyIcon={<ArrowRightLeft className="h-8 w-8 text-slate-300" />}
+      />
 
-                        {t.status === 'COMPLETED' && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => setReversingTransfer(t)}
-                            icon={<RotateCcw className="h-3 w-3 text-purple-400" />}
-                          >
-                            Reverter
-                          </Button>
-                        )}
-                      </div>
-                    </td>
-                  </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
-      </div>
-
-      {/* Modal Reverter Transferência */}
+      {/* Reversal Confirmation Modal */}
       {reversingTransfer && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm p-4">
-          <div className="relative w-full max-w-md rounded-2xl border border-slate-800 bg-slate-900 p-6 shadow-2xl">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-800">
-              <div className="flex items-center gap-2">
-                <div className="p-2 rounded-lg bg-purple-500/10 text-purple-400">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
+          <div className="relative w-full max-w-md rounded-2xl border border-slate-200 bg-white p-6 shadow-xl animate-fadeIn">
+            <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 rounded-xl bg-purple-50 text-purple-600">
                   <RotateCcw className="h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white">Reverter Transferência</h3>
-                  <p className="text-xs text-slate-400 font-mono">{reversingTransfer.transferNumber}</p>
+                  <h3 className="text-base font-bold text-slate-900">Reverter Transferência</h3>
+                  <p className="text-xs text-slate-500 font-mono">{reversingTransfer.transferNumber}</p>
                 </div>
               </div>
               <button
+                type="button"
                 onClick={() => setReversingTransfer(null)}
-                className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800"
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg hover:bg-slate-100"
               >
-                <X className="h-5 w-5" />
+                <X className="h-4 w-4" />
               </button>
             </div>
 
             <form onSubmit={handleExecuteRevert} className="mt-4 space-y-4">
-              <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-xs space-y-1">
+              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-xs space-y-1.5">
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Valor a Estornar:</span>
-                  <span className="font-mono font-bold text-white">{formatCurrency(reversingTransfer.amount)}</span>
+                  <span className="text-slate-500">Valor a Reverter:</span>
+                  <span className="font-mono font-bold text-slate-900">{formatCurrency(reversingTransfer.amount)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Origem original:</span>
-                  <span className="text-white">{reversingTransfer.fromEventTitle}</span>
+                  <span className="text-slate-500">Origem original:</span>
+                  <span className="font-medium text-slate-800">{reversingTransfer.fromEventTitle}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-slate-400">Destino original:</span>
-                  <span className="text-white">{reversingTransfer.toEventTitle}</span>
+                  <span className="text-slate-500">Destino original:</span>
+                  <span className="font-medium text-slate-800">{reversingTransfer.toEventTitle}</span>
                 </div>
               </div>
 
-              <div className="p-3 rounded-xl bg-purple-500/10 border border-purple-500/30 text-purple-300 text-xs flex items-start gap-2">
+              <div className="p-3 rounded-xl bg-purple-50 border border-purple-200 text-purple-700 text-xs flex items-start gap-2">
                 <ShieldCheck className="h-4 w-4 mt-0.5 shrink-0" />
                 <div>
-                  <strong>Compensação Contábil Factual:</strong> O sistema criará uma transferência compensatória reversa (Débito no destino e Crédito na origem) preservando a integridade e histórico auditado.
+                  <strong>Compensação Contábil Registrada:</strong> Uma movimentação reversa será gerada (Débito no destino e Crédito na origem) preservando o histórico auditado.
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
+                <label className="block text-xs font-semibold text-slate-700 mb-1">
                   Motivo da Reversão (Obrigatório)
                 </label>
                 <textarea
                   rows={3}
                   required
-                  placeholder="Ex: Cancelamento de serviço terceirizado ou erro de digitação do valor..."
+                  placeholder="Ex: Cancelamento de serviço terceirizado ou ajuste operacional..."
                   value={reversalReason}
                   onChange={(e) => setReversalReason(e.target.value)}
-                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs text-slate-900 focus:outline-none focus:border-orange-500 transition-colors"
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-3 pt-3 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-slate-100">
                 <Button
                   type="button"
                   variant="outline"

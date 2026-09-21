@@ -37,12 +37,12 @@ export const EventsFilters: React.FC<EventsFiltersProps> = ({
             placeholder="Buscar por nome, código público (EVT-...), local ou cidade..."
             value={filters.search || ''}
             onChange={(e) => onChangeFilter('search', e.target.value)}
-            className="w-full pl-10 pr-9 py-2 text-xs rounded-xl bg-slate-900/90 border border-slate-800 text-white placeholder-slate-500 focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/40 transition-colors"
+            className="w-full pl-10 pr-9 py-2 text-xs rounded-xl bg-white border border-slate-200/90 text-slate-900 placeholder-slate-400 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 shadow-2xs transition-colors dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 dark:placeholder-slate-500"
           />
           {filters.search && (
             <button
               onClick={() => onChangeFilter('search', '')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200"
             >
               <X className="h-3.5 w-3.5" />
             </button>
@@ -52,16 +52,16 @@ export const EventsFilters: React.FC<EventsFiltersProps> = ({
         {/* Filter dropdowns & controls */}
         <div className="flex flex-wrap items-center gap-2">
           {/* Status Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs">
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200/90 rounded-xl px-2.5 py-1.5 text-xs shadow-2xs dark:bg-slate-800 dark:border-slate-700">
             <SlidersHorizontal className="h-3.5 w-3.5 text-slate-400" />
             <select
               value={filters.status || 'ALL'}
               onChange={(e) => onChangeFilter('status', e.target.value as EventStatus | 'ALL')}
-              className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-700 text-xs focus:outline-none cursor-pointer dark:text-slate-200"
             >
-              <option value="ALL" className="bg-slate-900 text-white">Todos os status</option>
+              <option value="ALL" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Todos os status</option>
               {Object.entries(EVENT_STATUS_LABELS).map(([statusKey, label]) => (
-                <option key={statusKey} value={statusKey} className="bg-slate-900 text-white">
+                <option key={statusKey} value={statusKey} className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">
                   {label}
                 </option>
               ))}
@@ -69,48 +69,48 @@ export const EventsFilters: React.FC<EventsFiltersProps> = ({
           </div>
 
           {/* Period Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs">
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200/90 rounded-xl px-2.5 py-1.5 text-xs shadow-2xs dark:bg-slate-800 dark:border-slate-700">
             <span className="text-slate-400">Período:</span>
             <select
               value={filters.period || 'all'}
               onChange={(e) => onChangeFilter('period', e.target.value)}
-              className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-700 text-xs focus:outline-none cursor-pointer dark:text-slate-200"
             >
-              <option value="all" className="bg-slate-900 text-white">Todo o período</option>
-              <option value="upcoming" className="bg-slate-900 text-white">Eventos futuros</option>
-              <option value="today" className="bg-slate-900 text-white">Hoje</option>
-              <option value="next7days" className="bg-slate-900 text-white">Próximos 7 dias</option>
-              <option value="next30days" className="bg-slate-900 text-white">Próximos 30 dias</option>
-              <option value="thisMonth" className="bg-slate-900 text-white">Este mês</option>
-              <option value="past" className="bg-slate-900 text-white">Encerrados / Passados</option>
+              <option value="all" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Todo o período</option>
+              <option value="upcoming" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Eventos futuros</option>
+              <option value="today" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Hoje</option>
+              <option value="next7days" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Próximos 7 dias</option>
+              <option value="next30days" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Próximos 30 dias</option>
+              <option value="thisMonth" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Este mês</option>
+              <option value="past" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Encerrados / Passados</option>
             </select>
           </div>
 
           {/* Sort By Filter */}
-          <div className="flex items-center gap-1.5 bg-slate-900/90 border border-slate-800 rounded-xl px-2.5 py-1.5 text-xs">
+          <div className="flex items-center gap-1.5 bg-white border border-slate-200/90 rounded-xl px-2.5 py-1.5 text-xs shadow-2xs dark:bg-slate-800 dark:border-slate-700">
             <ArrowUpDown className="h-3.5 w-3.5 text-slate-400" />
             <select
               value={filters.sortBy || 'date_asc'}
               onChange={(e) => onChangeFilter('sortBy', e.target.value)}
-              className="bg-transparent text-slate-200 text-xs focus:outline-none cursor-pointer"
+              className="bg-transparent text-slate-700 text-xs focus:outline-none cursor-pointer dark:text-slate-200"
             >
-              <option value="date_asc" className="bg-slate-900 text-white">Data (Mais próximos)</option>
-              <option value="date_desc" className="bg-slate-900 text-white">Data (Mais distantes)</option>
-              <option value="name_asc" className="bg-slate-900 text-white">Nome (A - Z)</option>
-              <option value="name_desc" className="bg-slate-900 text-white">Nome (Z - A)</option>
-              <option value="created_recent" className="bg-slate-900 text-white">Mais recentes criados</option>
+              <option value="date_asc" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Data (Mais próximos)</option>
+              <option value="date_desc" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Data (Mais distantes)</option>
+              <option value="name_asc" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Nome (A - Z)</option>
+              <option value="name_desc" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Nome (Z - A)</option>
+              <option value="created_recent" className="bg-white text-slate-900 dark:bg-slate-800 dark:text-white">Mais recentes criados</option>
             </select>
           </div>
 
           {/* Cards / Table Toggle */}
-          <div className="flex items-center bg-slate-900/90 border border-slate-800 rounded-xl p-1">
+          <div className="flex items-center bg-white border border-slate-200/90 rounded-xl p-1 shadow-2xs dark:bg-slate-800 dark:border-slate-700">
             <button
               onClick={() => onChangeViewMode('cards')}
               title="Visualização em Cards"
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 viewMode === 'cards'
-                  ? 'bg-orange-500/20 text-orange-400 font-bold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-orange-50 text-orange-600 font-bold dark:bg-orange-950/60 dark:text-orange-400'
+                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <LayoutGrid className="h-3.5 w-3.5" />
@@ -120,8 +120,8 @@ export const EventsFilters: React.FC<EventsFiltersProps> = ({
               title="Visualização em Tabela"
               className={`p-1.5 rounded-lg transition-colors cursor-pointer ${
                 viewMode === 'table'
-                  ? 'bg-orange-500/20 text-orange-400 font-bold'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-orange-50 text-orange-600 font-bold dark:bg-orange-950/60 dark:text-orange-400'
+                  : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <List className="h-3.5 w-3.5" />
@@ -131,15 +131,15 @@ export const EventsFilters: React.FC<EventsFiltersProps> = ({
       </div>
 
       {/* Results counter and clear filter button */}
-      <div className="flex items-center justify-between text-xs text-slate-400 px-1">
+      <div className="flex items-center justify-between text-xs text-slate-500 px-1 dark:text-slate-400">
         <div>
-          Exibindo <span className="font-semibold text-white">{totalResults}</span> {totalResults === 1 ? 'evento' : 'eventos'}
+          Exibindo <span className="font-semibold text-slate-900 dark:text-white">{totalResults}</span> {totalResults === 1 ? 'evento' : 'eventos'}
         </div>
 
         {hasActiveFilters && (
           <button
             onClick={onClearFilters}
-            className="text-orange-400 hover:text-orange-300 underline underline-offset-2 transition-colors cursor-pointer"
+            className="text-orange-600 hover:text-orange-700 underline underline-offset-2 transition-colors cursor-pointer dark:text-orange-400"
           >
             Limpar filtros ativos
           </button>

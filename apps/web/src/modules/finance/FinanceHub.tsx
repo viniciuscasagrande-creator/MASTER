@@ -88,7 +88,7 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
       <ModuleHero
         title="HUB FINANCEIRO"
         subtitle="Gestão financeira integrada de produtores, liquidação bancária, saldos segregados e conciliação de recebíveis"
-        badgeText="Disk Pro Financial Hub"
+        badgeText="Gestão Financeira Integrada"
         badgeVariant="emerald"
         icon={<Landmark className="h-6 w-6 text-emerald-400" />}
         contextInfo={
@@ -227,14 +227,14 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
         title="STATUS OPERACIONAL, CONCILIAÇÃO & GOVERNANÇA"
         items={[
           {
-            label: 'Segregação de Funções (Maker-Checker)',
-            statusText: 'Ativo & Fiscalizado',
+            label: 'Segregação de Funções & Alçadas',
+            statusText: 'Ativo & Conforme',
             isHealthy: true,
-            detail: 'Auto-aprovação proibida no backend'
+            detail: 'Aprovações validadas pelo sistema'
           },
           {
             label: 'Alçadas de Segurança (> R$ 50.000)',
-            statusText: 'Step-Up Obrigatório',
+            statusText: 'Aprovação da Diretoria',
             isHealthy: true,
             detail: 'Diretoria Financeira autorizada'
           },
@@ -270,7 +270,7 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
             iconTheme="emerald"
             metricValue={formatCurrency(availableBalance)}
             metricLabel="Disponibilidade Líquida"
-            badge="Factual"
+            badge="Ativo"
             badgeVariant="emerald"
             onClick={() => onNavigateToView('finance-dashboard')}
           />
@@ -300,7 +300,7 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
             iconTheme="purple"
             metricValue="SafeSaff"
             metricLabel="Motor Contábil"
-            badge="Maker-Checker"
+            badge="Governança"
             badgeVariant="purple"
             onClick={() => onNavigateToView('finance-transfers')}
           />

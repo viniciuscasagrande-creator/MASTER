@@ -7,9 +7,13 @@ import {
   QrCode,
   DollarSign,
   ShieldCheck,
-  Building2
+  Building2,
+  Scale
 } from 'lucide-react';
-import { Badge } from '../../shared/components/Badge';
+import { StatusBadge } from '../../shared/components/StatusBadge';
+import { MetricCard } from '../../shared/components/MetricCard';
+import { FilterBar } from '../../shared/components/FilterBar';
+import { DataTable, Column } from '../../shared/components/DataTable';
 import { Button } from '../../shared/components/Button';
 import { formatCurrency } from '../../shared/utils/formatters';
 
@@ -39,6 +43,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
 }) => {
   const [isReconciling, setIsReconciling] = useState(false);
   const [successMessage, setSuccessMessage] = useState('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   const handleRunReconciliation = () => {
     setIsReconciling(true);
@@ -47,7 +52,7 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
       setIsReconciling(false);
       setSuccessMessage('Conciliação bancária executada com sucesso. 100% dos lotes conferidos.');
       onRefresh();
-    }, 1200);
+    }, 1000);
   };
 
   const totalSystem = records.reduce((acc, curr) => acc + curr.systemAmount, 0);
@@ -55,168 +60,192 @@ export const ReconciliationView: React.FC<ReconciliationViewProps> = ({
   const totalFees = records.reduce((acc, curr) => acc + curr.gatewayFees, 0);
   const totalDivergence = records.reduce((acc, curr) => acc + curr.divergenceAmount, 0);
 
-  if (isLoading) {
-    return (
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-400">
-        <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-cyan-500 border-t-transparent mb-3" />
-        <p className="text-xs">Consultando lotes de conciliação com adquirentes...</p>
-      </div>
-    );
-  }
+  const filteredRecords = records.filter(r =>
+    !searchTerm.trim() ||
+    r.gateway.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    r.period.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const getGatewayIcon = (gateway: string) => {
+    switch (gateway) {
+      case 'PIX_BancoCentral':
+        return <QrCode className="h-4 w-4 text-emerald-600" />;
+      case 'Cielo':
+      case 'Rede':
+        return <CreditCard className="h-4 w-4 text-blue-600" />;
+      default:
+        return <Building2 className="h-4 w-4 text-slate-600" />;
+    }
+  };
+
+  const columns: Column<GatewayReconciliationRecordUI>[] = [
+    {
+      header: 'Gateway / Adquirente',
+      accessor: (r) => (
+        <div className="flex items-center gap-2.5">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50">
+            {getGatewayIcon(r.gateway)}
+          </div>
+          <div>
+            <div className="font-bold text-slate-900">{r.gateway}</div>
+            <div className="text-[10px] text-slate-500 font-mono">Última conferência: {r.lastCheckedAt}</div>
+          </div>
+        </div>
+      )
+    },
+    {
+      header: 'Período',
+      width: '130px',
+      accessor: (r) => <span className="font-medium text-slate-700">{r.period}</span>
+    },
+    {
+      header: 'Lotes / Pedidos',
+      accessor: (r) => (
+        <span className="font-mono text-slate-600">
+          {r.ordersCount.toLocaleString('pt-BR')} pedidos
+        </span>
+      )
+    },
+    {
+      header: 'Valor Sistema',
+      align: 'right',
+      accessor: (r) => (
+        <span className="font-mono font-bold text-slate-900">
+          {formatCurrency(r.systemAmount)}
+        </span>
+      )
+    },
+    {
+      header: 'Valor Adquirente',
+      align: 'right',
+      accessor: (r) => (
+        <span className="font-mono font-bold text-emerald-700">
+          {formatCurrency(r.gatewayAmount)}
+        </span>
+      )
+    },
+    {
+      header: 'Taxas Retidas',
+      align: 'right',
+      accessor: (r) => (
+        <span className="font-mono text-slate-500">
+          {formatCurrency(r.gatewayFees)}
+        </span>
+      )
+    },
+    {
+      header: 'Divergência',
+      align: 'right',
+      accessor: (r) => {
+        const hasDivergence = r.divergenceAmount !== 0;
+        return (
+          <span className={`font-mono font-bold ${hasDivergence ? 'text-rose-600' : 'text-emerald-600'}`}>
+            {formatCurrency(r.divergenceAmount)}
+          </span>
+        );
+      }
+    },
+    {
+      header: 'Status',
+      align: 'right',
+      width: '130px',
+      accessor: (r) => {
+        if (r.status === 'CONCILIADO') return <StatusBadge variant="success" label="Conciliado" />;
+        if (r.status === 'DIVERGENTE') return <StatusBadge variant="danger" label="Divergente" />;
+        return <StatusBadge variant="warning" label="Pendente" />;
+      }
+    }
+  ];
 
   return (
-    <div className="space-y-6">
-      {/* Top Action Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <h3 className="text-sm font-bold text-white tracking-wide uppercase">
-            CONCILIAÇÃO BANCÁRIA & GATEWAYS
-          </h3>
-          <p className="text-xs text-slate-400">
-            Confronto automatizado entre pedidos comercializados e extratos das adquirentes
-          </p>
-        </div>
-
-        <Button
-          size="sm"
-          variant="primary"
-          onClick={handleRunReconciliation}
-          disabled={isReconciling}
-          icon={<RefreshCw className={`h-3.5 w-3.5 ${isReconciling ? 'animate-spin' : ''}`} />}
-        >
-          {isReconciling ? 'Conciliando...' : 'Reconciliar Agora'}
-        </Button>
-      </div>
-
+    <div className="space-y-5 animate-fadeIn">
+      {/* Success Notification */}
       {successMessage && (
-        <div className="p-3.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs flex items-center gap-2">
+        <div className="p-3.5 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs flex items-center gap-2">
           <CheckCircle2 className="h-4 w-4 shrink-0" />
           <span>{successMessage}</span>
         </div>
       )}
 
-      {/* Summary KPI Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-            Volume Registrado no Sistema
-          </span>
-          <span className="text-xl font-bold font-mono text-white mt-1 block">
-            {formatCurrency(totalSystem)}
-          </span>
-          <span className="text-[11px] text-slate-500 mt-1 block">
-            {records.reduce((acc, c) => acc + c.ordersCount, 0)} pedidos conferidos
-          </span>
-        </div>
+      {/* KPI Cards Row (120-140px Height) */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          title="TOTAL SISTEMA"
+          value={formatCurrency(totalSystem)}
+          subtitle="Registrado nas ordens de compra"
+          icon={<DollarSign className="h-4 w-4 text-slate-700" />}
+          badge="Bilheteria"
+          badgeVariant="slate"
+        />
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-            Volume Confirmado Adquirentes
-          </span>
-          <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">
-            {formatCurrency(totalGateway)}
-          </span>
-          <span className="text-[11px] text-slate-500 mt-1 block">
-            Liquidações confirmadas
-          </span>
-        </div>
+        <MetricCard
+          title="TOTAL ADQUIRENTES"
+          value={formatCurrency(totalGateway)}
+          trend={{ value: 'Confirmado pelas credenciadoras', isPositive: true }}
+          icon={<CheckCircle2 className="h-4 w-4 text-emerald-600" />}
+          badge="Extrato Bancário"
+          badgeVariant="emerald"
+        />
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-            Taxas de Meio de Pagamento
-          </span>
-          <span className="text-xl font-bold font-mono text-orange-400 mt-1 block">
-            {formatCurrency(totalFees)}
-          </span>
-          <span className="text-[11px] text-slate-500 mt-1 block">
-            MDR retido pelas adquirentes
-          </span>
-        </div>
+        <MetricCard
+          title="TAXAS DE INTERMEDIAÇÃO"
+          value={formatCurrency(totalFees)}
+          subtitle="Tarifas de adquirentes e PIX"
+          icon={<CreditCard className="h-4 w-4 text-blue-600" />}
+          badge="Custos de Gateway"
+          badgeVariant="cyan"
+        />
 
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
-          <span className="text-[11px] font-medium text-slate-400 uppercase tracking-wider block">
-            Divergências Identificadas
-          </span>
-          <span className={`text-xl font-bold font-mono mt-1 block ${
-            totalDivergence === 0 ? 'text-emerald-400' : 'text-rose-400'
-          }`}>
-            {formatCurrency(totalDivergence)}
-          </span>
-          <span className="text-[11px] text-slate-500 mt-1 block">
-            {totalDivergence === 0 ? 'Confronto 100% equilibrado' : 'Requer intervenção contábil'}
-          </span>
-        </div>
+        <MetricCard
+          title="DIVERGÊNCIA LÍQUIDA"
+          value={formatCurrency(totalDivergence)}
+          subtitle={totalDivergence === 0 ? 'Conferência 100% precisa' : 'Ajustes em apuração'}
+          icon={<Scale className="h-4 w-4 text-emerald-600" />}
+          badge={totalDivergence === 0 ? 'Equilibrado' : 'Atenção'}
+          badgeVariant={totalDivergence === 0 ? 'emerald' : 'rose'}
+        />
       </div>
+
+      {/* FilterBar */}
+      <FilterBar
+        searchValue={searchTerm}
+        onSearchChange={setSearchTerm}
+        searchPlaceholder="Buscar por adquirente ou período..."
+        hasActiveFilters={Boolean(searchTerm)}
+        onClearFilters={() => setSearchTerm('')}
+        actions={
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={onRefresh}
+              disabled={isLoading}
+              icon={<RefreshCw className={`h-3.5 w-3.5 ${isLoading ? 'animate-spin' : ''}`} />}
+            >
+              Atualizar
+            </Button>
+            <Button
+              size="sm"
+              variant="primary"
+              onClick={handleRunReconciliation}
+              disabled={isReconciling}
+              icon={<RefreshCw className={`h-3.5 w-3.5 ${isReconciling ? 'animate-spin' : ''}`} />}
+            >
+              {isReconciling ? 'Conciliando...' : 'Reconciliar Agora'}
+            </Button>
+          </div>
+        }
+      />
 
       {/* Reconciliation Table */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 shadow-lg overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
-              <tr>
-                <th className="py-3.5 px-6">Adquirente / Gateway</th>
-                <th className="py-3.5 px-4 text-center">Pedidos</th>
-                <th className="py-3.5 px-4 text-right">Volume Sistema</th>
-                <th className="py-3.5 px-4 text-right">Volume Gateway</th>
-                <th className="py-3.5 px-4 text-right">Taxas Retidas (MDR)</th>
-                <th className="py-3.5 px-4 text-right">Divergência</th>
-                <th className="py-3.5 px-6 text-center">Status</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-800/60">
-              {records.map((rec) => (
-                <tr key={rec.id} className="hover:bg-slate-800/30 transition-colors">
-                  <td className="py-4 px-6">
-                    <div className="font-semibold text-white flex items-center gap-2">
-                      {rec.gateway === 'PIX_BancoCentral' ? (
-                        <QrCode className="h-4 w-4 text-emerald-400" />
-                      ) : (
-                        <CreditCard className="h-4 w-4 text-cyan-400" />
-                      )}
-                      <span>{rec.gateway === 'PIX_BancoCentral' ? 'PIX Instantâneo (BACEN)' : rec.gateway}</span>
-                    </div>
-                    <div className="text-[11px] text-slate-500 mt-0.5">
-                      {rec.period} • Última checagem: {new Date(rec.lastCheckedAt).toLocaleTimeString('pt-BR')}
-                    </div>
-                  </td>
-
-                  <td className="py-4 px-4 text-center font-mono font-medium text-slate-300">
-                    {rec.ordersCount}
-                  </td>
-
-                  <td className="py-4 px-4 text-right font-mono text-slate-300">
-                    {formatCurrency(rec.systemAmount)}
-                  </td>
-
-                  <td className="py-4 px-4 text-right font-mono font-bold text-white">
-                    {formatCurrency(rec.gatewayAmount)}
-                  </td>
-
-                  <td className="py-4 px-4 text-right font-mono text-orange-400">
-                    {formatCurrency(rec.gatewayFees)}
-                  </td>
-
-                  <td className="py-4 px-4 text-right font-mono font-bold">
-                    {rec.divergenceAmount === 0 ? (
-                      <span className="text-emerald-400">R$ 0,00</span>
-                    ) : (
-                      <span className="text-rose-400">{formatCurrency(rec.divergenceAmount)}</span>
-                    )}
-                  </td>
-
-                  <td className="py-4 px-6 text-center">
-                    {rec.status === 'CONCILIADO' ? (
-                      <Badge variant="emerald">100% Conciliado</Badge>
-                    ) : (
-                      <Badge variant="rose">{rec.status}</Badge>
-                    )}
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <DataTable
+        columns={columns}
+        data={filteredRecords}
+        keyExtractor={(r) => r.id}
+        isLoading={isLoading}
+        emptyMessage="Nenhum lote de conciliação disponível no momento."
+        emptyIcon={<ShieldCheck className="h-8 w-8 text-slate-300" />}
+      />
     </div>
   );
 };
