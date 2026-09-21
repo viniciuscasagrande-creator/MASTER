@@ -243,7 +243,7 @@ const MainShell: React.FC = () => {
       case 'finance':
         return (
           <ProtectedRoute permission="financeiro.saldo.visualizar" onBack={() => handleNavigate('overview')}>
-            <FinanceDashboard />
+            <FinanceDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

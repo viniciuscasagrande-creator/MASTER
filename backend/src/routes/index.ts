@@ -74,6 +74,7 @@ router.use('/events', eventsRoutes);
 router.use('/venues', venueRoutes);
 router.get('/event-categories', authenticate, EventCategoryController.listCategories);
 router.use('/finance', financeRoutes);
+router.use('/financial', financeRoutes);
 router.use('/commercial/catalog', catalogRoutes);
 router.use('/commercial/contracts', contractRoutes);
 router.use('/commercial/account-management', accountManagementRoutes);
