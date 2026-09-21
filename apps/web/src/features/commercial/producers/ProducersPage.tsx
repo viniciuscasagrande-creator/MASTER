@@ -242,16 +242,16 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
       </div>
 
       {/* Filters Bar */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm backdrop-blur-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-xs backdrop-blur-sm">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Buscar por Razão Social, Nome ou CNPJ..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
@@ -260,7 +260,7 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
               value={segmentId}
               onChange={(e) => setSegmentId(e.target.value)}
               aria-label="Filtrar por Segmento"
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="">Todos os Segmentos</option>
               <option value="SHOWS_FESTIVAIS">Shows & Festivais</option>
@@ -275,7 +275,7 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
               value={classification}
               onChange={(e) => setClassification(e.target.value)}
               aria-label="Filtrar por Classificação"
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="">Todas Classificações</option>
               <option value="ESTRATEGICO">Estratégico</option>
@@ -289,7 +289,7 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
               value={commercialStatus}
               onChange={(e) => setCommercialStatus(e.target.value)}
               aria-label="Filtrar por Status Comercial"
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-300 focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="">Todos os Status</option>
               <option value="ACTIVE">Ativo</option>
@@ -308,17 +308,17 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
 
       {/* Error Banner */}
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Producers Table */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden backdrop-blur-sm">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs overflow-hidden backdrop-blur-sm">
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">Produtor / Razão Social</th>
                 <th className="px-4 py-3">Status Comercial</th>
@@ -330,7 +330,7 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 <th className="px-4 py-3 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {loading && producers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-slate-500">
@@ -354,11 +354,11 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                   return (
                     <tr
                       key={prod.producer.id}
-                      className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
                       onClick={() => onSelectProducer(prod.producer.id)}
                     >
                       <td className="px-4 py-3.5">
-                        <div className="font-semibold text-white group-hover:text-orange-400 transition-colors">
+                        <div className="font-semibold text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                           {prod.producer.name}
                         </div>
                         <div className="text-[10px] text-slate-500 font-mono mt-0.5">
@@ -373,20 +373,20 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                       </td>
                       <td className="px-4 py-3.5">
                         {primaryOwner?.userName ? (
-                          <div className="flex items-center gap-1.5 text-slate-300">
-                            <Briefcase className="h-3.5 w-3.5 text-orange-400 shrink-0" />
+                          <div className="flex items-center gap-1.5 text-slate-700 dark:text-slate-300">
+                            <Briefcase className="h-3.5 w-3.5 text-orange-500 shrink-0" />
                             <span className="truncate max-w-[140px]">{primaryOwner.userName}</span>
                           </div>
                         ) : (
-                          <span className="text-slate-500 italic">Não atribuído</span>
+                          <span className="text-slate-400 italic">Não atribuído</span>
                         )}
                       </td>
                       <td className="px-4 py-3.5 text-center">
-                        <div className="font-mono text-slate-200">
-                          <span className="text-emerald-400 font-bold">{prod.activeEventsCount}</span>
-                          <span className="text-slate-500"> / {prod.eventsCount}</span>
+                        <div className="font-mono text-slate-700 dark:text-slate-200">
+                          <span className="text-emerald-600 dark:text-emerald-400 font-bold">{prod.activeEventsCount}</span>
+                          <span className="text-slate-400"> / {prod.eventsCount}</span>
                         </div>
-                        <div className="text-[10px] text-slate-500">ativos/total</div>
+                        <div className="text-[10px] text-slate-400">ativos/total</div>
                       </td>
                       <td className="px-4 py-3.5 text-center">
                         <Badge variant={prod.openOpportunitiesCount > 0 ? 'orange' : 'slate'} size="sm">
@@ -398,19 +398,19 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                           <div className="flex flex-col">
                             <span
                               className={`text-xs font-mono font-medium ${
-                                isActionOverdue ? 'text-rose-400' : 'text-slate-300'
+                                isActionOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'
                               }`}
                             >
                               {formatDate(prod.nextActionAt)}
                             </span>
                             {isActionOverdue && (
-                              <span className="text-[10px] text-rose-400 flex items-center gap-1">
+                              <span className="text-[10px] text-rose-600 dark:text-rose-400 flex items-center gap-1">
                                 <AlertCircle className="h-3 w-3" /> Atrasada
                               </span>
                             )}
                           </div>
                         ) : (
-                          <span className="text-slate-500">—</span>
+                          <span className="text-slate-400">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3.5 text-right">
@@ -441,29 +441,29 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
         onClose={() => setIsCreateModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Building2 className="h-5 w-5 text-orange-400" />
+            <Building2 className="h-5 w-5 text-orange-500" />
             <span>Nova Prospecção Comercial (Lead)</span>
           </div>
         }
         size="lg"
       >
         <form onSubmit={handleCreateLead} className="space-y-4">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Cadastre uma nova empresa promotora de eventos no pipeline de prospecção comercial.
             Após a qualificação, ela poderá ser convertida formalmente em Produtor Credenciado no Core.
           </p>
 
           {createError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500 dark:text-rose-400" />
               <span>{createError}</span>
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
-                Razão Social <span className="text-orange-400">*</span>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+                Razão Social <span className="text-orange-500">*</span>
               </label>
               <input
                 type="text"
@@ -471,12 +471,12 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.companyName}
                 onChange={(e) => setCreateForm({ ...createForm, companyName: e.target.value })}
                 placeholder="Ex: Opus Produções Ltda"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Nome Fantasia
               </label>
               <input
@@ -484,12 +484,12 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.tradeName}
                 onChange={(e) => setCreateForm({ ...createForm, tradeName: e.target.value })}
                 placeholder="Ex: Opus Entretenimento"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 CNPJ (Validação automática anti-duplicidade)
               </label>
               <input
@@ -497,18 +497,18 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.cnpj}
                 onChange={(e) => setCreateForm({ ...createForm, cnpj: e.target.value })}
                 placeholder="00.000.000/0000-00"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Segmento de Atuação
               </label>
               <select
                 value={createForm.segmentId}
                 onChange={(e) => setCreateForm({ ...createForm, segmentId: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="SHOWS_FESTIVAIS">Shows & Festivais</option>
                 <option value="TEATRO_CULTURA">Teatro & Cultura</option>
@@ -520,7 +520,7 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Contato Principal (Nome)
               </label>
               <input
@@ -528,12 +528,12 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.contactName}
                 onChange={(e) => setCreateForm({ ...createForm, contactName: e.target.value })}
                 placeholder="Ex: Carlos Eduardo"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Email de Contato
               </label>
               <input
@@ -541,12 +541,12 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.contactEmail}
                 onChange={(e) => setCreateForm({ ...createForm, contactEmail: e.target.value })}
                 placeholder="carlos@empresa.com.br"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Telefone / WhatsApp
               </label>
               <input
@@ -554,13 +554,13 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
                 value={createForm.contactPhone}
                 onChange={(e) => setCreateForm({ ...createForm, contactPhone: e.target.value })}
                 placeholder="(11) 99999-9999"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Observações Comerciais / Contexto do Evento
             </label>
             <textarea
@@ -568,11 +568,11 @@ export const ProducersPage: React.FC<ProducersPageProps> = ({
               value={createForm.notes}
               onChange={(e) => setCreateForm({ ...createForm, notes: e.target.value })}
               placeholder="Descreva a expectativa de eventos, público estimado, histórico de bilheteria..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500 resize-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"

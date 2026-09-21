@@ -155,12 +155,12 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-2xl font-bold tracking-tight text-white">Propostas Comerciais</h1>
-            <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-semibold text-orange-400 border border-orange-500/20">
+            <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">Propostas Comerciais</h1>
+            <span className="rounded-full bg-orange-500/10 px-2.5 py-0.5 text-xs font-semibold text-orange-600 dark:text-orange-400 border border-orange-500/20">
               B2B Produtores
             </span>
           </div>
-          <p className="mt-1 text-sm text-slate-400">
+          <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">
             Formalização de condições comerciais com produtores, governança de alçadas e versionamento imutável.
           </p>
         </div>
@@ -170,18 +170,17 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             variant="outline"
             size="sm"
             onClick={() => loadData()}
-            className="flex items-center gap-2 border-slate-700 hover:bg-slate-800 text-slate-300"
+            icon={<RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />}
           >
-            <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
             Atualizar
           </Button>
 
           <Button
             size="sm"
             onClick={() => setIsCreateModalOpen(true)}
-            className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg shadow-orange-500/20"
+            variant="primary"
+            icon={<Plus className="h-4 w-4" />}
           >
-            <Plus className="h-4 w-4" />
             Nova Proposta
           </Button>
         </div>
@@ -194,7 +193,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             title="Total de Propostas"
             value={metrics.totalProposals}
             subtitle="Todas as propostas criadas"
-            icon={<FileText className="h-5 w-5 text-slate-400" />}
+            icon={<FileText className="h-5 w-5 text-slate-500" />}
             badgeVariant="slate"
           />
 
@@ -202,7 +201,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             title="Aguardando Alçada"
             value={metrics.pendingApprovalCount}
             subtitle="Necessitam aprovação de alçada"
-            icon={<Clock className="h-5 w-5 text-amber-400" />}
+            icon={<Clock className="h-5 w-5 text-amber-500" />}
             badge={metrics.pendingApprovalCount > 0 ? 'Ação requerida' : undefined}
             badgeVariant="amber"
           />
@@ -211,7 +210,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             title="Enviadas ao Produtor"
             value={metrics.sentCount}
             subtitle="Em análise pelo cliente B2B"
-            icon={<Send className="h-5 w-5 text-cyan-400" />}
+            icon={<Send className="h-5 w-5 text-cyan-500" />}
             badgeVariant="cyan"
           />
 
@@ -219,7 +218,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             title="Aceitas Formalmente"
             value={metrics.acceptedCount}
             subtitle="Prontas para contrato"
-            icon={<CheckCircle2 className="h-5 w-5 text-emerald-400" />}
+            icon={<CheckCircle2 className="h-5 w-5 text-emerald-500" />}
             badgeVariant="emerald"
           />
 
@@ -227,22 +226,22 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             title="Taxa de Conversão"
             value={metrics.acceptanceRatePercent !== undefined ? `${metrics.acceptanceRatePercent}%` : '0%'}
             subtitle="Aceite sobre enviadas"
-            icon={<TrendingUp className="h-5 w-5 text-orange-400" />}
+            icon={<TrendingUp className="h-5 w-5 text-orange-500" />}
             badgeVariant="orange"
           />
         </div>
       )}
 
       {/* Main Container */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-xl overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs overflow-hidden">
         {/* Navigation Tabs */}
-        <div className="border-b border-slate-800 px-4 pt-3 flex flex-wrap gap-2">
+        <div className="border-b border-slate-200 dark:border-slate-800 px-4 pt-3 flex flex-wrap gap-2">
           <button
             onClick={() => handleTabChange('ALL')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'ALL'
-                ? 'border-orange-500 text-orange-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-orange-500 text-orange-600 dark:text-orange-400 font-bold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Todas as Propostas
@@ -251,13 +250,13 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             onClick={() => handleTabChange('PENDING_APPROVAL')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors flex items-center gap-2 ${
               activeTab === 'PENDING_APPROVAL'
-                ? 'border-amber-500 text-amber-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-amber-500 text-amber-600 dark:text-amber-400 font-bold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Aguardando Alçada
             {metrics?.pendingApprovalCount ? (
-              <span className="rounded-full bg-amber-500/20 px-2 py-0.2 text-xs font-bold text-amber-300">
+              <span className="rounded-full bg-amber-100 dark:bg-amber-500/20 px-2 py-0.2 text-xs font-bold text-amber-700 dark:text-amber-300">
                 {metrics.pendingApprovalCount}
               </span>
             ) : null}
@@ -266,8 +265,8 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             onClick={() => handleTabChange('SENT')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'SENT'
-                ? 'border-cyan-500 text-cyan-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-cyan-500 text-cyan-600 dark:text-cyan-400 font-bold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Enviadas ao Produtor
@@ -276,8 +275,8 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             onClick={() => handleTabChange('ACCEPTED')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'ACCEPTED'
-                ? 'border-emerald-500 text-emerald-400 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-emerald-500 text-emerald-600 dark:text-emerald-400 font-bold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Aceitas Formalmente
@@ -286,8 +285,8 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
             onClick={() => handleTabChange('DRAFTS')}
             className={`px-4 py-2.5 text-sm font-medium border-b-2 transition-colors ${
               activeTab === 'DRAFTS'
-                ? 'border-slate-400 text-slate-200 font-semibold'
-                : 'border-transparent text-slate-400 hover:text-slate-200'
+                ? 'border-slate-500 text-slate-800 dark:text-slate-200 font-bold'
+                : 'border-transparent text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'
             }`}
           >
             Rascunhos / Em Negociação
@@ -295,15 +294,15 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
         </div>
 
         {/* Filter Bar */}
-        <div className="p-4 border-b border-slate-800 bg-slate-900/40 flex flex-col md:flex-row gap-3 items-center justify-between">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 flex flex-col md:flex-row gap-3 items-center justify-between">
           <form onSubmit={handleSearchSubmit} className="relative flex-1 w-full max-w-md">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Buscar por código (PROP-...), produtor, objeto..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 bg-slate-800/80 border border-slate-700 rounded-lg text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+              className="w-full pl-9 pr-4 py-2 bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg text-xs text-slate-900 dark:text-slate-200 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </form>
 
@@ -318,7 +317,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                     setPage(1);
                   }}
                   aria-label="Filtrar por Status"
-                  className="bg-slate-800/80 border border-slate-700 text-sm text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="bg-white dark:bg-slate-950 border border-slate-200 dark:border-slate-700 text-xs text-slate-700 dark:text-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:border-orange-500 focus:bg-white"
                 >
                   <option value="ALL">Todos os Status</option>
                   <option value="DRAFT">Rascunho (DRAFT)</option>
@@ -334,7 +333,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
               </div>
             )}
 
-            <span className="text-xs text-slate-400">
+            <span className="text-xs text-slate-500 dark:text-slate-400">
               {total} {total === 1 ? 'proposta encontrada' : 'propostas encontradas'}
             </span>
           </div>
@@ -372,19 +371,19 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
           </div>
         ) : (
           <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-800/40 text-xs uppercase tracking-wider text-slate-400 border-b border-slate-800">
+            <table className="w-full text-left text-xs text-slate-600 dark:text-slate-300">
+              <thead className="bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 border-b border-slate-200 dark:bg-slate-950/40 dark:text-slate-400 dark:border-slate-800">
                 <tr>
-                  <th className="px-5 py-3 font-medium">Código / Versão</th>
-                  <th className="px-5 py-3 font-medium">Produtor</th>
-                  <th className="px-5 py-3 font-medium">Objeto / Oportunidade</th>
-                  <th className="px-5 py-3 font-medium">Modelo</th>
-                  <th className="px-5 py-3 font-medium">Validade</th>
-                  <th className="px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3 font-medium text-right">Ações</th>
+                  <th className="px-5 py-3 font-bold">Código / Versão</th>
+                  <th className="px-5 py-3 font-bold">Produtor</th>
+                  <th className="px-5 py-3 font-bold">Objeto / Oportunidade</th>
+                  <th className="px-5 py-3 font-bold">Modelo</th>
+                  <th className="px-5 py-3 font-bold">Validade</th>
+                  <th className="px-5 py-3 font-bold">Status</th>
+                  <th className="px-5 py-3 font-bold text-right">Ações</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {proposals.map((proposal) => {
                   const currentVer = proposal.currentVersion;
                   const validUntil = currentVer?.validUntil || proposal.validUntil;
@@ -394,21 +393,21 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                   return (
                     <tr
                       key={proposal.id}
-                      className="hover:bg-slate-800/30 transition-colors group cursor-pointer"
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors group cursor-pointer"
                       onClick={() => onSelectProposal(proposal.id)}
                     >
                       {/* Código e Versão */}
                       <td className="px-5 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono font-semibold text-white group-hover:text-orange-400 transition-colors">
+                          <span className="font-mono font-semibold text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                             {proposal.publicCode}
                           </span>
-                          <span className="rounded bg-slate-800 px-1.5 py-0.5 text-xs font-mono font-medium text-slate-300 border border-slate-700">
+                          <span className="rounded bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 text-xs font-mono font-medium text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                             v{proposal.currentVersionNumber || currentVer?.versionNumber || 1}
                           </span>
                         </div>
                         {currentVer?.contentHash && (
-                          <div className="text-[11px] font-mono text-slate-500 truncate max-w-[140px]" title={currentVer.contentHash}>
+                          <div className="text-[11px] font-mono text-slate-400 dark:text-slate-500 truncate max-w-[140px]" title={currentVer.contentHash}>
                             sha: {currentVer.contentHash.slice(0, 10)}...
                           </div>
                         )}
@@ -417,10 +416,10 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                       {/* Produtor */}
                       <td className="px-5 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <Building2 className="h-4 w-4 text-slate-500 shrink-0" />
+                          <Building2 className="h-4 w-4 text-slate-400 shrink-0" />
                           <div>
                             <p
-                              className="font-medium text-slate-200 hover:text-orange-400 transition-colors cursor-pointer"
+                              className="font-medium text-slate-800 dark:text-slate-200 hover:text-orange-600 dark:hover:text-orange-400 transition-colors cursor-pointer"
                               onClick={(e) => {
                                 if (onSelectProducer) {
                                   e.stopPropagation();
@@ -431,7 +430,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                               {proposal.producerName || 'Produtor B2B'}
                             </p>
                             {(proposal as any).producerDocument && (
-                              <p className="text-xs text-slate-500">{(proposal as any).producerDocument}</p>
+                              <p className="text-xs text-slate-400 dark:text-slate-500 font-mono">{(proposal as any).producerDocument}</p>
                             )}
                           </div>
                         </div>
@@ -440,12 +439,12 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                       {/* Objeto / Oportunidade */}
                       <td className="px-5 py-4">
                         <div className="max-w-xs">
-                          <p className="font-medium text-slate-200 truncate" title={proposal.title}>
+                          <p className="font-medium text-slate-800 dark:text-slate-200 truncate" title={proposal.title}>
                             {proposal.title}
                           </p>
                           {proposal.opportunityTitle && (
                             <p
-                              className="text-xs text-orange-400/80 truncate hover:underline cursor-pointer"
+                              className="text-xs text-orange-600 dark:text-orange-400 truncate hover:underline cursor-pointer"
                               onClick={(e) => {
                                 if (onSelectOpportunity && proposal.opportunityId) {
                                   e.stopPropagation();
@@ -460,8 +459,8 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                       </td>
 
                       {/* Modelo Comercial */}
-                      <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-300">
-                        <span className="rounded bg-slate-800/80 px-2 py-1 border border-slate-700/60 font-medium">
+                      <td className="px-5 py-4 whitespace-nowrap text-xs text-slate-600 dark:text-slate-300">
+                        <span className="rounded bg-slate-100 dark:bg-slate-800/80 px-2 py-1 border border-slate-200 dark:border-slate-700/60 font-medium text-slate-700 dark:text-slate-300">
                           {formatModel(currentVer?.commercialModel || 'STANDARD')}
                         </span>
                       </td>
@@ -470,18 +469,18 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                       <td className="px-5 py-4 whitespace-nowrap text-xs">
                         {validUntil ? (
                           <div>
-                            <span className={expired ? 'text-rose-400 font-medium' : expiring ? 'text-amber-400 font-medium' : 'text-slate-300'}>
+                            <span className={expired ? 'text-rose-600 dark:text-rose-400 font-bold' : expiring ? 'text-amber-600 dark:text-amber-400 font-bold' : 'text-slate-700 dark:text-slate-300 font-mono'}>
                               {formatDate(validUntil)}
                             </span>
                             {expired && proposal.status !== 'ACCEPTED' && (
-                              <div className="text-[10px] text-rose-400 font-semibold">Expirada</div>
+                              <div className="text-[10px] text-rose-600 dark:text-rose-400 font-bold">Expirada</div>
                             )}
                             {expiring && !expired && (
-                              <div className="text-[10px] text-amber-400 font-semibold">Vence em breve</div>
+                              <div className="text-[10px] text-amber-600 dark:text-amber-400 font-bold">Vence em breve</div>
                             )}
                           </div>
                         ) : (
-                          <span className="text-slate-500">Sem validade</span>
+                          <span className="text-slate-400">Sem validade</span>
                         )}
                       </td>
 
@@ -498,7 +497,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                             variant="ghost"
                             size="sm"
                             onClick={() => onSelectProposal(proposal.id)}
-                            className="text-slate-400 hover:text-slate-200 hover:bg-slate-800 h-8 px-2"
+                            className="text-slate-500 hover:text-slate-900 hover:bg-slate-100 dark:text-slate-400 dark:hover:text-slate-200 dark:hover:bg-slate-800 h-8 px-2"
                             title="Ver Detalhes"
                           >
                             <Eye className="h-4 w-4" />
@@ -510,7 +509,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => setProposalToSend(proposal)}
-                              className="text-cyan-400 hover:text-cyan-300 hover:bg-cyan-500/10 h-8 px-2"
+                              className="text-cyan-600 dark:text-cyan-400 hover:text-cyan-700 hover:bg-cyan-50 dark:hover:bg-cyan-500/10 h-8 px-2"
                               title="Enviar Proposta Formal"
                             >
                               <Send className="h-4 w-4" />
@@ -523,7 +522,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => setProposalToAccept(proposal)}
-                              className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-8 px-2"
+                              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 h-8 px-2"
                               title="Registrar Aceite Comercial"
                             >
                               <CheckCircle2 className="h-4 w-4" />
@@ -536,7 +535,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                               variant="ghost"
                               size="sm"
                               onClick={() => onGenerateContract?.(proposal.id)}
-                              className="text-emerald-400 hover:text-emerald-300 hover:bg-emerald-500/10 h-8 px-2"
+                              className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 hover:bg-emerald-50 dark:hover:bg-emerald-500/10 h-8 px-2"
                               title="Gerar Contrato Comercial a partir desta Proposta"
                             >
                               <FileSignature className="h-4 w-4" />
@@ -554,10 +553,10 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
 
         {/* Pagination Footer */}
         {proposals.length > 0 && (
-          <div className="p-4 border-t border-slate-800 bg-slate-900/40 flex items-center justify-between text-xs text-slate-400">
+          <div className="p-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-900/40 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <div>
-              Mostrando página <span className="font-semibold text-slate-200">{page}</span> de{' '}
-              <span className="font-semibold text-slate-200">{totalPages}</span> ({total} propostas)
+              Mostrando página <span className="font-semibold text-slate-800 dark:text-slate-200">{page}</span> de{' '}
+              <span className="font-semibold text-slate-800 dark:text-slate-200">{totalPages}</span> ({total} propostas)
             </div>
 
             <div className="flex items-center gap-2">
@@ -566,7 +565,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                 size="sm"
                 disabled={page <= 1 || loading}
                 onClick={() => setPage(page - 1)}
-                className="h-8 px-2 border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                className="h-8 px-2"
               >
                 <ChevronLeft className="h-4 w-4" />
                 Anterior
@@ -576,7 +575,7 @@ export const ProposalsPage: React.FC<ProposalsPageProps> = ({
                 size="sm"
                 disabled={page >= totalPages || loading}
                 onClick={() => setPage(page + 1)}
-                className="h-8 px-2 border-slate-700 text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                className="h-8 px-2"
               >
                 Próxima
                 <ChevronRight className="h-4 w-4" />

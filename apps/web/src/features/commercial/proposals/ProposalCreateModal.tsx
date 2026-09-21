@@ -239,19 +239,19 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="relative w-full max-w-4xl bg-slate-900 border border-slate-700 rounded-xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
         {/* Modal Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-800 bg-slate-900/90">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-900/90">
           <div className="flex items-center gap-2">
-            <FileText className="w-5 h-5 text-indigo-400" />
-            <h2 className="text-lg font-bold text-white">
+            <FileText className="w-5 h-5 text-orange-500" />
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
               {isNewVersionMode ? 'Criar Nova Versão da Proposta (Imutável)' : 'Nova Proposta Comercial B2B'}
             </h2>
           </div>
           <button
             onClick={onClose}
-            className="p-1 text-slate-400 hover:text-white rounded-lg hover:bg-slate-800 transition"
+            className="p-1.5 text-slate-400 hover:text-slate-600 dark:hover:text-white rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -260,26 +260,26 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
         {/* Modal Body */}
         <form onSubmit={handleSubmit} className="p-6 overflow-y-auto flex-1 space-y-6">
           {error && (
-            <div className="p-3 bg-rose-900/40 border border-rose-800 rounded-lg text-rose-300 text-sm">
+            <div className="p-3 bg-rose-50 dark:bg-rose-900/40 border border-rose-200 dark:border-rose-800 rounded-xl text-rose-700 dark:text-rose-300 text-sm">
               {error}
             </div>
           )}
 
           {/* Section: Basic Data */}
           <div className="space-y-4">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 border-b border-slate-800 pb-1">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800 pb-1">
               1. Identificação da Proposta & Destinatário
             </h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!isNewVersionMode && (
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Produtor Parceiro *</label>
+                  <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Produtor Parceiro *</label>
                   <select
                     value={producerId}
                     onChange={(e) => setProducerId(e.target.value)}
                     required
-                    className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                    className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:outline-none focus:bg-white"
                   >
                     <option value="">Selecione o produtor...</option>
                     {producers.map((p) => (
@@ -300,34 +300,34 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
               )}
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Título da Proposta *</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Título da Proposta *</label>
                 <input
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Ex: Proposta Comercial — Festival de Verão 2027"
                   required
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:outline-none focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Validade da Proposta *</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Validade da Proposta *</label>
                 <input
                   type="date"
                   value={validUntil}
                   onChange={(e) => setValidUntil(e.target.value)}
                   required
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-orange-500 focus:outline-none focus:bg-white"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Modelo Comercial</label>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">Modelo Comercial</label>
                 <select
                   value={commercialModel}
                   onChange={(e) => setCommercialModel(e.target.value as CommercialModelType)}
-                  className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-indigo-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white focus:ring-2 focus:ring-orange-500 focus:outline-none focus:bg-white"
                 >
                   <option value="STANDARD">Padrão DiskIngressos</option>
                   <option value="EXCLUSIVE">Exclusividade Total de Ticketeria</option>
@@ -339,7 +339,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
 
             {isNewVersionMode && (
               <div>
-                <label className="block text-xs font-semibold text-amber-300 mb-1">
+                <label className="block text-xs font-semibold text-amber-600 dark:text-amber-400 mb-1">
                   Justificativa da Nova Versão (Obrigatório) *
                 </label>
                 <input
@@ -348,7 +348,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                   onChange={(e) => setChangeSummary(e.target.value)}
                   placeholder="Ex: Redução da taxa de comissão de 8% para 7% após contraproposta do produtor."
                   required
-                  className="w-full bg-slate-800 border border-amber-600/70 rounded-lg px-3 py-2 text-sm text-white focus:ring-2 focus:ring-amber-500 focus:outline-none"
+                  className="w-full bg-slate-50 dark:bg-slate-950 border border-amber-300 dark:border-amber-600/70 rounded-xl px-3 py-2 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:ring-2 focus:ring-amber-500 focus:outline-none focus:bg-white"
                 />
               </div>
             )}
@@ -356,11 +356,11 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
 
           {/* Section: Catalog Quick Pick */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 2. Catálogo Oficial de Ofertas DiskIngressos (Atalho Rápido)
               </h3>
-              <span className="text-xs text-indigo-400 flex items-center gap-1">
+              <span className="text-xs text-orange-600 dark:text-orange-400 flex items-center gap-1 font-medium">
                 <Sparkles className="w-3.5 h-3.5" /> Clique para adicionar condição
               </span>
             </div>
@@ -371,12 +371,12 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                   key={off.id}
                   type="button"
                   onClick={() => handleAddFromCatalog(off)}
-                  className="p-2 text-left bg-slate-950 hover:bg-indigo-950/40 border border-slate-800 hover:border-indigo-700/60 rounded-lg transition text-xs group"
+                  className="p-2.5 text-left bg-slate-50 dark:bg-slate-950/60 hover:bg-orange-50/50 dark:hover:bg-orange-950/20 border border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-orange-700/60 rounded-xl transition text-xs group shadow-xs"
                 >
-                  <div className="font-semibold text-slate-200 group-hover:text-indigo-300 truncate">
+                  <div className="font-bold text-slate-800 dark:text-slate-200 group-hover:text-orange-600 dark:group-hover:text-orange-300 truncate">
                     {off.name}
                   </div>
-                  <div className="text-[11px] text-slate-500 mt-0.5">
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-0.5">
                     {off.defaultPricingModel === 'PERCENTAGE'
                       ? `${off.defaultPercentage}%`
                       : `R$ ${off.defaultAmount}`}
@@ -388,8 +388,8 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
 
           {/* Section: Structured Commercial Terms */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 3. Condições Comerciais Estruturadas ({terms.length})
               </h3>
               <button
@@ -406,7 +406,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                     }
                   ])
                 }
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-semibold flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" /> Adicionar Condição
               </button>
@@ -416,7 +416,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
               {terms.map((term, index) => (
                 <div
                   key={index}
-                  className="p-3 bg-slate-950 border border-slate-800 rounded-lg space-y-2"
+                  className="p-3.5 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-xl space-y-2 shadow-xs"
                 >
                   <div className="grid grid-cols-1 md:grid-cols-5 gap-2 items-center">
                     <div className="md:col-span-2">
@@ -425,7 +425,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                         value={term.name}
                         onChange={(e) => handleUpdateTerm(index, 'name', e.target.value)}
                         placeholder="Nome da Condição / Taxa"
-                        className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                       />
                     </div>
 
@@ -433,7 +433,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                       <select
                         value={term.calculationType}
                         onChange={(e) => handleUpdateTerm(index, 'calculationType', e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white"
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                       >
                         <option value="PERCENTAGE">Percentual (%)</option>
                         <option value="FIXED_AMOUNT">Valor Fixo (R$)</option>
@@ -451,20 +451,20 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                             value={term.percentage ?? ''}
                             onChange={(e) => handleUpdateTerm(index, 'percentage', parseFloat(e.target.value))}
                             placeholder="Ex: 8.0"
-                            className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white text-right"
+                            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-900 dark:text-white text-right placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                           />
-                          <span className="text-xs text-slate-400">%</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">%</span>
                         </div>
                       ) : (
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-slate-400">R$</span>
+                          <span className="text-xs text-slate-500 dark:text-slate-400 font-bold">R$</span>
                           <input
                             type="number"
                             step="0.01"
                             value={term.amount ?? ''}
                             onChange={(e) => handleUpdateTerm(index, 'amount', parseFloat(e.target.value))}
                             placeholder="0,00"
-                            className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white text-right"
+                            className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-900 dark:text-white text-right placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                           />
                         </div>
                       )}
@@ -474,7 +474,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                       <select
                         value={term.payer}
                         onChange={(e) => handleUpdateTerm(index, 'payer', e.target.value)}
-                        className="w-full bg-slate-800 border border-slate-700 rounded px-2 py-1.5 text-xs text-white"
+                        className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2 py-1.5 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500"
                       >
                         <option value="PRODUCER">Produtor</option>
                         <option value="BUYER">Comprador (Taxa)</option>
@@ -484,7 +484,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                       <button
                         type="button"
                         onClick={() => handleRemoveTerm(index)}
-                        className="p-1.5 text-slate-400 hover:text-rose-400 transition"
+                        className="p-1.5 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                         title="Remover termo"
                       >
                         <Trash2 className="w-4 h-4" />
@@ -497,7 +497,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                     value={term.conditions || ''}
                     onChange={(e) => handleUpdateTerm(index, 'conditions', e.target.value)}
                     placeholder="Regras e condições específicas (ex: Válido até 10.000 ingressos emitidos)"
-                    className="w-full bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-400"
+                    className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-2.5 py-1 text-xs text-slate-600 dark:text-slate-400 placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                   />
                 </div>
               ))}
@@ -506,14 +506,14 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
 
           {/* Section: Event References */}
           <div className="space-y-3">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-1">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-1">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 4. Escopo de Eventos Estimados
               </h3>
               <button
                 type="button"
                 onClick={handleAddEvent}
-                className="text-xs text-indigo-400 hover:text-indigo-300 flex items-center gap-1"
+                className="text-xs text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 font-semibold flex items-center gap-1"
               >
                 <Plus className="w-3.5 h-3.5" /> Adicionar Evento
               </button>
@@ -523,28 +523,28 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
               {events.map((evt, idx) => (
                 <div
                   key={idx}
-                  className="grid grid-cols-1 md:grid-cols-4 gap-2 items-center p-2.5 bg-slate-950 border border-slate-800 rounded-lg"
+                  className="grid grid-cols-1 md:grid-cols-4 gap-2 items-center p-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-xl shadow-xs"
                 >
                   <input
                     type="text"
                     value={evt.estimatedEventName}
                     onChange={(e) => handleUpdateEvent(idx, 'estimatedEventName', e.target.value)}
                     placeholder="Nome Estimado do Evento *"
-                    className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                   />
                   <input
                     type="text"
                     value={evt.estimatedVenue || ''}
                     onChange={(e) => handleUpdateEvent(idx, 'estimatedVenue', e.target.value)}
                     placeholder="Local / Praça (ex: Pedreira)"
-                    className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                   />
                   <input
                     type="number"
                     value={evt.estimatedTickets ?? ''}
                     onChange={(e) => handleUpdateEvent(idx, 'estimatedTickets', parseInt(e.target.value) || undefined)}
                     placeholder="Ingressos Estimados"
-                    className="bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                    className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                   />
                   <div className="flex items-center gap-2">
                     <input
@@ -553,12 +553,12 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
                       value={evt.estimatedGrossRevenue ?? ''}
                       onChange={(e) => handleUpdateEvent(idx, 'estimatedGrossRevenue', parseFloat(e.target.value) || undefined)}
                       placeholder="Receita Bruta (R$)"
-                      className="w-full bg-slate-800 border border-slate-700 rounded px-2.5 py-1.5 text-xs text-white"
+                      className="w-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-1.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:border-orange-500"
                     />
                     <button
                       type="button"
                       onClick={() => handleRemoveEvent(idx)}
-                      className="p-1 text-slate-400 hover:text-rose-400 transition"
+                      className="p-1 text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
@@ -570,11 +570,11 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
         </form>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-800 bg-slate-950">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm transition"
+            className="px-4 py-2 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 rounded-xl text-sm transition font-medium"
           >
             Cancelar
           </button>
@@ -582,7 +582,7 @@ export const ProposalCreateModal: React.FC<ProposalCreateModalProps> = ({
             type="button"
             onClick={handleSubmit}
             disabled={submitting}
-            className="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 text-white font-medium rounded-lg text-sm flex items-center gap-2 shadow-lg shadow-indigo-600/20 transition"
+            className="px-5 py-2 bg-orange-600 hover:bg-orange-500 disabled:opacity-50 text-white font-medium rounded-xl text-sm flex items-center gap-2 shadow-xs transition"
           >
             {submitting ? (
               <>

@@ -64,24 +64,24 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-slate-800 bg-slate-950/60 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-950/60 px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-emerald-500/10 p-2 text-emerald-400 border border-emerald-500/20">
+            <div className="rounded-lg bg-emerald-50 dark:bg-emerald-500/10 p-2 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-500/20">
               <RefreshCw className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Renovação ou Renegociação de Contrato</h2>
-              <p className="text-xs text-slate-400">
-                Contrato <span className="font-mono text-white">{contractCode}</span>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Renovação ou Renegociação de Contrato</h2>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
+                Contrato <span className="font-mono font-semibold text-slate-900 dark:text-white">{contractCode}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -90,14 +90,14 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
         {/* Body */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4 text-sm flex-1">
           {error && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+            <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
               {error}
             </div>
           )}
 
           {/* Type Choice */}
           <div className="space-y-2">
-            <label className="block text-xs font-medium text-slate-400">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-400">
               Modalidade de Renovação *
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -106,15 +106,15 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
                 onClick={() => setRenewalType('SIMPLE')}
                 className={`flex flex-col text-left p-3 rounded-xl border transition-all ${
                   renewalType === 'SIMPLE'
-                    ? 'border-emerald-500/50 bg-emerald-500/10 text-emerald-300'
-                    : 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-800 dark:text-emerald-300 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900/60'
                 }`}
               >
                 <div className="flex items-center gap-1.5 font-semibold text-xs">
-                  <Calendar className="h-4 w-4 text-emerald-400" />
+                  <Calendar className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
                   Prorrogação Simples
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   Estende o prazo de vigência mantendo as mesmas condições comerciais vigentes.
                 </p>
               </button>
@@ -124,15 +124,15 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
                 onClick={() => setRenewalType('RENEGOTIATION')}
                 className={`flex flex-col text-left p-3 rounded-xl border transition-all ${
                   renewalType === 'RENEGOTIATION'
-                    ? 'border-orange-500/50 bg-orange-500/10 text-orange-300'
-                    : 'border-slate-800 bg-slate-950/40 text-slate-400 hover:text-slate-200'
+                    ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-800 dark:text-orange-300 shadow-xs'
+                    : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/40 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-900/60'
                 }`}
               >
                 <div className="flex items-center gap-1.5 font-semibold text-xs">
-                  <TrendingUp className="h-4 w-4 text-orange-400" />
+                  <TrendingUp className="h-4 w-4 text-orange-600 dark:text-orange-400" />
                   Renegociação Comercial
                 </div>
-                <p className="text-[11px] text-slate-400 mt-1">
+                <p className="text-[11px] text-slate-500 dark:text-slate-400 mt-1">
                   Gera uma nova oportunidade no CRM comercial para repactuar condições e novas taxas.
                 </p>
               </button>
@@ -142,34 +142,34 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
           {/* Dates */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 mb-1">
                 Novo Início de Vigência *
               </label>
               <input
                 type="date"
                 value={targetEffectiveFrom}
                 onChange={e => setTargetEffectiveFrom(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-400 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 mb-1">
                 Novo Término de Vigência *
               </label>
               <input
                 type="date"
                 value={targetEffectiveUntil}
                 onChange={e => setTargetEffectiveUntil(e.target.value)}
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors"
                 required
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-400 mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-400 mb-1">
               Notas e Justificativa da Renovação
             </label>
             <textarea
@@ -177,16 +177,16 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Ex: Renovação automática prevista em contrato para mais um ciclo de 12 meses..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:border-emerald-500 focus:outline-none transition-colors"
             />
           </div>
 
           {renewalType === 'RENEGOTIATION' && (
-            <div className="rounded-lg border border-orange-500/30 bg-orange-500/10 p-3 text-xs text-orange-300 flex items-start gap-2">
-              <Sparkles className="h-4 w-4 shrink-0 mt-0.5" />
+            <div className="rounded-xl border border-orange-200 dark:border-orange-500/30 bg-orange-50 dark:bg-orange-500/10 p-3 text-xs text-orange-800 dark:text-orange-300 flex items-start gap-2">
+              <Sparkles className="h-4 w-4 shrink-0 mt-0.5 text-orange-600 dark:text-orange-400" />
               <div>
-                <p className="font-semibold">Oportunidade no CRM Comercial</p>
-                <p className="text-orange-200/80 mt-0.5">
+                <p className="font-semibold text-orange-900 dark:text-orange-300">Oportunidade no CRM Comercial</p>
+                <p className="text-orange-700/90 dark:text-orange-200/80 mt-0.5">
                   Ao confirmar, uma nova oportunidade será registrada no pipeline da 1.3.4 vinculada a este produtor para condução da nova rodada de negociação.
                 </p>
               </div>
@@ -194,14 +194,14 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
           )}
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-4">
+          <div className="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onClose}
               disabled={submitting}
-              className="border-slate-700 text-slate-400 hover:text-white"
+              className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               Cancelar
             </Button>
@@ -209,7 +209,7 @@ export const ContractRenewalModal: React.FC<ContractRenewalModalProps> = ({
               type="submit"
               size="sm"
               disabled={submitting}
-              className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/20"
+              className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold shadow-xs"
             >
               {submitting ? 'Processando...' : renewalType === 'RENEGOTIATION' ? 'Iniciar Renegociação' : 'Efetivar Prorrogação'}
             </Button>

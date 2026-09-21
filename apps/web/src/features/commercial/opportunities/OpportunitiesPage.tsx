@@ -172,29 +172,29 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <TrendingUp className="h-6 w-6 text-orange-400" />
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <TrendingUp className="h-6 w-6 text-orange-500" />
               CENTRAL DE OPORTUNIDADES & PIPELINE
             </h1>
             <Badge variant="orange" size="sm">Funil B2B</Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Gestão visual do funil comercial, transição de estágios com concorrência otimista e motivos auditáveis
           </p>
         </div>
 
         <div className="flex items-center gap-2">
           {/* View Mode Toggle */}
-          <div className="flex items-center bg-slate-900 border border-slate-800 rounded-lg p-0.5">
+          <div className="flex items-center bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-0.5">
             <button
               onClick={() => setViewMode('kanban')}
-              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+              className={`p-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 viewMode === 'kanban'
-                  ? 'bg-orange-500 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Visualização em Quadro Kanban"
             >
@@ -203,10 +203,10 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
             </button>
             <button
               onClick={() => setViewMode('table')}
-              className={`p-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 transition-colors ${
+              className={`p-1.5 rounded-md text-xs font-semibold flex items-center gap-1.5 transition-colors ${
                 viewMode === 'table'
-                  ? 'bg-orange-500 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white'
+                  ? 'bg-white dark:bg-slate-800 text-orange-600 dark:text-orange-400 shadow-2xs'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
               }`}
               title="Visualização em Tabela / Lista"
             >
@@ -241,54 +241,54 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
           title="Total Abertas"
           value={metrics?.totalOpen || 0}
           subtitle="Negociações ativas"
-          icon={<TrendingUp className="h-4 w-4 text-orange-400" />}
+          icon={<TrendingUp className="h-4 w-4 text-orange-500" />}
         />
         <StatCard
           title="Em Negociação"
           value={metrics?.inNegotiation || 0}
           subtitle="Propostas e contratos"
-          icon={<Clock className="h-4 w-4 text-cyan-400" />}
+          icon={<Clock className="h-4 w-4 text-cyan-500" />}
         />
         <StatCard
           title="Sem Próxima Ação"
           value={metrics?.withoutNextAction || 0}
           subtitle="Sem agendamento"
           badgeVariant={metrics && metrics.withoutNextAction > 0 ? 'amber' : 'slate'}
-          icon={<AlertCircle className="h-4 w-4 text-amber-400" />}
+          icon={<AlertCircle className="h-4 w-4 text-amber-500" />}
         />
         <StatCard
           title="Ações Vencidas"
           value={metrics?.overdueActions || 0}
           subtitle="Atrasadas no prazo"
           badgeVariant={metrics && metrics.overdueActions > 0 ? 'rose' : 'emerald'}
-          icon={<XCircle className="h-4 w-4 text-rose-400" />}
+          icon={<XCircle className="h-4 w-4 text-rose-500" />}
         />
         <StatCard
           title="Ganhas no Período"
           value={metrics?.wonInPeriod || 0}
           subtitle="Negociações fechadas"
-          icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />}
+          icon={<CheckCircle2 className="h-4 w-4 text-emerald-500" />}
           badgeVariant="emerald"
         />
         <StatCard
           title="Ciclo Médio"
           value={metrics?.averageCycleDurationDays ? `${metrics.averageCycleDurationDays}d` : '—'}
           subtitle="Tempo médio de ciclo"
-          icon={<Calendar className="h-4 w-4 text-slate-400" />}
+          icon={<Calendar className="h-4 w-4 text-slate-500" />}
         />
       </div>
 
       {/* Filters Bar */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 shadow-sm backdrop-blur-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 shadow-xs">
         <form onSubmit={handleSearchSubmit} className="flex flex-col lg:flex-row gap-3">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
             <input
               type="text"
               placeholder="Buscar por título, código (OPC-...) ou produtor..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-9 pr-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg pl-9 pr-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
@@ -297,7 +297,7 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
               value={selectedPipelineId}
               onChange={(e) => setSelectedPipelineId(e.target.value)}
               aria-label="Selecionar Funil Comercial"
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               {pipelines.map((pip) => (
                 <option key={pip.id} value={pip.id}>
@@ -310,7 +310,7 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
               value={stageFilter}
               onChange={(e) => setStageFilter(e.target.value)}
               aria-label="Filtrar por Estágio do Pipeline"
-              className="bg-slate-950 border border-slate-800 rounded-lg px-2.5 py-2 text-xs text-slate-300 focus:outline-none focus:border-orange-500"
+              className="bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-2.5 py-2 text-xs text-slate-700 dark:text-slate-200 focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="">Todos os Estágios</option>
               {stages.map((st) => (
@@ -328,7 +328,7 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
       </div>
 
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center gap-2">
+        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-600 dark:text-rose-300 flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{error}</span>
         </div>
@@ -345,10 +345,10 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
         />
       ) : (
         /* Table View */
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden backdrop-blur-sm">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3">Código</th>
                   <th className="px-4 py-3">Título & Oportunidade</th>
@@ -361,10 +361,10 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
                   <th className="px-4 py-3 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {opportunities.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="text-center py-12 text-slate-500">
+                    <td colSpan={9} className="text-center py-12 text-slate-400">
                       Nenhuma oportunidade encontrada no pipeline selecionado.
                     </td>
                   </tr>
@@ -376,16 +376,16 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
                     return (
                       <tr
                         key={opp.id}
-                        className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                        className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
                         onClick={() => onSelectOpportunity(opp.id)}
                       >
-                        <td className="px-4 py-3 font-mono font-bold text-orange-400">
+                        <td className="px-4 py-3 font-mono font-bold text-orange-600 dark:text-orange-400">
                           {opp.publicCode}
                         </td>
-                        <td className="px-4 py-3 font-semibold text-white group-hover:text-orange-400 transition-colors">
+                        <td className="px-4 py-3 font-bold text-slate-900 dark:text-white group-hover:text-orange-600 dark:group-hover:text-orange-400 transition-colors">
                           {opp.title}
                         </td>
-                        <td className="px-4 py-3 text-slate-300">
+                        <td className="px-4 py-3 text-slate-700 dark:text-slate-300">
                           {opp.producerName || opp.leadCompanyName || 'Prospecção'}
                         </td>
                         <td className="px-4 py-3">
@@ -407,23 +407,23 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
                             {opp.status}
                           </Badge>
                         </td>
-                        <td className="px-4 py-3 text-right font-mono font-bold text-white">
+                        <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                           {opp.estimatedValue ? formatCurrency(opp.estimatedValue) : '—'}
                         </td>
-                        <td className="px-4 py-3 text-slate-400">
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">
                           {opp.ownerName || 'Não atribuído'}
                         </td>
                         <td className="px-4 py-3">
                           {opp.nextActionAt ? (
                             <span
                               className={`font-mono text-xs ${
-                                isActionOverdue ? 'text-rose-400 font-semibold' : 'text-slate-300'
+                                isActionOverdue ? 'text-rose-600 dark:text-rose-400 font-bold' : 'text-slate-700 dark:text-slate-300'
                               }`}
                             >
                               {formatDate(opp.nextActionAt)}
                             </span>
                           ) : (
-                            <span className="text-slate-500">—</span>
+                            <span className="text-slate-400">—</span>
                           )}
                         </td>
                         <td className="px-4 py-3 text-right">
@@ -455,23 +455,23 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
         onClose={() => setCreateModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-orange-400" />
-            <span>Criar Nova Oportunidade no Funil</span>
+            <Plus className="h-5 w-5 text-orange-500" />
+            <span className="text-slate-900 dark:text-white">Criar Nova Oportunidade no Funil</span>
           </div>
         }
         size="lg"
       >
         <form onSubmit={handleCreateOpportunity} className="space-y-4">
           {createError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
+            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-600 dark:text-rose-300 flex items-center gap-2">
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{createError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Título da Negociação <span className="text-orange-400">*</span>
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
+              Título da Negociação <span className="text-orange-500">*</span>
             </label>
             <input
               type="text"
@@ -479,13 +479,13 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
               value={createForm.title}
               onChange={(e) => setCreateForm({ ...createForm, title: e.target.value })}
               placeholder="Ex: Festival de Rock 2026 - Exclusividade de Bilheteria"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 ID do Produtor (Opcional)
               </label>
               <input
@@ -493,18 +493,18 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
                 value={createForm.producerId}
                 onChange={(e) => setCreateForm({ ...createForm, producerId: e.target.value })}
                 placeholder="Ex: prd_100 ou deixe em branco"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Tipo de Negócio
               </label>
               <select
                 value={createForm.businessType}
                 onChange={(e) => setCreateForm({ ...createForm, businessType: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="NOVO_EVENTO">Novo Evento</option>
                 <option value="RENOVACAO">Renovação Contratual</option>
@@ -515,7 +515,7 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Valor Estimado de Venda (R$)
               </label>
               <input
@@ -523,25 +523,25 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
                 value={createForm.estimatedValue}
                 onChange={(e) => setCreateForm({ ...createForm, estimatedValue: e.target.value })}
                 placeholder="Ex: 500.000,00"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                 Data Prevista de Decisão
               </label>
               <input
                 type="date"
                 value={createForm.expectedDecisionAt}
                 onChange={(e) => setCreateForm({ ...createForm, expectedDecisionAt: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Contexto e Escopo
             </label>
             <textarea
@@ -549,11 +549,11 @@ export const OpportunitiesPage: React.FC<OpportunitiesPageProps> = ({
               value={createForm.description}
               onChange={(e) => setCreateForm({ ...createForm, description: e.target.value })}
               placeholder="Descreva particularidades do evento, praça pretendida, estimativa de público..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 resize-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"

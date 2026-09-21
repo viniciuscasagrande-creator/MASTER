@@ -247,44 +247,44 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
       </div>
 
       {/* Sub-Navigation & Actions Bar */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-800 pb-3">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-slate-200 dark:border-slate-800 pb-3">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveSubTab('produtos')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               activeSubTab === 'produtos'
-                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
             }`}
           >
             <span className="flex items-center gap-2">
-              <Package className="w-4 h-4" />
+              <Package className="w-3.5 h-3.5" />
               Produtos & Limites ({products.length})
             </span>
           </button>
           <button
             onClick={() => setActiveSubTab('diagnostico')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               activeSubTab === 'diagnostico'
-                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
             }`}
           >
             <span className="flex items-center gap-2">
-              <ShieldAlert className="w-4 h-4" />
+              <ShieldAlert className="w-3.5 h-3.5" />
               Diagnóstico & Overrides ({overrides.length})
             </span>
           </button>
           <button
             onClick={() => setActiveSubTab('auditoria')}
-            className={`px-4 py-2 text-sm font-medium rounded-lg transition-colors ${
+            className={`px-3.5 py-1.5 text-xs font-semibold rounded-lg transition-colors ${
               activeSubTab === 'auditoria'
-                ? 'bg-orange-500 text-white shadow-lg shadow-orange-500/20'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
             }`}
           >
             <span className="flex items-center gap-2">
-              <History className="w-4 h-4" />
+              <History className="w-3.5 h-3.5" />
               Telemetria ({auditLogs.length})
             </span>
           </button>
@@ -295,17 +295,17 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
             variant="outline"
             size="sm"
             onClick={() => setIsTestModalOpen(true)}
-            className="flex items-center gap-2 text-slate-300"
+            className="flex items-center gap-2"
           >
             <Search className="w-4 h-4" />
-            Testar Recurso
+            Simular Acesso
           </Button>
           <Button
-            variant="outline"
+            variant="secondary"
             size="sm"
             onClick={handleReconcile}
             disabled={reconciling}
-            className="flex items-center gap-2 text-slate-300"
+            className="flex items-center gap-2"
           >
             <RefreshCw className={`w-4 h-4 ${reconciling ? 'animate-spin' : ''}`} />
             Reconciliar
@@ -326,10 +326,10 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
       {activeSubTab === 'produtos' && (
         <div className="space-y-6">
           {products.length === 0 ? (
-            <div className="text-center py-12 bg-slate-900/50 border border-slate-800 rounded-2xl p-8">
-              <Package className="w-12 h-12 text-slate-600 mx-auto mb-3" />
-              <h3 className="text-base font-semibold text-white">Nenhum produto comercial contratado</h3>
-              <p className="text-sm text-slate-400 max-w-md mx-auto mt-1 mb-6">
+            <div className="text-center py-12 bg-white dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-2xl p-8 shadow-xs">
+              <Package className="w-12 h-12 text-slate-400 dark:text-slate-600 mx-auto mb-3" />
+              <h3 className="text-base font-semibold text-slate-900 dark:text-white">Nenhum produto comercial contratado</h3>
+              <p className="text-sm text-slate-500 dark:text-slate-400 max-w-md mx-auto mt-1 mb-6">
                 Este produtor ainda não possui contratos comerciais ativos provisionados ou migrações legadas registradas.
               </p>
               <div className="flex justify-center gap-3">
@@ -343,12 +343,12 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
               {products.map((prod, idx) => (
                 <div
                   key={`${prod.offeringId}-${idx}`}
-                  className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden p-6 hover:border-slate-700 transition-colors"
+                  className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl overflow-hidden p-6 hover:border-orange-300 dark:hover:border-slate-700 transition-colors shadow-xs"
                 >
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-800">
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-slate-100 dark:border-slate-800">
                     <div>
                       <div className="flex items-center gap-3">
-                        <h3 className="text-lg font-bold text-white">{prod.offeringName}</h3>
+                        <h3 className="text-lg font-bold text-slate-900 dark:text-white">{prod.offeringName}</h3>
                         <Badge variant={getStatusBadgeVariant(prod.status)}>
                           {prod.status}
                         </Badge>
@@ -356,19 +356,19 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                           {prod.offeringType}
                         </Badge>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-slate-400 mt-2">
+                      <div className="flex items-center gap-4 text-xs text-slate-500 dark:text-slate-400 mt-2">
                         {prod.contractPublicCode && (
                           <span className="flex items-center gap-1 font-mono">
                             Contrato: {prod.contractPublicCode}
                           </span>
                         )}
                         {prod.publicCode && (
-                          <span className="flex items-center gap-1 font-mono text-slate-500">
+                          <span className="flex items-center gap-1 font-mono text-slate-400 dark:text-slate-500">
                             Oferta: {prod.publicCode}
                           </span>
                         )}
                         <span className="flex items-center gap-1">
-                          <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                          <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                           Vigência: {prod.effectiveFrom ? formatDate(prod.effectiveFrom) : 'Imediato'} até{' '}
                           {prod.effectiveUntil ? formatDate(prod.effectiveUntil) : 'Indeterminado'}
                         </span>
@@ -378,8 +378,8 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
 
                   {/* Features & Limites Included */}
                   <div className="mt-6">
-                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
-                      <Layers className="w-4 h-4 text-orange-400" />
+                    <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3 flex items-center gap-2">
+                      <Layers className="w-4 h-4 text-orange-500" />
                       Capacidades e Limites Operacionais Incluídos
                     </h4>
 
@@ -387,31 +387,31 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                       {prod.features.map((feat) => (
                         <div
                           key={feat.code}
-                          className="bg-slate-950/60 border border-slate-800/80 rounded-xl p-4 flex flex-col justify-between"
+                          className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800/80 rounded-xl p-4 flex flex-col justify-between"
                         >
                           <div>
                             <div className="flex items-start justify-between gap-2">
                               <div>
-                                <h5 className="text-sm font-medium text-slate-200">{feat.name}</h5>
-                                <span className="text-[11px] font-mono text-slate-500">{feat.code}</span>
+                                <h5 className="text-sm font-medium text-slate-900 dark:text-slate-200">{feat.name}</h5>
+                                <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">{feat.code}</span>
                               </div>
                               {getCategoryBadge(feat.category)}
                             </div>
                           </div>
 
                           {feat.limits && feat.limits.length > 0 ? (
-                            <div className="mt-3 pt-3 border-t border-slate-800/60 space-y-2">
+                            <div className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-800/60 space-y-2">
                               {feat.limits.map((lim) => {
                                 const percentage = lim.value > 0 ? Math.min(100, Math.round((lim.currentUsage / lim.value) * 100)) : 0;
                                 return (
                                   <div key={lim.key} className="space-y-1">
                                     <div className="flex justify-between text-xs">
-                                      <span className="text-slate-400">Consumo em Tempo Real:</span>
-                                      <span className={`font-semibold ${lim.isExceeded ? 'text-rose-400' : 'text-slate-200'}`}>
+                                      <span className="text-slate-500 dark:text-slate-400">Consumo em Tempo Real:</span>
+                                      <span className={`font-semibold ${lim.isExceeded ? 'text-rose-500 dark:text-rose-400' : 'text-slate-900 dark:text-slate-200'}`}>
                                         {lim.currentUsage} / {lim.value} {lim.unit}
                                       </span>
                                     </div>
-                                    <div className="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                                    <div className="w-full bg-slate-200 dark:bg-slate-800 rounded-full h-1.5 overflow-hidden">
                                       <div
                                         className={`h-full transition-all duration-300 ${
                                           lim.isExceeded ? 'bg-rose-500' : percentage > 80 ? 'bg-amber-500' : 'bg-emerald-500'
@@ -420,7 +420,7 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                                       />
                                     </div>
                                     {lim.isExceeded && (
-                                      <p className="text-[11px] text-rose-400 font-medium">
+                                      <p className="text-[11px] text-rose-500 dark:text-rose-400 font-medium">
                                         Limite atingido. Operações extras exigem aditivo ou override.
                                       </p>
                                     )}
@@ -429,7 +429,7 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                               })}
                             </div>
                           ) : (
-                            <div className="mt-3 pt-2 border-t border-slate-800/60 flex items-center justify-between text-xs text-emerald-400">
+                            <div className="mt-3 pt-2 border-t border-slate-200 dark:border-slate-800/60 flex items-center justify-between text-xs text-emerald-600 dark:text-emerald-400">
                               <span>Acesso ilimitado contratado</span>
                               <CheckCircle2 className="w-3.5 h-3.5" />
                             </div>
@@ -448,11 +448,11 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
       {/* TAB 2: DIAGNÓSTICO & OVERRIDES */}
       {activeSubTab === 'diagnostico' && (
         <div className="space-y-6">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="text-base font-semibold text-white">Overrides Administrativos Registrados</h3>
-                <p className="text-xs text-slate-400">
+                <h3 className="text-base font-semibold text-slate-900 dark:text-white">Overrides Administrativos Registrados</h3>
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Concessões excepcionais, bloqueios preventivos ou alterações temporárias de cotas.
                 </p>
               </div>
@@ -467,9 +467,9 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                 Nenhum override administrativo ativo ou histórico para este produtor.
               </p>
             ) : (
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-sm text-slate-300">
-                  <thead className="bg-slate-950 text-xs uppercase text-slate-400 border-b border-slate-800">
+              <div className="overflow-x-auto rounded-xl border border-slate-200 dark:border-slate-800">
+                <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+                  <thead className="bg-slate-50/80 dark:bg-slate-950 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
                     <tr>
                       <th className="py-3 px-4">Ação</th>
                       <th className="py-3 px-4">Recurso</th>
@@ -480,17 +480,17 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                       <th className="py-3 px-4 text-right">Ação</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-800/60">
+                  <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                     {overrides.map((ovr) => (
-                      <tr key={ovr.id} className="hover:bg-slate-800/30">
+                      <tr key={ovr.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
                         <td className="py-3 px-4">
                           <Badge variant={ovr.action === 'GRANT' ? 'emerald' : 'rose'} size="sm">
                             {ovr.action}
                           </Badge>
                         </td>
                         <td className="py-3 px-4">
-                          <div className="font-medium text-white">{ovr.featureName || ovr.featureCode}</div>
-                          <span className="text-[11px] font-mono text-slate-500">{ovr.featureCode}</span>
+                          <div className="font-medium text-slate-900 dark:text-white">{ovr.featureName || ovr.featureCode}</div>
+                          <span className="text-[11px] font-mono text-slate-400 dark:text-slate-500">{ovr.featureCode}</span>
                         </td>
                         <td className="py-3 px-4 max-w-xs truncate" title={ovr.reason}>
                           {ovr.reason}
@@ -510,7 +510,7 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                               variant="outline"
                               size="sm"
                               onClick={() => handleRevokeOverride(ovr.id)}
-                              className="text-rose-400 hover:text-rose-300 hover:border-rose-500/50"
+                              className="text-rose-500 hover:text-rose-600 hover:border-rose-300"
                             >
                               Revogar
                             </Button>
@@ -528,9 +528,9 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
 
       {/* TAB 3: AUDITORIA & TELEMETRIA */}
       {activeSubTab === 'auditoria' && (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl p-6">
-          <h3 className="text-base font-semibold text-white mb-2">Trilha de Auditoria & Telemetria de Direitos</h3>
-          <p className="text-xs text-slate-400 mb-6">
+        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 shadow-xs">
+          <h3 className="text-base font-semibold text-slate-900 dark:text-white mb-2">Trilha de Auditoria & Telemetria de Direitos</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 mb-6">
             Histórico imutável de provisionamento, reconciliação e verificações de acesso interceptadas pelo motor transversal.
           </p>
 
@@ -543,7 +543,7 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
               {auditLogs.map((log) => (
                 <div
                   key={log.id}
-                  className="bg-slate-950/70 border border-slate-800 rounded-xl p-3 flex items-start justify-between gap-4 text-xs"
+                  className="bg-slate-50 dark:bg-slate-950/70 border border-slate-200 dark:border-slate-800 rounded-xl p-3 flex items-start justify-between gap-4 text-xs"
                 >
                   <div className="space-y-1">
                     <div className="flex items-center gap-2">
@@ -559,16 +559,16 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
                       >
                         {log.eventType}
                       </Badge>
-                      <span className="font-semibold text-white">{log.source}</span>
+                      <span className="font-semibold text-slate-900 dark:text-white">{log.source}</span>
                       {log.featureCode && (
-                        <span className="font-mono text-slate-400">{log.featureCode}</span>
+                        <span className="font-mono text-slate-500 dark:text-slate-400">{log.featureCode}</span>
                       )}
                     </div>
                     {log.detailsJson && (
-                      <p className="text-slate-400 font-mono text-[11px]">{log.detailsJson}</p>
+                      <p className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">{log.detailsJson}</p>
                     )}
                   </div>
-                  <span className="text-slate-500 whitespace-nowrap">
+                  <span className="text-slate-400 dark:text-slate-500 whitespace-nowrap">
                     {formatDateTime(log.createdAt)}
                   </span>
                 </div>
@@ -586,13 +586,13 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
       >
         <form onSubmit={handleCreateOverride} className="space-y-4">
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Recurso Técnico / Feature
             </label>
             <select
               value={overrideForm.featureCode}
               onChange={(e) => setOverrideForm({ ...overrideForm, featureCode: e.target.value })}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="feature.access.offline_validator">Validação Offline de Ingressos (feature.access.offline_validator)</option>
               <option value="feature.access.facial_biometrics">Biometria Facial (feature.access.facial_biometrics)</option>
@@ -603,15 +603,15 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Ação
             </label>
             <div className="grid grid-cols-2 gap-3">
               <label
                 className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer ${
                   overrideForm.action === 'GRANT'
-                    ? 'border-emerald-500 bg-emerald-500/10 text-emerald-300'
-                    : 'border-slate-700 bg-slate-800 text-slate-400'
+                    ? 'border-emerald-500 bg-emerald-50 dark:bg-emerald-500/10 text-emerald-700 dark:text-emerald-300'
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <input
@@ -629,8 +629,8 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
               <label
                 className={`flex items-center gap-2 p-2.5 rounded-lg border cursor-pointer ${
                   overrideForm.action === 'REVOKE'
-                    ? 'border-rose-500 bg-rose-500/10 text-rose-300'
-                    : 'border-slate-700 bg-slate-800 text-slate-400'
+                    ? 'border-rose-500 bg-rose-50 dark:bg-rose-500/10 text-rose-700 dark:text-rose-300'
+                    : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-400'
                 }`}
               >
                 <input
@@ -648,7 +648,7 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Data de Vigência Final (Expiração Obrigatória)
             </label>
             <input
@@ -656,12 +656,12 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
               required
               value={overrideForm.effectiveUntil}
               onChange={(e) => setOverrideForm({ ...overrideForm, effectiveUntil: e.target.value })}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Justificativa Comercial / Operacional (Mínimo 10 caracteres)
             </label>
             <textarea
@@ -670,11 +670,11 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
               placeholder="Descreva a razão da concessão ou corte emergencial..."
               value={overrideForm.reason}
               onChange={(e) => setOverrideForm({ ...overrideForm, reason: e.target.value })}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
-          <div className="flex justify-end gap-3 pt-3 border-t border-slate-800">
+          <div className="flex justify-end gap-3 pt-3 border-t border-slate-200 dark:border-slate-800">
             <Button type="button" variant="outline" onClick={() => setIsOverrideModalOpen(false)}>
               Cancelar
             </Button>
@@ -695,18 +695,18 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
         title="Simulador de Avaliação de Entitlement"
       >
         <div className="space-y-4">
-          <p className="text-xs text-slate-400">
+          <p className="text-xs text-slate-500 dark:text-slate-400">
             Executa a avaliação canônica em tempo real combinando Contrato, Limites, Vigência e Overrides para verificar se o produtor teria acesso liberado.
           </p>
 
           <div>
-            <label className="block text-xs font-semibold text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Selecione o Recurso Técnico
             </label>
             <select
               value={testFeatureCode}
               onChange={(e) => setTestFeatureCode(e.target.value)}
-              className="w-full bg-slate-800 border border-slate-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="feature.events.max_active_events">feature.events.max_active_events</option>
               <option value="feature.access.offline_validator">feature.access.offline_validator</option>
@@ -729,19 +729,19 @@ export const ProducerProductsTab: React.FC<ProducerProductsTabProps> = ({ produc
             <div
               className={`p-4 rounded-xl border ${
                 testResult.allowed
-                  ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-                  : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+                  ? 'bg-emerald-50 border-emerald-200 text-emerald-800 dark:bg-emerald-500/10 dark:border-emerald-500/30 dark:text-emerald-300'
+                  : 'bg-rose-50 border-rose-200 text-rose-800 dark:bg-rose-500/10 dark:border-rose-500/30 dark:text-rose-300'
               }`}
             >
               <div className="flex items-center gap-2 font-bold mb-1">
                 {testResult.allowed ? (
                   <>
-                    <CheckCircle2 className="w-5 h-5 text-emerald-400" />
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
                     <span>ACESSO PERMITIDO</span>
                   </>
                 ) : (
                   <>
-                    <XCircle className="w-5 h-5 text-rose-400" />
+                    <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />
                     <span>ACESSO BLOQUEADO</span>
                   </>
                 )}

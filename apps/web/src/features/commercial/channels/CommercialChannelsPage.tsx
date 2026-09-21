@@ -107,17 +107,17 @@ export const CommercialChannelsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               CANAIS DE VENDA OMNICHANNEL
             </h1>
             <Badge variant="orange" size="sm">
               Gestão de Canais
             </Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Distribuição de ingressos, controle de cotas e faturamento por canal de comercialização
           </p>
         </div>
@@ -125,34 +125,34 @@ export const CommercialChannelsPage: React.FC = () => {
 
       {/* KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Volume Total Comercializado
           </span>
-          <div className="text-xl font-bold font-mono text-white">
+          <div className="text-xl font-bold font-mono text-slate-900 dark:text-white">
             {formatCurrency(totalVolume)}
           </div>
-          <p className="text-[11px] text-slate-400">Somatório de todos os canais ativos</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Somatório de todos os canais ativos</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Ingressos Distribuídos
           </span>
-          <div className="text-xl font-bold font-mono text-orange-400">
+          <div className="text-xl font-bold font-mono text-orange-600 dark:text-orange-400">
             {totalTickets.toLocaleString('pt-BR')}
           </div>
-          <p className="text-[11px] text-slate-400">Total de entradas confirmadas</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Total de entradas confirmadas</p>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900/60 border border-slate-800 space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400">
+        <div className="p-4 rounded-xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 shadow-xs space-y-1">
+          <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Canais Ativos Homologados
           </span>
-          <div className="text-xl font-bold font-mono text-emerald-400">
+          <div className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
             {channels.filter(c => c.status === 'active').length} de {channels.length}
           </div>
-          <p className="text-[11px] text-slate-400">Canais operando sem restrições</p>
+          <p className="text-[11px] text-slate-500 dark:text-slate-400">Canais operando sem restrições</p>
         </div>
       </div>
 
@@ -161,17 +161,17 @@ export const CommercialChannelsPage: React.FC = () => {
         {channels.map((chan) => (
           <div
             key={chan.id}
-            className="p-5 rounded-2xl bg-slate-900/60 border border-slate-800 hover:border-slate-700 transition-all flex flex-col justify-between space-y-4"
+            className="p-5 rounded-2xl bg-white dark:bg-slate-900/60 border border-slate-200 dark:border-slate-800 hover:border-orange-300 dark:hover:border-slate-700 shadow-xs transition-all flex flex-col justify-between space-y-4"
           >
             <div className="space-y-3">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-center shrink-0">
+                  <div className="w-10 h-10 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center justify-center shrink-0">
                     {getChannelIcon(chan.code)}
                   </div>
                   <div>
-                    <h3 className="text-sm font-bold text-white">{chan.name}</h3>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider">{chan.code}</span>
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">{chan.name}</h3>
+                    <span className="text-[10px] font-mono text-slate-400 uppercase tracking-wider">{chan.code}</span>
                   </div>
                 </div>
                 <Badge variant={chan.status === 'active' ? 'emerald' : 'amber'} size="sm">
@@ -179,37 +179,37 @@ export const CommercialChannelsPage: React.FC = () => {
                 </Badge>
               </div>
 
-              <p className="text-xs text-slate-400 line-clamp-2">
+              <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
                 {chan.description}
               </p>
             </div>
 
-            <div className="pt-3 border-t border-slate-800/80 grid grid-cols-3 gap-2 text-xs">
+            <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 grid grid-cols-3 gap-2 text-xs">
               <div>
-                <span className="text-slate-500 text-[10px] block">Volume</span>
-                <strong className="text-white font-mono">{formatCurrency(chan.totalSales)}</strong>
+                <span className="text-slate-400 text-[10px] block">Volume</span>
+                <strong className="text-slate-900 dark:text-white font-mono">{formatCurrency(chan.totalSales)}</strong>
               </div>
               <div>
-                <span className="text-slate-500 text-[10px] block">Ingressos</span>
-                <strong className="text-white font-mono">{chan.ticketsSold.toLocaleString('pt-BR')}</strong>
+                <span className="text-slate-400 text-[10px] block">Ingressos</span>
+                <strong className="text-slate-900 dark:text-white font-mono">{chan.ticketsSold.toLocaleString('pt-BR')}</strong>
               </div>
               <div>
-                <span className="text-slate-500 text-[10px] block">Participação</span>
-                <strong className="text-orange-400 font-mono">{chan.sharePercentage}%</strong>
+                <span className="text-slate-400 text-[10px] block">Participação</span>
+                <strong className="text-orange-600 dark:text-orange-400 font-mono">{chan.sharePercentage}%</strong>
               </div>
             </div>
 
-            <div className="flex items-center justify-between text-xs text-slate-400 pt-2 border-t border-slate-800/40">
+            <div className="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800/40">
               <div className="flex items-center gap-1.5 flex-wrap">
-                <span className="text-[10px] text-slate-500">Pagamentos:</span>
+                <span className="text-[10px] text-slate-400">Pagamentos:</span>
                 {chan.allowedPayments.map((p) => (
-                  <span key={p} className="px-1.5 py-0.5 rounded bg-slate-950 text-[10px] text-slate-300 font-mono">
+                  <span key={p} className="px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 text-[10px] text-slate-700 dark:text-slate-300 font-mono">
                     {p}
                   </span>
                 ))}
               </div>
-              <span className="text-[11px] font-mono text-slate-400">
-                Taxa: <strong>{chan.commissionRatePercent}%</strong>
+              <span className="text-[11px] font-mono text-slate-600 dark:text-slate-400">
+                Taxa: <strong className="text-slate-900 dark:text-white">{chan.commissionRatePercent}%</strong>
               </span>
             </div>
           </div>

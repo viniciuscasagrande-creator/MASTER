@@ -308,7 +308,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       <div className="flex items-center justify-between">
         <button
           onClick={onBack}
-          className="flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+          className="flex items-center gap-1.5 text-xs font-medium text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-white transition-colors"
         >
           <ChevronLeft className="h-4 w-4" />
           Voltar para Central de Contratos
@@ -318,7 +318,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
           variant="outline"
           size="sm"
           onClick={loadContract}
-          className="border-slate-800 text-slate-400 hover:text-white h-8"
+          className="border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white h-8"
         >
           <RefreshCw className={`h-3.5 w-3.5 mr-1 ${loading ? 'animate-spin' : ''}`} />
           Recarregar
@@ -327,14 +327,14 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
       {/* Notifications */}
       {actionSuccess && (
-        <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-300 flex items-center justify-between animate-fadeIn">
+        <div className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-4 text-xs text-emerald-800 dark:text-emerald-300 flex items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+            <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             <span>{actionSuccess}</span>
           </div>
           <button
             onClick={() => setActionSuccess(null)}
-            className="text-emerald-400 hover:text-white"
+            className="text-emerald-600 dark:text-emerald-400 hover:text-emerald-800 dark:hover:text-white"
           >
             &times;
           </button>
@@ -342,9 +342,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       )}
 
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center justify-between">
+        <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-4 text-xs text-rose-700 dark:text-rose-300 flex items-center justify-between">
           <span>{error}</span>
-          <button onClick={() => setError(null)} className="text-rose-400 hover:text-white">
+          <button onClick={() => setError(null)} className="text-rose-600 dark:text-rose-400 hover:text-rose-800 dark:hover:text-white">
             &times;
           </button>
         </div>
@@ -352,68 +352,68 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
       {/* Contract Signed but Not Active Notice */}
       {contract.status === 'SIGNED' && (
-        <div className="rounded-xl border border-teal-500/30 bg-teal-500/10 p-4 text-xs text-teal-200 flex items-start gap-3">
-          <Clock className="h-5 w-5 text-teal-400 shrink-0 mt-0.5" />
+        <div className="rounded-xl border border-teal-200 dark:border-teal-500/30 bg-teal-50 dark:bg-teal-500/10 p-4 text-xs text-teal-800 dark:text-teal-200 flex items-start gap-3">
+          <Clock className="h-5 w-5 text-teal-600 dark:text-teal-400 shrink-0 mt-0.5" />
           <div>
-            <p className="font-semibold text-teal-300">
+            <p className="font-bold text-teal-900 dark:text-teal-300">
               Contrato Totalmente Assinado! Aguardando Início da Vigência.
             </p>
-            <p className="mt-0.5 text-teal-200/80">
-              As assinaturas eletrônicas foram concluídas com sucesso. Conforme o princípio de separação entre assinatura e vigência, o contrato entrará automaticamente em status <span className="font-bold text-teal-300">VIGENTE (ACTIVE)</span> na data <span className="font-semibold">{contract.effectiveFrom ? formatDate(contract.effectiveFrom) : 'prevista'}</span>.
+            <p className="mt-0.5 text-teal-700 dark:text-teal-200/80">
+              As assinaturas eletrônicas foram concluídas com sucesso. Conforme o princípio de separação entre assinatura e vigência, o contrato entrará automaticamente em status <span className="font-bold text-teal-900 dark:text-teal-300">VIGENTE (ACTIVE)</span> na data <span className="font-semibold">{contract.effectiveFrom ? formatDate(contract.effectiveFrom) : 'prevista'}</span>.
             </p>
           </div>
         </div>
       )}
 
       {/* Header Banner */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl relative overflow-hidden backdrop-blur-sm">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-xs relative overflow-hidden">
         <div className="pointer-events-none absolute -right-12 -top-12 h-40 w-40 rounded-full bg-orange-500/10 blur-3xl" />
 
         <div className="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-6 relative z-10">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-3">
-              <span className="font-mono text-xl font-bold text-white tracking-wide">
+              <span className="font-mono text-xl font-bold text-slate-900 dark:text-white tracking-wide">
                 {contract.publicCode}
               </span>
-              <span className="rounded bg-slate-800 px-2.5 py-1 text-xs font-mono font-semibold text-slate-200 border border-slate-700 flex items-center gap-1">
-                <Layers className="h-3 w-3 text-orange-400" />
+              <span className="rounded-lg bg-slate-100 dark:bg-slate-800 px-2.5 py-1 text-xs font-mono font-semibold text-slate-700 dark:text-slate-200 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                <Layers className="h-3 w-3 text-orange-500" />
                 Versão v{contract.currentVersionNumber}
               </span>
               <ContractStatusBadge status={contract.status} />
               {isSigned && (
-                <span className="rounded bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-slate-400 border border-slate-700 flex items-center gap-1">
-                  <Lock className="h-3 w-3 text-amber-400" />
+                <span className="rounded-lg bg-slate-100 dark:bg-slate-800/80 px-2 py-0.5 text-[11px] font-medium text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-slate-700 flex items-center gap-1">
+                  <Lock className="h-3 w-3 text-amber-500" />
                   Imutável (Edição via Aditivos)
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl font-bold text-slate-100">{contract.title}</h1>
+            <h1 className="text-xl font-bold text-slate-900 dark:text-slate-100">{contract.title}</h1>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <div
-                className="flex items-center gap-1.5 hover:text-white cursor-pointer"
+                className="flex items-center gap-1.5 hover:text-orange-600 dark:hover:text-white cursor-pointer font-medium"
                 onClick={() => contract.producerId && onSelectProducer?.(contract.producerId)}
               >
-                <Building2 className="h-4 w-4 text-orange-400" />
-                <span className="font-medium text-slate-200">{contract.producerName || 'Produtor Contratante'}</span>
+                <Building2 className="h-4 w-4 text-orange-500" />
+                <span className="text-slate-800 dark:text-slate-200">{contract.producerName || 'Produtor Contratante'}</span>
               </div>
 
               <div className="flex items-center gap-1.5">
-                <Calendar className="h-4 w-4 text-slate-500" />
+                <Calendar className="h-4 w-4 text-slate-400" />
                 <span>
-                  Vigência: <strong className="text-slate-200">{contract.effectiveFrom ? formatDate(contract.effectiveFrom) : 'Não definida'}</strong> até{' '}
-                  <strong className="text-slate-200">{contract.effectiveUntil ? formatDate(contract.effectiveUntil) : 'Indeterminada'}</strong>
+                  Vigência: <strong className="text-slate-900 dark:text-slate-200">{contract.effectiveFrom ? formatDate(contract.effectiveFrom) : 'Não definida'}</strong> até{' '}
+                  <strong className="text-slate-900 dark:text-slate-200">{contract.effectiveUntil ? formatDate(contract.effectiveUntil) : 'Indeterminada'}</strong>
                 </span>
               </div>
 
               {contract.sourceProposalPublicCode && (
                 <div
-                  className="flex items-center gap-1 hover:text-orange-400 cursor-pointer"
+                  className="flex items-center gap-1 hover:text-orange-500 cursor-pointer"
                   onClick={() => contract.sourceProposalId && onSelectProposal?.(contract.sourceProposalId)}
                 >
                   <ExternalLink className="h-3.5 w-3.5" />
-                  <span>Proposta Origem: <strong>{contract.sourceProposalPublicCode}</strong></span>
+                  <span>Proposta Origem: <strong className="text-slate-800 dark:text-slate-200">{contract.sourceProposalPublicCode}</strong></span>
                 </div>
               )}
             </div>
@@ -428,7 +428,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   size="sm"
                   onClick={handleSubmitApproval}
                   disabled={actionLoading}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/20"
+                  className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-xs"
                 >
                   <ShieldCheck className="h-4 w-4 mr-1.5" />
                   Submeter Aprovação
@@ -439,7 +439,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   variant="outline"
                   onClick={handleGenerateDocument}
                   disabled={actionLoading}
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   <FileText className="h-4 w-4 mr-1.5" />
                   Gerar Minuta
@@ -455,7 +455,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   setDecisionType('APPROVE');
                   setIsDecisionModalOpen(true);
                 }}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-lg shadow-indigo-600/20"
+                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold shadow-xs"
               >
                 <ShieldCheck className="h-4 w-4 mr-1.5" />
                 Decidir Aprovação (Maker-Checker)
@@ -468,7 +468,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 <Button
                   size="sm"
                   onClick={() => setIsSignatureModalOpen(true)}
-                  className="bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-lg shadow-purple-600/20"
+                  className="bg-purple-600 hover:bg-purple-500 text-white font-semibold shadow-xs"
                 >
                   <FileSignature className="h-4 w-4 mr-1.5" />
                   Despachar para Assinatura
@@ -479,7 +479,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   variant="outline"
                   onClick={handleGenerateDocument}
                   disabled={actionLoading}
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   <FileText className="h-4 w-4 mr-1.5" />
                   Atualizar Minuta
@@ -493,7 +493,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 size="sm"
                 onClick={handleSimulateSignature}
                 disabled={actionLoading}
-                className="bg-teal-600 hover:bg-teal-500 text-white font-semibold shadow-lg shadow-teal-600/20"
+                className="bg-teal-600 hover:bg-teal-500 text-white font-semibold shadow-xs"
               >
                 <UserCheck className="h-4 w-4 mr-1.5" />
                 Simular Assinatura (Webhook Demo)
@@ -506,7 +506,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 <Button
                   size="sm"
                   onClick={() => setIsAmendmentModalOpen(true)}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-lg shadow-orange-500/20"
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs"
                 >
                   <Plus className="h-4 w-4 mr-1.5" />
                   Novo Aditivo
@@ -516,9 +516,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   size="sm"
                   variant="outline"
                   onClick={() => setIsRenewalModalOpen(true)}
-                  className="border-slate-700 text-slate-300 hover:bg-slate-800"
+                  className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
-                  <CalendarCheck2 className="h-4 w-4 mr-1.5 text-emerald-400" />
+                  <CalendarCheck2 className="h-4 w-4 mr-1.5 text-emerald-600 dark:text-emerald-400" />
                   Renovar / Prorrogar
                 </Button>
 
@@ -526,7 +526,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   size="sm"
                   variant="outline"
                   onClick={() => setIsSuspendModalOpen(true)}
-                  className="border-orange-500/40 text-orange-400 hover:bg-orange-500/10"
+                  className="border-orange-200 dark:border-orange-500/40 text-orange-600 dark:text-orange-400 hover:bg-orange-50 dark:hover:bg-orange-500/10"
                 >
                   <PauseCircle className="h-4 w-4 mr-1.5" />
                   Suspender
@@ -536,7 +536,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   size="sm"
                   variant="outline"
                   onClick={() => setIsTerminationModalOpen(true)}
-                  className="border-rose-500/40 text-rose-400 hover:bg-rose-500/10"
+                  className="border-rose-200 dark:border-rose-500/40 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10"
                 >
                   <AlertOctagon className="h-4 w-4 mr-1.5" />
                   Rescindir
@@ -550,7 +550,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 size="sm"
                 onClick={handleReactivate}
                 disabled={actionLoading}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-lg shadow-emerald-600/20"
+                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold shadow-xs"
               >
                 <PlayCircle className="h-4 w-4 mr-1.5" />
                 Reativar Contrato
@@ -561,13 +561,13 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       </div>
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-slate-800 overflow-x-auto gap-1">
+      <div className="flex border-b border-slate-200 dark:border-slate-800 overflow-x-auto gap-1">
         <button
           onClick={() => setActiveTab('OVERVIEW')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'OVERVIEW'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <Building2 className="h-4 w-4" />
@@ -576,10 +576,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
         <button
           onClick={() => setActiveTab('TERMS')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'TERMS'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <Layers className="h-4 w-4" />
@@ -588,10 +588,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
         <button
           onClick={() => setActiveTab('DOCUMENT')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'DOCUMENT'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <FileText className="h-4 w-4" />
@@ -600,10 +600,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
         <button
           onClick={() => setActiveTab('SIGNATURE')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'SIGNATURE'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <FileSignature className="h-4 w-4" />
@@ -612,10 +612,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
         <button
           onClick={() => setActiveTab('AMENDMENTS')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'AMENDMENTS'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <FileDiff className="h-4 w-4" />
@@ -624,10 +624,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
         <button
           onClick={() => setActiveTab('RENEWALS')}
-          className={`px-4 py-2.5 text-xs font-semibold rounded-t-lg transition-all border-b-2 flex items-center gap-1.5 ${
+          className={`px-4 py-2.5 text-xs font-semibold rounded-t-xl transition-all border-b-2 flex items-center gap-1.5 ${
             activeTab === 'RENEWALS'
-              ? 'border-orange-500 text-orange-400 bg-slate-900/60'
-              : 'border-transparent text-slate-400 hover:text-white hover:bg-slate-900/40'
+              ? 'border-orange-500 text-orange-600 dark:text-orange-400 bg-orange-50/20 dark:bg-slate-900/60 font-bold'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-900/40'
           }`}
         >
           <CalendarCheck2 className="h-4 w-4" />
@@ -643,26 +643,26 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
           {/* Parties Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {/* Party 1: DiskIngressos */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Building2 className="h-4 w-4 text-orange-400" />
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Building2 className="h-4 w-4 text-orange-500 dark:text-orange-400" />
                 Contratada / Operadora (DiskIngressos)
               </div>
               <div className="space-y-1.5 text-xs">
-                <div className="text-white font-bold">DiskIngressos Serviços de Bilhetagem S.A.</div>
-                <div className="text-slate-400">CNPJ: 12.345.678/0001-90</div>
-                <div className="text-slate-400">Sede: Curitiba/PR, Brasil</div>
-                <div className="pt-2 border-t border-slate-800 text-slate-300">
-                  <span className="text-slate-500 block text-[11px]">Representante Legal:</span>
+                <div className="text-slate-900 dark:text-white font-bold">DiskIngressos Serviços de Bilhetagem S.A.</div>
+                <div className="text-slate-500 dark:text-slate-400">CNPJ: 12.345.678/0001-90</div>
+                <div className="text-slate-500 dark:text-slate-400">Sede: Curitiba/PR, Brasil</div>
+                <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+                  <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Representante Legal:</span>
                   Diretoria Executiva DiskIngressos (comercial@diskingressos.com.br)
                 </div>
               </div>
             </div>
 
             {/* Party 2: Producer */}
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-              <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-                <Building2 className="h-4 w-4 text-purple-400" />
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-3">
+              <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <Building2 className="h-4 w-4 text-purple-500 dark:text-purple-400" />
                 Contratante (Produtor B2B)
               </div>
               {contract.parties?.find(p => p.partyType === 'PRODUCER') ? (
@@ -670,18 +670,18 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   const p = contract.parties.find(x => x.partyType === 'PRODUCER')!;
                   return (
                     <div className="space-y-1.5 text-xs">
-                      <div className="text-white font-bold">{p.legalName}</div>
-                      <div className="text-slate-400">CNPJ / CPF: {p.document}</div>
-                      <div className="text-slate-400">Endereço: {p.address || 'Brasil'}</div>
-                      <div className="pt-2 border-t border-slate-800 text-slate-300">
-                        <span className="text-slate-500 block text-[11px]">Representante Legal:</span>
+                      <div className="text-slate-900 dark:text-white font-bold">{p.legalName}</div>
+                      <div className="text-slate-500 dark:text-slate-400">CNPJ / CPF: {p.document}</div>
+                      <div className="text-slate-500 dark:text-slate-400">Endereço: {p.address || 'Brasil'}</div>
+                      <div className="pt-2 border-t border-slate-100 dark:border-slate-800 text-slate-700 dark:text-slate-300">
+                        <span className="text-slate-400 dark:text-slate-500 block text-[11px]">Representante Legal:</span>
                         {p.representativeName} ({p.representativeRole}) - {p.representativeEmail}
                       </div>
                     </div>
                   );
                 })()
               ) : (
-                <div className="text-xs text-slate-400">
+                <div className="text-xs text-slate-500 dark:text-slate-400">
                   {contract.producerName || 'Produtor Contratante'}
                 </div>
               )}
@@ -689,38 +689,38 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
           </div>
 
           {/* Cryptographic & Audit Metadata */}
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-3">
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-300">
-              <Hash className="h-4 w-4 text-orange-400" />
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-3">
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+              <Hash className="h-4 w-4 text-orange-500 dark:text-orange-400" />
               Integridade Criptográfica & Trilha de Auditoria
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
-              <div className="rounded-lg bg-slate-950/40 p-3 border border-slate-800">
-                <span className="text-[11px] text-slate-500 block">Hash do Contrato (contentHash):</span>
-                <span className="font-mono text-orange-400 text-[11px] break-all">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 p-3 border border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Hash do Contrato (contentHash):</span>
+                <span className="font-mono text-orange-600 dark:text-orange-400 text-[11px] break-all">
                   {contract.currentVersion?.contentHash || 'Calculado no fechamento da versão'}
                 </span>
               </div>
 
-              <div className="rounded-lg bg-slate-950/40 p-3 border border-slate-800">
-                <span className="text-[11px] text-slate-500 block">Hash da Proposta de Origem:</span>
-                <span className="font-mono text-cyan-400 text-[11px] break-all">
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 p-3 border border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Hash da Proposta de Origem:</span>
+                <span className="font-mono text-cyan-600 dark:text-cyan-400 text-[11px] break-all">
                   {contract.sourceProposalContentHash || 'Contrato criado de forma direta'}
                 </span>
               </div>
 
-              <div className="rounded-lg bg-slate-950/40 p-3 border border-slate-800">
-                <span className="text-[11px] text-slate-500 block">Controle de Concorrência Otimista:</span>
-                <span className="font-mono text-white text-xs">Versão de Lock: #{contract.version}</span>
+              <div className="rounded-xl bg-slate-50 dark:bg-slate-950/40 p-3 border border-slate-200 dark:border-slate-800">
+                <span className="text-[11px] text-slate-400 dark:text-slate-500 block">Controle de Concorrência Otimista:</span>
+                <span className="font-mono text-slate-900 dark:text-white text-xs">Versão de Lock: #{contract.version}</span>
               </div>
             </div>
           </div>
 
           {/* Notes */}
           {contract.notes && (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-2">
-              <div className="text-xs font-semibold text-slate-300">Observações Gerais</div>
-              <p className="text-xs text-slate-400 leading-relaxed">{contract.notes}</p>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-2">
+              <div className="text-xs font-semibold text-slate-700 dark:text-slate-300">Observações Gerais</div>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{contract.notes}</p>
             </div>
           )}
         </div>
@@ -731,22 +731,22 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       {/* =================================================================== */}
       {activeTab === 'TERMS' && (
         <div className="space-y-4">
-          <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/10 p-4 text-xs text-emerald-200 flex items-start gap-3">
-            <Info className="h-5 w-5 text-emerald-400 shrink-0 mt-0.5" />
+          <div className="rounded-xl border border-emerald-200 dark:border-emerald-500/30 bg-emerald-50 dark:bg-emerald-500/10 p-4 text-xs text-emerald-900 dark:text-emerald-200 flex items-start gap-3">
+            <Info className="h-5 w-5 text-emerald-600 dark:text-emerald-400 shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold text-emerald-300">
+              <p className="font-semibold text-emerald-800 dark:text-emerald-300">
                 Autoridade de Taxas para o Financeiro & Borderô
               </p>
-              <p className="mt-0.5 text-emerald-200/80">
+              <p className="mt-0.5 text-emerald-700/90 dark:text-emerald-200/80">
                 Estas são as condições comerciais vigentes calculadas a partir do contrato base sobreposto por todos os aditivos contratuais ativos na data atual. O Financeiro consome este endpoint para apurações, borderôs e repasses.
               </p>
             </div>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-xl overflow-hidden">
+          <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-xs overflow-hidden">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 bg-slate-950/60 text-slate-400 font-semibold">
+                <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/60 text-slate-500 dark:text-slate-400 font-semibold uppercase tracking-wider text-[11px]">
                   <tr>
                     <th className="px-4 py-3">Tipo da Taxa</th>
                     <th className="px-4 py-3">Descrição / Nome</th>
@@ -756,28 +756,28 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                     <th className="px-4 py-3">Origem</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60 text-slate-300">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 text-slate-700 dark:text-slate-300">
                   {effectiveTerms?.terms && effectiveTerms.terms.length > 0 ? (
                     effectiveTerms.terms.map((t, idx) => (
-                      <tr key={idx} className="hover:bg-slate-800/30">
-                        <td className="px-4 py-3 font-medium text-white">{t.termType}</td>
+                      <tr key={idx} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                        <td className="px-4 py-3 font-medium text-slate-900 dark:text-white">{t.termType}</td>
                         <td className="px-4 py-3">{t.name}</td>
-                        <td className="px-4 py-3 text-slate-400">{t.calculationType}</td>
-                        <td className="px-4 py-3 font-semibold text-white">
+                        <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{t.calculationType}</td>
+                        <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                           {t.percentage ? `${t.percentage}%` : t.amount ? `R$ ${t.amount.toFixed(2)}` : '-'}
                         </td>
                         <td className="px-4 py-3">
-                          <span className="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-mono text-slate-300">
+                          <span className="rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 px-2 py-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300">
                             {t.payer}
                           </span>
                         </td>
                         <td className="px-4 py-3">
                           {t.source === 'AMENDMENT' ? (
-                            <span className="rounded bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 text-[11px] font-semibold">
+                            <span className="rounded bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30 px-2 py-0.5 text-[11px] font-semibold">
                               Aditivo {t.sourceAmendmentCode || ''}
                             </span>
                           ) : (
-                            <span className="rounded bg-slate-800 text-slate-300 px-2 py-0.5 text-[11px]">
+                            <span className="rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.5 text-[11px]">
                               Contrato Base
                             </span>
                           )}
@@ -786,7 +786,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="px-4 py-8 text-center text-slate-500">
+                      <td colSpan={6} className="px-4 py-8 text-center text-slate-400 dark:text-slate-500">
                         Nenhuma condição comercial apurada para este produtor.
                       </td>
                     </tr>
@@ -804,11 +804,11 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       {activeTab === 'DOCUMENT' && (
         <div className="space-y-4">
           <div className="flex items-center justify-between">
-            <div className="text-xs text-slate-400">
+            <div className="text-xs text-slate-500 dark:text-slate-400">
               {contract.currentVersion?.documentChecksum ? (
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="h-4 w-4 text-emerald-400" />
-                  <span>SHA-256 Checksum: <strong className="font-mono text-white">{contract.currentVersion.documentChecksum}</strong></span>
+                  <ShieldCheck className="h-4 w-4 text-emerald-500 dark:text-emerald-400" />
+                  <span>SHA-256 Checksum: <strong className="font-mono text-slate-900 dark:text-white">{contract.currentVersion.documentChecksum}</strong></span>
                 </div>
               ) : (
                 <span>Documento formal ainda não gerado para a versão v{contract.currentVersionNumber}.</span>
@@ -819,7 +819,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               size="sm"
               onClick={handleGenerateDocument}
               disabled={actionLoading}
-              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs"
+              className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs"
             >
               <FileText className="h-3.5 w-3.5 mr-1.5" />
               {documentHtml ? 'Atualizar Minuta' : 'Gerar Minuta Oficial'}
@@ -827,13 +827,13 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
           </div>
 
           {documentHtml ? (
-            <div className="rounded-xl border border-slate-800 bg-white text-slate-900 p-8 shadow-2xl max-h-[700px] overflow-y-auto font-serif">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white text-slate-900 p-8 shadow-md max-h-[700px] overflow-y-auto font-serif">
               <div dangerouslySetInnerHTML={{ __html: documentHtml }} />
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-500">
-              <FileText className="h-12 w-12 mx-auto mb-3 text-slate-600 opacity-40" />
-              <p className="text-sm text-slate-400 font-medium">Nenhuma minuta gerada em tela</p>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-12 text-center text-slate-400 dark:text-slate-500 shadow-xs">
+              <FileText className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600 opacity-60" />
+              <p className="text-sm text-slate-700 dark:text-slate-400 font-medium">Nenhuma minuta gerada em tela</p>
               <p className="text-xs text-slate-500 mt-1">
                 Clique em "Gerar Minuta Oficial" para compilar as cláusulas contratuais formalizadas.
               </p>
@@ -848,22 +848,22 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
       {activeTab === 'SIGNATURE' && (
         <div className="space-y-4">
           {envelope ? (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 space-y-4">
-              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-800 pb-4">
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-bold text-white">
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                       Envelope de Assinatura Digital #{envelope.id}
                     </h3>
-                    <span className="rounded bg-purple-500/20 text-purple-300 border border-purple-500/30 px-2 py-0.5 text-[11px] font-semibold">
+                    <span className="rounded bg-purple-50 dark:bg-purple-500/20 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-500/30 px-2 py-0.5 text-[11px] font-semibold">
                       Provedor: {envelope.provider}
                     </span>
-                    <span className="rounded bg-slate-800 text-slate-300 px-2 py-0.5 text-[11px] font-mono">
+                    <span className="rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700 px-2 py-0.5 text-[11px] font-mono">
                       Ref: {envelope.providerReference || 'Simulado'}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-1">
-                    Status do Envelope: <strong className="text-white">{envelope.status}</strong>
+                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                    Status do Envelope: <strong className="text-slate-900 dark:text-white">{envelope.status}</strong>
                   </p>
                 </div>
 
@@ -872,7 +872,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                     size="sm"
                     onClick={handleSimulateSignature}
                     disabled={actionLoading}
-                    className="bg-teal-600 hover:bg-teal-500 text-white font-semibold text-xs"
+                    className="bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs shadow-xs"
                   >
                     <UserCheck className="h-3.5 w-3.5 mr-1" />
                     Simular Assinatura (Webhook)
@@ -882,31 +882,31 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
               {/* Signers List */}
               <div className="space-y-2">
-                <h4 className="text-xs font-semibold text-slate-300">Signatários Vinculados</h4>
+                <h4 className="text-xs font-semibold text-slate-700 dark:text-slate-300">Signatários Vinculados</h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {envelope.signers?.map((signer, idx) => (
                     <div
                       key={signer.id || idx}
-                      className="rounded-lg border border-slate-800 bg-slate-950/50 p-3.5 space-y-1.5 text-xs"
+                      className="rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950/50 p-3.5 space-y-1.5 text-xs"
                     >
                       <div className="flex items-center justify-between">
-                        <span className="font-semibold text-white">{signer.name}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white">{signer.name}</span>
                         <span
                           className={`rounded px-1.5 py-0.5 text-[10px] font-semibold ${
                             signer.status === 'SIGNED'
-                              ? 'bg-emerald-500/20 text-emerald-300'
-                              : 'bg-amber-500/20 text-amber-300'
+                              ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30'
+                              : 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30'
                           }`}
                         >
                           {signer.status}
                         </span>
                       </div>
-                      <div className="text-slate-400">{signer.email}</div>
-                      <div className="text-[11px] text-slate-500">
+                      <div className="text-slate-500 dark:text-slate-400">{signer.email}</div>
+                      <div className="text-[11px] text-slate-400 dark:text-slate-500">
                         {signer.role || 'Representante'} | Ordem: #{signer.signingOrder}
                       </div>
                       {signer.signedAt && (
-                        <div className="text-[11px] text-emerald-400 pt-1 border-t border-slate-800/80">
+                        <div className="text-[11px] text-emerald-600 dark:text-emerald-400 pt-1 border-t border-slate-200 dark:border-slate-800/80">
                           Assinado em: {formatDate(signer.signedAt)}
                         </div>
                       )}
@@ -916,9 +916,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               </div>
             </div>
           ) : (
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-500">
-              <FileSignature className="h-12 w-12 mx-auto mb-3 text-slate-600 opacity-40" />
-              <p className="text-sm text-slate-400 font-medium">Nenhum envelope despachado</p>
+            <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-12 text-center text-slate-400 dark:text-slate-500 shadow-xs">
+              <FileSignature className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600 opacity-60" />
+              <p className="text-sm text-slate-700 dark:text-slate-400 font-medium">Nenhum envelope despachado</p>
               <p className="text-xs text-slate-500 mt-1">
                 Após aprovação interna do contrato, o envelope poderá ser despachado para os signatários.
               </p>
@@ -934,8 +934,8 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white">Aditivos Contratuais Formalizados</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Aditivos Contratuais Formalizados</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Imutabilidade pós-assinatura: qualquer alteração de taxa, prazo ou escopo é registrada via aditivo.
               </p>
             </div>
@@ -944,7 +944,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               <Button
                 size="sm"
                 onClick={() => setIsAmendmentModalOpen(true)}
-                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold text-xs shadow-xs"
               >
                 <Plus className="h-3.5 w-3.5 mr-1" />
                 Novo Aditivo
@@ -957,21 +957,21 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               contract.amendments.map(adt => (
                 <div
                   key={adt.id}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-3"
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-4 shadow-xs space-y-3"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono font-bold text-white text-xs">{adt.publicCode}</span>
-                      <span className="rounded bg-slate-800 px-2 py-0.5 text-[11px] font-mono text-slate-300">
+                      <span className="font-mono font-bold text-slate-900 dark:text-white text-xs">{adt.publicCode}</span>
+                      <span className="rounded bg-slate-100 dark:bg-slate-800 px-2 py-0.5 text-[11px] font-mono text-slate-700 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
                         {adt.type}
                       </span>
                       <span
                         className={`rounded px-2 py-0.5 text-[11px] font-semibold ${
                           adt.status === 'ACTIVE'
-                            ? 'bg-emerald-500/20 text-emerald-300'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30'
                             : adt.status === 'APPROVED'
-                            ? 'bg-indigo-500/20 text-indigo-300'
-                            : 'bg-amber-500/20 text-amber-300'
+                            ? 'bg-indigo-50 dark:bg-indigo-500/20 text-indigo-700 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-500/30'
+                            : 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30'
                         }`}
                       >
                         {adt.status}
@@ -985,7 +985,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                           variant="outline"
                           onClick={() => handleApproveAmendment(adt.id)}
                           disabled={actionLoading}
-                          className="border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/10 h-7 text-xs"
+                          className="border-indigo-200 dark:border-indigo-500/30 text-indigo-600 dark:text-indigo-300 hover:bg-indigo-50 dark:hover:bg-indigo-500/10 h-7 text-xs"
                         >
                           <ShieldCheck className="h-3 w-3 mr-1" />
                           Aprovar Aditivo
@@ -997,7 +997,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                           size="sm"
                           onClick={() => handleActivateAmendment(adt.id)}
                           disabled={actionLoading}
-                          className="bg-emerald-600 hover:bg-emerald-500 text-white h-7 text-xs font-semibold"
+                          className="bg-emerald-600 hover:bg-emerald-700 text-white h-7 text-xs font-semibold shadow-xs"
                         >
                           <CheckCircle2 className="h-3 w-3 mr-1" />
                           Ativar Aditivo
@@ -1007,9 +1007,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   </div>
 
                   <div className="text-xs space-y-1">
-                    <div className="text-slate-300 font-medium">Motivo: {adt.reason}</div>
-                    <div className="text-slate-400">Resumo: {adt.summary}</div>
-                    <div className="text-[11px] text-slate-500 flex items-center gap-3 pt-1">
+                    <div className="text-slate-700 dark:text-slate-300 font-medium">Motivo: {adt.reason}</div>
+                    <div className="text-slate-500 dark:text-slate-400">Resumo: {adt.summary}</div>
+                    <div className="text-[11px] text-slate-400 dark:text-slate-500 flex items-center gap-3 pt-1">
                       <span>Vigência a partir de: {formatDate(adt.effectiveFrom)}</span>
                       <span>Hash: {adt.contentHash.substring(0, 16)}...</span>
                     </div>
@@ -1017,9 +1017,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 </div>
               ))
             ) : (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-500">
-                <FileDiff className="h-12 w-12 mx-auto mb-3 text-slate-600 opacity-40" />
-                <p className="text-sm text-slate-400 font-medium">Nenhum aditivo lavrado</p>
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-12 text-center text-slate-400 dark:text-slate-500 shadow-xs">
+                <FileDiff className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600 opacity-60" />
+                <p className="text-sm text-slate-700 dark:text-slate-400 font-medium">Nenhum aditivo lavrado</p>
                 <p className="text-xs text-slate-500 mt-1">
                   Aditivos mantêm o histórico transparente de repactuação comercial sem alterar o contrato base.
                 </p>
@@ -1036,8 +1036,8 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
         <div className="space-y-4">
           <div className="flex items-center justify-between">
             <div>
-              <h3 className="text-sm font-bold text-white">Histórico de Renovações e Renegociações</h3>
-              <p className="text-xs text-slate-400">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Histórico de Renovações e Renegociações</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Extensões simples de vigência ou desdobramento de novas oportunidades no CRM
               </p>
             </div>
@@ -1046,7 +1046,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               <Button
                 size="sm"
                 onClick={() => setIsRenewalModalOpen(true)}
-                className="bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs"
+                className="bg-emerald-600 hover:bg-emerald-700 text-white font-semibold text-xs shadow-xs"
               >
                 <CalendarCheck2 className="h-3.5 w-3.5 mr-1" />
                 Iniciar Renovação
@@ -1059,18 +1059,18 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               contract.renewals.map(rnw => (
                 <div
                   key={rnw.id}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 space-y-2.5"
+                  className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-4 shadow-xs space-y-2.5"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="font-semibold text-white text-xs">
+                      <span className="font-semibold text-slate-900 dark:text-white text-xs">
                         Modalidade: {rnw.renewalType === 'SIMPLE' ? 'Prorrogação Simples' : 'Renegociação CRM'}
                       </span>
                       <span
                         className={`rounded px-2 py-0.5 text-[11px] font-semibold ${
                           rnw.status === 'COMPLETED'
-                            ? 'bg-emerald-500/20 text-emerald-300'
-                            : 'bg-amber-500/20 text-amber-300'
+                            ? 'bg-emerald-50 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-500/30'
+                            : 'bg-amber-50 dark:bg-amber-500/20 text-amber-700 dark:text-amber-300 border border-amber-200 dark:border-amber-500/30'
                         }`}
                       >
                         {rnw.status}
@@ -1082,24 +1082,24 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                         size="sm"
                         onClick={() => handleCompleteRenewal(rnw.id)}
                         disabled={actionLoading}
-                        className="bg-emerald-600 hover:bg-emerald-500 text-white h-7 text-xs font-semibold"
+                        className="bg-emerald-600 hover:bg-emerald-700 text-white h-7 text-xs font-semibold shadow-xs"
                       >
                         Concluir Prorrogação
                       </Button>
                     )}
                   </div>
 
-                  <div className="text-xs text-slate-400 space-y-1">
+                  <div className="text-xs text-slate-500 dark:text-slate-400 space-y-1">
                     <div>
                       Prazo pretendido:{' '}
-                      <span className="text-white">
+                      <span className="text-slate-900 dark:text-white font-medium">
                         {rnw.targetEffectiveFrom ? formatDate(rnw.targetEffectiveFrom) : '-'} até{' '}
                         {rnw.targetEffectiveUntil ? formatDate(rnw.targetEffectiveUntil) : '-'}
                       </span>
                     </div>
                     {rnw.notes && <div>Notas: {rnw.notes}</div>}
                     {rnw.sourceOpportunityId && (
-                      <div className="text-orange-400 text-[11px]">
+                      <div className="text-orange-600 dark:text-orange-400 text-[11px] font-medium">
                         Vinculado à Oportunidade CRM #{rnw.sourceOpportunityId}
                       </div>
                     )}
@@ -1107,9 +1107,9 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 </div>
               ))
             ) : (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-12 text-center text-slate-500">
-                <CalendarCheck2 className="h-12 w-12 mx-auto mb-3 text-slate-600 opacity-40" />
-                <p className="text-sm text-slate-400 font-medium">Nenhuma renovação registrada</p>
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-12 text-center text-slate-400 dark:text-slate-500 shadow-xs">
+                <CalendarCheck2 className="h-12 w-12 mx-auto mb-3 text-slate-300 dark:text-slate-600 opacity-60" />
+                <p className="text-sm text-slate-700 dark:text-slate-400 font-medium">Nenhuma renovação registrada</p>
                 <p className="text-xs text-slate-500 mt-1">
                   Gerencie prorrogações ordinárias ou direcione o produtor para renegociação no CRM.
                 </p>
@@ -1121,29 +1121,29 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
       {/* Decision Modal (Maker-Checker) */}
       {isDecisionModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-700 bg-slate-900 shadow-2xl p-6 space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-base">
-              <ShieldCheck className="h-5 w-5 text-indigo-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+              <ShieldCheck className="h-5 w-5 text-indigo-500 dark:text-indigo-400" />
               Decisão de Aprovação Interna
             </div>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Avaliação de alçada para liberação de minuta e assinatura do contrato{' '}
-              <strong className="text-white">{contract.publicCode}</strong>.
+              <strong className="text-slate-900 dark:text-white">{contract.publicCode}</strong>.
             </p>
 
             <div className="space-y-3 text-xs">
               <div>
-                <label className="block text-slate-400 mb-1">Decisão *</label>
+                <label className="block text-slate-700 dark:text-slate-400 font-medium mb-1">Decisão *</label>
                 <div className="grid grid-cols-2 gap-2">
                   <button
                     type="button"
                     onClick={() => setDecisionType('APPROVE')}
-                    className={`py-2 rounded-lg border font-semibold ${
+                    className={`py-2 rounded-xl border font-semibold transition-colors ${
                       decisionType === 'APPROVE'
-                        ? 'bg-indigo-600 border-indigo-500 text-white'
-                        : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                        ? 'bg-indigo-600 border-indigo-600 text-white shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Aprovar Minuta
@@ -1151,10 +1151,10 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   <button
                     type="button"
                     onClick={() => setDecisionType('REJECT')}
-                    className={`py-2 rounded-lg border font-semibold ${
+                    className={`py-2 rounded-xl border font-semibold transition-colors ${
                       decisionType === 'REJECT'
-                        ? 'bg-rose-600 border-rose-500 text-white'
-                        : 'border-slate-700 text-slate-400 hover:bg-slate-800'
+                        ? 'bg-rose-600 border-rose-600 text-white shadow-xs'
+                        : 'border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     Rejeitar Minuta
@@ -1163,7 +1163,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
               </div>
 
               <div>
-                <label className="block text-slate-400 mb-1">
+                <label className="block text-slate-700 dark:text-slate-400 font-medium mb-1">
                   Parecer / Motivo {decisionType === 'REJECT' ? '*' : '(Opcional)'}
                 </label>
                 <textarea
@@ -1171,18 +1171,19 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                   value={decisionReason}
                   onChange={e => setDecisionReason(e.target.value)}
                   placeholder="Justifique ou adicione parecer da alçada comercial..."
-                  className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-white focus:outline-none"
+                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:border-indigo-500 focus:outline-none transition-colors"
                   required={decisionType === 'REJECT'}
                 />
               </div>
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsDecisionModalOpen(false)}
                 disabled={actionLoading}
+                className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
               >
                 Cancelar
               </Button>
@@ -1190,7 +1191,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 size="sm"
                 onClick={handleProcessDecision}
                 disabled={actionLoading || (decisionType === 'REJECT' && !decisionReason.trim())}
-                className={decisionType === 'APPROVE' ? 'bg-indigo-600 hover:bg-indigo-500 text-white' : 'bg-rose-600 hover:bg-rose-500 text-white'}
+                className={decisionType === 'APPROVE' ? 'bg-indigo-600 hover:bg-indigo-700 text-white font-semibold shadow-xs' : 'bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-xs'}
               >
                 {actionLoading ? 'Registrando...' : 'Confirmar Decisão'}
               </Button>
@@ -1201,35 +1202,36 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
 
       {/* Suspend Modal */}
       {isSuspendModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
-          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-orange-500/40 bg-slate-900 shadow-2xl p-6 space-y-4">
-            <div className="flex items-center gap-2 text-white font-bold text-base">
-              <PauseCircle className="h-5 w-5 text-orange-400" />
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
+          <div className="relative w-full max-w-md overflow-hidden rounded-2xl border border-orange-200 dark:border-orange-500/40 bg-white dark:bg-[#0F172A] shadow-2xl p-6 space-y-4">
+            <div className="flex items-center gap-2 text-slate-900 dark:text-white font-bold text-base">
+              <PauseCircle className="h-5 w-5 text-orange-500 dark:text-orange-400" />
               Suspender Contrato Comercial
             </div>
 
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               A suspensão congela temporariamente os efeitos contratuais até reativação formal.
             </p>
 
             <div>
-              <label className="block text-xs text-slate-300 mb-1">Motivo da Suspensão *</label>
+              <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">Motivo da Suspensão *</label>
               <textarea
                 rows={3}
                 value={suspensionReason}
                 onChange={e => setSuspensionReason(e.target.value)}
                 placeholder="Ex: Inadimplência temporária de repasses / Notificação formal..."
-                className="w-full rounded-lg border border-slate-700 bg-slate-800 p-2 text-xs text-white focus:outline-none"
+                className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 p-2.5 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:border-orange-500 focus:outline-none transition-colors"
                 required
               />
             </div>
 
-            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-800">
+            <div className="flex items-center justify-end gap-2 pt-2 border-t border-slate-100 dark:border-slate-800">
               <Button
                 variant="outline"
                 size="sm"
                 onClick={() => setIsSuspendModalOpen(false)}
                 disabled={isSuspending}
+                className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
               >
                 Cancelar
               </Button>
@@ -1237,7 +1239,7 @@ export const ContractDetailsPage: React.FC<ContractDetailsPageProps> = ({
                 size="sm"
                 onClick={handleSuspend}
                 disabled={isSuspending || !suspensionReason.trim()}
-                className="bg-orange-600 hover:bg-orange-500 text-white"
+                className="bg-orange-500 hover:bg-orange-600 text-white font-semibold shadow-xs"
               >
                 {isSuspending ? 'Suspendendo...' : 'Confirmar Suspensão'}
               </Button>

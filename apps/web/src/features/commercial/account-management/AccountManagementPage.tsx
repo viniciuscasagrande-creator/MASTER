@@ -148,10 +148,10 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between flex-wrap gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-white tracking-tight">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white tracking-tight">
             Gestão de Contas & Renovações
           </h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Operação contínua de relacionamento B2B, ciclos de renovação contratual, expansão e readequação de planos.
           </p>
         </div>
@@ -159,15 +159,15 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
         <div className="flex items-center gap-3">
           <button
             onClick={() => handleOpenImpactModal()}
-            className="px-3.5 py-2 bg-indigo-600/20 hover:bg-indigo-600/30 text-indigo-300 border border-indigo-500/30 rounded-lg text-xs font-medium transition flex items-center gap-2 shadow-sm"
+            className="px-3.5 py-2 bg-orange-50 dark:bg-orange-500/10 hover:bg-orange-100 dark:hover:bg-orange-500/20 text-orange-700 dark:text-orange-400 border border-orange-200 dark:border-orange-500/30 rounded-xl text-xs font-semibold transition flex items-center gap-2 shadow-xs"
           >
-            <Sparkles className="h-4 w-4 text-indigo-400" />
+            <Sparkles className="h-4 w-4 text-orange-500 dark:text-orange-400" />
             <span>Simulador de Impacto</span>
           </button>
 
           <button
             onClick={loadData}
-            className="p-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+            className="p-2 bg-white dark:bg-slate-800 hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-700 rounded-xl transition shadow-xs"
             title="Recarregar Dados"
           >
             <RefreshCw className={`h-4 w-4 ${isLoading ? 'animate-spin' : ''}`} />
@@ -179,78 +179,78 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
       {metrics && (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {/* Card 1: Produtores Ativos */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Produtores Ativos</span>
-              <Users className="h-4 w-4 text-emerald-400" />
+              <Users className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div className="text-xl font-bold text-white">{metrics.activeProducers}</div>
-            <div className="text-[11px] text-slate-500">De {metrics.totalProducers} cadastrados</div>
+            <div className="text-xl font-bold text-slate-900 dark:text-white">{metrics.activeProducers}</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">De {metrics.totalProducers} cadastrados</div>
           </div>
 
           {/* Card 2: Cobertura de Carteira */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Cobertura Carteira</span>
-              <ShieldCheck className="h-4 w-4 text-blue-400" />
+              <ShieldCheck className="h-4 w-4 text-blue-600 dark:text-blue-400" />
             </div>
-            <div className="text-xl font-bold text-white">{metrics.portfolioCoveragePercentage}%</div>
-            <div className="text-[11px] text-slate-500">Com executivo de contas</div>
+            <div className="text-xl font-bold text-slate-900 dark:text-white">{metrics.portfolioCoveragePercentage}%</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">Com executivo de contas</div>
           </div>
 
           {/* Card 3: Janela de Renovação */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Janela de Renovação</span>
-              <Calendar className="h-4 w-4 text-amber-400" />
+              <Calendar className="h-4 w-4 text-amber-600 dark:text-amber-400" />
             </div>
-            <div className="text-xl font-bold text-amber-300">{metrics.contractsInRenewalWindow}</div>
-            <div className="text-[11px] text-slate-500">Vencimento em até 90d</div>
+            <div className="text-xl font-bold text-amber-600 dark:text-amber-400">{metrics.contractsInRenewalWindow}</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">Vencimento em até 90d</div>
           </div>
 
           {/* Card 4: Contratos Vencidos */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Contratos Vencidos</span>
-              <AlertTriangle className="h-4 w-4 text-rose-400" />
+              <AlertTriangle className="h-4 w-4 text-rose-600 dark:text-rose-400" />
             </div>
-            <div className={`text-xl font-bold ${metrics.overdueContracts > 0 ? 'text-rose-400' : 'text-slate-300'}`}>
+            <div className={`text-xl font-bold ${metrics.overdueContracts > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-700 dark:text-slate-300'}`}>
               {metrics.overdueContracts}
             </div>
-            <div className="text-[11px] text-slate-500">Requerem regularização</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">Requerem regularização</div>
           </div>
 
           {/* Card 5: Renovações em Andamento */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Renovações em Curso</span>
-              <RefreshCw className="h-4 w-4 text-indigo-400" />
+              <RefreshCw className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
             </div>
-            <div className="text-xl font-bold text-white">{metrics.ongoingRenewals}</div>
-            <div className="text-[11px] text-slate-500">Em negociação/proposta</div>
+            <div className="text-xl font-bold text-indigo-600 dark:text-indigo-400">{metrics.ongoingRenewals}</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">Em negociação/proposta</div>
           </div>
 
           {/* Card 6: Taxa de Retenção */}
-          <div className="p-3.5 bg-slate-900 border border-slate-800 rounded-xl space-y-1">
-            <div className="flex items-center justify-between text-slate-400 text-xs">
+          <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-1 shadow-xs">
+            <div className="flex items-center justify-between text-slate-500 dark:text-slate-400 text-xs font-medium">
               <span>Retenção no Ciclo</span>
-              <CheckCircle2 className="h-4 w-4 text-emerald-400" />
+              <CheckCircle2 className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <div className="text-xl font-bold text-emerald-400">{metrics.renewalRetentionRate}%</div>
-            <div className="text-[11px] text-slate-500">{metrics.completedRenewals} contratos retidos</div>
+            <div className="text-xl font-bold text-emerald-600 dark:text-emerald-400">{metrics.renewalRetentionRate}%</div>
+            <div className="text-[11px] text-slate-400 dark:text-slate-500">{metrics.completedRenewals} contratos retidos</div>
           </div>
         </div>
       )}
 
       {/* Navigation Tabs & Search */}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-3 gap-4 flex-wrap">
+      <div className="flex items-center justify-between border-b border-slate-200 dark:border-slate-800 pb-3 gap-4 flex-wrap">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setActiveTab('portfolio')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
               activeTab === 'portfolio'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             Minha Carteira de Contas ({accounts.length})
@@ -258,10 +258,10 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
 
           <button
             onClick={() => setActiveTab('renewals')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
               activeTab === 'renewals'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             Central de Renovações ({renewals.length})
@@ -269,10 +269,10 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
 
           <button
             onClick={() => setActiveTab('movements')}
-            className={`px-4 py-2 rounded-lg text-xs font-semibold transition ${
+            className={`px-4 py-2 rounded-xl text-xs font-semibold transition ${
               activeTab === 'movements'
-                ? 'bg-blue-600 text-white shadow-sm'
-                : 'bg-slate-800 text-slate-400 hover:text-white hover:bg-slate-700'
+                ? 'bg-orange-500 text-white shadow-xs'
+                : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
           >
             Movimentações Comerciais ({movements.length})
@@ -281,13 +281,13 @@ export const AccountManagementPage: React.FC<AccountManagementPageProps> = ({
 
         {/* Quick Search */}
         <div className="relative w-64">
-          <Search className="h-3.5 w-3.5 absolute left-3 top-2.5 text-slate-500" />
+          <Search className="h-3.5 w-3.5 absolute left-3 top-3 text-slate-400" />
           <input
             type="text"
             placeholder="Buscar por produtor ou CNPJ..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-slate-900 border border-slate-800 rounded-lg text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+            className="w-full pl-9 pr-3 py-2 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-xs text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-orange-500 shadow-xs transition-colors"
           />
         </div>
       </div>

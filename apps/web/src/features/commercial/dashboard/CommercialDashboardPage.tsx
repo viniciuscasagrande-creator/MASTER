@@ -270,25 +270,25 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                 return (
                   <div key={idx} className="flex flex-col items-center gap-2">
                     <div className="text-[10px] text-slate-500 font-mono">{t.tickets} ing.</div>
-                    <div className="w-full bg-slate-100 rounded-t-lg h-28 flex items-end justify-center p-1">
+                    <div className="w-full bg-slate-50 dark:bg-slate-800/80 rounded-t-lg h-28 flex items-end justify-center p-1 border-b border-slate-100 dark:border-slate-800">
                       <div
                         style={{ height: `${heightPct}%` }}
                         className="w-full bg-orange-500 hover:bg-orange-600 rounded-t transition-all duration-300"
                         title={`${t.label}: ${t.orders} pedidos, ${t.tickets} ingressos${t.grossSales !== null ? ` (${formatCurrency(t.grossSales)})` : ''}`}
                       />
                     </div>
-                    <div className="text-[11px] font-bold text-slate-700">{t.label}</div>
+                    <div className="text-[11px] font-bold text-slate-700 dark:text-slate-200">{t.label}</div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
             <span>Filtro ativo: {data?.period.label || 'Sem restrição'}</span>
             <button
               onClick={onNavigateToSales}
-              className="text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1 transition-colors"
+              className="text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1 transition-colors cursor-pointer"
             >
               Ver Performance Completa & Drilldown <ArrowUpRight className="h-3 w-3" />
             </button>
@@ -296,22 +296,22 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
         </div>
 
         {/* Orders Status Distribution */}
-        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
+        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Status dos Pedidos</h2>
-            <p className="text-xs text-slate-500">Distribuição no período selecionado</p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Status dos Pedidos</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Distribuição no período selecionado</p>
           </div>
 
           <div className="space-y-3">
             {data?.ordersByStatus.map((st) => (
               <div key={st.status} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-700 font-medium">{st.label}</span>
-                  <span className="font-mono text-slate-900 font-bold">
+                  <span className="text-slate-700 dark:text-slate-300 font-medium">{st.label}</span>
+                  <span className="font-mono text-slate-900 dark:text-white font-bold">
                     {st.count} <span className="text-slate-400 font-normal">({st.percentage}%)</span>
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
+                <div className="h-2 w-full rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
                   <div
                     style={{ width: `${st.percentage}%` }}
                     className={`h-full rounded-full ${
@@ -330,17 +330,17 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
           </div>
 
           <div className="pt-2">
-            <h3 className="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Canais de Venda</h3>
+            <h3 className="text-xs font-bold text-slate-800 dark:text-slate-200 mb-2 uppercase tracking-wider">Canais de Venda</h3>
             <div className="space-y-2">
               {data?.salesByChannel.map((ch) => (
                 <div
                   key={ch.channelId}
-                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs shadow-2xs"
+                  className="flex items-center justify-between rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-2.5 text-xs shadow-2xs hover:border-orange-200 transition-colors"
                 >
-                  <div className="font-bold text-slate-800">{ch.channelName}</div>
+                  <div className="font-bold text-slate-800 dark:text-slate-200">{ch.channelName}</div>
                   <div className="text-right font-mono">
-                    <div className="text-slate-900 font-bold">{ch.ticketsSold} ingressos</div>
-                    <div className="text-[10px] text-slate-500">{ch.sharePercentage}% do total</div>
+                    <div className="text-slate-900 dark:text-white font-bold">{ch.ticketsSold} ingressos</div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">{ch.sharePercentage}% do total</div>
                   </div>
                 </div>
               ))}
@@ -350,44 +350,44 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
       </div>
 
       {/* Recent Orders Table */}
-      <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold text-slate-900">Últimos Pedidos Comerciais</h2>
-            <p className="text-xs text-slate-500">Transações recentes registradas no sistema</p>
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white">Últimos Pedidos Comerciais</h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Transações recentes registradas no sistema</p>
           </div>
           <Button size="sm" variant="secondary" onClick={onNavigateToOrders}>
             Ver Todos os Pedidos
           </Button>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+            <thead className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
               <tr>
-                <th className="pb-3">Código</th>
-                <th className="pb-3">Data</th>
-                <th className="pb-3">Evento</th>
-                <th className="pb-3">Comprador</th>
-                <th className="pb-3">Canal</th>
-                <th className="pb-3 text-center">Ingressos</th>
-                <th className="pb-3 text-right">Total</th>
-                <th className="pb-3 text-center">Status</th>
-                <th className="pb-3 text-right">Ação</th>
+                <th className="py-3 px-3">Código</th>
+                <th className="py-3 px-3">Data</th>
+                <th className="py-3 px-3">Evento</th>
+                <th className="py-3 px-3">Comprador</th>
+                <th className="py-3 px-3">Canal</th>
+                <th className="py-3 px-3 text-center">Ingressos</th>
+                <th className="py-3 px-3 text-right">Total</th>
+                <th className="py-3 px-3 text-center">Status</th>
+                <th className="py-3 px-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {data?.recentOrders?.map((order) => (
-                <tr key={order.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="py-3 font-mono font-bold text-orange-600">
+                <tr key={order.id} className="hover:bg-slate-50 dark:hover:bg-slate-800/40 transition-colors">
+                  <td className="py-3 px-3 font-mono font-bold text-orange-600">
                     <button
                       onClick={() => onSelectOrder(order.id)}
-                      className="hover:underline text-left"
+                      className="hover:underline text-left cursor-pointer"
                     >
                       {order.publicCode}
                     </button>
                   </td>
-                  <td className="py-3 text-slate-500 font-mono">
+                  <td className="py-3 px-3 text-slate-500 dark:text-slate-400 font-mono">
                     {new Date(order.createdAt).toLocaleString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
@@ -395,27 +395,27 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                       minute: '2-digit'
                     })}
                   </td>
-                  <td className="py-3 font-medium text-slate-800">
+                  <td className="py-3 px-3 font-medium text-slate-800 dark:text-slate-200">
                     {order.eventName || 'Evento'}
                   </td>
-                  <td className="py-3">
-                    <div className="text-slate-900 font-semibold">
+                  <td className="py-3 px-3">
+                    <div className="text-slate-900 dark:text-white font-semibold">
                       {order.buyerSnapshot?.name || 'Cliente'}
                     </div>
-                    <div className="text-[10px] text-slate-500 font-mono">
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                       {order.buyerSnapshot?.documentMasked || '***'}
                     </div>
                   </td>
-                  <td className="py-3 text-slate-600">
+                  <td className="py-3 px-3 text-slate-600 dark:text-slate-400">
                     {order.salesChannelName || 'Online'}
                   </td>
-                  <td className="py-3 text-center font-mono font-bold text-slate-800">
+                  <td className="py-3 px-3 text-center font-mono font-bold text-slate-800 dark:text-slate-200">
                     {order.totalTicketsCount || order.itemsCount || 1}
                   </td>
-                  <td className="py-3 text-right font-mono font-bold text-slate-900">
+                  <td className="py-3 px-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                     {order.totalAmount > 0 ? formatCurrency(order.totalAmount) : '—'}
                   </td>
-                  <td className="py-3 text-center">
+                  <td className="py-3 px-3 text-center">
                     <Badge
                       variant={
                         order.status === 'CONFIRMED'
@@ -439,10 +439,10 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                         : order.status}
                     </Badge>
                   </td>
-                  <td className="py-3 text-right">
+                  <td className="py-3 px-3 text-right">
                     <button
                       onClick={() => onSelectOrder(order.id)}
-                      className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-2xs"
+                      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2.5 py-1 text-[11px] font-semibold text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900 transition-colors shadow-2xs cursor-pointer"
                     >
                       Ver Detalhes
                     </button>

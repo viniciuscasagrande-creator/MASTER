@@ -137,7 +137,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
       )}
 
       {/* Filter and Search Bar */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-lg space-y-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-4 shadow-xs space-y-4">
         <form onSubmit={handleSearchSubmit} className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -146,7 +146,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
               placeholder="Buscar por código (PED-...), nome do comprador, CPF ou e-mail..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 bg-slate-50 pl-9 pr-4 py-2 text-xs text-slate-900 placeholder:text-slate-400 focus:bg-white focus:border-orange-500 focus:outline-none transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
             />
           </div>
 
@@ -156,7 +156,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
               setSelectedEventId(e.target.value);
               setPage(1);
             }}
-            className="rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-slate-200 focus:border-orange-500 focus:outline-none"
+            className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-800 focus:bg-white focus:border-orange-500 focus:outline-none dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
           >
             <option value="">Todos os Eventos</option>
             {events.map((ev) => (
@@ -172,8 +172,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
         </form>
 
         {/* Channel Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
-          <span className="text-[11px] font-bold text-slate-400 mr-2 uppercase tracking-wider">
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-2 uppercase tracking-wider">
             Canal:
           </span>
           {[
@@ -191,8 +191,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
               }}
               className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 selectedChannel === ch.id
-                  ? 'bg-orange-500 text-white font-bold shadow'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                  ? 'bg-orange-500 text-white font-bold shadow-xs'
+                  : 'bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900'
               }`}
             >
               {ch.label}
@@ -201,8 +201,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
         </div>
 
         {/* Status Filter Tabs */}
-        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/40">
-          <span className="text-[11px] font-bold text-slate-400 mr-2 uppercase tracking-wider">
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
+          <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 mr-2 uppercase tracking-wider">
             Status:
           </span>
           {[
@@ -221,8 +221,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
               }}
               className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 selectedStatus === tab.id
-                  ? 'bg-slate-700 text-white font-bold'
-                  : 'bg-slate-950 text-slate-400 hover:bg-slate-800 hover:text-white'
+                  ? 'bg-orange-500 text-white font-bold shadow-xs'
+                  : 'bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-slate-900'
               }`}
             >
               {tab.label}
@@ -232,19 +232,19 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
       </div>
 
       {/* Orders Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400">
-            Mostrando <strong className="text-white font-mono">{orders.length}</strong> de <strong className="text-white font-mono">{total}</strong> pedidos cadastrados
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Mostrando <strong className="text-slate-900 dark:text-white font-mono">{orders.length}</strong> de <strong className="text-slate-900 dark:text-white font-mono">{total}</strong> pedidos cadastrados
           </div>
-          <div className="text-xs text-slate-400">
-            Página <strong className="text-white font-mono">{page}</strong> de <strong className="text-white font-mono">{totalPages}</strong>
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Página <strong className="text-slate-900 dark:text-white font-mono">{page}</strong> de <strong className="text-slate-900 dark:text-white font-mono">{totalPages}</strong>
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-slate-950/40">
+            <thead className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:border-slate-800 dark:bg-slate-900/60 dark:text-slate-400">
               <tr>
                 <th className="py-3 px-4">Código / Protocolo</th>
                 <th className="py-3 px-4">Data</th>
@@ -257,7 +257,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                 <th className="py-3 px-4 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {loading ? (
                 <tr>
                   <td colSpan={9} className="py-8 text-center text-slate-400">
@@ -266,14 +266,14 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                 </tr>
               ) : orders.length === 0 ? (
                 <tr>
-                  <td colSpan={9} className="py-8 text-center text-slate-500">
+                  <td colSpan={9} className="py-8 text-center text-slate-400">
                     Nenhum pedido encontrado com os filtros selecionados.
                   </td>
                 </tr>
               ) : (
                 orders.map((order) => (
-                  <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="py-3 px-4 font-mono font-bold text-orange-400">
+                  <tr key={order.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                    <td className="py-3 px-4 font-mono font-bold text-orange-600">
                       <button
                         onClick={() => setDossierOrder(order)}
                         className="hover:underline text-left font-mono cursor-pointer"
@@ -282,27 +282,27 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                         {order.publicCode || order.id}
                       </button>
                     </td>
-                    <td className="py-3 px-4 text-slate-400 font-mono">
+                    <td className="py-3 px-4 text-slate-500 dark:text-slate-400 font-mono">
                       {formatDateTime(order.createdAt)}
                     </td>
-                    <td className="py-3 px-4 font-medium text-slate-200">
+                    <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">
                       {order.eventName || 'Evento Geral'}
                     </td>
                     <td className="py-3 px-4">
-                      <div className="text-slate-200 font-medium">
+                      <div className="text-slate-900 dark:text-white font-semibold">
                         {order.buyerSnapshot?.name || 'Cliente Balcão'}
                       </div>
-                      <div className="text-[10px] text-slate-500 font-mono">
+                      <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono">
                         {order.buyerSnapshot?.documentMasked || '***'}
                       </div>
                     </td>
-                    <td className="py-3 px-4 text-slate-400">
+                    <td className="py-3 px-4 text-slate-600 dark:text-slate-400">
                       {order.salesChannelName || 'Site Oficial'}
                     </td>
-                    <td className="py-3 px-4 text-center font-mono font-bold text-slate-200">
+                    <td className="py-3 px-4 text-center font-mono font-bold text-slate-800 dark:text-slate-200">
                       {order.totalTicketsCount || order.itemsCount || 1}
                     </td>
-                    <td className="py-3 px-4 text-right font-mono font-bold text-white">
+                    <td className="py-3 px-4 text-right font-mono font-bold text-slate-900 dark:text-white">
                       {order.totalAmount > 0 ? formatCurrency(order.totalAmount) : '—'}
                     </td>
                     <td className="py-3 px-4 text-center">
@@ -335,7 +335,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                       <div className="flex items-center justify-end gap-1.5">
                         <button
                           onClick={() => setDossierOrder(order)}
-                          className="inline-flex items-center gap-1 rounded-lg border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[11px] font-semibold text-orange-400 hover:bg-orange-500 hover:text-white transition-all cursor-pointer"
+                          className="inline-flex items-center gap-1 rounded-lg border border-orange-200 bg-orange-50 px-2.5 py-1 text-[11px] font-semibold text-orange-700 hover:bg-orange-500 hover:text-white transition-all cursor-pointer dark:border-orange-500/30 dark:bg-orange-500/10 dark:text-orange-400"
                           title="Abrir dossiê operacional completo"
                         >
                           <Eye className="h-3 w-3" />
@@ -351,7 +351,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
         </div>
 
         {/* Pagination Bar */}
-        <div className="p-4 border-t border-slate-800 flex items-center justify-between">
+        <div className="p-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
           <Button
             size="sm"
             variant="secondary"
@@ -362,7 +362,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
             Anterior
           </Button>
 
-          <span className="text-xs text-slate-400">
+          <span className="text-xs text-slate-500 dark:text-slate-400">
             Página {page} de {totalPages}
           </span>
 

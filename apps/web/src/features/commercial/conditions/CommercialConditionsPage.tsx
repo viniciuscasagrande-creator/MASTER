@@ -229,17 +229,17 @@ export const CommercialConditionsPage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
               CONDIÇÕES COMERCIAIS & TAXAS DOS EVENTOS
             </h1>
             <Badge variant="orange" size="sm">
               Acordos Homologados
             </Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Gestão auditada de taxas de serviço, spread, antecipações (Advanced) e modelos de repasse
           </p>
         </div>
@@ -249,14 +249,14 @@ export const CommercialConditionsPage: React.FC = () => {
         <div
           className={`p-4 rounded-xl border text-xs flex items-center gap-2 ${
             feedbackMessage.type === 'success'
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-300'
-              : 'bg-rose-500/10 border-rose-500/30 text-rose-300'
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-700 dark:text-emerald-300'
+              : 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300'
           }`}
         >
           {feedbackMessage.type === 'success' ? (
-            <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 shrink-0" />
           ) : (
-            <AlertCircle className="w-4 h-4 text-rose-400 shrink-0" />
+            <AlertCircle className="w-4 h-4 text-rose-600 dark:text-rose-400 shrink-0" />
           )}
           <span>{feedbackMessage.text}</span>
         </div>
@@ -266,13 +266,13 @@ export const CommercialConditionsPage: React.FC = () => {
       {(semTaxaCount > 0 || pendenciasCount > 0) && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {semTaxaCount > 0 && (
-            <div className="p-4 rounded-xl border border-rose-500/30 bg-rose-500/10 flex items-start gap-3 text-xs">
-              <AlertCircle className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl border border-rose-500/20 bg-rose-500/5 flex items-start gap-3 text-xs">
+              <AlertCircle className="w-5 h-5 text-rose-500 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-rose-300 font-bold block">
+                <strong className="text-rose-700 dark:text-rose-300 font-bold block">
                   {semTaxaCount} evento(s) sem taxa de conveniência cadastrada
                 </strong>
-                <p className="text-rose-400/80 mt-0.5">
+                <p className="text-rose-600/80 dark:text-rose-400/80 mt-0.5">
                   Defina as condições comerciais antes de abrir as vendas oficiais para evitar repasses incorretos.
                 </p>
               </div>
@@ -280,13 +280,13 @@ export const CommercialConditionsPage: React.FC = () => {
           )}
 
           {pendenciasCount > 0 && (
-            <div className="p-4 rounded-xl border border-amber-500/30 bg-amber-500/10 flex items-start gap-3 text-xs">
-              <AlertTriangle className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+            <div className="p-4 rounded-xl border border-amber-500/20 bg-amber-500/5 flex items-start gap-3 text-xs">
+              <AlertTriangle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
               <div>
-                <strong className="text-amber-300 font-bold block">
+                <strong className="text-amber-800 dark:text-amber-300 font-bold block">
                   {pendenciasCount} pendência(s) de aprovação contratual
                 </strong>
-                <p className="text-amber-400/80 mt-0.5">
+                <p className="text-amber-700/80 dark:text-amber-400/80 mt-0.5">
                   Existem contratos comerciais aguardando aceite da produtora responsável.
                 </p>
               </div>
@@ -296,7 +296,7 @@ export const CommercialConditionsPage: React.FC = () => {
       )}
 
       {/* Filter and Search Bar */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4 shadow-lg space-y-4">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-4 shadow-xs space-y-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
@@ -305,7 +305,7 @@ export const CommercialConditionsPage: React.FC = () => {
               placeholder="Buscar por evento, código (EVT-...), produtora ou contrato..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-slate-700 bg-slate-950 pl-9 pr-4 py-2 text-xs text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+              className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 pl-9 pr-4 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-orange-500 focus:outline-none focus:bg-white"
             />
           </div>
 
@@ -322,8 +322,8 @@ export const CommercialConditionsPage: React.FC = () => {
                 onClick={() => setFilterSituation(tab.id as any)}
                 className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
                   filterSituation === tab.id
-                    ? 'bg-orange-500 text-white font-bold shadow'
-                    : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                    ? 'bg-orange-500 text-white font-bold shadow-xs'
+                    : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
                 {tab.label}
@@ -334,16 +334,16 @@ export const CommercialConditionsPage: React.FC = () => {
       </div>
 
       {/* Conditions Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden">
-        <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-          <div className="text-xs text-slate-400">
-            Mostrando <strong className="text-white font-mono">{filteredConditions.length}</strong> evento(s) configurado(s)
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            Mostrando <strong className="text-slate-900 dark:text-white font-mono">{filteredConditions.length}</strong> evento(s) configurado(s)
           </div>
         </div>
 
         <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs text-slate-300">
-            <thead className="bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-400 border-b border-slate-800">
+          <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
+            <thead className="bg-slate-50/80 dark:bg-slate-950/80 text-[11px] uppercase tracking-wider text-slate-500 dark:text-slate-400 border-b border-slate-200 dark:border-slate-800">
               <tr>
                 <th className="py-3 px-4">Evento / Código</th>
                 <th className="py-3 px-4">Produtora</th>
@@ -355,35 +355,35 @@ export const CommercialConditionsPage: React.FC = () => {
                 <th className="py-3 px-4 text-right">Ações</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
               {filteredConditions.map((item) => (
-                <tr key={item.eventId} className="hover:bg-slate-800/40 transition-colors">
+                <tr key={item.eventId} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                   <td className="py-3 px-4">
                     <div>
-                      <strong className="text-white block font-medium">{item.eventTitle}</strong>
-                      <span className="font-mono text-[10px] text-orange-400">{item.eventCode}</span>
+                      <strong className="text-slate-900 dark:text-white block font-medium">{item.eventTitle}</strong>
+                      <span className="font-mono text-[10px] text-orange-600 dark:text-orange-400">{item.eventCode}</span>
                     </div>
                   </td>
                   <td className="py-3 px-4">
                     <div>
-                      <span className="text-slate-200 block">{item.producerName}</span>
+                      <span className="text-slate-800 dark:text-slate-200 block">{item.producerName}</span>
                       <span className="font-mono text-[10px] text-slate-500">{item.producerDocument}</span>
                     </div>
                   </td>
                   <td className="py-3 px-4">
                     {item.situation === 'sem_taxa' ? (
-                      <span className="text-rose-400 font-bold">Não definida</span>
+                      <span className="text-rose-600 dark:text-rose-400 font-bold">Não definida</span>
                     ) : item.serviceFeeType === 'percentage' ? (
                       <div>
-                        <strong className="text-white">{(item.serviceFeeBps / 100).toFixed(1)}%</strong>
-                        <span className="text-[10px] text-slate-400 block">
+                        <strong className="text-slate-900 dark:text-white">{(item.serviceFeeBps / 100).toFixed(1)}%</strong>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">
                           {item.serviceFeePaidBy === 'buyer' ? 'Comprador' : 'Produtor'}
                         </span>
                       </div>
                     ) : (
                       <div>
-                        <strong className="text-white">{formatCurrency(item.serviceFeeFixedCents / 100)}</strong>
-                        <span className="text-[10px] text-slate-400 block">Fixa por ingresso</span>
+                        <strong className="text-slate-900 dark:text-white">{formatCurrency(item.serviceFeeFixedCents / 100)}</strong>
+                        <span className="text-[10px] text-slate-500 dark:text-slate-400 block">Fixa por ingresso</span>
                       </div>
                     )}
                   </td>
@@ -391,18 +391,18 @@ export const CommercialConditionsPage: React.FC = () => {
                     {item.spreadEnabled ? (
                       <Badge variant="cyan" size="sm">+{(item.spreadBps / 100).toFixed(1)}%</Badge>
                     ) : (
-                      <span className="text-slate-500">Inativo</span>
+                      <span className="text-slate-400 dark:text-slate-500">Inativo</span>
                     )}
                   </td>
                   <td className="py-3 px-4">
                     {item.advancedEnabled ? (
                       <Badge variant="emerald" size="sm">Teto {item.advancedMaxPercent}%</Badge>
                     ) : (
-                      <span className="text-slate-500">Desabilitado</span>
+                      <span className="text-slate-400 dark:text-slate-500">Desabilitado</span>
                     )}
                   </td>
                   <td className="py-3 px-4">
-                    <span className="font-mono text-slate-300">D+{item.payoutTermsDays}</span>
+                    <span className="font-mono text-slate-700 dark:text-slate-300">D+{item.payoutTermsDays}</span>
                     <span className="text-[10px] text-slate-500 block capitalize">{item.payoutModel.replace('_', ' ')}</span>
                   </td>
                   <td className="py-3 px-4">
@@ -439,21 +439,21 @@ export const CommercialConditionsPage: React.FC = () => {
 
       {/* MODAL 1: DEFINIR CONDIÇÕES COMERCIAIS */}
       {editingCondition && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden text-slate-100">
-            <div className="bg-slate-950 px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-2xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100">
+            <div className="bg-slate-50/80 dark:bg-slate-950 px-6 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <Scale className="w-5 h-5 text-orange-400" />
+                <Scale className="w-5 h-5 text-orange-500" />
                 <div>
-                  <h3 className="text-sm font-bold text-white">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                     Condições Comerciais: {editingCondition.eventTitle}
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {editingCondition.eventCode} • {editingCondition.producerName}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setEditingCondition(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setEditingCondition(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
@@ -461,7 +461,7 @@ export const CommercialConditionsPage: React.FC = () => {
             <form onSubmit={handleSaveCondition} className="p-6 space-y-5">
               {/* Tipo de Taxa */}
               <div className="space-y-2">
-                <label className="text-xs font-bold text-slate-300 uppercase tracking-wider block">
+                <label className="text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider block">
                   Tipo de Taxa de Conveniência (Serviço Disk)
                 </label>
                 <div className="grid grid-cols-2 gap-3">
@@ -470,8 +470,8 @@ export const CommercialConditionsPage: React.FC = () => {
                     onClick={() => setFormFeeType('percentage')}
                     className={`p-3 rounded-xl border text-left text-xs transition-colors cursor-pointer ${
                       formFeeType === 'percentage'
-                        ? 'border-orange-500 bg-orange-500/10 text-orange-400 font-bold'
-                        : 'border-slate-800 bg-slate-950 text-slate-300'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900'
                     }`}
                   >
                     Percentual (%) sobre o valor facial
@@ -481,8 +481,8 @@ export const CommercialConditionsPage: React.FC = () => {
                     onClick={() => setFormFeeType('fixed')}
                     className={`p-3 rounded-xl border text-left text-xs transition-colors cursor-pointer ${
                       formFeeType === 'fixed'
-                        ? 'border-orange-500 bg-orange-500/10 text-orange-400 font-bold'
-                        : 'border-slate-800 bg-slate-950 text-slate-300'
+                        ? 'border-orange-500 bg-orange-50 dark:bg-orange-500/10 text-orange-600 dark:text-orange-400 font-bold'
+                        : 'border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-900'
                     }`}
                   >
                     Valor Fixo (R$) por ingresso emitido
@@ -494,7 +494,7 @@ export const CommercialConditionsPage: React.FC = () => {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {formFeeType === 'percentage' ? (
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                       Percentual da Taxa (%):
                     </label>
                     <input
@@ -504,12 +504,12 @@ export const CommercialConditionsPage: React.FC = () => {
                       max="50"
                       value={formFeePercent}
                       onChange={(e) => setFormFeePercent(e.target.value)}
-                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-orange-500 focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:bg-white"
                     />
                   </div>
                 ) : (
                   <div>
-                    <label className="text-xs font-semibold text-slate-300 block mb-1">
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                       Valor Fixo em Reais (R$):
                     </label>
                     <input
@@ -518,19 +518,19 @@ export const CommercialConditionsPage: React.FC = () => {
                       min="0"
                       value={formFeeFixed}
                       onChange={(e) => setFormFeeFixed(e.target.value)}
-                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-orange-500 focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:bg-white"
                     />
                   </div>
                 )}
 
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Quem Paga a Taxa de Serviço?
                   </label>
                   <select
                     value={formFeePaidBy}
                     onChange={(e) => setFormFeePaidBy(e.target.value as any)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white focus:border-orange-500 focus:outline-none"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:bg-white"
                   >
                     <option value="buyer">Comprador (Taxa Adicional no Checkout)</option>
                     <option value="producer">Produtor (Taxa Embutida no Valor do Ingresso)</option>
@@ -539,15 +539,15 @@ export const CommercialConditionsPage: React.FC = () => {
               </div>
 
               {/* Spread e Antecipação */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-slate-300">Spread Comercial</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Spread Comercial</label>
                     <input
                       type="checkbox"
                       checked={formSpreadEnabled}
                       onChange={(e) => setFormSpreadEnabled(e.target.checked)}
-                      className="rounded border-slate-700 text-orange-500 focus:ring-orange-500"
+                      className="rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                     />
                   </div>
                   {formSpreadEnabled && (
@@ -557,19 +557,19 @@ export const CommercialConditionsPage: React.FC = () => {
                       placeholder="Spread % (ex: 1.5)"
                       value={formSpreadPercent}
                       onChange={(e) => setFormSpreadPercent(e.target.value)}
-                      className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-1.5 text-xs text-white focus:border-orange-500 focus:outline-none"
+                      className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-1.5 text-xs text-slate-900 dark:text-white focus:border-orange-500 focus:outline-none focus:bg-white"
                     />
                   )}
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <label className="text-xs font-semibold text-slate-300">Habilitar Antecipação (Advanced)</label>
+                    <label className="text-xs font-semibold text-slate-700 dark:text-slate-300">Habilitar Antecipação (Advanced)</label>
                     <input
                       type="checkbox"
                       checked={formAdvancedEnabled}
                       onChange={(e) => setFormAdvancedEnabled(e.target.checked)}
-                      className="rounded border-slate-700 text-orange-500 focus:ring-orange-500"
+                      className="rounded border-slate-300 text-orange-500 focus:ring-orange-500"
                     />
                   </div>
                   {formAdvancedEnabled && (
@@ -580,14 +580,14 @@ export const CommercialConditionsPage: React.FC = () => {
                         placeholder="Taxa %"
                         value={formAdvancedRate}
                         onChange={(e) => setFormAdvancedRate(e.target.value)}
-                        className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-xs text-white"
+                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2 py-1.5 text-xs text-slate-900 dark:text-white focus:bg-white"
                       />
                       <input
                         type="number"
                         placeholder="Teto % (ex: 70)"
                         value={formAdvancedMax}
                         onChange={(e) => setFormAdvancedMax(e.target.value)}
-                        className="rounded-lg border border-slate-700 bg-slate-950 px-2 py-1.5 text-xs text-white"
+                        className="rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-2 py-1.5 text-xs text-slate-900 dark:text-white focus:bg-white"
                       />
                     </div>
                   )}
@@ -595,9 +595,9 @@ export const CommercialConditionsPage: React.FC = () => {
               </div>
 
               {/* Repasse & Contrato */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-800">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-3 border-t border-slate-200 dark:border-slate-800">
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Prazo de Repasse (Dias após evento):
                   </label>
                   <input
@@ -605,11 +605,11 @@ export const CommercialConditionsPage: React.FC = () => {
                     min="0"
                     value={formPayoutDays}
                     onChange={(e) => setFormPayoutDays(e.target.value)}
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:bg-white"
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-300 block mb-1">
+                  <label className="text-xs font-semibold text-slate-700 dark:text-slate-300 block mb-1">
                     Número do Contrato:
                   </label>
                   <input
@@ -617,14 +617,14 @@ export const CommercialConditionsPage: React.FC = () => {
                     value={formContractNumber}
                     onChange={(e) => setFormContractNumber(e.target.value)}
                     placeholder="CTR-2026-..."
-                    className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white"
+                    className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white focus:bg-white"
                   />
                 </div>
               </div>
 
               {/* Motivo da Alteração (Obrigatório para Auditoria) */}
-              <div className="space-y-1 pt-3 border-t border-slate-800">
-                <label className="text-xs font-bold text-orange-400 block uppercase tracking-wider">
+              <div className="space-y-1 pt-3 border-t border-slate-200 dark:border-slate-800">
+                <label className="text-xs font-bold text-orange-600 dark:text-orange-400 block uppercase tracking-wider">
                   Motivo da Alteração / Justificativa Comercial *
                 </label>
                 <textarea
@@ -633,15 +633,15 @@ export const CommercialConditionsPage: React.FC = () => {
                   placeholder="Explique o motivo da definição/atualização de taxa (ex: negociação contratual, acordo de volume)..."
                   value={formChangeReason}
                   onChange={(e) => setFormChangeReason(e.target.value)}
-                  className="w-full rounded-lg border border-slate-700 bg-slate-950 px-3 py-2 text-xs text-white placeholder-slate-500 focus:border-orange-500 focus:outline-none"
+                  className="w-full rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:border-orange-500 focus:outline-none focus:bg-white"
                 />
-                <p className="text-[10px] text-slate-400">
+                <p className="text-[10px] text-slate-500 dark:text-slate-400">
                   Esta justificativa será registrada na trilha imutável de auditoria e versionamento do acordo.
                 </p>
               </div>
 
               {/* Modal Actions */}
-              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-800">
+              <div className="flex items-center justify-end gap-3 pt-4 border-t border-slate-200 dark:border-slate-800">
                 <Button size="sm" variant="secondary" onClick={() => setEditingCondition(null)}>
                   Cancelar
                 </Button>
@@ -656,62 +656,62 @@ export const CommercialConditionsPage: React.FC = () => {
 
       {/* MODAL 2: DOSSIÊ COMERCIAL DO EVENTO */}
       {dossierCondition && (
-        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden text-slate-100">
-            <div className="bg-slate-950 px-6 py-4 flex items-center justify-between border-b border-slate-800">
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 rounded-2xl w-full max-w-3xl shadow-2xl overflow-hidden text-slate-900 dark:text-slate-100">
+            <div className="bg-slate-50/80 dark:bg-slate-950 px-6 py-4 flex items-center justify-between border-b border-slate-200 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <FileText className="w-5 h-5 text-cyan-400" />
+                <FileText className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                 <div>
-                  <h3 className="text-sm font-bold text-white">
+                  <h3 className="text-sm font-bold text-slate-900 dark:text-white">
                     Dossiê Comercial do Evento
                   </h3>
-                  <p className="text-xs text-slate-400 font-mono">
+                  <p className="text-xs text-slate-500 dark:text-slate-400 font-mono">
                     {dossierCondition.eventCode} • {dossierCondition.eventTitle}
                   </p>
                 </div>
               </div>
-              <button onClick={() => setDossierCondition(null)} className="text-slate-400 hover:text-white">
+              <button onClick={() => setDossierCondition(null)} className="text-slate-400 hover:text-slate-600 dark:hover:text-white">
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             <div className="p-6 space-y-6 max-h-[80vh] overflow-y-auto">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 text-[11px] block">Versão Vigente</span>
-                  <strong className="text-white text-base">Versão {dossierCondition.currentVersion || 1}</strong>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400 text-[11px] block">Versão Vigente</span>
+                  <strong className="text-slate-900 dark:text-white text-base">Versão {dossierCondition.currentVersion || 1}</strong>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 text-[11px] block">Contrato</span>
-                  <strong className="text-white text-base font-mono">{dossierCondition.contractNumber || 'Não vinculado'}</strong>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400 text-[11px] block">Contrato</span>
+                  <strong className="text-slate-900 dark:text-white text-base font-mono">{dossierCondition.contractNumber || 'Não vinculado'}</strong>
                 </div>
-                <div className="p-4 rounded-xl bg-slate-950 border border-slate-800">
-                  <span className="text-slate-400 text-[11px] block">Situação</span>
-                  <strong className="text-emerald-400 text-base capitalize">{dossierCondition.situation}</strong>
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800">
+                  <span className="text-slate-500 dark:text-slate-400 text-[11px] block">Situação</span>
+                  <strong className="text-emerald-600 dark:text-emerald-400 text-base capitalize">{dossierCondition.situation}</strong>
                 </div>
               </div>
 
               {/* Trilha de Auditoria Comercial */}
               <div className="space-y-3">
                 <div className="flex items-center gap-2">
-                  <History className="w-4 h-4 text-orange-400" />
-                  <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                  <History className="w-4 h-4 text-orange-500" />
+                  <h4 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     Histórico de Alterações e Auditoria
                   </h4>
                 </div>
 
-                <div className="space-y-3 relative pl-6 border-l-2 border-slate-800 text-xs">
+                <div className="space-y-3 relative pl-6 border-l-2 border-slate-200 dark:border-slate-800 text-xs">
                   <div className="relative">
-                    <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-orange-500 border-2 border-slate-900" />
-                    <div className="bg-slate-950/60 border border-slate-800 rounded-xl p-3">
-                      <div className="flex justify-between text-slate-400 text-[11px]">
-                        <strong className="text-orange-400">Versão {dossierCondition.currentVersion || 1} (Ativa)</strong>
+                    <div className="absolute -left-[31px] top-1 w-3 h-3 rounded-full bg-orange-500 border-2 border-white dark:border-slate-900" />
+                    <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-xl p-3">
+                      <div className="flex justify-between text-slate-500 dark:text-slate-400 text-[11px]">
+                        <strong className="text-orange-600 dark:text-orange-400">Versão {dossierCondition.currentVersion || 1} (Ativa)</strong>
                         <span>Hoje</span>
                       </div>
-                      <p className="text-slate-200 mt-1">
+                      <p className="text-slate-700 dark:text-slate-200 mt-1">
                         Taxa de conveniência ajustada para {dossierCondition.serviceFeeBps / 100}% com repasse em D+{dossierCondition.payoutTermsDays}.
                       </p>
-                      <p className="text-[10px] text-slate-400 mt-1">
+                      <p className="text-[10px] text-slate-500 dark:text-slate-400 mt-1">
                         Responsável: Equipe Comercial DiskIngressos
                       </p>
                     </div>
@@ -720,7 +720,7 @@ export const CommercialConditionsPage: React.FC = () => {
               </div>
             </div>
 
-            <div className="px-6 py-3 bg-slate-950 border-t border-slate-800 flex justify-end">
+            <div className="px-6 py-3 bg-slate-50/80 dark:bg-slate-950 border-t border-slate-200 dark:border-slate-800 flex justify-end">
               <Button size="sm" variant="secondary" onClick={() => setDossierCondition(null)}>
                 Fechar Dossiê
               </Button>

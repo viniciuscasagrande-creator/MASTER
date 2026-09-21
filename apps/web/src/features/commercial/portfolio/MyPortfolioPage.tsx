@@ -109,16 +109,16 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 dark:border-slate-800 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white flex items-center gap-2">
-              <Briefcase className="h-6 w-6 text-orange-400" />
+            <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+              <Briefcase className="h-6 w-6 text-orange-500" />
               MINHA CARTEIRA COMERCIAL
             </h1>
             <Badge variant="orange" size="sm">Executivo B2B</Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
             Painel de gestão de produtores atribuídos, ações prioritárias e acompanhamento de receita
           </p>
         </div>
@@ -151,25 +151,25 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
           title="Meus Produtores"
           value={summary?.producersCount || 0}
           subtitle="Contas sob minha gestão"
-          icon={<Building2 className="h-4 w-4 text-orange-400" />}
+          icon={<Building2 className="h-4 w-4 text-orange-500" />}
         />
         <StatCard
           title="Eventos Ativos"
           value={summary?.activeEventsCount || 0}
           subtitle="Eventos em venda na carteira"
-          icon={<Calendar className="h-4 w-4 text-emerald-400" />}
+          icon={<Calendar className="h-4 w-4 text-emerald-500" />}
         />
         <StatCard
           title="Oportunidades"
           value={summary?.openOpportunitiesCount || 0}
           subtitle="Negociações abertas no pipeline"
-          icon={<TrendingUp className="h-4 w-4 text-cyan-400" />}
+          icon={<TrendingUp className="h-4 w-4 text-cyan-500" />}
         />
         <StatCard
           title="Ações Pendentes"
           value={summary?.pendingActionsCount || 0}
           subtitle="Tarefas agendadas na carteira"
-          icon={<Clock className="h-4 w-4 text-amber-400" />}
+          icon={<Clock className="h-4 w-4 text-amber-500" />}
         />
         <StatCard
           title="Ações Vencidas"
@@ -177,28 +177,28 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
           subtitle="Exigem contato imediato"
           badge={summary && summary.overdueActionsCount > 0 ? 'Atrasada' : 'Em dia'}
           badgeVariant={summary && summary.overdueActionsCount > 0 ? 'rose' : 'emerald'}
-          icon={<AlertCircle className="h-4 w-4 text-rose-400" />}
+          icon={<AlertCircle className="h-4 w-4 text-rose-500" />}
         />
       </div>
 
       {/* Error alert */}
       {error && (
-        <div className="rounded-xl border border-rose-500/30 bg-rose-500/10 p-4 text-xs text-rose-300 flex items-center gap-2">
-          <AlertCircle className="h-4 w-4 shrink-0" />
+        <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-4 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+          <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
           <span>{error}</span>
         </div>
       )}
 
       {/* Section 1: Priority Actions Box */}
       {priorityProducers.length > 0 && (
-        <div className="rounded-xl border border-amber-500/30 bg-amber-500/5 p-5">
+        <div className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50/80 dark:bg-amber-500/5 p-5 shadow-xs">
           <div className="flex items-center gap-2 mb-3">
-            <Clock className="h-5 w-5 text-amber-400" />
-            <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+            <Clock className="h-5 w-5 text-amber-600 dark:text-amber-400" />
+            <h2 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider">
               Prioridades Comerciais do Dia / Ações Vencidas ({priorityProducers.length})
             </h2>
           </div>
-          <p className="text-xs text-slate-400 mb-4">
+          <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
             Estes produtores possuem prazos de alinhamento vencidos ou agendados para hoje.
           </p>
 
@@ -208,12 +208,12 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
               return (
                 <div
                   key={prod.producer.id}
-                  className="rounded-lg border border-slate-800 bg-slate-900/90 p-3.5 space-y-2.5 flex flex-col justify-between hover:border-orange-500/50 transition-colors cursor-pointer"
+                  className="rounded-lg border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 p-3.5 space-y-2.5 flex flex-col justify-between hover:border-orange-300 dark:hover:border-orange-500/50 shadow-xs transition-colors cursor-pointer"
                   onClick={() => onSelectProducer(prod.producer.id)}
                 >
                   <div>
                     <div className="flex items-center justify-between">
-                      <span className="font-semibold text-white text-xs truncate">
+                      <span className="font-semibold text-slate-900 dark:text-white text-xs truncate">
                         {prod.producer.name}
                       </span>
                       {isOverdue ? (
@@ -222,18 +222,18 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
                         <Badge variant="amber" size="sm">Hoje</Badge>
                       )}
                     </div>
-                    <div className="text-[11px] text-slate-400 mt-1 font-mono">
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 mt-1 font-mono">
                       Data limite: {formatDate(prod.nextActionAt!)}
                     </div>
                     {prod.nextActionDescription && (
-                      <p className="text-[11px] text-slate-300 mt-1 line-clamp-1">
+                      <p className="text-[11px] text-slate-600 dark:text-slate-300 mt-1 line-clamp-1">
                         {prod.nextActionDescription}
                       </p>
                     )}
                   </div>
 
-                  <div className="flex items-center justify-between pt-2 border-t border-slate-800 text-xs">
-                    <span className="text-slate-400 font-mono text-[11px]">
+                  <div className="flex items-center justify-between pt-2 border-t border-slate-100 dark:border-slate-800 text-xs">
+                    <span className="text-slate-500 dark:text-slate-400 font-mono text-[11px]">
                       {prod.activeEventsCount} eventos ativos
                     </span>
                     <Button
@@ -256,30 +256,30 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
       )}
 
       {/* Section 2: Full Portfolio List */}
-      <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden backdrop-blur-sm">
-        <div className="p-4 border-b border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs overflow-hidden">
+        <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <h3 className="text-sm font-bold text-white">Todos os Produtores da Minha Carteira</h3>
-            <span className="text-xs text-slate-400 font-mono">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Todos os Produtores da Minha Carteira</h3>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
               {filteredProducers.length} produtores encontrados
             </span>
           </div>
 
           <div className="relative w-full sm:w-72">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-500" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
             <input
               type="text"
               placeholder="Buscar por nome ou CNPJ..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg pl-8 pr-3 py-1.5 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
         </div>
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">Produtor / Razão Social</th>
                 <th className="px-4 py-3">Status</th>
@@ -291,11 +291,11 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
                 <th className="px-4 py-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
               {loading && producers.length === 0 ? (
                 <tr>
                   <td colSpan={8} className="text-center py-12 text-slate-500">
-                    <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-orange-400" />
+                    <RefreshCw className="h-6 w-6 animate-spin mx-auto mb-2 text-orange-500" />
                     Carregando carteira de produtores...
                   </td>
                 </tr>
@@ -313,14 +313,14 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
                   return (
                     <tr
                       key={prod.producer.id}
-                      className="hover:bg-slate-800/40 transition-colors group cursor-pointer"
+                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors group cursor-pointer"
                       onClick={() => onSelectProducer(prod.producer.id)}
                     >
                       <td className="px-4 py-3">
-                        <div className="font-semibold text-white group-hover:text-orange-400 transition-colors">
+                        <div className="font-semibold text-slate-900 dark:text-white group-hover:text-orange-600 transition-colors">
                           {prod.producer.name}
                         </div>
-                        <div className="text-[10px] text-slate-500 font-mono mt-0.5">
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-mono mt-0.5">
                           CNPJ: {formatCnpj(prod.producer.cnpj)}
                         </div>
                       </td>
@@ -330,7 +330,7 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
                       <td className="px-4 py-3">
                         {getClassificationBadge(prod.commercialAccount?.commercialClassification)}
                       </td>
-                      <td className="px-4 py-3 text-center font-mono text-emerald-400 font-bold">
+                      <td className="px-4 py-3 text-center font-mono text-emerald-600 dark:text-emerald-400 font-bold">
                         {prod.activeEventsCount}
                       </td>
                       <td className="px-4 py-3 text-center">
@@ -338,20 +338,20 @@ export const MyPortfolioPage: React.FC<MyPortfolioPageProps> = ({
                           {prod.openOpportunitiesCount}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 font-mono text-slate-400 text-[11px]">
+                      <td className="px-4 py-3 font-mono text-slate-500 dark:text-slate-400 text-[11px]">
                         {prod.lastContactAt ? formatDate(prod.lastContactAt) : '—'}
                       </td>
                       <td className="px-4 py-3">
                         {prod.nextActionAt ? (
                           <span
                             className={`font-mono text-xs font-medium ${
-                              isActionOverdue ? 'text-rose-400' : 'text-slate-200'
+                              isActionOverdue ? 'text-rose-600 dark:text-rose-400' : 'text-slate-800 dark:text-slate-200'
                             }`}
                           >
                             {formatDate(prod.nextActionAt)}
                           </span>
                         ) : (
-                          <span className="text-slate-500">—</span>
+                          <span className="text-slate-400 dark:text-slate-500">—</span>
                         )}
                       </td>
                       <td className="px-4 py-3 text-right">

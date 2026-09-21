@@ -52,24 +52,24 @@ export const ContractTerminationModal: React.FC<ContractTerminationModalProps> =
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
-      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-rose-500/40 bg-slate-900 shadow-2xl flex flex-col max-h-[90vh]">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 dark:bg-black/75 p-4 backdrop-blur-sm animate-fadeIn">
+      <div className="relative w-full max-w-lg overflow-hidden rounded-2xl border border-rose-200 dark:border-rose-500/40 bg-white dark:bg-[#0F172A] shadow-2xl flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-rose-500/20 bg-rose-500/10 px-6 py-4">
+        <div className="flex items-center justify-between border-b border-rose-100 dark:border-rose-500/20 bg-rose-50/80 dark:bg-rose-500/10 px-6 py-4">
           <div className="flex items-center gap-2">
-            <div className="rounded-lg bg-rose-500/20 p-2 text-rose-400 border border-rose-500/30">
+            <div className="rounded-lg bg-rose-100 dark:bg-rose-500/20 p-2 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-500/30">
               <AlertOctagon className="h-5 w-5" />
             </div>
             <div>
-              <h2 className="text-base font-bold text-white">Rescisão Contratual Definitiva</h2>
-              <p className="text-xs text-rose-300">
-                Ação irreversível para o contrato <span className="font-mono font-bold text-white">{contractCode}</span>
+              <h2 className="text-base font-bold text-slate-900 dark:text-white">Rescisão Contratual Definitiva</h2>
+              <p className="text-xs text-rose-600 dark:text-rose-300 font-medium">
+                Ação irreversível para o contrato <span className="font-mono font-bold text-slate-900 dark:text-white">{contractCode}</span>
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+            className="rounded-lg p-1.5 text-slate-400 transition-colors hover:bg-rose-100/50 dark:hover:bg-slate-800 hover:text-slate-700 dark:hover:text-white"
           >
             <X className="h-5 w-5" />
           </button>
@@ -78,23 +78,23 @@ export const ContractTerminationModal: React.FC<ContractTerminationModalProps> =
         {/* Body */}
         <form onSubmit={handleSubmit} className="overflow-y-auto p-6 space-y-4 text-sm flex-1">
           {error && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300">
+            <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-700 dark:text-rose-300">
               {error}
             </div>
           )}
 
-          <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-200 flex items-start gap-2.5">
-            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400 mt-0.5" />
+          <div className="rounded-xl border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-200 flex items-start gap-2.5">
+            <AlertTriangle className="h-4 w-4 shrink-0 text-rose-600 dark:text-rose-400 mt-0.5" />
             <div>
-              <p className="font-semibold text-rose-300">Atenção ao impacto operacional e financeiro:</p>
-              <p className="mt-1 leading-relaxed">
+              <p className="font-semibold text-rose-900 dark:text-rose-300">Atenção ao impacto operacional e financeiro:</p>
+              <p className="mt-1 text-rose-700/90 dark:text-rose-200/90 leading-relaxed">
                 Ao rescindir este contrato, as taxas e condições comerciais serão imediatamente desativadas. Todos os borderôs e apurações futuras serão afetados e o status passará a TERMINATED.
               </p>
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Motivo Formal da Rescisão *
             </label>
             <input
@@ -102,13 +102,13 @@ export const ContractTerminationModal: React.FC<ContractTerminationModalProps> =
               value={reason}
               onChange={e => setReason(e.target.value)}
               placeholder="Ex: Distrato consensual entre as partes / Inadimplemento contratual..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white focus:border-rose-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:border-rose-500 focus:outline-none transition-colors"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
               Observações e Parecer Jurídico
             </label>
             <textarea
@@ -116,19 +116,19 @@ export const ContractTerminationModal: React.FC<ContractTerminationModalProps> =
               value={notes}
               onChange={e => setNotes(e.target.value)}
               placeholder="Detalhes adicionais, número de processo ou termos acordados na notificação extrajudicial..."
-              className="w-full rounded-lg border border-slate-700 bg-slate-800 px-3 py-2 text-xs text-white focus:border-rose-500 focus:outline-none"
+              className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-950 px-3 py-2 text-xs text-slate-900 dark:text-white placeholder:text-slate-400 focus:bg-white focus:border-rose-500 focus:outline-none transition-colors"
             />
           </div>
 
           {/* Actions */}
-          <div className="flex items-center justify-end gap-3 border-t border-slate-800 pt-4">
+          <div className="flex items-center justify-end gap-3 border-t border-slate-100 dark:border-slate-800 pt-4">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={onClose}
               disabled={submitting}
-              className="border-slate-700 text-slate-400 hover:text-white"
+              className="border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               Cancelar
             </Button>
@@ -136,7 +136,7 @@ export const ContractTerminationModal: React.FC<ContractTerminationModalProps> =
               type="submit"
               size="sm"
               disabled={submitting || !reason.trim()}
-              className="bg-rose-600 hover:bg-rose-500 text-white font-semibold shadow-lg shadow-rose-600/20"
+              className="bg-rose-600 hover:bg-rose-700 text-white font-semibold shadow-xs"
             >
               {submitting ? 'Rescindindo...' : 'Confirmar Rescisão Contratual'}
             </Button>

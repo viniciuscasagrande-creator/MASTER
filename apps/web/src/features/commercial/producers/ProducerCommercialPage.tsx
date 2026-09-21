@@ -430,13 +430,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       </div>
 
       {/* Main Header Card */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/80 p-6 shadow-xl backdrop-blur-sm relative overflow-hidden">
+      <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-xs relative overflow-hidden">
         <div className="pointer-events-none absolute -right-8 -top-8 h-32 w-32 rounded-full bg-orange-500/10 blur-3xl" />
 
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
           <div className="space-y-2">
             <div className="flex flex-wrap items-center gap-2.5">
-              <h1 className="text-2xl font-bold tracking-tight text-white">
+              <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
                 {summary.producer.name}
               </h1>
               {getStatusBadge(summary.commercialAccount?.commercialStatus || summary.producer.status)}
@@ -448,20 +448,20 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               )}
             </div>
 
-            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-400">
+            <div className="flex flex-wrap items-center gap-4 text-xs text-slate-500 dark:text-slate-400">
               <span className="font-mono">CNPJ: {formatCnpj(summary.producer.cnpj)}</span>
               <span>•</span>
               <span className="flex items-center gap-1.5">
-                <Briefcase className="h-3.5 w-3.5 text-orange-400" />
+                <Briefcase className="h-3.5 w-3.5 text-orange-500" />
                 Responsável:{' '}
                 {primaryOwner?.userName ? (
-                  <span className="font-semibold text-white">
+                  <span className="font-semibold text-slate-900 dark:text-white">
                     {primaryOwner.userName}
                   </span>
                 ) : (
                   <button
                     onClick={() => setIsAssignModalOpen(true)}
-                    className="text-orange-400 hover:underline font-medium"
+                    className="text-orange-600 dark:text-orange-400 hover:underline font-medium"
                   >
                     + Atribuir responsável
                   </button>
@@ -470,7 +470,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               {primaryOwner && (
                 <button
                   onClick={() => setIsAssignModalOpen(true)}
-                  className="text-[11px] text-slate-500 hover:text-orange-400 underline ml-1"
+                  className="text-[11px] text-slate-400 hover:text-orange-600 underline ml-1"
                 >
                   Alterar
                 </button>
@@ -479,14 +479,14 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
           </div>
 
           {/* Quick Summary Pill / Next Action */}
-          <div className="flex flex-col sm:flex-row gap-3 bg-slate-950/60 border border-slate-800 rounded-xl p-3.5">
-            <div className="pr-4 border-r border-slate-800/80">
+          <div className="flex flex-col sm:flex-row gap-3 bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 rounded-xl p-3.5">
+            <div className="pr-4 border-r border-slate-200 dark:border-slate-800/80">
               <div className="text-[10px] uppercase font-bold text-slate-500 tracking-wider">
                 Eventos no Catálogo
               </div>
-              <div className="text-lg font-bold font-mono text-white mt-0.5">
-                <span className="text-emerald-400">{summary.activeEventsCount}</span>
-                <span className="text-xs text-slate-500"> / {summary.eventsCount} total</span>
+              <div className="text-lg font-bold font-mono text-slate-900 dark:text-white mt-0.5">
+                <span className="text-emerald-600 dark:text-emerald-400">{summary.activeEventsCount}</span>
+                <span className="text-xs text-slate-400"> / {summary.eventsCount} total</span>
               </div>
             </div>
 
@@ -499,12 +499,12 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   <div className="flex items-center gap-1.5">
                     <Clock
                       className={`h-3.5 w-3.5 ${
-                        isNextActionOverdue ? 'text-rose-400' : 'text-amber-400'
+                        isNextActionOverdue ? 'text-rose-500' : 'text-amber-500'
                       }`}
                     />
                     <span
                       className={`text-xs font-mono font-semibold ${
-                        isNextActionOverdue ? 'text-rose-400' : 'text-slate-200'
+                        isNextActionOverdue ? 'text-rose-600' : 'text-slate-800 dark:text-slate-200'
                       }`}
                     >
                       {formatDate(summary.nextActionAt)}
@@ -516,7 +516,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                     )}
                   </div>
                 ) : (
-                  <span className="text-xs text-slate-500 italic">Nenhuma ação agendada</span>
+                  <span className="text-xs text-slate-400 italic">Nenhuma ação agendada</span>
                 )}
               </div>
             </div>
@@ -524,7 +524,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex items-center gap-2 border-t border-slate-800 mt-6 pt-4 overflow-x-auto">
+        <div className="flex items-center gap-2 border-t border-slate-200 dark:border-slate-800 mt-6 pt-4 overflow-x-auto">
           {[
             { id: 'resumo', label: 'Resumo da Conta' },
             { id: 'produtos', label: 'Produtos Contratados & Limites' },
@@ -540,8 +540,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               onClick={() => setActiveTab(tab.id as TabType)}
               className={`px-3.5 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors ${
                 activeTab === tab.id
-                  ? 'bg-orange-500 text-white shadow-sm'
-                  : 'text-slate-400 hover:text-white hover:bg-slate-800/60'
+                  ? 'bg-orange-500 text-white font-bold shadow-xs'
+                  : 'bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-50'
               }`}
             >
               {tab.label}
@@ -559,28 +559,28 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       {activeTab === 'resumo' && (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-sm">
-              <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                <Building2 className="h-4 w-4 text-orange-400" />
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 shadow-xs">
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                <Building2 className="h-4 w-4 text-orange-500" />
                 Condições Comerciais & Parâmetros
               </h3>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
-                <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
+                <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
                   <div className="text-slate-500">Classificação Comercial</div>
                   <div className="mt-1">{getClassificationBadge(account?.commercialClassification)}</div>
-                  <div className="text-[10px] text-slate-500 mt-1">Segmento: {account?.segmentId || 'SHOWS_FESTIVAIS'}</div>
+                  <div className="text-[10px] text-slate-400 mt-1">Segmento: {account?.segmentId || 'SHOWS_FESTIVAIS'}</div>
                 </div>
 
-                <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
+                <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
                   <div className="text-slate-500">Status da Conta</div>
                   <div className="mt-1">{getStatusBadge(account?.commercialStatus)}</div>
-                  <div className="text-[10px] text-slate-500 mt-1">Versão do registro: v{account?.version || 1}</div>
+                  <div className="text-[10px] text-slate-400 mt-1">Versão do registro: v{account?.version || 1}</div>
                 </div>
 
-                <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800 sm:col-span-2">
+                <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800 sm:col-span-2">
                   <div className="text-slate-500">Resumo de Anotações Estratégicas</div>
-                  <p className="text-slate-300 mt-1 leading-relaxed">
+                  <p className="text-slate-700 dark:text-slate-300 mt-1 leading-relaxed">
                     {account?.notesSummary || 'Nenhuma anotação cadastrada para esta conta comercial.'}
                   </p>
                 </div>
@@ -589,28 +589,28 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
             {/* Performance Snapshot */}
             {performance && (
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-sm">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4 flex items-center gap-2">
-                  <TrendingUp className="h-4 w-4 text-emerald-400" />
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 shadow-xs">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4 text-emerald-500" />
                   Métricas Comerciais Consolidadas
                 </h3>
 
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                  <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
-                    <div className="text-[11px] text-slate-400">Volume Bruto Vendido</div>
-                    <div className="text-lg font-bold font-mono text-white mt-1">
+                  <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Volume Bruto Vendido</div>
+                    <div className="text-lg font-bold font-mono text-slate-900 dark:text-white mt-1">
                       {formatCurrency(performance.summary.grossSales || 0)}
                     </div>
                   </div>
-                  <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
-                    <div className="text-[11px] text-slate-400">Ingressos Vendidos</div>
-                    <div className="text-lg font-bold font-mono text-white mt-1">
+                  <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Ingressos Vendidos</div>
+                    <div className="text-lg font-bold font-mono text-slate-900 dark:text-white mt-1">
                       {performance.summary.ticketsSold.toLocaleString('pt-BR')} un
                     </div>
                   </div>
-                  <div className="bg-slate-950/40 p-3 rounded-lg border border-slate-800">
-                    <div className="text-[11px] text-slate-400">Ticket Médio</div>
-                    <div className="text-lg font-bold font-mono text-white mt-1">
+                  <div className="bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400">Ticket Médio</div>
+                    <div className="text-lg font-bold font-mono text-slate-900 dark:text-white mt-1">
                       {formatCurrency(performance.summary.averageOrderValue || 0)}
                     </div>
                   </div>
@@ -621,9 +621,9 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
           {/* Right Column: Key Contact & Next Actions */}
           <div className="space-y-6">
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-sm">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 shadow-xs">
               <div className="flex items-center justify-between mb-3">
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                   Interlocutor Primário
                 </h3>
                 <Button
@@ -640,23 +640,23 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 (() => {
                   const primary = contacts.find((c) => c.isPrimary) || contacts[0];
                   return (
-                    <div className="space-y-3 bg-slate-950/40 p-3 rounded-lg border border-slate-800">
+                    <div className="space-y-3 bg-slate-50 dark:bg-slate-950/40 p-3 rounded-lg border border-slate-200 dark:border-slate-800">
                       <div>
-                        <div className="text-sm font-semibold text-white">{primary.name}</div>
-                        <div className="text-xs text-orange-400">{primary.roleTitle || 'Representante'}</div>
+                        <div className="text-sm font-semibold text-slate-900 dark:text-white">{primary.name}</div>
+                        <div className="text-xs text-orange-600 dark:text-orange-400">{primary.roleTitle || 'Representante'}</div>
                       </div>
-                      <div className="space-y-1.5 text-xs text-slate-300">
+                      <div className="space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                         {primary.email && (
                           <div className="flex items-center gap-2">
-                            <Mail className="h-3.5 w-3.5 text-slate-500" />
-                            <a href={`mailto:${primary.email}`} className="hover:underline text-slate-200 truncate">
+                            <Mail className="h-3.5 w-3.5 text-slate-400" />
+                            <a href={`mailto:${primary.email}`} className="hover:underline text-slate-700 dark:text-slate-200 truncate">
                               {primary.email}
                             </a>
                           </div>
                         )}
                         {primary.phone && (
                           <div className="flex items-center gap-2">
-                            <Phone className="h-3.5 w-3.5 text-slate-500" />
+                            <Phone className="h-3.5 w-3.5 text-slate-400" />
                             <span className="font-mono">{primary.phone}</span>
                           </div>
                         )}
@@ -665,14 +665,14 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   );
                 })()
               ) : (
-                <div className="text-xs text-slate-500 italic py-4 text-center">
+                <div className="text-xs text-slate-400 italic py-4 text-center">
                   Nenhum contato cadastrado ainda.
                 </div>
               )}
             </div>
 
-            <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5 shadow-sm space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400">
+            <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 shadow-xs space-y-3">
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 Ações Rápidas
               </h3>
               <Button
@@ -680,7 +680,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 size="sm"
                 className="w-full justify-start"
                 onClick={() => setIsActivityModalOpen(true)}
-                icon={<MessageSquare className="h-4 w-4 text-orange-400" />}
+                icon={<MessageSquare className="h-4 w-4 text-orange-500" />}
               >
                 Registrar Atendimento / Reunião
               </Button>
@@ -689,7 +689,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 size="sm"
                 className="w-full justify-start"
                 onClick={() => setIsOpportunityModalOpen(true)}
-                icon={<Plus className="h-4 w-4 text-emerald-400" />}
+                icon={<Plus className="h-4 w-4 text-emerald-500" />}
               >
                 Criar Oportunidade Comercial
               </Button>
@@ -709,17 +709,17 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
       {/* Tab 2: Eventos */}
       {activeTab === 'eventos' && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 shadow-lg overflow-hidden backdrop-blur-sm">
-          <div className="p-4 border-b border-slate-800 flex items-center justify-between">
-            <h3 className="text-sm font-bold text-white">Eventos Realizados & Em Cartaz</h3>
-            <span className="text-xs text-slate-400 font-mono">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 shadow-xs overflow-hidden">
+          <div className="p-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">Eventos Realizados & Em Cartaz</h3>
+            <span className="text-xs text-slate-500 dark:text-slate-400 font-mono">
               {performance?.events?.length || summary.eventsCount} eventos encontrados
             </span>
           </div>
 
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3">Evento</th>
                   <th className="px-4 py-3">Status</th>
@@ -729,7 +729,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   <th className="px-4 py-3 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {!performance?.events || performance.events.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-8 text-slate-500">
@@ -738,8 +738,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   </tr>
                 ) : (
                   performance.events.map((evt) => (
-                    <tr key={evt.eventId} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-white">
+                    <tr key={evt.eventId} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
                         {evt.eventName}
                       </td>
                       <td className="px-4 py-3">
@@ -750,13 +750,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                           {evt.status}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-center font-mono text-slate-300">
+                      <td className="px-4 py-3 text-center font-mono text-slate-600 dark:text-slate-300">
                         {evt.capacity.toLocaleString('pt-BR')}
                       </td>
-                      <td className="px-4 py-3 text-center font-mono">
+                      <td className="px-4 py-3 text-center font-mono text-slate-700 dark:text-slate-200">
                         {evt.ticketsSold.toLocaleString('pt-BR')} un ({evt.occupancyPercentage}%)
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-white">
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                         {formatCurrency(evt.grossSales || 0)}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -790,36 +790,36 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   title="Faturamento Bruto"
                   value={formatCurrency(performance.summary.grossSales || 0)}
                   subtitle="Vendas totais acumuladas"
-                  icon={<DollarSign className="h-4 w-4 text-emerald-400" />}
+                  icon={<DollarSign className="h-4 w-4 text-emerald-500" />}
                 />
                 <StatCard
                   title="Ingressos Emitidos"
                   value={performance.summary.ticketsSold.toLocaleString('pt-BR')}
                   subtitle="Volume de público transacionado"
-                  icon={<CheckCircle2 className="h-4 w-4 text-cyan-400" />}
+                  icon={<CheckCircle2 className="h-4 w-4 text-cyan-500" />}
                 />
                 <StatCard
                   title="Ticket Médio"
                   value={formatCurrency(performance.summary.averageOrderValue || 0)}
                   subtitle="Média por pedido"
-                  icon={<TrendingUp className="h-4 w-4 text-orange-400" />}
+                  icon={<TrendingUp className="h-4 w-4 text-orange-500" />}
                 />
                 <StatCard
                   title="Taxa de Ocupação"
                   value={`${performance.summary.commercialOccupancyPercentage}%`}
                   subtitle="Média ponderada do inventário"
                   badgeVariant="cyan"
-                  icon={<AlertCircle className="h-4 w-4 text-cyan-400" />}
+                  icon={<AlertCircle className="h-4 w-4 text-cyan-500" />}
                 />
               </div>
 
-              <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-5">
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider mb-4">
+              <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-5 shadow-xs">
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white uppercase tracking-wider mb-4">
                   Desempenho por Canal de Venda
                 </h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
-                    <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                    <thead className="border-b border-slate-200 dark:border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                       <tr>
                         <th className="pb-3">Canal</th>
                         <th className="pb-3 text-center">Ingressos</th>
@@ -827,16 +827,16 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                         <th className="pb-3 text-right">Participação</th>
                       </tr>
                     </thead>
-                    <tbody className="divide-y divide-slate-800/60">
+                    <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                       {performance.channels && performance.channels.length > 0 ? (
                         performance.channels.map((ch) => (
-                          <tr key={ch.channelId} className="hover:bg-slate-800/30">
-                            <td className="py-2.5 font-medium text-white">{ch.channelName}</td>
-                            <td className="py-2.5 text-center font-mono text-slate-300">{ch.ticketsSold}</td>
-                            <td className="py-2.5 text-right font-mono font-semibold text-emerald-400">
+                          <tr key={ch.channelId} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/30 transition-colors">
+                            <td className="py-2.5 font-medium text-slate-900 dark:text-white">{ch.channelName}</td>
+                            <td className="py-2.5 text-center font-mono text-slate-600 dark:text-slate-300">{ch.ticketsSold}</td>
+                            <td className="py-2.5 text-right font-mono font-semibold text-emerald-600 dark:text-emerald-400">
                               {formatCurrency(ch.grossSales || 0)}
                             </td>
-                            <td className="py-2.5 text-right font-mono text-slate-400">
+                            <td className="py-2.5 text-right font-mono text-slate-500 dark:text-slate-400">
                               {performance.summary.grossSales && ch.grossSales
                                 ? `${((ch.grossSales / performance.summary.grossSales) * 100).toFixed(1)}%`
                                 : '0%'}
@@ -868,8 +868,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm font-bold text-white">Interlocutores da Conta Comercial</h3>
-              <p className="text-xs text-slate-400">Contatos de produção, financeiro, marketing e direção da empresa</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Interlocutores da Conta Comercial</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Contatos de produção, financeiro, marketing e direção da empresa</p>
             </div>
             <Button
               variant="primary"
@@ -883,19 +883,19 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {contacts.length === 0 ? (
-              <div className="col-span-full text-center py-12 text-slate-500 bg-slate-900/40 rounded-xl border border-slate-800">
+              <div className="col-span-full text-center py-12 text-slate-500 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-200 dark:border-slate-800">
                 Nenhum contato B2B cadastrado para este produtor.
               </div>
             ) : (
               contacts.map((contact) => (
                 <div
                   key={contact.id}
-                  className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 relative group hover:border-slate-700 transition-all"
+                  className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 relative group hover:border-orange-200 dark:hover:border-slate-700 shadow-xs transition-all"
                 >
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex items-center gap-1.5">
-                        <span className="font-semibold text-white text-sm">{contact.name}</span>
+                        <span className="font-semibold text-slate-900 dark:text-white text-sm">{contact.name}</span>
                         {contact.isPrimary && (
                           <Badge variant="orange" size="sm">Principal</Badge>
                         )}
@@ -903,27 +903,27 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                           <Badge variant="purple" size="sm">Pode Negociar</Badge>
                         )}
                       </div>
-                      <div className="text-xs text-slate-400 mt-0.5">{contact.roleTitle || 'Representante Comercial'}</div>
+                      <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">{contact.roleTitle || 'Representante Comercial'}</div>
                     </div>
                   </div>
 
-                  <div className="mt-3 space-y-1.5 text-xs text-slate-300">
+                  <div className="mt-3 space-y-1.5 text-xs text-slate-600 dark:text-slate-300">
                     {contact.email && (
                       <div className="flex items-center gap-2">
-                        <Mail className="h-3.5 w-3.5 text-slate-500" />
+                        <Mail className="h-3.5 w-3.5 text-slate-400" />
                         <span className="truncate">{contact.email}</span>
                       </div>
                     )}
                     {contact.phone && (
                       <div className="flex items-center gap-2">
-                        <Phone className="h-3.5 w-3.5 text-slate-500" />
+                        <Phone className="h-3.5 w-3.5 text-slate-400" />
                         <span className="font-mono">{contact.phone}</span>
                       </div>
                     )}
                   </div>
 
                   {contact.notes && (
-                    <div className="mt-3 text-[11px] text-slate-400 bg-slate-950/40 p-2 rounded border border-slate-800/80">
+                    <div className="mt-3 text-[11px] text-slate-600 dark:text-slate-400 bg-slate-50 dark:bg-slate-950/40 p-2 rounded border border-slate-200 dark:border-slate-800/80">
                       {contact.notes}
                     </div>
                   )}
@@ -939,8 +939,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm font-bold text-white">Oportunidades Comerciais Vinculadas</h3>
-              <p className="text-xs text-slate-400">Negociações de novos eventos, contratos de exclusividade ou renovações</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Oportunidades Comerciais Vinculadas</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Negociações de novos eventos, contratos de exclusividade ou renovações</p>
             </div>
             <Button
               variant="primary"
@@ -952,9 +952,9 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
             </Button>
           </div>
 
-          <div className="rounded-xl border border-slate-800 bg-slate-900/60 overflow-hidden shadow-lg">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 overflow-hidden shadow-xs">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <thead className="border-b border-slate-200 dark:border-slate-800 bg-slate-50/80 dark:bg-slate-950/40 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
                 <tr>
                   <th className="px-4 py-3">Código & Título</th>
                   <th className="px-4 py-3">Estágio do Funil</th>
@@ -964,7 +964,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   <th className="px-4 py-3 text-right">Ação</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {opportunities.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="text-center py-8 text-slate-500">
@@ -973,10 +973,10 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   </tr>
                 ) : (
                   opportunities.map((opp) => (
-                    <tr key={opp.id} className="hover:bg-slate-800/40 transition-colors">
+                    <tr key={opp.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                       <td className="px-4 py-3">
-                        <div className="font-semibold text-white">{opp.title}</div>
-                        <div className="text-[10px] text-orange-400 font-mono">{opp.publicCode}</div>
+                        <div className="font-semibold text-slate-900 dark:text-white">{opp.title}</div>
+                        <div className="text-[10px] text-orange-600 dark:text-orange-400 font-mono">{opp.publicCode}</div>
                       </td>
                       <td className="px-4 py-3">
                         <Badge variant="cyan" size="sm">{opp.stageName || 'Estágio Inicial'}</Badge>
@@ -995,10 +995,10 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                           {opp.status}
                         </Badge>
                       </td>
-                      <td className="px-4 py-3 text-right font-mono font-bold text-white">
+                      <td className="px-4 py-3 text-right font-mono font-bold text-slate-900 dark:text-white">
                         {opp.estimatedValue ? formatCurrency(opp.estimatedValue) : '—'}
                       </td>
-                      <td className="px-4 py-3 font-mono text-slate-300">
+                      <td className="px-4 py-3 font-mono text-slate-600 dark:text-slate-300">
                         {opp.expectedDecisionAt ? formatDate(opp.expectedDecisionAt) : '—'}
                       </td>
                       <td className="px-4 py-3 text-right">
@@ -1027,8 +1027,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         <div className="space-y-4">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-sm font-bold text-white">Histórico de Atendimentos & Contatos</h3>
-              <p className="text-xs text-slate-400">Registro cronológico de reuniões, telefonemas e alinhamentos comerciais</p>
+              <h3 className="text-sm font-bold text-slate-900 dark:text-white">Histórico de Atendimentos & Contatos</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Registro cronológico de reuniões, telefonemas e alinhamentos comerciais</p>
             </div>
             <Button
               variant="primary"
@@ -1042,7 +1042,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
           <div className="space-y-3">
             {activities.length === 0 ? (
-              <div className="text-center py-12 text-slate-500 bg-slate-900/40 rounded-xl border border-slate-800">
+              <div className="text-center py-12 text-slate-500 bg-slate-50 dark:bg-slate-900/40 rounded-xl border border-slate-200 dark:border-slate-800">
                 Nenhuma atividade comercial registrada até o momento.
               </div>
             ) : (
@@ -1051,7 +1051,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 return (
                   <div
                     key={act.id}
-                    className="rounded-xl border border-slate-800 bg-slate-900/60 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-slate-700 transition-colors"
+                    className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4 hover:border-orange-200 dark:hover:border-slate-700 shadow-xs transition-colors"
                   >
                     <div className="space-y-1.5">
                       <div className="flex items-center gap-2">
@@ -1061,29 +1061,29 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                             {typeInfo.label}
                           </span>
                         </Badge>
-                        <span className="text-sm font-semibold text-white">{act.subject}</span>
+                        <span className="text-sm font-semibold text-slate-900 dark:text-white">{act.subject}</span>
                       </div>
                       {act.description && (
-                        <p className="text-xs text-slate-300 max-w-3xl leading-relaxed">
+                        <p className="text-xs text-slate-600 dark:text-slate-300 max-w-3xl leading-relaxed">
                           {act.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-3 text-[11px] text-slate-500">
-                        <span>Registrado por: <strong className="text-slate-400">{act.createdByName || 'Comercial'}</strong></span>
+                      <div className="flex items-center gap-3 text-[11px] text-slate-400 dark:text-slate-500">
+                        <span>Registrado por: <strong className="text-slate-700 dark:text-slate-400">{act.createdByName || 'Comercial'}</strong></span>
                         <span>•</span>
                         <span className="font-mono">{formatDateTime(act.createdAt)}</span>
                       </div>
                     </div>
 
                     {act.nextActionDescription && (
-                      <div className="bg-slate-950/60 border border-slate-800 p-2.5 rounded-lg text-xs min-w-[220px]">
-                        <div className="text-[10px] uppercase font-bold text-orange-400 flex items-center gap-1">
+                      <div className="bg-slate-50 dark:bg-slate-950/60 border border-slate-200 dark:border-slate-800 p-2.5 rounded-lg text-xs min-w-[220px]">
+                        <div className="text-[10px] uppercase font-bold text-orange-600 dark:text-orange-400 flex items-center gap-1">
                           <Clock className="h-3 w-3" />
                           Próxima Ação Gerada
                         </div>
-                        <div className="font-medium text-slate-200 mt-0.5">{act.nextActionDescription}</div>
+                        <div className="font-medium text-slate-800 dark:text-slate-200 mt-0.5">{act.nextActionDescription}</div>
                         {act.nextActionAt && (
-                          <div className="text-[10px] font-mono text-slate-400 mt-0.5">
+                          <div className="text-[10px] font-mono text-slate-500 dark:text-slate-400 mt-0.5">
                             Prazo: {formatDate(act.nextActionAt)}
                           </div>
                         )}
@@ -1099,10 +1099,10 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
 
       {/* Tab 7: Pendências */}
       {activeTab === 'pendencias' && (
-        <div className="rounded-xl border border-slate-800 bg-slate-900/60 p-6 text-center space-y-3">
-          <ListTodo className="h-10 w-10 text-amber-400 mx-auto" />
-          <h3 className="text-base font-bold text-white">Tarefas & Pendências da Central de Trabalho</h3>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/60 p-6 text-center space-y-3 shadow-xs">
+          <ListTodo className="h-10 w-10 text-amber-500 mx-auto" />
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Tarefas & Pendências da Central de Trabalho</h3>
+          <p className="text-xs text-slate-500 dark:text-slate-400 max-w-md mx-auto">
             Todas as pendências operacionais e comerciais vinculadas a este produtor são orquestradas pelo Core Task Engine.
           </p>
           <div className="pt-2">
@@ -1119,7 +1119,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         onClose={() => setIsActivityModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <MessageSquare className="h-5 w-5 text-orange-400" />
+            <MessageSquare className="h-5 w-5 text-orange-500" />
             <span>Registrar Interação Comercial</span>
           </div>
         }
@@ -1127,21 +1127,21 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       >
         <form onSubmit={handleRegisterActivity} className="space-y-4">
           {actionError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{actionError}</span>
             </div>
           )}
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
-                Tipo de Interação <span className="text-orange-400">*</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Tipo de Interação <span className="text-orange-500">*</span>
               </label>
               <select
                 value={activityForm.type}
                 onChange={(e) => setActivityForm({ ...activityForm, type: e.target.value as CommercialActivityType })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="MEETING">Reunião Presencial / Online</option>
                 <option value="CALL">Ligação Telefônica</option>
@@ -1154,8 +1154,8 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
-                Assunto <span className="text-orange-400">*</span>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+                Assunto <span className="text-orange-500">*</span>
               </label>
               <input
                 type="text"
@@ -1163,13 +1163,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 value={activityForm.subject}
                 onChange={(e) => setActivityForm({ ...activityForm, subject: e.target.value })}
                 placeholder="Ex: Alinhamento de taxas e datas do festival"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Descrição detalhada da conversa
             </label>
             <textarea
@@ -1177,22 +1177,22 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={activityForm.description}
               onChange={(e) => setActivityForm({ ...activityForm, description: e.target.value })}
               placeholder="Principais pontos acordados, solicitações do produtor e impressões gerais..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500 resize-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white resize-none"
             />
           </div>
 
-          <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800 space-y-3">
-            <div className="text-xs font-bold text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
+          <div className="bg-slate-50 dark:bg-slate-950/60 p-4 rounded-xl border border-slate-200 dark:border-slate-800 space-y-3">
+            <div className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider flex items-center gap-1.5">
               <Clock className="h-4 w-4" />
               Sincronizar Próxima Ação (Core Task Engine)
             </div>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-slate-500 dark:text-slate-400">
               Opcional: cria automaticamente uma tarefa acionável na Central de Trabalho com alerta de prazo.
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Título da Próxima Ação
                 </label>
                 <input
@@ -1200,25 +1200,25 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                   value={activityForm.nextActionDescription}
                   onChange={(e) => setActivityForm({ ...activityForm, nextActionDescription: e.target.value })}
                   placeholder="Ex: Enviar minuta revisada do contrato"
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-slate-300 mb-1">
+                <label className="block text-xs font-medium text-slate-700 dark:text-slate-300 mb-1">
                   Data Limite (Deadline)
                 </label>
                 <input
                   type="date"
                   value={activityForm.nextActionAt}
                   onChange={(e) => setActivityForm({ ...activityForm, nextActionAt: e.target.value })}
-                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                  className="w-full bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 font-mono"
                 />
               </div>
             </div>
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
@@ -1245,7 +1245,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         onClose={() => setIsOpportunityModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Plus className="h-5 w-5 text-orange-400" />
+            <Plus className="h-5 w-5 text-orange-500" />
             <span>Nova Oportunidade Comercial</span>
           </div>
         }
@@ -1253,15 +1253,15 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       >
         <form onSubmit={handleCreateOpportunity} className="space-y-4">
           {actionError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{actionError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Título da Oportunidade <span className="text-orange-400">*</span>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Título da Oportunidade <span className="text-orange-500">*</span>
             </label>
             <input
               type="text"
@@ -1269,19 +1269,19 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={opportunityForm.title}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, title: e.target.value })}
               placeholder="Ex: Turnê Acústica 2026 - Exclusividade Curitiba"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Tipo de Negócio
               </label>
               <select
                 value={opportunityForm.businessType}
                 onChange={(e) => setOpportunityForm({ ...opportunityForm, businessType: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="NOVO_EVENTO">Novo Evento</option>
                 <option value="RENOVACAO">Renovação</option>
@@ -1292,7 +1292,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Valor Estimado de Venda (R$)
               </label>
               <input
@@ -1300,25 +1300,25 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 value={opportunityForm.estimatedValue}
                 onChange={(e) => setOpportunityForm({ ...opportunityForm, estimatedValue: e.target.value })}
                 placeholder="Ex: 150.000,00"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Previsão de Decisão
               </label>
               <input
                 type="date"
                 value={opportunityForm.expectedDecisionAt}
                 onChange={(e) => setOpportunityForm({ ...opportunityForm, expectedDecisionAt: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 font-mono"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white font-mono"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Contexto da Negociação
             </label>
             <textarea
@@ -1326,11 +1326,11 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={opportunityForm.description}
               onChange={(e) => setOpportunityForm({ ...opportunityForm, description: e.target.value })}
               placeholder="Escopo do evento, locais cogitados, expectativa de público..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500 resize-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
@@ -1357,7 +1357,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         onClose={() => setIsContactModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <UserPlus className="h-5 w-5 text-orange-400" />
+            <UserPlus className="h-5 w-5 text-orange-500" />
             <span>Adicionar Interlocutor B2B</span>
           </div>
         }
@@ -1365,15 +1365,15 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       >
         <form onSubmit={handleAddContact} className="space-y-4">
           {actionError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{actionError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
-              Nome Completo <span className="text-orange-400">*</span>
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
+              Nome Completo <span className="text-orange-500">*</span>
             </label>
             <input
               type="text"
@@ -1381,13 +1381,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={contactForm.name}
               onChange={(e) => setContactForm({ ...contactForm, name: e.target.value })}
               placeholder="Ex: Mariana Silva"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Cargo / Função
               </label>
               <input
@@ -1395,12 +1395,12 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 value={contactForm.roleTitle}
                 onChange={(e) => setContactForm({ ...contactForm, roleTitle: e.target.value })}
                 placeholder="Ex: Gerente Geral de Produção"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Telefone / Celular
               </label>
               <input
@@ -1408,13 +1408,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
                 value={contactForm.phone}
                 onChange={(e) => setContactForm({ ...contactForm, phone: e.target.value })}
                 placeholder="(41) 99999-8888"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Email Comercial
             </label>
             <input
@@ -1422,34 +1422,34 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={contactForm.email}
               onChange={(e) => setContactForm({ ...contactForm, email: e.target.value })}
               placeholder="mariana@empresa.com.br"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div className="flex items-center gap-6 py-2">
-            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={contactForm.isPrimary}
                 onChange={(e) => setContactForm({ ...contactForm, isPrimary: e.target.checked })}
-                className="rounded border-slate-700 bg-slate-950 text-orange-500 focus:ring-orange-500"
+                className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-orange-500 focus:ring-orange-500"
               />
               Contato Principal da Conta
             </label>
 
-            <label className="flex items-center gap-2 text-xs text-slate-300 cursor-pointer">
+            <label className="flex items-center gap-2 text-xs text-slate-700 dark:text-slate-300 cursor-pointer">
               <input
                 type="checkbox"
                 checked={contactForm.canNegotiate}
                 onChange={(e) => setContactForm({ ...contactForm, canNegotiate: e.target.checked })}
-                className="rounded border-slate-700 bg-slate-950 text-orange-500 focus:ring-orange-500"
+                className="rounded border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-orange-500 focus:ring-orange-500"
               />
               Tomador de Decisão / Pode Negociar
             </label>
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Notas Adicionais
             </label>
             <input
@@ -1457,11 +1457,11 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={contactForm.notes}
               onChange={(e) => setContactForm({ ...contactForm, notes: e.target.value })}
               placeholder="Preferência de horário, canal favorito..."
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white placeholder-slate-600 focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
@@ -1488,7 +1488,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         onClose={() => setIsEditAccountModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Edit2 className="h-5 w-5 text-orange-400" />
+            <Edit2 className="h-5 w-5 text-orange-500" />
             <span>Editar Parâmetros da Conta Comercial</span>
           </div>
         }
@@ -1496,21 +1496,21 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       >
         <form onSubmit={handleUpdateAccount} className="space-y-4">
           {actionError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{actionError}</span>
             </div>
           )}
 
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Status Comercial
               </label>
               <select
                 value={editAccountForm.commercialStatus}
                 onChange={(e) => setEditAccountForm({ ...editAccountForm, commercialStatus: e.target.value as CommercialStatus })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="ACTIVE">Ativo</option>
                 <option value="PROSPECT">Prospect</option>
@@ -1521,13 +1521,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
             </div>
 
             <div>
-              <label className="block text-xs font-medium text-slate-300 mb-1">
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Classificação
               </label>
               <select
                 value={editAccountForm.commercialClassification}
                 onChange={(e) => setEditAccountForm({ ...editAccountForm, commercialClassification: e.target.value })}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+                className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
               >
                 <option value="ESTRATEGICO">Estratégico</option>
                 <option value="KEY_ACCOUNT">Key Account</option>
@@ -1539,13 +1539,13 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Segmento
             </label>
             <select
               value={editAccountForm.segmentId}
               onChange={(e) => setEditAccountForm({ ...editAccountForm, segmentId: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="SHOWS_FESTIVAIS">Shows & Festivais</option>
               <option value="TEATRO_CULTURA">Teatro & Cultura</option>
@@ -1557,18 +1557,18 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Notas e Acordos Internos
             </label>
             <textarea
               rows={3}
               value={editAccountForm.notesSummary}
               onChange={(e) => setEditAccountForm({ ...editAccountForm, notesSummary: e.target.value })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500 resize-none"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-600 focus:outline-none focus:border-orange-500 focus:bg-white resize-none"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
@@ -1595,7 +1595,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
         onClose={() => setIsAssignModalOpen(false)}
         title={
           <div className="flex items-center gap-2">
-            <Briefcase className="h-5 w-5 text-orange-400" />
+            <Briefcase className="h-5 w-5 text-orange-500" />
             <span>Atribuir Responsável Comercial</span>
           </div>
         }
@@ -1603,14 +1603,14 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
       >
         <form onSubmit={handleAssignPortfolio} className="space-y-4">
           {actionError && (
-            <div className="rounded-lg border border-rose-500/30 bg-rose-500/10 p-3 text-xs text-rose-300 flex items-center gap-2">
-              <AlertCircle className="h-4 w-4 shrink-0" />
+            <div className="rounded-lg border border-rose-200 dark:border-rose-500/30 bg-rose-50 dark:bg-rose-500/10 p-3 text-xs text-rose-800 dark:text-rose-300 flex items-center gap-2">
+              <AlertCircle className="h-4 w-4 shrink-0 text-rose-500" />
               <span>{actionError}</span>
             </div>
           )}
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               ID do Usuário Comercial
             </label>
             <input
@@ -1619,18 +1619,18 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={assignForm.userId}
               onChange={(e) => setAssignForm({ ...assignForm, userId: e.target.value })}
               placeholder="Ex: usr-admin-1"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Papel na Conta
             </label>
             <select
               value={assignForm.role}
               onChange={(e) => setAssignForm({ ...assignForm, role: e.target.value as any })}
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             >
               <option value="PRIMARY">Responsável Principal (Primary Owner)</option>
               <option value="SUPPORT">Suporte Comercial (Support)</option>
@@ -1639,7 +1639,7 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1">
+            <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">
               Motivo da Atribuição / Transferência
             </label>
             <input
@@ -1647,11 +1647,11 @@ export const ProducerCommercialPage: React.FC<ProducerCommercialPageProps> = ({
               value={assignForm.notes}
               onChange={(e) => setAssignForm({ ...assignForm, notes: e.target.value })}
               placeholder="Ex: Reorganização de carteira regional"
-              className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-xs text-white focus:outline-none focus:border-orange-500"
+              className="w-full bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-lg px-3 py-2 text-xs text-slate-900 dark:text-white focus:outline-none focus:border-orange-500 focus:bg-white"
             />
           </div>
 
-          <div className="flex justify-end gap-2 pt-2 border-t border-slate-800">
+          <div className="flex justify-end gap-2 pt-2 border-t border-slate-200 dark:border-slate-800">
             <Button
               type="button"
               variant="outline"
