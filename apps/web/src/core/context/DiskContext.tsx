@@ -146,14 +146,17 @@ export const DiskContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (isLockedToSingleProducer) return;
     setSelectedProducerIdState(producerId);
 
-    // If selected event does not belong to new producer, reset event filter
-    if (producerId !== 'all' && selectedEventId !== 'all') {
-      const evt = allEvents.find(e => e.id === selectedEventId);
-      if (evt && evt.producerId !== producerId) {
-        setSelectedEventIdState('all');
+    // Invalidação imediata e atômica de evento incompatível (Regra 12)
+    setSelectedEventIdState(prevEventId => {
+      if (prevEventId === 'all') return 'all';
+      if (producerId === 'all') return 'all';
+      const evt = allEvents.find(e => e.id === prevEventId);
+      if (!evt || evt.producerId !== producerId) {
+        return 'all';
       }
-    }
-  }, [isLockedToSingleProducer, selectedEventId, allEvents]);
+      return prevEventId;
+    });
+  }, [isLockedToSingleProducer, allEvents]);
 
   const setEvent = useCallback((eventId: string | 'all') => {
     if (isLockedToSingleEvent) return;

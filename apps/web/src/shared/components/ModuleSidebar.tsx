@@ -78,7 +78,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
 
   const SECTIONS: ModuleNavSection[] = [
     {
-      title: 'PRINCIPAL',
+      title: 'VISÃO GERAL',
       items: [
         {
           id: 'overview',
@@ -164,7 +164,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
       ]
     },
     {
-      title: 'FINANÇAS & RESULTADOS',
+      title: 'GESTÃO',
       items: [
         {
           id: 'finance',
@@ -189,7 +189,12 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'accounting-entries', label: 'Livro Diário' },
             { id: 'accounting-dre', label: 'DRE Gerencial', requiredPermission: 'contabilidade.dre.visualizar' }
           ]
-        },
+        }
+      ]
+    },
+    {
+      title: 'CRESCIMENTO',
+      items: [
         {
           id: 'marketing',
           label: 'Marketing',
