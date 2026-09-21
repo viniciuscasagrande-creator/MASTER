@@ -509,14 +509,14 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2.5">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
               CENTRO DE CONTROLE DE ESTORNOS
             </h1>
             <Badge variant="rose" size="sm">
               Cascata Reversa Integrada
             </Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Gestão de estornos totais, parciais e alçadas com cancelamento factual de ingressos na catraca e lançamentos compensatórios no Ledger
           </p>
         </div>
@@ -541,7 +541,7 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           title="SOLICITAÇÕES PENDENTES"
           value={`${pendingApprovalsList.length} pedidos`}
           subtitle={`Total: ${formatCurrency(pendingAmount)}`}
-          icon={<Clock className="h-4 w-4 text-amber-400" />}
+          icon={<Clock className="h-4 w-4 text-amber-500" />}
           badge={pendingApprovalsList.length > 0 ? 'Ação Requerida' : 'Zerado'}
           badgeVariant={pendingApprovalsList.length > 0 ? 'amber' : 'emerald'}
         />
@@ -550,7 +550,7 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           title="TOTAL ESTORNADO (MÊS)"
           value={formatCurrency(completedAmount)}
           subtitle="Refletido em balancetes no Ledger"
-          icon={<ArrowDownLeft className="h-4 w-4 text-rose-400" />}
+          icon={<ArrowDownLeft className="h-4 w-4 text-rose-500" />}
           badge="Auditado"
           badgeVariant="rose"
         />
@@ -559,7 +559,7 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           title="TAXA DE CHARGEBACK"
           value="0.08%"
           trend={{ value: 'Abaixo do limite de 1.0%', isPositive: true }}
-          icon={<ShieldAlert className="h-4 w-4 text-emerald-400" />}
+          icon={<ShieldAlert className="h-4 w-4 text-emerald-500" />}
           badge="Segurança Visa/Master"
           badgeVariant="emerald"
         />
@@ -568,14 +568,14 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           title="TEMPO MÉDIO DE EXECUÇÃO"
           value="1.4 horas"
           subtitle="Até invalidação do QR Code na catraca"
-          icon={<Activity className="h-4 w-4 text-cyan-400" />}
+          icon={<Activity className="h-4 w-4 text-cyan-500" />}
           badge="SLA Cumprido"
           badgeVariant="cyan"
         />
       </div>
 
       {/* Sub-Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
         {[
           { id: 'refunds-dashboard', label: 'Centro de Controle' },
           { id: 'refunds-requests', label: `Central de Solicitações (${scopedRefunds.length})` },
@@ -587,8 +587,8 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
             onClick={() => setActiveTab(tab.id)}
             className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40 shadow-sm'
-                : 'text-slate-400 hover:text-white hover:bg-slate-800/40'
+                ? 'bg-orange-50 text-orange-700 border border-orange-200 shadow-2xs font-bold'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
             }`}
           >
             <span>{tab.label}</span>
@@ -600,13 +600,13 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       {activeTab === 'refunds-dashboard' && (
         <div className="space-y-4">
           {/* Cascata Reversa Banner */}
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-950/70 p-4 text-xs text-slate-300 flex items-start gap-3">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/10 text-orange-400 border border-orange-500/20 shrink-0">
+          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 text-xs text-slate-700 flex items-start gap-3 shadow-xs">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 border border-orange-200 shrink-0">
               <RotateCcw className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <strong className="text-white block">Arquitetura de Cascata Reversa Integrada:</strong>
-              <p className="text-slate-400 leading-relaxed">
+              <strong className="text-slate-900 block font-bold">Arquitetura de Cascata Reversa Integrada:</strong>
+              <p className="text-slate-500 leading-relaxed">
                 Ao aprovar e processar uma devolução, o Core desativa os QR Codes nas catracas do evento, recalcula o split com o produtor, atualiza o status do pedido no SAC e emite lançamentos compensatórios no Ledger Contábil — sem jamais editar saldos históricos.
               </p>
             </div>
@@ -614,14 +614,14 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
 
           {/* Quick Pending Approvals Callout */}
           {pendingApprovalsList.length > 0 && (
-            <div className="rounded-2xl border border-amber-500/30 bg-amber-500/5 p-4 flex items-center justify-between">
+            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-center justify-between shadow-xs">
               <div className="flex items-center gap-3">
-                <Clock className="h-5 w-5 text-amber-400 shrink-0" />
+                <Clock className="h-5 w-5 text-amber-600 shrink-0" />
                 <div>
-                  <div className="text-xs font-bold text-amber-300">
+                  <div className="text-xs font-bold text-amber-900">
                     {pendingApprovalsList.length} solicitação(ões) de estorno aguardando avaliação de alçada
                   </div>
-                  <div className="text-[11px] text-amber-400/80">
+                  <div className="text-[11px] text-amber-700">
                     Montante total aguardando decisão: {formatCurrency(pendingAmount)}
                   </div>
                 </div>

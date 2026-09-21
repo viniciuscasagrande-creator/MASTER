@@ -280,12 +280,12 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
 
   return (
     <aside
-      className={`relative z-20 flex flex-col border-r border-slate-800/80 bg-slate-950/95 transition-all duration-300 select-none ${
+      className={`relative z-20 flex flex-col border-r border-slate-800 bg-[#0F172A] transition-all duration-300 select-none ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
     >
       {/* Header with expand/collapse toggle */}
-      <div className="flex h-12 items-center justify-between px-3 border-b border-slate-800/60">
+      <div className="flex h-12 items-center justify-between px-3 border-b border-slate-800">
         {isExpanded ? (
           <div className="flex items-center gap-1.5 overflow-hidden">
             <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 truncate">

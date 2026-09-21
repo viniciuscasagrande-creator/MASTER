@@ -23,18 +23,18 @@ export const ModuleQuickActions: React.FC<ModuleQuickActionsProps> = ({
   className
 }) => {
   const variantStyles = {
-    primary: 'bg-orange-500/10 text-orange-400 border-orange-500/30 hover:bg-orange-500/20',
-    outline: 'bg-slate-900/60 text-slate-300 border-slate-800 hover:border-slate-700 hover:text-white',
-    emerald: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30 hover:bg-emerald-500/20',
-    purple: 'bg-purple-500/10 text-purple-400 border-purple-500/30 hover:bg-purple-500/20',
-    amber: 'bg-amber-500/10 text-amber-400 border-amber-500/30 hover:bg-amber-500/20',
-    cyan: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30 hover:bg-cyan-500/20'
+    primary: 'bg-orange-50 text-orange-700 border-orange-200 hover:bg-orange-100/80',
+    outline: 'bg-white text-slate-700 border-slate-200 hover:border-slate-300 hover:bg-slate-50 hover:text-slate-900 shadow-2xs',
+    emerald: 'bg-emerald-50 text-emerald-700 border-emerald-200 hover:bg-emerald-100/80',
+    purple: 'bg-purple-50 text-purple-700 border-purple-200 hover:bg-purple-100/80',
+    amber: 'bg-amber-50 text-amber-700 border-amber-200 hover:bg-amber-100/80',
+    cyan: 'bg-cyan-50 text-cyan-700 border-cyan-200 hover:bg-cyan-100/80'
   };
 
   return (
     <div className={cn('space-y-3', className)}>
       {title && (
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block px-1">
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 block px-1">
           {title}
         </span>
       )}
@@ -45,7 +45,7 @@ export const ModuleQuickActions: React.FC<ModuleQuickActionsProps> = ({
             onClick={act.onClick}
             disabled={act.disabled}
             className={cn(
-              'group flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-sm',
+              'group flex items-center gap-2.5 px-4 py-2.5 rounded-xl border text-xs font-semibold transition-all duration-150 active:scale-95 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed shadow-2xs',
               variantStyles[act.variant || 'outline']
             )}
           >
@@ -54,7 +54,7 @@ export const ModuleQuickActions: React.FC<ModuleQuickActionsProps> = ({
             </span>
             <span>{act.label}</span>
             {act.badge && (
-              <span className="ml-1 px-1.5 py-0.5 rounded-md text-[10px] font-mono bg-black/40 text-slate-300">
+              <span className="ml-1 px-1.5 py-0.5 rounded-md text-[10px] font-mono bg-slate-100 text-slate-600 border border-slate-200">
                 {act.badge}
               </span>
             )}

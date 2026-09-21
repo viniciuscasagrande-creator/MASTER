@@ -56,17 +56,17 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
   return (
     <div className="space-y-6">
       {/* Top Banner & Scope feedback */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-800/80 bg-gradient-to-r from-slate-900/90 via-slate-900/60 to-slate-950 p-5 shadow-xl">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
               Visão Geral do Disk Interno
             </h1>
             <Badge variant="orange" size="sm" dot>
               Core Ativo
             </Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             {currentProducer
               ? `Filtrado por: ${currentProducer.name} ${currentEvent ? `• ${currentEvent.title}` : ''}`
               : 'Monitoramento unificado de todos os produtores, eventos e operações financeiras.'}
@@ -76,7 +76,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         <div className="flex items-center gap-2.5">
           <button
             onClick={onOpenNewSale}
-            className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-3.5 py-2 text-xs font-semibold text-white shadow-md shadow-orange-500/20 hover:bg-orange-600 transition-all cursor-pointer"
+            className="inline-flex items-center gap-2 rounded-xl bg-orange-500 px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-orange-600 transition-all cursor-pointer"
           >
             <Sparkles className="h-4 w-4" />
             Simular Venda Real
@@ -90,7 +90,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           title="Receita Bruta Total"
           value={formatCurrency(totalGross)}
           trend={{ value: '14,8% vs mês ant.', isPositive: true }}
-          icon={<DollarSign className="h-4 w-4 text-orange-400" />}
+          icon={<DollarSign className="h-4 w-4 text-orange-500" />}
           badge="Global"
           badgeVariant="orange"
         />
@@ -99,7 +99,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           title="Ingressos Emitidos"
           value={formatNumber(totalTickets)}
           trend={{ value: '8,2% este mês', isPositive: true }}
-          icon={<Ticket className="h-4 w-4 text-cyan-400" />}
+          icon={<Ticket className="h-4 w-4 text-cyan-600" />}
           subtitle={`${filteredEvents.length} eventos no escopo`}
         />
 
@@ -107,7 +107,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           title="Saldo Produtores"
           value={formatCurrency(totalBalance)}
           trend={{ value: 'R$ 387 mil repasses hoje', isPositive: true }}
-          icon={<Users className="h-4 w-4 text-emerald-400" />}
+          icon={<Users className="h-4 w-4 text-emerald-600" />}
           badge="Disponível"
           badgeVariant="emerald"
         />
@@ -116,21 +116,21 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
           title="Atenção Operacional"
           value={`${pendingRefundsCount + activeIncidentsCount} itens`}
           subtitle={`${pendingRefundsCount} estornos • ${activeIncidentsCount} chamados`}
-          icon={<ShieldAlert className="h-4 w-4 text-amber-400" />}
+          icon={<ShieldAlert className="h-4 w-4 text-amber-500" />}
           badge={pendingRefundsCount > 0 ? 'Pendente' : 'Normal'}
           badgeVariant={pendingRefundsCount > 0 ? 'amber' : 'slate'}
         />
       </div>
 
       {/* Cross-Module Operational Matrix */}
-      <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h2 className="text-sm font-bold text-white">Status dos 9 Módulos Conectados</h2>
-            <p className="text-xs text-slate-400">Todos sincronizados sobre a mesma base relacional</p>
+            <h2 className="text-sm font-bold text-slate-900">Status dos 9 Módulos Conectados</h2>
+            <p className="text-xs text-slate-500">Todos sincronizados sobre a mesma base relacional</p>
           </div>
-          <span className="text-[11px] font-mono text-emerald-400 flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+          <span className="text-[11px] font-mono text-emerald-700 flex items-center gap-1.5 font-semibold">
+            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
             Conexão em Tempo Real Ativa
           </span>
         </div>
@@ -150,14 +150,14 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             <div
               key={mod.id}
               onClick={() => onNavigate(mod.id)}
-              className="group flex flex-col justify-between rounded-xl border border-slate-800 bg-slate-950/60 p-3 hover:border-orange-500/50 hover:bg-slate-900 cursor-pointer transition-all"
+              className="group flex flex-col justify-between rounded-xl border border-slate-200 bg-slate-50 p-3 hover:border-orange-500/50 hover:bg-orange-50/30 cursor-pointer transition-all shadow-2xs"
             >
-              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-300 group-hover:text-white">
+              <div className="flex items-center justify-between text-[11px] font-semibold text-slate-700 group-hover:text-slate-900">
                 <span className="truncate">{mod.name}</span>
-                <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 text-orange-400 transition-opacity" />
+                <ArrowUpRight className="h-3 w-3 opacity-0 group-hover:opacity-100 text-orange-600 transition-opacity" />
               </div>
-              <div className="mt-2 text-xs font-bold text-white font-mono">{mod.count}</div>
-              <div className="mt-1 text-[10px] text-slate-500">{mod.status}</div>
+              <div className="mt-2 text-xs font-bold text-slate-900 font-mono">{mod.count}</div>
+              <div className="mt-1 text-[10px] text-slate-500 font-medium">{mod.status}</div>
             </div>
           ))}
         </div>
@@ -166,15 +166,15 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       {/* Two Columns: Live Stream & Active Events */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Left: Active Events Snapshot */}
-        <div className="lg:col-span-2 rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg">
+        <div className="lg:col-span-2 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold text-white">Eventos em Operação</h2>
-              <p className="text-xs text-slate-400">Status de vendas e check-in em tempo real</p>
+              <h2 className="text-sm font-bold text-slate-900">Eventos em Operação</h2>
+              <p className="text-xs text-slate-500">Status de vendas e check-in em tempo real</p>
             </div>
             <button
               onClick={() => onNavigate('events')}
-              className="text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors"
+              className="text-xs font-semibold text-orange-600 hover:text-orange-700 transition-colors"
             >
               Ver todos ({filteredEvents.length}) →
             </button>
@@ -189,12 +189,12 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 <div
                   key={evt.id}
                   onClick={() => onNavigate('events')}
-                  className="rounded-xl border border-slate-800/80 bg-slate-950/50 p-4 transition-all hover:border-slate-700 cursor-pointer"
+                  className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 transition-all hover:border-slate-300 hover:bg-slate-100/50 cursor-pointer shadow-2xs"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                     <div>
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold text-sm text-white">{evt.title}</span>
+                        <span className="font-bold text-sm text-slate-900">{evt.title}</span>
                         <Badge
                           variant={evt.status === 'in_operation' ? 'orange' : evt.status === 'on_sale' ? 'emerald' : 'slate'}
                           size="sm"
@@ -202,16 +202,16 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                           {evt.status === 'in_operation' ? 'Em Andamento' : evt.status === 'on_sale' ? 'Vendas Abertas' : 'Publicado'}
                         </Badge>
                       </div>
-                      <div className="text-xs text-slate-400 mt-0.5">
+                      <div className="text-xs text-slate-500 mt-0.5">
                         {evt.venue} • {evt.city}/{evt.state} • {evt.producerName}
                       </div>
                     </div>
 
                     <div className="text-right">
-                      <div className="text-sm font-bold text-white font-mono">
+                      <div className="text-sm font-bold text-slate-900 font-mono">
                         {formatCurrency(evt.grossRevenue)}
                       </div>
-                      <div className="text-[11px] text-slate-400 font-mono">
+                      <div className="text-[11px] text-slate-500 font-mono">
                         {formatNumber(evt.ticketsSold)} / {formatNumber(evt.totalCapacity)} ingressos ({percentSold}%)
                       </div>
                     </div>
@@ -219,11 +219,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
                   {/* Progress bar */}
                   <div className="mt-3">
-                    <div className="flex justify-between text-[11px] text-slate-400 mb-1">
+                    <div className="flex justify-between text-[11px] text-slate-500 mb-1">
                       <span>Ocupação da Capacidade</span>
-                      <span className="font-mono">{percentSold}% vendido</span>
+                      <span className="font-mono font-semibold text-slate-700">{percentSold}% vendido</span>
                     </div>
-                    <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                    <div className="h-2 w-full rounded-full bg-slate-200 overflow-hidden">
                       <div
                         className="h-full bg-gradient-to-r from-orange-500 to-amber-500 rounded-full transition-all duration-500"
                         style={{ width: `${percentSold}%` }}
@@ -232,7 +232,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   </div>
 
                   {evt.status === 'in_operation' && (
-                    <div className="mt-2 text-[11px] text-cyan-400 flex items-center justify-between font-mono">
+                    <div className="mt-2 text-[11px] text-cyan-700 flex items-center justify-between font-mono font-medium">
                       <span>Portaria & Check-in: {formatNumber(evt.checkInCount)} validados</span>
                       <span>{percentCheckIn}% do público presente</span>
                     </div>
@@ -244,45 +244,45 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         </div>
 
         {/* Right: Real-time Transaction & Audit Stream */}
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg flex flex-col">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs flex flex-col">
           <div className="flex items-center justify-between mb-4">
             <div>
-              <h2 className="text-sm font-bold text-white">Fluxo do Core</h2>
-              <p className="text-xs text-slate-400">Últimas transações interconectadas</p>
+              <h2 className="text-sm font-bold text-slate-900">Fluxo do Core</h2>
+              <p className="text-xs text-slate-500">Últimas transações interconectadas</p>
             </div>
-            <Activity className="h-4 w-4 text-orange-400" />
+            <Activity className="h-4 w-4 text-orange-600" />
           </div>
 
           <div className="flex-1 overflow-y-auto space-y-3 max-h-[420px]">
             {orders.slice(0, 5).map((ord) => (
               <div
                 key={ord.id}
-                className="rounded-xl border border-slate-800/70 bg-slate-950/60 p-3 text-xs space-y-1 hover:border-slate-700 transition-colors"
+                className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-xs space-y-1 hover:bg-slate-100 transition-colors shadow-2xs"
               >
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-white font-mono">{ord.orderNumber}</span>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-semibold ${
-                    ord.status === 'paid' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
+                  <span className="font-bold text-slate-900 font-mono">{ord.orderNumber}</span>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    ord.status === 'paid' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' : 'bg-rose-50 text-rose-700 border border-rose-200'
                   }`}>
                     {ord.status.toUpperCase()}
                   </span>
                 </div>
-                <div className="text-slate-300 font-medium truncate">
+                <div className="text-slate-700 font-medium truncate">
                   {ord.customerName}
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-400 font-mono">
+                <div className="flex items-center justify-between text-[11px] text-slate-500 font-mono">
                   <span>{ord.paymentMethod.toUpperCase()}</span>
-                  <span className="font-bold text-white">{formatCurrency(ord.totalAmount)}</span>
+                  <span className="font-bold text-slate-900">{formatCurrency(ord.totalAmount)}</span>
                 </div>
               </div>
             ))}
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800 flex items-center justify-between text-xs">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs">
             <span className="text-slate-500">Transações automáticas</span>
             <button
               onClick={() => onNavigate('sac', 'sac-orders')}
-              className="text-orange-400 hover:text-orange-300 font-medium"
+              className="text-orange-600 hover:text-orange-700 font-semibold"
             >
               Consultar no SAC →
             </button>

@@ -67,17 +67,17 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
   return (
     <div className="space-y-6">
       {/* Top Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
               VISÃO GERAL COMERCIAL
             </h1>
             <Badge variant="orange" size="sm">
               Core Comercial Real
             </Badge>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Indicadores executivos consolidados, vendas confirmadas, ritmo de comercialização e canais
           </p>
         </div>
@@ -91,7 +91,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                 setSelectedProducerId(e.target.value);
                 setSelectedEventId('');
               }}
-              className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:border-orange-500 focus:outline-none"
+              className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:border-orange-500 focus:outline-none shadow-2xs"
             >
               <option value="">Todos os Produtores</option>
               {producers.map((p) => (
@@ -105,7 +105,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
           <select
             value={selectedEventId}
             onChange={(e) => setSelectedEventId(e.target.value)}
-            className="rounded-lg border border-slate-700 bg-slate-900 px-3 py-1.5 text-xs text-slate-200 focus:border-orange-500 focus:outline-none"
+            className="rounded-xl border border-slate-200 bg-white px-3 py-1.5 text-xs text-slate-800 focus:border-orange-500 focus:outline-none shadow-2xs"
           >
             <option value="">Todos os Eventos</option>
             {events
@@ -210,25 +210,25 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
 
       {/* Remarketing Opportunity Alert Card (Strictly aggregated preview, NO PII, NO cart manipulation) */}
       {data?.opportunities && Number(data.opportunities.abandonedCarts) > 0 && (
-        <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/10 via-slate-900/60 to-slate-900/60 p-5 shadow-lg">
+        <div className="rounded-2xl border border-amber-200 bg-amber-50/80 p-5 shadow-xs">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 text-amber-400" />
-                <h2 className="text-sm font-bold text-white uppercase tracking-wider">
+                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <h2 className="text-sm font-bold text-slate-900 uppercase tracking-wider">
                   Oportunidades de Recuperação Comercial (Remarketing)
                 </h2>
                 <Badge variant="amber" size="sm">
                   Origem: Módulo Remarketing
                 </Badge>
               </div>
-              <p className="text-xs text-slate-300">
-                Existem <strong className="text-amber-300 font-mono">{data.opportunities.abandonedCarts} pedidos/carrinhos</strong> em aberto aguardando conversão
+              <p className="text-xs text-slate-700">
+                Existem <strong className="text-amber-800 font-mono">{data.opportunities.abandonedCarts} pedidos/carrinhos</strong> em aberto aguardando conversão
                 {data.opportunities.potentialValue !== null && (
-                  <span>, totalizando potencial de <strong className="text-emerald-300 font-mono">{formatCurrency(data.opportunities.potentialValue)}</strong></span>
+                  <span>, totalizando potencial de <strong className="text-emerald-800 font-mono">{formatCurrency(data.opportunities.potentialValue)}</strong></span>
                 )}.
               </p>
-              <p className="text-[11px] text-slate-400 italic">
+              <p className="text-[11px] text-slate-500 italic">
                 * Conforme diretriz de governança, o módulo Comercial expõe apenas indicadores agregados sem PII. A régua de recuperação e contatos são geridos no módulo Remarketing.
               </p>
             </div>
@@ -238,7 +238,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                 size="sm"
                 variant="secondary"
                 onClick={onNavigateToRemarketing}
-                icon={<ArrowUpRight className="h-3.5 w-3.5 text-amber-400" />}
+                icon={<ArrowUpRight className="h-3.5 w-3.5 text-amber-600" />}
               >
                 Ver no Remarketing
               </Button>
@@ -250,12 +250,12 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
       {/* Trends & Distribution Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Trend (7 days) */}
-        <div className="lg:col-span-2 rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg flex flex-col justify-between">
+        <div className="lg:col-span-2 rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-4">
               <div>
-                <h2 className="text-sm font-bold text-white">Ritmo Diário de Vendas (Últimos 7 Dias)</h2>
-                <p className="text-xs text-slate-400">Transações e ingressos emitidos por data oficial</p>
+                <h2 className="text-sm font-bold text-slate-900">Ritmo Diário de Vendas (Últimos 7 Dias)</h2>
+                <p className="text-xs text-slate-500">Transações e ingressos emitidos por data oficial</p>
               </div>
               <Badge variant="slate" size="sm">
                 Real time
@@ -269,26 +269,26 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
 
                 return (
                   <div key={idx} className="flex flex-col items-center gap-2">
-                    <div className="text-[10px] text-slate-400 font-mono">{t.tickets} ing.</div>
-                    <div className="w-full bg-slate-800/80 rounded-t-lg h-28 flex items-end justify-center p-1">
+                    <div className="text-[10px] text-slate-500 font-mono">{t.tickets} ing.</div>
+                    <div className="w-full bg-slate-100 rounded-t-lg h-28 flex items-end justify-center p-1">
                       <div
                         style={{ height: `${heightPct}%` }}
-                        className="w-full bg-orange-500/80 hover:bg-orange-400 rounded-t transition-all duration-300"
+                        className="w-full bg-orange-500 hover:bg-orange-600 rounded-t transition-all duration-300"
                         title={`${t.label}: ${t.orders} pedidos, ${t.tickets} ingressos${t.grossSales !== null ? ` (${formatCurrency(t.grossSales)})` : ''}`}
                       />
                     </div>
-                    <div className="text-[11px] font-bold text-slate-300">{t.label}</div>
+                    <div className="text-[11px] font-bold text-slate-700">{t.label}</div>
                   </div>
                 );
               })}
             </div>
           </div>
 
-          <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <span>Filtro ativo: {data?.period.label || 'Sem restrição'}</span>
             <button
               onClick={onNavigateToSales}
-              className="text-orange-400 hover:text-orange-300 font-semibold flex items-center gap-1 transition-colors"
+              className="text-orange-600 hover:text-orange-700 font-bold flex items-center gap-1 transition-colors"
             >
               Ver Performance Completa & Drilldown <ArrowUpRight className="h-3 w-3" />
             </button>
@@ -296,22 +296,22 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
         </div>
 
         {/* Orders Status Distribution */}
-        <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg space-y-4">
+        <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
           <div>
-            <h2 className="text-sm font-bold text-white">Status dos Pedidos</h2>
-            <p className="text-xs text-slate-400">Distribuição no período selecionado</p>
+            <h2 className="text-sm font-bold text-slate-900">Status dos Pedidos</h2>
+            <p className="text-xs text-slate-500">Distribuição no período selecionado</p>
           </div>
 
           <div className="space-y-3">
             {data?.ordersByStatus.map((st) => (
               <div key={st.status} className="space-y-1">
                 <div className="flex items-center justify-between text-xs">
-                  <span className="text-slate-300 font-medium">{st.label}</span>
-                  <span className="font-mono text-white font-semibold">
-                    {st.count} <span className="text-slate-500 font-normal">({st.percentage}%)</span>
+                  <span className="text-slate-700 font-medium">{st.label}</span>
+                  <span className="font-mono text-slate-900 font-bold">
+                    {st.count} <span className="text-slate-400 font-normal">({st.percentage}%)</span>
                   </span>
                 </div>
-                <div className="h-2 w-full rounded-full bg-slate-800 overflow-hidden">
+                <div className="h-2 w-full rounded-full bg-slate-100 overflow-hidden">
                   <div
                     style={{ width: `${st.percentage}%` }}
                     className={`h-full rounded-full ${
@@ -321,7 +321,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                         ? 'bg-amber-500'
                         : st.status === 'PROCESSING'
                         ? 'bg-cyan-500'
-                        : 'bg-slate-600'
+                        : 'bg-slate-400'
                     }`}
                   />
                 </div>
@@ -330,17 +330,17 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
           </div>
 
           <div className="pt-2">
-            <h3 className="text-xs font-bold text-slate-300 mb-2 uppercase tracking-wider">Canais de Venda</h3>
+            <h3 className="text-xs font-bold text-slate-800 mb-2 uppercase tracking-wider">Canais de Venda</h3>
             <div className="space-y-2">
               {data?.salesByChannel.map((ch) => (
                 <div
                   key={ch.channelId}
-                  className="flex items-center justify-between rounded-lg border border-slate-800 bg-slate-950/40 p-2.5 text-xs"
+                  className="flex items-center justify-between rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-xs shadow-2xs"
                 >
-                  <div className="font-medium text-slate-200">{ch.channelName}</div>
+                  <div className="font-bold text-slate-800">{ch.channelName}</div>
                   <div className="text-right font-mono">
-                    <div className="text-white font-bold">{ch.ticketsSold} ingressos</div>
-                    <div className="text-[10px] text-slate-400">{ch.sharePercentage}% do total</div>
+                    <div className="text-slate-900 font-bold">{ch.ticketsSold} ingressos</div>
+                    <div className="text-[10px] text-slate-500">{ch.sharePercentage}% do total</div>
                   </div>
                 </div>
               ))}
@@ -350,11 +350,11 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
       </div>
 
       {/* Recent Orders Table */}
-      <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-5 shadow-lg space-y-4">
+      <div className="rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs space-y-4">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-sm font-bold text-white">Últimos Pedidos Comerciais</h2>
-            <p className="text-xs text-slate-400">Transações recentes registradas no sistema</p>
+            <h2 className="text-sm font-bold text-slate-900">Últimos Pedidos Comerciais</h2>
+            <p className="text-xs text-slate-500">Transações recentes registradas no sistema</p>
           </div>
           <Button size="sm" variant="secondary" onClick={onNavigateToOrders}>
             Ver Todos os Pedidos
@@ -363,7 +363,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
 
         <div className="overflow-x-auto">
           <table className="w-full text-left text-xs">
-            <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+            <thead className="border-b border-slate-200 text-[11px] font-bold uppercase tracking-wider text-slate-500">
               <tr>
                 <th className="pb-3">Código</th>
                 <th className="pb-3">Data</th>
@@ -376,10 +376,10 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                 <th className="pb-3 text-right">Ação</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-800/60">
+            <tbody className="divide-y divide-slate-100">
               {data?.recentOrders?.map((order) => (
-                <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
-                  <td className="py-3 font-mono font-bold text-orange-400">
+                <tr key={order.id} className="hover:bg-slate-50 transition-colors">
+                  <td className="py-3 font-mono font-bold text-orange-600">
                     <button
                       onClick={() => onSelectOrder(order.id)}
                       className="hover:underline text-left"
@@ -387,7 +387,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                       {order.publicCode}
                     </button>
                   </td>
-                  <td className="py-3 text-slate-400 font-mono">
+                  <td className="py-3 text-slate-500 font-mono">
                     {new Date(order.createdAt).toLocaleString('pt-BR', {
                       day: '2-digit',
                       month: '2-digit',
@@ -395,24 +395,24 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                       minute: '2-digit'
                     })}
                   </td>
-                  <td className="py-3 font-medium text-slate-200">
+                  <td className="py-3 font-medium text-slate-800">
                     {order.eventName || 'Evento'}
                   </td>
                   <td className="py-3">
-                    <div className="text-slate-200 font-medium">
+                    <div className="text-slate-900 font-semibold">
                       {order.buyerSnapshot?.name || 'Cliente'}
                     </div>
                     <div className="text-[10px] text-slate-500 font-mono">
                       {order.buyerSnapshot?.documentMasked || '***'}
                     </div>
                   </td>
-                  <td className="py-3 text-slate-400">
+                  <td className="py-3 text-slate-600">
                     {order.salesChannelName || 'Online'}
                   </td>
-                  <td className="py-3 text-center font-mono font-bold text-slate-200">
+                  <td className="py-3 text-center font-mono font-bold text-slate-800">
                     {order.totalTicketsCount || order.itemsCount || 1}
                   </td>
-                  <td className="py-3 text-right font-mono font-bold text-white">
+                  <td className="py-3 text-right font-mono font-bold text-slate-900">
                     {order.totalAmount > 0 ? formatCurrency(order.totalAmount) : '—'}
                   </td>
                   <td className="py-3 text-center">
@@ -442,7 +442,7 @@ export const CommercialDashboardPage: React.FC<CommercialDashboardPageProps> = (
                   <td className="py-3 text-right">
                     <button
                       onClick={() => onSelectOrder(order.id)}
-                      className="rounded border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
+                      className="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700 hover:bg-slate-100 hover:text-slate-900 transition-colors shadow-2xs"
                     >
                       Ver Detalhes
                     </button>

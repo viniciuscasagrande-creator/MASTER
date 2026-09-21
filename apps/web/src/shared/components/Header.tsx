@@ -108,7 +108,7 @@ export const Header: React.FC<HeaderProps> = ({
   );
 
   return (
-    <header className="sticky top-0 z-30 flex flex-col w-full border-b border-slate-800/80 bg-slate-950/90 backdrop-blur-md">
+    <header className="sticky top-0 z-30 flex flex-col w-full border-b border-slate-200 bg-white/95 backdrop-blur-md shadow-xs">
       {/* Top Bar: Brand, Global Search, Popover Selectors, Actions, Persona */}
       <div className="flex h-16 w-full items-center justify-between px-4">
         {/* Left: Brand & Live Indicator */}
@@ -119,18 +119,18 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <span className="text-sm font-bold tracking-tight text-white">DISK INTERNO</span>
-                <span className="rounded bg-orange-500/10 px-1.5 py-0.5 text-[10px] font-semibold text-orange-400 border border-orange-500/20">
+                <span className="text-sm font-black tracking-tight text-slate-900">DISK INTERNO</span>
+                <span className="rounded bg-orange-50 px-1.5 py-0.5 text-[10px] font-bold text-orange-700 border border-orange-200">
                   PDT CORE
                 </span>
               </div>
-              <div className="flex items-center gap-1.5 text-[11px] text-slate-400">
+              <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                 <span className={`h-1.5 w-1.5 rounded-full ${
                   connectionStatus === 'CONNECTED'
-                    ? 'bg-emerald-400 animate-pulse'
+                    ? 'bg-emerald-500 animate-pulse'
                     : connectionStatus === 'CONNECTING' || connectionStatus === 'RECONNECTING'
-                    ? 'bg-amber-400 animate-pulse'
-                    : 'bg-slate-500'
+                    ? 'bg-amber-500 animate-pulse'
+                    : 'bg-slate-400'
                 }`} />
                 <span>{connectionStatus === 'CONNECTED' ? 'Realtime Ativo' : 'Node Core Real'} • v1.1.5</span>
               </div>
@@ -138,24 +138,24 @@ export const Header: React.FC<HeaderProps> = ({
           </div>
 
           {/* Global Popover Selector (Producer & Event) */}
-          <div className="hidden lg:flex items-center gap-1.5 rounded-xl border border-slate-800 bg-slate-900/70 p-1">
+          <div className="hidden lg:flex items-center gap-1.5 rounded-xl border border-slate-200 bg-slate-100/80 p-1">
             {/* Searchable Producer Popover */}
             <div className="relative" ref={producerPopoverRef}>
               <button
                 onClick={() => !isLockedToSingleProducer && setIsProducerPopoverOpen(!isProducerPopoverOpen)}
                 disabled={isLockedToSingleProducer}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
                   isProducerPopoverOpen
-                    ? 'bg-slate-800 text-white'
-                    : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-slate-900'
                 } ${isLockedToSingleProducer ? 'cursor-default opacity-85' : 'cursor-pointer'}`}
               >
-                <Building2 className="h-3.5 w-3.5 text-orange-400" />
+                <Building2 className="h-3.5 w-3.5 text-orange-600" />
                 <span className="max-w-[140px] truncate">
                   {activeProducer ? activeProducer.name : 'Todas as Produtoras'}
                 </span>
                 {isLockedToSingleProducer ? (
-                  <span title="Escopo travado à sua organização" className="text-amber-400 ml-1">
+                  <span title="Escopo travado à sua organização" className="text-amber-600 ml-1">
                     <Lock className="h-3 w-3" />
                   </span>
                 ) : (
@@ -164,7 +164,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {isProducerPopoverOpen && !isLockedToSingleProducer && (
-                <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+                <div className="absolute left-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50 animate-in fade-in duration-150">
                   <div className="relative mb-2">
                     <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
                     <input
@@ -172,7 +172,7 @@ export const Header: React.FC<HeaderProps> = ({
                       placeholder="Filtrar produtores..."
                       value={producerSearch}
                       onChange={(e) => setProducerSearch(e.target.value)}
-                      className="w-full rounded-xl border border-slate-800 bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-500 outline-none focus:border-orange-500"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-orange-500 focus:bg-white"
                       autoFocus
                     />
                   </div>
@@ -186,12 +186,12 @@ export const Header: React.FC<HeaderProps> = ({
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors ${
                         selectedProducerId === 'all'
-                          ? 'bg-orange-500/15 text-orange-400 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800'
+                          ? 'bg-orange-50 text-orange-700 font-semibold'
+                          : 'text-slate-700 hover:bg-slate-100'
                       }`}
                     >
                       <span>Todas as Produtoras (Visão Geral)</span>
-                      {selectedProducerId === 'all' && <Check className="h-3.5 w-3.5" />}
+                      {selectedProducerId === 'all' && <Check className="h-3.5 w-3.5 text-orange-600" />}
                     </button>
 
                     {filteredProducers.map(p => (
@@ -204,15 +204,15 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors ${
                           selectedProducerId === p.id
-                            ? 'bg-orange-500/15 text-orange-400 font-semibold'
-                            : 'text-slate-300 hover:bg-slate-800'
+                            ? 'bg-orange-50 text-orange-700 font-semibold'
+                            : 'text-slate-700 hover:bg-slate-100'
                         }`}
                       >
                         <div className="overflow-hidden pr-2">
-                          <div className="font-medium text-white truncate">{p.name}</div>
-                          <div className="text-[10px] text-slate-400 font-mono">{p.cnpj}</div>
+                          <div className="font-semibold text-slate-900 truncate">{p.name}</div>
+                          <div className="text-[10px] text-slate-500 font-mono">{p.cnpj}</div>
                         </div>
-                        {selectedProducerId === p.id && <Check className="h-3.5 w-3.5 text-orange-400 shrink-0" />}
+                        {selectedProducerId === p.id && <Check className="h-3.5 w-3.5 text-orange-600 shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -220,25 +220,25 @@ export const Header: React.FC<HeaderProps> = ({
               )}
             </div>
 
-            <div className="h-4 w-px bg-slate-800" />
+            <div className="h-4 w-px bg-slate-300" />
 
             {/* Searchable Event Popover */}
             <div className="relative" ref={eventPopoverRef}>
               <button
                 onClick={() => !isLockedToSingleEvent && setIsEventPopoverOpen(!isEventPopoverOpen)}
                 disabled={isLockedToSingleEvent}
-                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-lg transition-all ${
+                className={`flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold rounded-lg transition-all ${
                   isEventPopoverOpen
-                    ? 'bg-slate-800 text-white'
-                    : 'text-slate-300 hover:bg-slate-800/60 hover:text-white'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-700 hover:bg-white/80 hover:text-slate-900'
                 } ${isLockedToSingleEvent ? 'cursor-default opacity-85' : 'cursor-pointer'}`}
               >
-                <Calendar className="h-3.5 w-3.5 text-cyan-400" />
+                <Calendar className="h-3.5 w-3.5 text-cyan-600" />
                 <span className="max-w-[170px] truncate">
                   {activeEvent ? activeEvent.title : 'Todos os Eventos'}
                 </span>
                 {isLockedToSingleEvent ? (
-                  <span title="Escopo travado ao seu evento" className="text-amber-400 ml-1">
+                  <span title="Escopo travado ao seu evento" className="text-amber-600 ml-1">
                     <Lock className="h-3 w-3" />
                   </span>
                 ) : (
@@ -247,7 +247,7 @@ export const Header: React.FC<HeaderProps> = ({
               </button>
 
               {isEventPopoverOpen && !isLockedToSingleEvent && (
-                <div className="absolute left-0 top-full mt-2 w-80 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+                <div className="absolute left-0 top-full mt-2 w-80 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50 animate-in fade-in duration-150">
                   <div className="relative mb-2">
                     <Search className="absolute left-2.5 top-2.5 h-3.5 w-3.5 text-slate-400" />
                     <input
@@ -255,7 +255,7 @@ export const Header: React.FC<HeaderProps> = ({
                       placeholder="Filtrar eventos..."
                       value={eventSearch}
                       onChange={(e) => setEventSearch(e.target.value)}
-                      className="w-full rounded-xl border border-slate-800 bg-slate-950 py-1.5 pl-8 pr-3 text-xs text-white placeholder-slate-500 outline-none focus:border-cyan-500"
+                      className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-8 pr-3 text-xs text-slate-900 placeholder-slate-400 outline-none focus:border-cyan-500 focus:bg-white"
                       autoFocus
                     />
                   </div>
@@ -269,12 +269,12 @@ export const Header: React.FC<HeaderProps> = ({
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors ${
                         selectedEventId === 'all'
-                          ? 'bg-cyan-500/15 text-cyan-400 font-semibold'
-                          : 'text-slate-300 hover:bg-slate-800'
+                          ? 'bg-cyan-50 text-cyan-700 font-semibold'
+                          : 'text-slate-700 hover:bg-slate-100'
                       }`}
                     >
                       <span>Todos os Eventos do Produtor</span>
-                      {selectedEventId === 'all' && <Check className="h-3.5 w-3.5" />}
+                      {selectedEventId === 'all' && <Check className="h-3.5 w-3.5 text-cyan-600" />}
                     </button>
 
                     {filteredEvents.map(e => (
@@ -287,15 +287,15 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors ${
                           selectedEventId === e.id
-                            ? 'bg-cyan-500/15 text-cyan-400 font-semibold'
-                            : 'text-slate-300 hover:bg-slate-800'
+                            ? 'bg-cyan-50 text-cyan-700 font-semibold'
+                            : 'text-slate-700 hover:bg-slate-100'
                         }`}
                       >
                         <div className="overflow-hidden pr-2">
-                          <div className="font-medium text-white truncate">{e.title}</div>
-                          <div className="text-[10px] text-slate-400 truncate">{e.venue}</div>
+                          <div className="font-semibold text-slate-900 truncate">{e.title}</div>
+                          <div className="text-[10px] text-slate-500 truncate">{e.venue}</div>
                         </div>
-                        {selectedEventId === e.id && <Check className="h-3.5 w-3.5 text-cyan-400 shrink-0" />}
+                        {selectedEventId === e.id && <Check className="h-3.5 w-3.5 text-cyan-600 shrink-0" />}
                       </button>
                     ))}
                   </div>
@@ -310,7 +310,7 @@ export const Header: React.FC<HeaderProps> = ({
                   if (onNavigate) onNavigate('overview', 'overview-main');
                 }}
                 title="Limpar filtros operacionais globais"
-                className="flex h-6 w-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors ml-1"
+                className="flex h-6 w-6 items-center justify-center rounded-lg text-slate-500 hover:bg-white hover:text-slate-900 transition-colors ml-1 shadow-2xs"
               >
                 <RotateCcw className="h-3 w-3" />
               </button>
@@ -323,13 +323,13 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenCommandPalette}
             title="Buscar no Disk Interno • Central de Consulta (Ctrl + K)"
-            className="flex h-9 w-full items-center justify-between rounded-xl border border-slate-800 bg-slate-900/60 px-3 text-xs text-slate-400 transition-all hover:border-slate-700 hover:bg-slate-900/90"
+            className="flex h-9 w-full items-center justify-between rounded-xl border border-slate-200 bg-slate-100/80 px-3 text-xs text-slate-500 transition-all hover:border-slate-300 hover:bg-white hover:shadow-xs"
           >
             <div className="flex items-center gap-2">
               <Search className="h-3.5 w-3.5 text-slate-400" />
-              <span>Buscar pedidos, ingressos, clientes ou comandos...</span>
+              <span className="truncate">Buscar pedidos, ingressos, clientes ou comandos...</span>
             </div>
-            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-slate-700 bg-slate-800 px-1.5 py-0.5 text-[10px] font-mono text-slate-300">
+            <kbd className="hidden sm:inline-flex items-center gap-0.5 rounded border border-slate-200 bg-white px-1.5 py-0.5 text-[10px] font-mono text-slate-500 shadow-2xs">
               <span>⌘</span>K
             </kbd>
           </button>
@@ -351,11 +351,11 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenAudit}
             title="Trilha de Auditoria Inter-Módulos"
-            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800 hover:text-white"
+            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:border-slate-300 hover:bg-white hover:text-slate-900 shadow-2xs"
           >
             <Layers className="h-4 w-4" />
             {auditLogs.length > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-500 px-1 text-[9px] font-bold text-slate-950">
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-cyan-600 px-1 text-[9px] font-bold text-white shadow-xs">
                 {auditLogs.length}
               </span>
             )}
@@ -365,33 +365,33 @@ export const Header: React.FC<HeaderProps> = ({
           <button
             onClick={onOpenNotifications}
             title="Notificações em Tempo Real"
-            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-800 bg-slate-900/60 text-slate-300 transition-colors hover:border-slate-700 hover:bg-slate-800 hover:text-white"
+            className="relative flex h-9 w-9 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-600 transition-colors hover:border-slate-300 hover:bg-white hover:text-slate-900 shadow-2xs"
           >
             <Bell className="h-4 w-4" />
             {unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[9px] font-bold text-white">
+              <span className="absolute -top-1 -right-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-600 px-1 text-[9px] font-bold text-white shadow-xs">
                 {unreadCount}
               </span>
             )}
           </button>
 
-          <div className="h-6 w-px bg-slate-800" />
+          <div className="h-6 w-px bg-slate-200" />
 
           {/* User Persona Switcher */}
           <div className="relative" ref={userDropdownRef}>
             <button
               onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
-              className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-900/40 p-1.5 text-left transition-colors hover:border-slate-700 hover:bg-slate-900"
+              className="flex items-center gap-2.5 rounded-xl border border-slate-200 bg-slate-50/80 p-1.5 text-left transition-all hover:border-slate-300 hover:bg-white hover:shadow-xs"
             >
-              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-slate-800 text-xs font-bold text-orange-400 border border-slate-700">
+              <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-orange-100 text-xs font-bold text-orange-700 border border-orange-200">
                 {currentUser.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
               </div>
               <div className="hidden md:block">
-                <div className="text-xs font-semibold text-slate-200 leading-none">{currentUser.name}</div>
-                <div className="text-[10px] text-orange-400 font-medium mt-0.5 flex items-center gap-1">
+                <div className="text-xs font-bold text-slate-800 leading-none">{currentUser.name}</div>
+                <div className="text-[10px] text-orange-600 font-semibold mt-0.5 flex items-center gap-1">
                   <span>{currentUser.roleName}</span>
                   {currentUser.twoFactorEnforced && (
-                    <span className="rounded bg-cyan-500/10 px-1 text-[8px] font-bold text-cyan-400 border border-cyan-500/20">
+                    <span className="rounded bg-cyan-50 px-1 text-[8px] font-bold text-cyan-700 border border-cyan-200">
                       2FA
                     </span>
                   )}
@@ -401,10 +401,10 @@ export const Header: React.FC<HeaderProps> = ({
             </button>
 
             {isUserDropdownOpen && (
-              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-800 bg-slate-900 p-2 shadow-2xl z-50 animate-in fade-in duration-150">
-                <div className="px-2 py-1.5 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center justify-between">
+              <div className="absolute right-0 top-full mt-2 w-72 rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl z-50 animate-in fade-in duration-150">
+                <div className="px-2 py-1.5 border-b border-slate-100 text-[11px] font-bold uppercase tracking-wider text-slate-500 flex items-center justify-between">
                   <span>Simular Perfil / Usuário</span>
-                  <span className="text-[10px] text-orange-400 font-mono">Fase 1.1.5</span>
+                  <span className="text-[10px] text-orange-600 font-mono">Fase 1.1.5</span>
                 </div>
 
                 <div className="mt-1.5 space-y-1 max-h-72 overflow-y-auto">
@@ -419,17 +419,17 @@ export const Header: React.FC<HeaderProps> = ({
                         }}
                         className={`flex w-full items-start gap-2.5 rounded-xl p-2 text-left text-xs transition-colors ${
                           isCurrent
-                            ? 'bg-orange-500/10 text-orange-400 border border-orange-500/30 font-medium'
-                            : 'text-slate-300 hover:bg-slate-800'
+                            ? 'bg-orange-50 text-orange-700 border border-orange-200 font-medium'
+                            : 'text-slate-700 hover:bg-slate-50'
                         }`}
                       >
-                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-800 text-[10px] font-bold text-slate-300 mt-0.5 border border-slate-700">
+                        <div className="flex h-6 w-6 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[10px] font-bold text-slate-700 mt-0.5 border border-slate-200">
                           {u.name.split(' ').map(n => n[0]).join('').slice(0, 2)}
                         </div>
                         <div className="overflow-hidden">
-                          <div className="font-semibold text-white leading-tight truncate">{u.name}</div>
-                          <div className="text-[10px] text-slate-400 truncate">{u.roleName}</div>
-                          <div className="text-[9px] text-cyan-400 font-mono mt-0.5">
+                          <div className="font-bold text-slate-900 leading-tight truncate">{u.name}</div>
+                          <div className="text-[10px] text-slate-500 truncate">{u.roleName}</div>
+                          <div className="text-[9px] text-cyan-700 font-mono mt-0.5">
                             Escopo: {u.scope.type} {u.scope.producerIds.length > 0 ? `(${u.scope.producerIds.join(',')})` : ''}
                           </div>
                         </div>
@@ -438,16 +438,16 @@ export const Header: React.FC<HeaderProps> = ({
                   })}
                 </div>
 
-                <div className="mt-2 pt-2 border-t border-slate-800 flex items-center justify-between px-1">
+                <div className="mt-2 pt-2 border-t border-slate-100 flex items-center justify-between px-1">
                   {hasPermission('admin.usuarios.visualizar') && onNavigateToAdmin && (
                     <button
                       onClick={() => {
                         setIsUserDropdownOpen(false);
                         onNavigateToAdmin();
                       }}
-                      className="text-[11px] text-slate-400 hover:text-white flex items-center gap-1"
+                      className="text-[11px] text-slate-600 hover:text-slate-900 font-medium flex items-center gap-1"
                     >
-                      <ShieldCheck className="h-3.5 w-3.5 text-orange-400" />
+                      <ShieldCheck className="h-3.5 w-3.5 text-orange-600" />
                       Painel Admin
                     </button>
                   )}
@@ -456,7 +456,7 @@ export const Header: React.FC<HeaderProps> = ({
                       setIsUserDropdownOpen(false);
                       logout();
                     }}
-                    className="text-[11px] text-rose-400 hover:text-rose-300 flex items-center gap-1 ml-auto"
+                    className="text-[11px] text-rose-600 hover:text-rose-700 font-semibold flex items-center gap-1 ml-auto"
                   >
                     <LogOut className="h-3.5 w-3.5" />
                     Sair
@@ -470,12 +470,12 @@ export const Header: React.FC<HeaderProps> = ({
 
       {/* Real-time Alert Toast Banner */}
       {toastNotification && (
-        <div className="flex items-center justify-between px-4 py-2 bg-gradient-to-r from-orange-950/90 via-slate-900/95 to-slate-950 border-t border-b border-orange-500/40 text-xs text-white animate-in slide-in-from-top duration-200">
+        <div className="flex items-center justify-between px-4 py-2 bg-orange-50 border-t border-b border-orange-200 text-xs text-slate-800 animate-in slide-in-from-top duration-200">
           <div className="flex items-center gap-2 overflow-hidden">
             <span className="flex h-2 w-2 rounded-full bg-orange-500 animate-ping shrink-0" />
-            <span className="font-bold text-orange-400 shrink-0">[{toastNotification.module}]</span>
-            <span className="font-semibold text-white truncate">{toastNotification.title}:</span>
-            <span className="text-slate-300 truncate max-w-lg hidden sm:inline">{toastNotification.description}</span>
+            <span className="font-bold text-orange-700 shrink-0">[{toastNotification.module}]</span>
+            <span className="font-bold text-slate-900 truncate">{toastNotification.title}:</span>
+            <span className="text-slate-600 truncate max-w-lg hidden sm:inline">{toastNotification.description}</span>
           </div>
           <div className="flex items-center gap-2 shrink-0 ml-3">
             <button
@@ -483,13 +483,13 @@ export const Header: React.FC<HeaderProps> = ({
                 dismissToast();
                 onOpenNotifications();
               }}
-              className="px-2.5 py-0.5 rounded-lg bg-orange-500/20 text-orange-400 hover:bg-orange-500/30 text-[11px] font-semibold border border-orange-500/30 transition-colors"
+              className="px-2.5 py-0.5 rounded-lg bg-orange-100 text-orange-800 hover:bg-orange-200 text-[11px] font-bold border border-orange-200 transition-colors"
             >
               Ver Alerta
             </button>
             <button
               onClick={dismissToast}
-              className="text-slate-400 hover:text-white text-xs px-1"
+              className="text-slate-400 hover:text-slate-700 text-xs px-1"
             >
               ✕
             </button>
@@ -498,14 +498,21 @@ export const Header: React.FC<HeaderProps> = ({
       )}
 
       {/* Operational Breadcrumb Bar */}
-      <div className="flex items-center justify-between px-4 py-1.5 bg-slate-950/90 border-t border-slate-800/40 text-[11px] text-slate-400 overflow-x-auto select-none">
-        <div className="flex items-center gap-1.5 whitespace-nowrap">
-          <span className="font-bold text-slate-300">Disk Interno</span>
-          <ChevronRight className="h-3 w-3 text-slate-600" />
+      <div className="flex items-center justify-between px-4 py-2 bg-slate-50 border-t border-slate-200 text-xs text-slate-600 overflow-x-auto select-none">
+        <div className="flex items-center gap-2 whitespace-nowrap">
+          <button
+            onClick={() => {
+              if (onNavigate) onNavigate('overview', 'overview-main');
+            }}
+            className="font-bold text-slate-800 hover:text-orange-600 transition-colors"
+          >
+            Disk Interno
+          </button>
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
 
           {/* Producer Segment */}
           {activeProducer ? (
-            <div className="flex items-center gap-1 text-orange-400 bg-orange-500/10 px-1.5 py-0.5 rounded border border-orange-500/20">
+            <div className="flex items-center gap-1 text-orange-700 bg-orange-50 px-2 py-0.5 rounded-lg border border-orange-200 font-medium">
               <Building2 className="h-3 w-3" />
               <span>{activeProducer.name}</span>
               {!isLockedToSingleProducer && (
@@ -515,21 +522,21 @@ export const Header: React.FC<HeaderProps> = ({
                     if (onNavigate) onNavigate('overview', 'overview-main');
                   }}
                   title="Remover filtro de produtora"
-                  className="hover:text-white ml-0.5"
+                  className="hover:text-orange-900 ml-0.5"
                 >
                   ✕
                 </button>
               )}
             </div>
           ) : (
-            <span className="text-slate-400">Todas as Produtoras</span>
+            <span className="text-slate-500">Todas as Produtoras</span>
           )}
 
-          <ChevronRight className="h-3 w-3 text-slate-600" />
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
 
           {/* Event Segment */}
           {activeEvent ? (
-            <div className="flex items-center gap-1 text-cyan-400 bg-cyan-500/10 px-1.5 py-0.5 rounded border border-cyan-500/20">
+            <div className="flex items-center gap-1 text-cyan-700 bg-cyan-50 px-2 py-0.5 rounded-lg border border-cyan-200 font-medium">
               <Calendar className="h-3 w-3" />
               <span>{activeEvent.title}</span>
               {!isLockedToSingleEvent && (
@@ -539,29 +546,31 @@ export const Header: React.FC<HeaderProps> = ({
                     if (onNavigate) onNavigate('events', 'events-all');
                   }}
                   title="Remover filtro de evento"
-                  className="hover:text-white ml-0.5"
+                  className="hover:text-cyan-900 ml-0.5"
                 >
                   ✕
                 </button>
               )}
             </div>
           ) : (
-            <span className="text-slate-400">Todos os Eventos</span>
+            <span className="text-slate-500">Todos os Eventos</span>
           )}
 
-          <ChevronRight className="h-3 w-3 text-slate-600" />
+          <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
 
           {/* Active Module Segment */}
-          <span className="font-semibold text-white">{activeModuleName}</span>
+          <span className="font-bold text-slate-900 bg-white px-2 py-0.5 rounded-lg border border-slate-200 shadow-2xs">
+            {activeModuleName}
+          </span>
         </div>
 
         {/* Active Context Indicators */}
-        <div className="hidden sm:flex items-center gap-3 font-mono text-[10px] text-slate-500">
+        <div className="hidden sm:flex items-center gap-3 font-mono text-[11px] text-slate-500">
           <span>Produtores: {availableProducers.length}</span>
           <span>•</span>
           <span>Eventos Ativos: {availableEvents.length}</span>
           {isFiltered && (
-            <span className="text-amber-400 font-bold bg-amber-500/10 px-1.5 py-0.2 rounded border border-amber-500/20">
+            <span className="text-amber-700 font-bold bg-amber-50 px-2 py-0.5 rounded-md border border-amber-200">
               Filtro Ativo
             </span>
           )}

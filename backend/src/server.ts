@@ -1,12 +1,16 @@
 import http from 'http';
 import app from './app';
 import { setupWebSocketServer } from './realtime/websocket.server';
+import { runSeed } from '../prisma/seed';
 
 const port = process.env.PORT || 3001;
 const server = http.createServer(app);
 
 // Attach Real-time WebSocket server
 setupWebSocketServer(server);
+
+// Auto-seed in-memory / local database on boot
+runSeed().catch((err) => console.error('[Seed Error]:', err));
 
 if (process.env.NODE_ENV !== 'test') {
   server.listen(port, () => {

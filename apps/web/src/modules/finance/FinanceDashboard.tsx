@@ -55,13 +55,18 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
   const { currentUser, hasPermission } = useAuth();
 
   // Tab State: default directly to Hub Financeiro for premium entry experience
-  const [activeTab, setActiveTab] = useState<string>(
-    initialSubItem === 'finance-dashboard' ? 'finance-hub' : (initialSubItem || 'finance-hub')
-  );
+  const [activeTab, setActiveTab] = useState<string>(() => {
+    if (!initialSubItem || initialSubItem === 'finance-dashboard' || !initialSubItem.startsWith('finance-')) {
+      return 'finance-hub';
+    }
+    return initialSubItem;
+  });
 
   useEffect(() => {
-    if (initialSubItem) {
-      setActiveTab(initialSubItem === 'finance-dashboard' ? 'finance-hub' : initialSubItem);
+    if (!initialSubItem || initialSubItem === 'finance-dashboard' || !initialSubItem.startsWith('finance-')) {
+      setActiveTab('finance-hub');
+    } else {
+      setActiveTab(initialSubItem);
     }
   }, [initialSubItem]);
 
@@ -277,15 +282,19 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       </div>
 
       {/* Sub-Tabs Bar */}
-      <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-medium">
+      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto text-xs font-medium">
         <button
           onClick={() => {
             setActiveTab('finance-hub');
             onNavigate?.('finance', 'finance-hub');
           }}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-emerald-500/30"
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
+            activeTab === 'finance-hub'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
+          }`}
         >
-          <LayoutGrid className="h-3.5 w-3.5 text-emerald-400" />
+          <LayoutGrid className="h-3.5 w-3.5 text-emerald-600" />
           <span>Hub Principal</span>
         </button>
 
@@ -294,10 +303,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-dashboard');
             onNavigate?.('finance', 'finance-dashboard');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-dashboard'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Visão Geral
@@ -308,10 +317,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-event-balances');
             onNavigate?.('finance', 'finance-event-balances');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-event-balances'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Saldos por Evento ({eventBalances.length})
@@ -322,10 +331,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-transfers');
             onNavigate?.('finance', 'finance-transfers');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-transfers'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Transferências entre Eventos
@@ -336,10 +345,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-receivables-payables');
             onNavigate?.('finance', 'finance-receivables-payables');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-receivables-payables'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Contas a Pagar & Receber
@@ -350,10 +359,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-payouts');
             onNavigate?.('finance', 'finance-payouts');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-payouts'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Repasses Programados ({payouts.length})
@@ -364,10 +373,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-treasury');
             onNavigate?.('finance', 'finance-treasury');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-treasury'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Tesouraria, Fluxo & DRE
@@ -378,10 +387,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-statement');
             onNavigate?.('finance', 'finance-reports');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-statement' || activeTab === 'finance-reports'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Extrato da Conta Corrente
@@ -392,10 +401,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-reconciliation');
             onNavigate?.('finance', 'finance-reconciliation');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-reconciliation'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Conciliação de Gateways
@@ -406,10 +415,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-advances');
             onNavigate?.('finance', 'finance-advances');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-advances'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Antecipações & Crédito
@@ -420,10 +429,10 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-bordero');
             onNavigate?.('finance', 'finance-bordero');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 border ${
             activeTab === 'finance-bordero'
-              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
-              : 'text-slate-400 hover:text-white'
+              ? 'bg-emerald-50 border-emerald-300 text-emerald-800 font-bold shadow-xs'
+              : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900'
           }`}
         >
           Borderô de Fechamento
@@ -431,10 +440,37 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
       </div>
 
       {errorMessage && (
-        <div className="p-4 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs flex items-center gap-2">
+        <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs flex items-center gap-2">
           <AlertCircle className="h-4 w-4 shrink-0" />
           <span>{errorMessage}</span>
         </div>
+      )}
+
+      {/* TAB 0: HUB FINANCEIRO PRINCIPAL (Executive Functional Clusters) */}
+      {activeTab === 'finance-hub' && (
+        <FinanceHub
+          producerName={producerName}
+          summary={summary}
+          eventBalances={eventBalances}
+          payouts={payouts}
+          statement={statement}
+          reconciliations={reconciliations}
+          isLoading={isLoading}
+          onRefresh={loadFinancialData}
+          onNavigateToView={(viewId) => {
+            setActiveTab(viewId);
+            onNavigate?.('finance', viewId);
+          }}
+          onOpenNewPayout={() => {
+            setPreselectedEventId('');
+            setIsNewPayoutModalOpen(true);
+          }}
+          onOpenNewTransfer={() => setIsNewTransferModalOpen(true)}
+          onOpenNewPayable={() => {
+            setActiveTab('finance-receivables-payables');
+            onNavigate?.('finance', 'finance-receivables-payables');
+          }}
+        />
       )}
 
       {/* TAB 1: VISÃO GERAL */}

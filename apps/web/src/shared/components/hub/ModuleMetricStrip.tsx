@@ -42,28 +42,28 @@ export const ModuleMetricStrip: React.FC<ModuleMetricStripProps> = ({
           key={m.id}
           onClick={m.onClick}
           className={cn(
-            'group relative overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg backdrop-blur-sm transition-all duration-200 hover:border-slate-700 hover:bg-slate-900/90',
+            'group relative overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-200 hover:border-slate-300 hover:shadow-md',
             m.onClick && 'cursor-pointer hover:-translate-y-0.5'
           )}
         >
           <div className="flex items-center justify-between gap-2">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 truncate">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500 truncate">
               {m.label}
             </span>
             {m.icon && (
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950/60 text-slate-300 group-hover:text-white transition-colors">
+              <div className="flex h-8 w-8 items-center justify-center rounded-xl border border-slate-200 bg-slate-50 text-slate-700 shadow-2xs group-hover:bg-slate-100 transition-colors">
                 {m.icon}
               </div>
             )}
           </div>
 
           <div className="mt-3 flex items-baseline gap-2">
-            <span className="text-xl sm:text-2xl font-black font-mono tracking-tight text-white">
+            <span className="text-xl sm:text-2xl font-black font-mono tracking-tight text-slate-900">
               {m.value}
             </span>
           </div>
 
-          <div className="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-slate-800/40">
+          <div className="mt-2.5 flex items-center justify-between text-xs pt-2 border-t border-slate-100">
             {m.helper && (
               <span className="text-[11px] text-slate-500 truncate max-w-[70%]">
                 {m.helper}
@@ -73,7 +73,7 @@ export const ModuleMetricStrip: React.FC<ModuleMetricStripProps> = ({
               <span
                 className={cn(
                   'text-[11px] font-bold font-mono inline-flex items-center',
-                  m.trend.isPositive ? 'text-emerald-400' : 'text-rose-400'
+                  m.trend.isPositive ? 'text-emerald-600' : 'text-rose-600'
                 )}
               >
                 {m.trend.isPositive ? '▲ ' : '▼ '}

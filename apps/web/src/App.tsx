@@ -25,6 +25,8 @@ import { AccountingDashboard } from './modules/accounting/AccountingDashboard';
 import { MarketingDashboard } from './modules/marketing/MarketingDashboard';
 import { RemarketingDashboard } from './modules/remarketing/RemarketingDashboard';
 import { SettingsView } from './modules/settings/SettingsView';
+import { EventContextHeader } from './features/events/components/EventContextHeader';
+import { ErrorBoundary } from './modules/observability/components/ErrorBoundary';
 
 // Central Administrativa (Fase 1.1.5.2 & Fase 1.1.5.4)
 import { AdminDashboardView } from './modules/admin/AdminDashboardView';
@@ -101,12 +103,30 @@ const MODULE_NAMES: Record<string, string> = {
 
 const MainShell: React.FC = () => {
   const { currentUser, isAuthenticated, showLoginModal, setShowLoginModal } = useAuth();
-  const { defaultDashboard } = useDiskContext();
+  const { defaultDashboard, activeEvent, availableEvents, setEvent, clearEvent, selectedEventId } = useDiskContext();
+
+  const isEventContextActive = Boolean(selectedEventId && selectedEventId !== 'all' && activeEvent);
 
   const [activeModule, setActiveModule] = useState<string>(defaultDashboard);
   const [activeSubItem, setActiveSubItem] = useState<string | undefined>('overview-main');
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(true);
+  const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('master_sidebar_expanded') !== 'false';
+    } catch {
+      return true;
+    }
+  });
   const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
+
+  const toggleSidebar = () => {
+    setIsSidebarExpanded((prev) => {
+      const next = !prev;
+      try {
+        localStorage.setItem('master_sidebar_expanded', String(next));
+      } catch {}
+      return next;
+    });
+  };
 
   // Modals & Drawers
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -124,9 +144,27 @@ const MainShell: React.FC = () => {
     }
   }, [currentUser.id, defaultDashboard]);
 
+  // Deep linking: synchronize URL hash on mount and hash changes
+  useEffect(() => {
+    const syncFromHash = () => {
+      const rawHash = window.location.hash.replace(/^#\/?/, '');
+      if (rawHash) {
+        const [mod, sub] = rawHash.split('/');
+        if (mod && MODULE_NAMES[mod]) {
+          setActiveModule(mod);
+          setActiveSubItem(sub || undefined);
+        }
+      }
+    };
+    syncFromHash();
+    window.addEventListener('hashchange', syncFromHash);
+    return () => window.removeEventListener('hashchange', syncFromHash);
+  }, []);
+
   const handleNavigate = (moduleId: string, subItemId?: string) => {
     setActiveModule(moduleId);
     setActiveSubItem(subItemId);
+    window.location.hash = subItemId ? `#${moduleId}/${subItemId}` : `#${moduleId}`;
     if (moduleId === 'search') {
       setSearchInitialQuery(subItemId || '');
     }
@@ -383,14 +421,14 @@ const MainShell: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-950 font-sans text-slate-100">
+    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
       {/* Expandable Sidebar with Dynamic RBAC filtering */}
       <Sidebar
         activeModule={activeModule}
         activeSubItem={activeSubItem}
         onNavigate={handleNavigate}
         isExpanded={isSidebarExpanded}
-        onToggleExpanded={() => setIsSidebarExpanded(!isSidebarExpanded)}
+        onToggleExpanded={toggleSidebar}
       />
 
       {/* Main App Canvas */}
@@ -407,9 +445,22 @@ const MainShell: React.FC = () => {
         />
 
         {/* Scrollable Module Workspace */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-950/60">
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-50">
           <div className="mx-auto max-w-7xl">
-            {renderModuleContent()}
+            {isEventContextActive && activeEvent && (
+              <EventContextHeader
+                event={activeEvent as any}
+                availableEvents={availableEvents as any}
+                onSelectAnotherEvent={(id) => setEvent(id)}
+                onClearEventContext={() => {
+                  clearEvent();
+                  handleNavigate('events', 'events-all');
+                }}
+              />
+            )}
+            <ErrorBoundary fallbackTitle="Erro ao carregar módulo do Disk Interno">
+              {renderModuleContent()}
+            </ErrorBoundary>
           </div>
         </main>
       </div>

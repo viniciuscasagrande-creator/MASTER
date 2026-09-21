@@ -29,12 +29,12 @@ export const ModuleSection: React.FC<ModuleSectionProps> = ({
 
   return (
     <section className={cn('space-y-4', className)}>
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-800/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-200">
         <div className="flex items-center gap-3">
-          <div className="h-4 w-1.5 rounded-full bg-emerald-500" />
+          <div className="h-4 w-1.5 rounded-full bg-orange-500" />
           <div>
             <div className="flex items-center gap-2.5">
-              <h2 className="text-xs sm:text-sm font-bold tracking-wider uppercase text-white">
+              <h2 className="text-xs sm:text-sm font-bold tracking-wider uppercase text-slate-900">
                 {title}
               </h2>
               {badge && (
@@ -44,7 +44,7 @@ export const ModuleSection: React.FC<ModuleSectionProps> = ({
               )}
             </div>
             {description && (
-              <p className="text-[11px] text-slate-400 mt-0.5">
+              <p className="text-[11px] text-slate-500 mt-0.5">
                 {description}
               </p>
             )}

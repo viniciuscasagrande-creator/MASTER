@@ -34,39 +34,46 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
 }) => {
   const themeStyles = {
     emerald: {
-      iconBg: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20 group-hover:bg-emerald-500/20',
-      borderHover: 'hover:border-emerald-500/40 hover:shadow-emerald-500/5',
-      glow: 'bg-emerald-500/5'
+      iconBg: 'bg-emerald-50 text-emerald-600 border-emerald-200/70 group-hover:bg-emerald-100/80',
+      borderHover: 'hover:border-emerald-300 hover:shadow-emerald-500/10',
+      glow: 'bg-emerald-500/5',
+      titleHover: 'group-hover:text-emerald-700'
     },
     purple: {
-      iconBg: 'bg-purple-500/10 text-purple-400 border-purple-500/20 group-hover:bg-purple-500/20',
-      borderHover: 'hover:border-purple-500/40 hover:shadow-purple-500/5',
-      glow: 'bg-purple-500/5'
+      iconBg: 'bg-purple-50 text-purple-600 border-purple-200/70 group-hover:bg-purple-100/80',
+      borderHover: 'hover:border-purple-300 hover:shadow-purple-500/10',
+      glow: 'bg-purple-500/5',
+      titleHover: 'group-hover:text-purple-700'
     },
     blue: {
-      iconBg: 'bg-blue-500/10 text-blue-400 border-blue-500/20 group-hover:bg-blue-500/20',
-      borderHover: 'hover:border-blue-500/40 hover:shadow-blue-500/5',
-      glow: 'bg-blue-500/5'
+      iconBg: 'bg-blue-50 text-blue-600 border-blue-200/70 group-hover:bg-blue-100/80',
+      borderHover: 'hover:border-blue-300 hover:shadow-blue-500/10',
+      glow: 'bg-blue-500/5',
+      titleHover: 'group-hover:text-blue-700'
     },
     amber: {
-      iconBg: 'bg-amber-500/10 text-amber-400 border-amber-500/20 group-hover:bg-amber-500/20',
-      borderHover: 'hover:border-amber-500/40 hover:shadow-amber-500/5',
-      glow: 'bg-amber-500/5'
+      iconBg: 'bg-amber-50 text-amber-600 border-amber-200/70 group-hover:bg-amber-100/80',
+      borderHover: 'hover:border-amber-300 hover:shadow-amber-500/10',
+      glow: 'bg-amber-500/5',
+      titleHover: 'group-hover:text-amber-700'
     },
     cyan: {
-      iconBg: 'bg-cyan-500/10 text-cyan-400 border-cyan-500/20 group-hover:bg-cyan-500/20',
-      borderHover: 'hover:border-cyan-500/40 hover:shadow-cyan-500/5',
-      glow: 'bg-cyan-500/5'
+      iconBg: 'bg-cyan-50 text-cyan-600 border-cyan-200/70 group-hover:bg-cyan-100/80',
+      borderHover: 'hover:border-cyan-300 hover:shadow-cyan-500/10',
+      glow: 'bg-cyan-500/5',
+      titleHover: 'group-hover:text-cyan-700'
     },
     rose: {
-      iconBg: 'bg-rose-500/10 text-rose-400 border-rose-500/20 group-hover:bg-rose-500/20',
-      borderHover: 'hover:border-rose-500/40 hover:shadow-rose-500/5',
-      glow: 'bg-rose-500/5'
+      iconBg: 'bg-rose-50 text-rose-600 border-rose-200/70 group-hover:bg-rose-100/80',
+      borderHover: 'hover:border-rose-300 hover:shadow-rose-500/10',
+      glow: 'bg-rose-500/5',
+      titleHover: 'group-hover:text-rose-700'
     },
     orange: {
-      iconBg: 'bg-orange-500/10 text-orange-400 border-orange-500/20 group-hover:bg-orange-500/20',
-      borderHover: 'hover:border-orange-500/40 hover:shadow-orange-500/5',
-      glow: 'bg-orange-500/5'
+      iconBg: 'bg-orange-50 text-orange-600 border-orange-200/70 group-hover:bg-orange-100/80',
+      borderHover: 'hover:border-orange-300 hover:shadow-orange-500/10',
+      glow: 'bg-orange-500/5',
+      titleHover: 'group-hover:text-orange-700'
     }
   };
 
@@ -76,8 +83,8 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
     <div
       onClick={disabled ? undefined : onClick}
       className={cn(
-        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-lg backdrop-blur-sm transition-all duration-200 text-left',
-        !disabled && 'cursor-pointer hover:-translate-y-1 hover:bg-slate-900/90',
+        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-200 text-left',
+        !disabled && 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300',
         !disabled && currentTheme.borderHover,
         disabled && 'opacity-60 cursor-not-allowed',
         className
@@ -96,7 +103,7 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
         <div className="flex items-start justify-between gap-3">
           <div
             className={cn(
-              'flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 shadow-inner',
+              'flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 shadow-2xs',
               currentTheme.iconBg
             )}
           >
@@ -111,34 +118,34 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
 
         {/* Title and description */}
         <div className="space-y-1.5">
-          <h3 className="text-sm sm:text-base font-bold text-white tracking-wide group-hover:text-emerald-300 transition-colors">
+          <h3 className={cn("text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors", currentTheme.titleHover)}>
             {title}
           </h3>
-          <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
+          <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
             {description}
           </p>
         </div>
       </div>
 
       {/* Card Footer: Live metric or direct arrow */}
-      <div className="mt-5 pt-3.5 border-t border-slate-800/50 flex items-center justify-between">
+      <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
         {metricValue ? (
           <div>
-            <span className="text-[10px] uppercase font-bold text-slate-500 block">
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">
               {metricLabel || 'Posição Atual'}
             </span>
-            <span className="text-sm font-bold font-mono text-white tracking-tight">
+            <span className="text-sm font-bold font-mono text-slate-900 tracking-tight">
               {metricValue}
             </span>
           </div>
         ) : (
-          <span className="text-[11px] font-semibold text-slate-400 group-hover:text-white transition-colors">
+          <span className="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">
             Acessar Área
           </span>
         )}
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-800 bg-slate-950/60 text-slate-400 group-hover:border-slate-700 group-hover:bg-slate-800 group-hover:text-white transition-all">
-          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-1" />
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-300 group-hover:bg-slate-100 group-hover:text-slate-900 transition-all shadow-2xs">
+          <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>
       </div>
     </div>

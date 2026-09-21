@@ -93,11 +93,11 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
         icon={<Landmark className="h-6 w-6 text-emerald-400" />}
         contextInfo={
           <span className="flex items-center gap-2">
-            <strong className="text-white">{producerName}</strong>
+            <strong className="text-slate-900 font-bold">{producerName}</strong>
             <span>•</span>
             <span>{eventBalances.length} Eventos Ativos</span>
             <span>•</span>
-            <span className="text-emerald-400 font-mono">Conta Gráfica Auditada</span>
+            <span className="text-emerald-600 font-mono font-medium">Conta Gráfica Auditada</span>
           </span>
         }
         actions={

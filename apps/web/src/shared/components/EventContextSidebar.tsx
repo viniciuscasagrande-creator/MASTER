@@ -69,7 +69,7 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
 
   const SECTIONS: EventContextNavSection[] = [
     {
-      title: 'VISÃO GERAL',
+      title: 'EVENTO',
       items: [
         {
           id: 'events-dashboard',
@@ -80,7 +80,7 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
       ]
     },
     {
-      title: 'PLANEJAMENTO & ESTRUTURA',
+      title: 'ESTRUTURA',
       items: [
         {
           id: 'events-sessions',
@@ -95,12 +95,7 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           label: 'Locais & Plantas',
           icon: <MapPin className="h-4 w-4 text-amber-400" />,
           requiredPermission: 'eventos.locais.visualizar'
-        }
-      ]
-    },
-    {
-      title: 'INGRESSOS & PRECIFICAÇÃO',
-      items: [
+        },
         {
           id: 'events-sections',
           moduleId: 'events',
@@ -135,13 +130,32 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           label: 'Inventário & Capacidade',
           icon: <BarChart3 className="h-4 w-4 text-purple-400" />,
           requiredPermission: 'eventos.sessoes.capacidade.visualizar'
+        }
+      ]
+    },
+    {
+      title: 'VENDAS',
+      items: [
+        {
+          id: 'commercial-orders',
+          moduleId: 'commercial',
+          label: 'Central de Pedidos',
+          icon: <ShoppingBag className="h-4 w-4 text-orange-400" />,
+          requiredPermission: 'comercial.pedidos.visualizar'
         },
         {
-          id: 'events-rules',
-          moduleId: 'events',
-          label: 'Regras de Venda',
-          icon: <Sliders className="h-4 w-4 text-slate-400" />,
-          requiredPermission: 'eventos.setores.configurar'
+          id: 'commercial-sales',
+          moduleId: 'commercial',
+          label: 'Central de Vendas',
+          icon: <TrendingUp className="h-4 w-4 text-amber-400" />,
+          requiredPermission: 'comercial.vendas.visualizar'
+        },
+        {
+          id: 'commercial-conditions',
+          moduleId: 'commercial',
+          label: 'Taxas & Condições',
+          icon: <Sliders className="h-4 w-4 text-emerald-400" />,
+          requiredPermission: 'comercial.contratos.visualizar'
         },
         {
           id: 'events-complimentary',
@@ -160,29 +174,20 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
       ]
     },
     {
-      title: 'EQUIPE & PRONTIDÃO',
+      title: 'CRESCIMENTO',
       items: [
         {
-          id: 'events-team',
-          moduleId: 'events',
-          label: 'Equipe & Escalas',
-          icon: <Users className="h-4 w-4 text-indigo-400" />,
-          requiredPermission: 'eventos.equipe.visualizar'
-        },
-        {
-          id: 'events-documents',
-          moduleId: 'events',
-          label: 'Documentos do Evento',
-          icon: <FileText className="h-4 w-4 text-cyan-400" />,
-          requiredPermission: 'eventos.documentos.visualizar'
-        },
-        {
-          id: 'events-tasks',
-          moduleId: 'events',
-          label: 'Pendências do Evento',
-          icon: <CheckSquare className="h-4 w-4 text-amber-400" />,
-          requiredPermission: 'eventos.pendencias.visualizar'
-        },
+          id: 'marketing-dashboard',
+          moduleId: 'marketing',
+          label: 'Marketing do Evento',
+          icon: <TrendingUp className="h-4 w-4 text-pink-400" />,
+          requiredPermission: 'marketing.campanha.visualizar'
+        }
+      ]
+    },
+    {
+      title: 'OPERAÇÃO',
+      items: [
         {
           id: 'events-readiness',
           moduleId: 'events',
@@ -198,17 +203,12 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           requiredPermission: 'eventos.alteracoes.visualizar'
         },
         {
-          id: 'events-review-publication',
+          id: 'events-team',
           moduleId: 'events',
-          label: 'Revisão & Publicação',
-          icon: <ShieldCheck className="h-4 w-4 text-emerald-400" />,
-          requiredPermission: 'eventos.lifecycle.review'
-        }
-      ]
-    },
-    {
-      title: 'OPERAÇÃO AO VIVO & ENCERRAMENTO',
-      items: [
+          label: 'Equipe & Escalas',
+          icon: <Users className="h-4 w-4 text-indigo-400" />,
+          requiredPermission: 'eventos.equipe.visualizar'
+        },
         {
           id: 'events-checkin',
           moduleId: 'events',
@@ -224,30 +224,16 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           requiredPermission: 'eventos.operacao.visualizar'
         },
         {
-          id: 'events-closure',
-          moduleId: 'events',
-          label: 'Encerramento de Sessões',
-          icon: <Lock className="h-4 w-4 text-slate-400" />,
-          requiredPermission: 'eventos.encerramento.sessao.encerrar'
-        },
-        {
-          id: 'events-post-event',
-          moduleId: 'events',
-          label: 'Relatório Pós-Evento',
-          icon: <FileSpreadsheet className="h-4 w-4 text-cyan-400" />,
-          requiredPermission: 'eventos.pos_evento.visualizar'
-        },
-        {
-          id: 'events-cancellation',
-          moduleId: 'events',
-          label: 'Gestão de Cancelamento',
-          icon: <AlertTriangle className="h-4 w-4 text-rose-400" />,
-          requiredPermission: 'eventos.cancelamento.solicitar'
+          id: 'sac-dashboard',
+          moduleId: 'sac',
+          label: 'Atendimento SAC',
+          icon: <MessageSquare className="h-4 w-4 text-cyan-400" />,
+          requiredPermission: 'sac.consulta.acessar'
         }
       ]
     },
     {
-      title: 'MÓDULOS VINCULADOS AO EVENTO',
+      title: 'GESTÃO',
       items: [
         {
           id: 'finance-dashboard',
@@ -257,39 +243,18 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           requiredPermission: 'financeiro.saldo.visualizar'
         },
         {
-          id: 'marketing-dashboard',
-          moduleId: 'marketing',
-          label: 'Marketing do Evento',
-          icon: <TrendingUp className="h-4 w-4 text-pink-400" />,
-          requiredPermission: 'marketing.campanha.visualizar'
+          id: 'events-post-event',
+          moduleId: 'events',
+          label: 'Relatório Pós-Evento',
+          icon: <FileSpreadsheet className="h-4 w-4 text-cyan-400" />,
+          requiredPermission: 'eventos.pos_evento.visualizar'
         },
         {
-          id: 'commercial-orders',
-          moduleId: 'commercial',
-          label: 'Pedidos do Evento',
-          icon: <ShoppingBag className="h-4 w-4 text-orange-400" />,
-          requiredPermission: 'comercial.pedidos.visualizar'
-        },
-        {
-          id: 'commercial-sales',
-          moduleId: 'commercial',
-          label: 'Vendas do Evento',
-          icon: <TrendingUp className="h-4 w-4 text-amber-400" />,
-          requiredPermission: 'comercial.vendas.visualizar'
-        },
-        {
-          id: 'commercial-conditions',
-          moduleId: 'commercial',
-          label: 'Taxas & Condições do Evento',
-          icon: <Sliders className="h-4 w-4 text-emerald-400" />,
-          requiredPermission: 'comercial.contratos.visualizar'
-        },
-        {
-          id: 'sac-dashboard',
-          moduleId: 'sac',
-          label: 'Atendimento SAC do Evento',
-          icon: <MessageSquare className="h-4 w-4 text-cyan-400" />,
-          requiredPermission: 'sac.consulta.acessar'
+          id: 'events-closure',
+          moduleId: 'events',
+          label: 'Encerramento de Sessões',
+          icon: <Lock className="h-4 w-4 text-slate-400" />,
+          requiredPermission: 'eventos.encerramento.sessao.encerrar'
         }
       ]
     }
@@ -297,26 +262,26 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
 
   return (
     <aside
-      className={`relative z-20 flex flex-col border-r border-slate-800/80 bg-slate-950/95 transition-all duration-300 select-none ${
+      className={`relative z-20 flex flex-col border-r border-slate-800 bg-[#0F172A] transition-all duration-300 select-none ${
         isExpanded ? 'w-64' : 'w-16'
       }`}
     >
       {/* Top Bar with Context Back Button and Expand Toggle */}
-      <div className="flex h-12 items-center justify-between px-3 border-b border-slate-800/60">
+      <div className="flex h-12 items-center justify-between px-3 border-b border-slate-800">
         {isExpanded ? (
           <button
             onClick={onExitEventContext}
-            title="Sair do contexto do evento e voltar ao catálogo geral"
-            className="flex items-center gap-1.5 text-xs font-semibold text-orange-400 hover:text-orange-300 transition-colors group cursor-pointer"
+            title="Sair do contexto do evento e voltar à visão do Produtor"
+            className="flex items-center gap-1.5 text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors group cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4 group-hover:-translate-x-0.5 transition-transform" />
-            <span>Voltar aos Eventos</span>
+            <span>← Visão Produtor</span>
           </button>
         ) : (
           <button
             onClick={onExitEventContext}
-            title="Voltar aos Eventos"
-            className="flex h-7 w-7 items-center justify-center rounded-lg text-orange-400 hover:bg-slate-900 transition-colors cursor-pointer"
+            title="Voltar à Visão do Produtor"
+            className="flex h-7 w-7 items-center justify-center rounded-lg text-orange-400 hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <ArrowLeft className="h-4 w-4" />
           </button>

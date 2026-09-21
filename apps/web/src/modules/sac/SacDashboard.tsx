@@ -343,14 +343,14 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
+            <h1 className="text-xl font-bold tracking-tight text-slate-900">
               ATENDIMENTO SAC
             </h1>
-            <span className="rounded bg-orange-500/10 px-2 py-0.5 text-[11px] font-bold text-orange-400 border border-orange-500/20">
+            <span className="rounded bg-orange-50 px-2 py-0.5 text-[11px] font-bold text-orange-700 border border-orange-200">
               Operação ao Consumidor
             </span>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
+          <p className="text-xs text-slate-500 mt-1">
             Central operacional de suporte ao comprador, consulta unificada de pedidos, ingressos e gestão de protocolos
           </p>
         </div>
@@ -368,13 +368,13 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       </div>
 
       {/* Operational Subnavigation Tabs */}
-      <div className="flex items-center gap-1 border-b border-slate-800 bg-slate-950/40 p-1 rounded-xl text-xs font-semibold overflow-x-auto">
+      <div className="flex items-center gap-1 border border-slate-200 bg-white p-1 rounded-xl text-xs font-semibold overflow-x-auto shadow-2xs">
         <button
           onClick={() => setActiveSubTab('sac-dashboard')}
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-dashboard'
-              ? 'bg-orange-500 text-white font-bold'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-orange-500 text-white font-bold shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -384,8 +384,8 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           onClick={() => setActiveSubTab('sac-query-center')}
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-query-center'
-              ? 'bg-orange-500 text-white font-bold'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-orange-500 text-white font-bold shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Search className="w-3.5 h-3.5" />
@@ -395,8 +395,8 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           onClick={() => setActiveSubTab('sac-queue')}
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-queue'
-              ? 'bg-orange-500 text-white font-bold'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-orange-500 text-white font-bold shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <Headphones className="w-3.5 h-3.5" />
@@ -406,8 +406,8 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           onClick={() => setActiveSubTab('sac-customers')}
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-customers'
-              ? 'bg-orange-500 text-white font-bold'
-              : 'text-slate-400 hover:text-slate-200'
+              ? 'bg-orange-500 text-white font-bold shadow-2xs'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
           }`}
         >
           <User className="w-3.5 h-3.5" />

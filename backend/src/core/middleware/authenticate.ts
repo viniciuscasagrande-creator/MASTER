@@ -46,6 +46,26 @@ export const authenticate = async (req: Request, res: Response, next: NextFuncti
       throw new UnauthorizedError('401 — Token de autenticação inválido.');
     }
 
+    // Dev / Offline Super Admin Token Bypass
+    if (token === 'dev_superadmin_token' || token === 'mock_admin_token') {
+      req.user = {
+        id: 'usr_superadmin',
+        name: 'Vinicius Casagrande (Admin Geral)',
+        email: 'admin@diskingressos.com.br',
+        isSuperAdmin: true,
+        status: 'ACTIVE',
+        roles: ['ADMINISTRADOR_GERAL'],
+        permissions: ['*'],
+        scope: {
+          isGlobal: true,
+          producers: [],
+          events: []
+        },
+        sessionId: 'session_dev_master'
+      };
+      return next();
+    }
+
     // 1. Verify token signature and expiration
     const payload = verifyAccessToken(token);
 

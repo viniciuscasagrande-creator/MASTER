@@ -357,7 +357,7 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
                   <span>Central de Alterações</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {dashboard?.changesSummary.pendingApprovalCount ? (
+                  {dashboard?.changesSummary?.pendingApprovalCount ? (
                     <span className="px-1.5 py-0.5 rounded-full text-[10px] font-bold bg-purple-500/20 text-purple-300">
                       {dashboard.changesSummary.pendingApprovalCount}
                     </span>
@@ -376,7 +376,7 @@ export const EventDashboardPage: React.FC<EventDashboardPageProps> = ({
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-[11px] font-bold text-emerald-400">
-                    {dashboard?.readinessSummary.scorePercentage || 0}%
+                    {dashboard?.readinessSummary?.scorePercentage || 0}%
                   </span>
                   <ChevronRight className="w-4 h-4 text-slate-500 group-hover:text-white transition-colors" />
                 </div>
