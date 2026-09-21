@@ -29,13 +29,16 @@ export const EventsSummary: React.FC<EventsSummaryProps> = ({
     );
   }
 
-  const configuringCount = summary.configuring + (summary.draft || 0);
+  const configuringCount = (summary.configuring || 0) + (summary.draft || 0);
+  const totalCount = summary.total ?? 0;
+  const onSaleCount = summary.onSale ?? (summary as any).emVenda ?? 0;
+  const upcomingCount = summary.upcoming ?? (summary as any).proximos ?? 0;
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard
         title="TOTAL DE EVENTOS"
-        value={summary.total.toString()}
+        value={String(totalCount)}
         subtitle="Eventos sob seu escopo"
         icon={<Calendar className="h-4 w-4 text-orange-400" />}
         badge="Catálogo"
@@ -44,7 +47,7 @@ export const EventsSummary: React.FC<EventsSummaryProps> = ({
 
       <StatCard
         title="EM VENDA"
-        value={summary.onSale.toString()}
+        value={String(onSaleCount)}
         subtitle="Bilheteria aberta ao público"
         icon={<Ticket className="h-4 w-4 text-emerald-400" />}
         badge="Ativos"
@@ -53,7 +56,7 @@ export const EventsSummary: React.FC<EventsSummaryProps> = ({
 
       <StatCard
         title="PRÓXIMOS / PROGRAMADOS"
-        value={summary.upcoming.toString()}
+        value={String(upcomingCount)}
         subtitle="Aguardando abertura de vendas"
         icon={<Clock className="h-4 w-4 text-cyan-400" />}
         badge="Agendados"
@@ -62,7 +65,7 @@ export const EventsSummary: React.FC<EventsSummaryProps> = ({
 
       <StatCard
         title="EM CONFIGURAÇÃO"
-        value={configuringCount.toString()}
+        value={String(configuringCount)}
         subtitle={`${summary.draft || 0} rascunhos em preenchimento`}
         icon={<Wrench className="h-4 w-4 text-amber-400" />}
         badge="Setup"

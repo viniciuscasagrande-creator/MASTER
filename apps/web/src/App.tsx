@@ -6,8 +6,7 @@ import { CoreDataProvider } from './core/context/CoreDataContext';
 import { ProtectedRoute } from './core/auth/ProtectedRoute';
 import { LoginView } from './core/auth/LoginView';
 
-import { Header } from './shared/components/Header';
-import { Sidebar } from './shared/components/Sidebar';
+import { AppShell } from './shared/components/AppShell';
 import { CommandPalette } from './shared/components/CommandPalette';
 import { NotificationsDrawer } from './shared/components/NotificationsDrawer';
 import { AuditDrawer } from './shared/components/AuditDrawer';
@@ -109,24 +108,7 @@ const MainShell: React.FC = () => {
 
   const [activeModule, setActiveModule] = useState<string>(defaultDashboard);
   const [activeSubItem, setActiveSubItem] = useState<string | undefined>('overview-main');
-  const [isSidebarExpanded, setIsSidebarExpanded] = useState<boolean>(() => {
-    try {
-      return localStorage.getItem('master_sidebar_expanded') !== 'false';
-    } catch {
-      return true;
-    }
-  });
   const [searchInitialQuery, setSearchInitialQuery] = useState<string>('');
-
-  const toggleSidebar = () => {
-    setIsSidebarExpanded((prev) => {
-      const next = !prev;
-      try {
-        localStorage.setItem('master_sidebar_expanded', String(next));
-      } catch {}
-      return next;
-    });
-  };
 
   // Modals & Drawers
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
@@ -421,49 +403,32 @@ const MainShell: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-slate-50 font-sans text-slate-900">
-      {/* Expandable Sidebar with Dynamic RBAC filtering */}
-      <Sidebar
+    <>
+      <AppShell
         activeModule={activeModule}
         activeSubItem={activeSubItem}
         onNavigate={handleNavigate}
-        isExpanded={isSidebarExpanded}
-        onToggleExpanded={toggleSidebar}
-      />
-
-      {/* Main App Canvas */}
-      <div className="flex flex-1 flex-col overflow-hidden">
-        {/* Global Header */}
-        <Header
-          onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
-          onOpenNotifications={() => setIsNotificationsOpen(true)}
-          onOpenAudit={() => setIsAuditOpen(true)}
-          onOpenNewSale={() => setIsNewSaleModalOpen(true)}
-          onNavigateToAdmin={() => handleNavigate('admin', 'admin-dashboard')}
-          onNavigate={handleNavigate}
-          activeModuleName={MODULE_NAMES[activeModule] || activeModule}
-        />
-
-        {/* Scrollable Module Workspace */}
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 bg-slate-50">
-          <div className="mx-auto max-w-7xl">
-            {isEventContextActive && activeEvent && (
-              <EventContextHeader
-                event={activeEvent as any}
-                availableEvents={availableEvents as any}
-                onSelectAnotherEvent={(id) => setEvent(id)}
-                onClearEventContext={() => {
-                  clearEvent();
-                  handleNavigate('events', 'events-all');
-                }}
-              />
-            )}
-            <ErrorBoundary fallbackTitle="Erro ao carregar módulo do Disk Interno">
-              {renderModuleContent()}
-            </ErrorBoundary>
+        onOpenCommandPalette={() => setIsCommandPaletteOpen(true)}
+        onOpenNotifications={() => setIsNotificationsOpen(true)}
+        onOpenAudit={() => setIsAuditOpen(true)}
+        onOpenNewSale={() => setIsNewSaleModalOpen(true)}
+        onNavigateToAdmin={() => handleNavigate('admin', 'admin-dashboard')}
+      >
+        {isEventContextActive && activeEvent && (
+          <div className="mb-6">
+            <EventContextHeader
+              event={activeEvent as any}
+              availableEvents={availableEvents as any}
+              onSelectAnotherEvent={(id) => setEvent(id)}
+              onClearEventContext={() => {
+                clearEvent();
+                handleNavigate('events', 'events-all');
+              }}
+            />
           </div>
-        </main>
-      </div>
+        )}
+        {renderModuleContent()}
+      </AppShell>
 
       {/* Global Command Palette (Cmd+K / Ctrl+K) */}
       <CommandPalette
@@ -492,7 +457,7 @@ const MainShell: React.FC = () => {
         isOpen={isNewSaleModalOpen}
         onClose={() => setIsNewSaleModalOpen(false)}
       />
-    </div>
+    </>
   );
 };
 

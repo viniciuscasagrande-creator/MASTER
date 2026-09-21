@@ -1,0 +1,62 @@
+[
+  {
+    "module": "Visão Geral",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Eventos",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Comercial",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Suporte Eventos",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Atendimento SAC",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Estorno",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Financeiro",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Contabilidade",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Marketing",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Remarketing",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Administração",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  },
+  {
+    "module": "Configurações",
+    "status": "PASS",
+    "details": "Renderizado com sucesso"
+  }
+]
