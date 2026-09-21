@@ -480,7 +480,7 @@ export const QueryCenterView: React.FC<QueryCenterViewProps> = ({
                   {/* Actions Bar */}
                   <div className="flex items-center justify-between border-t border-slate-800/60 pt-3 mt-4">
                     <span className="text-[10px] text-slate-500 font-mono truncate max-w-[200px]">
-                      {item.eventName || item.producerName || 'Disk Interno Core'}
+                      {item.eventName || item.producerName || 'Disk Interno'}
                     </span>
 
                     <div className="flex items-center gap-2">

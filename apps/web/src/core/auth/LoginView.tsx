@@ -177,7 +177,7 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
 
         {/* Footer */}
         <div className="text-center text-[11px] text-slate-500 font-mono">
-          Core de Identidade & RBAC v1.1.5 • Sessão Criptografada SHA-256
+          Disk Interno • Plataforma de Gestão e Operações
         </div>
       </div>
     </div>

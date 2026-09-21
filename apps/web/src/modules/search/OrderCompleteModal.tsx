@@ -204,7 +204,7 @@ export const OrderCompleteModal: React.FC<OrderCompleteModalProps> = ({
           <div className="rounded-2xl border border-slate-800 bg-slate-950/80 p-5">
             <h4 className="text-xs font-bold text-white mb-1">Ações Contextuais Autorizadas</h4>
             <p className="text-[11px] text-slate-400 mb-4">
-              Os botões abaixo respeitam os limites do seu perfil no Core Node.js.
+              Os botões abaixo respeitam os limites do seu perfil de acesso.
             </p>
 
             <div className="flex flex-wrap gap-2.5">

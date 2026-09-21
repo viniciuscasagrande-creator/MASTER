@@ -167,19 +167,21 @@ export const CommandPalette: React.FC<CommandPaletteProps> = ({
                   </div>
                 </button>
 
-                <button
-                  onClick={() => {
-                    onClose();
-                    onOpenNewSale();
-                  }}
-                  className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-950/40 p-2.5 text-left text-xs text-slate-300 hover:border-orange-500/40 hover:bg-orange-500/5 hover:text-white transition-all"
-                >
-                  <Sparkles className="h-4 w-4 text-emerald-400" />
-                  <div>
-                    <div className="font-semibold text-white">Simular Venda Real</div>
-                    <div className="text-[10px] text-slate-400">Dispara pedido no Core</div>
-                  </div>
-                </button>
+                {import.meta.env.DEV && (
+                  <button
+                    onClick={() => {
+                      onClose();
+                      onOpenNewSale();
+                    }}
+                    className="flex items-center gap-2.5 rounded-xl border border-slate-800/80 bg-slate-950/40 p-2.5 text-left text-xs text-slate-300 hover:border-orange-500/40 hover:bg-orange-500/5 hover:text-white transition-all"
+                  >
+                    <Sparkles className="h-4 w-4 text-emerald-400" />
+                    <div>
+                      <div className="font-semibold text-white">Simular Venda Real</div>
+                      <div className="text-[10px] text-slate-400">Ambiente de Testes / Sandbox</div>
+                    </div>
+                  </button>
+                )}
 
                 <button
                   onClick={() => {

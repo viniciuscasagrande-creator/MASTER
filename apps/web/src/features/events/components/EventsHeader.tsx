@@ -23,24 +23,21 @@ export const EventsHeader: React.FC<EventsHeaderProps> = ({
   const canCreateEvent = hasPermission('eventos.evento.criar');
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/80 pb-5">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-200 pb-5">
       <div>
         <div className="flex flex-wrap items-center gap-2.5">
-          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-500/10 border border-orange-500/30 text-orange-400">
+          <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 border border-orange-200 text-orange-600 shadow-2xs">
             <Calendar className="h-5 w-5" />
           </div>
-          <h1 className="text-xl font-bold tracking-tight text-white">
-            {isProducerUser ? 'MEUS EVENTOS' : 'CENTRAL DE EVENTOS'}
+          <h1 className="text-xl font-bold tracking-tight text-slate-900">
+            {isProducerUser ? 'Meus Eventos' : 'Central de Eventos'}
           </h1>
-          <Badge variant="orange" size="sm">
-            Fase 1.2
-          </Badge>
 
           {activeProducer && (
-            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-900 border border-slate-800 text-xs text-slate-300">
-              <Building2 className="h-3 w-3 text-cyan-400" />
-              <span className="text-slate-400">Produtor:</span>
-              <strong className="text-white">{activeProducer.name}</strong>
+            <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-slate-100 border border-slate-200 text-xs text-slate-700">
+              <Building2 className="h-3 w-3 text-cyan-600" />
+              <span className="text-slate-500">Produtor:</span>
+              <strong className="text-slate-900">{activeProducer.name}</strong>
             </div>
           )}
 
@@ -50,7 +47,7 @@ export const EventsHeader: React.FC<EventsHeaderProps> = ({
             </Badge>
           )}
         </div>
-        <p className="text-xs text-slate-400 mt-1.5">
+        <p className="text-xs text-slate-500 mt-1.5">
           Ciclo operacional completo de eventos, bilheteria, lotes, capacidade e contexto integrado.
         </p>
       </div>

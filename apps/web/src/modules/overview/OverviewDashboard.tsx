@@ -381,7 +381,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 ))}
 
                 <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
-                  <span className="text-slate-500">Transações no Core</span>
+                  <span className="text-slate-500">Transações Operacionais</span>
                   <button
                     onClick={() => onNavigate('sac', 'sac-orders')}
                     className="text-orange-600 hover:text-orange-700 font-semibold cursor-pointer"

@@ -198,7 +198,7 @@ export const CustomerCompleteModal: React.FC<CustomerCompleteModalProps> = ({
                     <div className="text-xs font-semibold text-white">Governança e Mascaramento de Dados LGPD</div>
                     <div className="text-[11px] text-slate-400">
                       {isMasked
-                        ? 'Os documentos e contatos deste cliente estão parcialmente ofuscados no Node.js conforme seu perfil de acesso.'
+                        ? 'Os documentos e contatos deste cliente estão parcialmente ofuscados conforme política de privacidade e perfil de acesso.'
                         : 'Você possui privilégio de visualização de documentos completos auditada pelo sistema.'}
                     </div>
                   </div>

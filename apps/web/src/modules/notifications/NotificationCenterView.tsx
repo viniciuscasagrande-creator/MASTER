@@ -590,7 +590,7 @@ export const NotificationCenterView: React.FC<NotificationCenterViewProps> = ({ 
           <div className="rounded-2xl border border-slate-800 bg-slate-900/60 p-4">
             <h3 className="text-sm font-bold text-white">Regras de Negócio do Motor Central & Janelas Anti-Ruído</h3>
             <p className="text-xs text-slate-400 mt-0.5">
-              Políticas ativas no Node.js EventBus. Notificações redundantes com a mesma chave de agrupamento são condensadas para prevenir fadiga de alertas.
+              Políticas ativas no mensageiro em tempo real. Notificações redundantes com a mesma chave de agrupamento são condensadas para prevenir fadiga de alertas.
             </p>
           </div>
 

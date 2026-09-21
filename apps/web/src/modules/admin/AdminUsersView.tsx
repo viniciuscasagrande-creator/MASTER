@@ -86,7 +86,7 @@ export const AdminUsersView: React.FC = () => {
         <StatCard
           title="USUÁRIOS ATIVOS"
           value={users.filter(u => u.status === 'active').length.toString()}
-          subtitle={`${users.length} cadastrados no Core`}
+          subtitle={`${users.length} cadastrados no sistema`}
           icon={<Users className="h-4 w-4 text-orange-400" />}
           badge="Identidade"
           badgeVariant="orange"

@@ -120,9 +120,6 @@ export const Header: React.FC<HeaderProps> = ({
             <div>
               <div className="flex items-center gap-2">
                 <span className="text-sm font-black tracking-tight text-slate-900">DISK INTERNO</span>
-                <span className="rounded bg-orange-50 px-1.5 py-0.5 text-[10px] font-bold text-orange-700 border border-orange-200">
-                  PDT CORE
-                </span>
               </div>
               <div className="flex items-center gap-1.5 text-[11px] text-slate-500">
                 <span className={`h-1.5 w-1.5 rounded-full ${
@@ -132,7 +129,7 @@ export const Header: React.FC<HeaderProps> = ({
                     ? 'bg-amber-500 animate-pulse'
                     : 'bg-slate-400'
                 }`} />
-                <span>{connectionStatus === 'CONNECTED' ? 'Realtime Ativo' : 'Node Core Real'} • v1.1.5</span>
+                <span>Gestão Operacional</span>
               </div>
             </div>
           </div>

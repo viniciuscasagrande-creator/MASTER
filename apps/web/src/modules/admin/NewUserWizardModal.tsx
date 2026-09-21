@@ -518,7 +518,7 @@ export const NewUserWizardModal: React.FC<NewUserWizardModalProps> = ({ isOpen, 
                 <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 text-[11px] text-slate-400 flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-orange-400 shrink-0" />
                   <span>
-                    O novo usuário será cadastrado no banco relacional seguro do Core Node.js com Argon2id.
+                    O novo usuário será cadastrado na base segura com autenticação protegida.
                   </span>
                 </div>
               </div>

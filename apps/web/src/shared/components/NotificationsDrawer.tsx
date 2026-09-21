@@ -319,7 +319,7 @@ export const NotificationsDrawer: React.FC<NotificationsDrawerProps> = ({
           )}
 
           <div className="text-[10px] text-slate-500 text-center font-mono">
-            EventBus Central • Node.js WebSocket /realtime
+            Notificações em Tempo Real • Conexão Ativa
           </div>
         </div>
       </div>

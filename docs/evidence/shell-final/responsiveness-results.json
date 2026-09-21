@@ -1,0 +1,50 @@
+[
+  {
+    "resolucao": "Desktop 1920x1080",
+    "dimensoes": "1920x1080",
+    "larguraJanela": 1920,
+    "larguraScroll": 1920,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  },
+  {
+    "resolucao": "Desktop 1440x900",
+    "dimensoes": "1440x900",
+    "larguraJanela": 1440,
+    "larguraScroll": 1440,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  },
+  {
+    "resolucao": "Notebook 1366x768",
+    "dimensoes": "1366x768",
+    "larguraJanela": 1366,
+    "larguraScroll": 1366,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  },
+  {
+    "resolucao": "Tablet 1024x768",
+    "dimensoes": "1024x768",
+    "larguraJanela": 1024,
+    "larguraScroll": 1024,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  },
+  {
+    "resolucao": "Tablet 768x1024",
+    "dimensoes": "768x1024",
+    "larguraJanela": 768,
+    "larguraScroll": 768,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  },
+  {
+    "resolucao": "Mobile 390x844",
+    "dimensoes": "390x844",
+    "larguraJanela": 390,
+    "larguraScroll": 390,
+    "overflowHorizontal": "NÃO (OK)",
+    "status": "PASS"
+  }
+]

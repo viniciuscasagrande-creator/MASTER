@@ -156,7 +156,7 @@ export const AdminDashboardView: React.FC<AdminDashboardViewProps> = ({
         <div className="flex items-center justify-between">
           <div>
             <h3 className="font-bold text-sm text-white">Últimas Ações Administrativas & de Governança</h3>
-            <span className="text-xs text-slate-400">Registros sincronizados diretamente com a camada de auditoria do Node.js</span>
+            <span className="text-xs text-slate-400">Registros sincronizados diretamente com o serviço de auditoria</span>
           </div>
           <Button
             size="sm"

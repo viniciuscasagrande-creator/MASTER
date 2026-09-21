@@ -24,7 +24,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ isOpen, onClose }) => 
             </div>
             <div>
               <h2 className="text-sm font-bold text-white leading-tight">
-                Trilha de Auditoria do Core
+                Trilha de Auditoria do Sistema
               </h2>
               <p className="text-[11px] text-slate-400">
                 Registro imutável de eventos inter-departamentais (Produtor → Evento → Pedido)
@@ -97,7 +97,7 @@ export const AuditDrawer: React.FC<AuditDrawerProps> = ({ isOpen, onClose }) => 
 
         {/* Footer */}
         <div className="pt-3 border-t border-slate-800 text-[11px] text-slate-500 flex items-center justify-between">
-          <span>{auditLogs.length} eventos registrados no Core</span>
+          <span>{auditLogs.length} registros no histórico de auditoria</span>
           <span className="text-emerald-400 flex items-center gap-1">
             <ShieldCheck className="h-3 w-3" /> Hash SHA-256 Verificado
           </span>

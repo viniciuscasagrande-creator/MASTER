@@ -237,7 +237,7 @@ export const NewSaleModal: React.FC<NewSaleModalProps> = ({ isOpen, onClose, onN
 
             <div className="rounded-xl border border-slate-800 bg-slate-950 p-4 space-y-2">
               <div className="text-xs font-bold uppercase tracking-wider text-slate-400">
-                Efeitos Simultâneos no Core:
+                Efeitos Simultâneos nos Módulos:
               </div>
               <div className="space-y-1.5 text-xs text-slate-300">
                 <div className="flex items-center gap-2">
