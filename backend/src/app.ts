@@ -20,6 +20,22 @@ app.get('/api/health', (req: Request, res: Response) => {
     status: 'online',
     system: 'Disk Interno Core Node.js Real',
     version: '1.1.5.1',
+    phase: '1.3.11.1.5',
+    commit: process.env.RAILWAY_GIT_COMMIT_SHA || process.env.GIT_COMMIT_SHA || 'f08744d',
+    activeModules: [
+      'overview',
+      'events',
+      'commercial',
+      'event-support',
+      'sac',
+      'refunds',
+      'finance',
+      'accounting',
+      'marketing',
+      'remarketing',
+      'admin',
+      'settings'
+    ],
     timestamp: new Date().toISOString()
   });
 });
