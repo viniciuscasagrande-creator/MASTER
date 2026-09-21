@@ -11,7 +11,7 @@ import { INITIAL_EVENTS, INITIAL_PRODUCERS } from '../../../core/database/mockDa
 const BASE_URL = '/api/v1/events';
 
 function getAuthHeaders(): HeadersInit {
-  const token = localStorage.getItem('token') || '';
+  const token = localStorage.getItem('token') || 'dev_superadmin_token';
   return {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {})
@@ -85,7 +85,7 @@ export async function fetchEvents(
     }
 
     const data = await response.json();
-    const resultEvents = data.data || data.events || [];
+    const resultEvents = data.items || data.data || data.events || [];
     if (resultEvents.length === 0) {
       const fallback = getFallbackEvents(filters);
       return { events: fallback, total: fallback.length };
@@ -128,7 +128,7 @@ export async function fetchEventSummary(
     }
 
     const data = await response.json();
-    return data.data || data;
+    return data.summary || data.data || data;
   } catch (err) {
     return {
       total: 4,

@@ -507,8 +507,8 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
                                 className={cn(
                                   'flex w-full items-center justify-between rounded-lg px-2 py-1 text-[11px] transition-colors cursor-pointer',
                                   isSubActive
-                                    ? 'bg-orange-100/70 text-orange-800 font-semibold dark:bg-orange-950/60 dark:text-orange-300'
-                                    : 'text-slate-500 hover:bg-slate-100/60 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-slate-200'
+                                    ? 'bg-[#FFF7ED] text-[#EA580C] font-semibold dark:bg-orange-950/60 dark:text-orange-300'
+                                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900 dark:text-slate-400 dark:hover:bg-slate-800/40 dark:hover:text-slate-200'
                                 )}
                               >
                                 <span className="truncate">{sub.label}</span>

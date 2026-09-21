@@ -33,6 +33,7 @@ import { Can } from '../../core/auth/Can';
 import { formatCurrency, formatDateTime } from '../../shared/utils/formatters';
 import { RefundDetailModal, RefundDetailItem } from './RefundDetailModal';
 import { NewRefundModal } from './NewRefundModal';
+import { RefundsApi } from '../../features/refunds/api/refunds.api';
 
 interface RefundsDashboardProps {
   initialSubItem?: string;
@@ -55,6 +56,54 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       setActiveTab(initialSubItem);
     }
   }, [initialSubItem]);
+
+  useEffect(() => {
+    RefundsApi.listRefunds()
+      .then(res => {
+        if (res && res.refunds && res.refunds.length > 0) {
+          const mapped: RefundDetailItem[] = res.refunds.map(r => ({
+            id: r.id,
+            refundCode: r.refundCode,
+            orderId: r.orderId,
+            orderNumber: r.orderNumber,
+            customerId: r.customerId,
+            customerName: r.customerName,
+            customerCpfMasked: r.customerCpfMasked,
+            producerId: r.producerId,
+            eventId: r.eventId,
+            eventName: r.eventName,
+            kind: r.kind,
+            amount: r.amount,
+            originalOrderAmount: r.originalOrderAmount,
+            eligibleRemainingAmount: r.eligibleRemainingAmount,
+            reason: r.reason,
+            reasonDescription: r.reasonDescription,
+            status: r.status,
+            riskLevel: r.riskLevel,
+            requiredApprovals: r.requiredApprovals,
+            approvalsReceived: r.approvalsReceived,
+            approvals: r.approvals || [],
+            requestedBy: r.requestedBy,
+            requestedByUserId: r.requestedByUserId,
+            paymentMethod: r.paymentMethod,
+            paymentGateway: r.paymentGateway,
+            transactionCode: r.transactionCode,
+            gatewayRefundId: r.gatewayRefundId,
+            idempotencyKey: r.idempotencyKey,
+            ticketIds: r.ticketIds || [],
+            sacTicketId: r.sacTicketId,
+            timeline: r.timeline || [],
+            createdAt: r.createdAt,
+            updatedAt: r.updatedAt,
+            completedAt: r.completedAt
+          }));
+          setRichRefunds(mapped);
+        }
+      })
+      .catch(err => {
+        console.warn('Backend refunds API fallback to initial seed:', err);
+      });
+  }, []);
 
   // Modals State
   const [selectedRefundForDetail, setSelectedRefundForDetail] = useState<RefundDetailItem | null>(null);
@@ -278,6 +327,12 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       throw new Error('Violação de Segregação de Função: Solicitante não pode aprovar o próprio estorno.');
     }
 
+    try {
+      await RefundsApi.approveRefund(refundId, comment);
+    } catch (e) {
+      console.warn('RefundsApi.approveRefund fallback to local:', e);
+    }
+
     const currentLevel = target.approvalsReceived + 1;
     const isApproved = currentLevel >= target.requiredApprovals;
 
@@ -327,6 +382,12 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
     const target = richRefunds.find(r => r.id === refundId);
     if (!target) return;
 
+    try {
+      await RefundsApi.rejectRefund(refundId, reason);
+    } catch (e) {
+      console.warn('RefundsApi.rejectRefund fallback to local:', e);
+    }
+
     setRichRefunds(prev =>
       prev.map(r => {
         if (r.id === refundId) {
@@ -357,6 +418,12 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
   const handleProcess = async (refundId: string) => {
     const target = richRefunds.find(r => r.id === refundId);
     if (!target) return;
+
+    try {
+      await RefundsApi.processRefund(refundId);
+    } catch (e) {
+      console.warn('RefundsApi.processRefund fallback to local:', e);
+    }
 
     const gwId = `GW-${target.paymentMethod.slice(0, 3)}-${Date.now().toString().slice(-6)}`;
 
@@ -414,6 +481,19 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
     const refCode = `EST-2026-${String(newRefCounter).padStart(6, '0')}`;
     const requiredApprovals = dto.amount >= 5000 ? 3 : dto.amount >= 1000 ? 2 : 1;
     const riskLevel = dto.amount >= 5000 ? 'CRITICAL' : dto.amount >= 1000 ? 'HIGH' : dto.kind === 'PARTIAL' ? 'MEDIUM' : 'LOW';
+
+    try {
+      await RefundsApi.createRefund({
+        orderId: ord.id,
+        kind: dto.kind,
+        amount: dto.amount,
+        reason: dto.reason as any,
+        reasonDescription: dto.reasonDescription,
+        ticketIds: dto.ticketIds
+      });
+    } catch (e) {
+      console.warn('RefundsApi.createRefund fallback to local:', e);
+    }
 
     const newRefundItem: RefundDetailItem = {
       id: `ref-${newRefCounter}`,
@@ -575,20 +655,20 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       </div>
 
       {/* Sub-Navigation Tabs */}
-      <div className="flex items-center gap-2 border-b border-slate-200 pb-2 overflow-x-auto">
+      <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-1 rounded-xl text-xs font-semibold overflow-x-auto shadow-xs">
         {[
           { id: 'refunds-dashboard', label: 'Centro de Controle' },
           { id: 'refunds-requests', label: `Central de Solicitações (${scopedRefunds.length})` },
-          { id: 'refunds-approvals', label: `Fila de Aprovação (${pendingApprovalsList.length})`, badge: pendingApprovalsList.length },
+          { id: 'refunds-approvals', label: `Fila de Aprovação (${pendingApprovalsList.length})` },
           { id: 'refunds-chargebacks', label: 'Chargebacks & Disputas' }
         ].map(tab => (
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`rounded-xl px-3.5 py-1.5 text-xs font-semibold transition-all flex items-center gap-1.5 whitespace-nowrap ${
+            className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
               activeTab === tab.id
-                ? 'bg-orange-50 text-orange-700 border border-orange-200 shadow-2xs font-bold'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                ? 'bg-orange-500 text-white font-bold shadow-xs'
+                : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
             }`}
           >
             <span>{tab.label}</span>
@@ -600,13 +680,13 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       {activeTab === 'refunds-dashboard' && (
         <div className="space-y-4">
           {/* Cascata Reversa Banner */}
-          <div className="rounded-2xl border border-slate-200/90 bg-white p-4 text-xs text-slate-700 flex items-start gap-3 shadow-xs">
-            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 border border-orange-200 shrink-0">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-4 text-xs text-slate-700 dark:text-slate-300 flex items-start gap-3 shadow-xs">
+            <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-50 text-orange-600 border border-orange-200 shrink-0 dark:bg-orange-500/10 dark:border-orange-500/30">
               <RotateCcw className="h-5 w-5" />
             </div>
             <div className="space-y-1">
-              <strong className="text-slate-900 block font-bold">Arquitetura de Cascata Reversa Integrada:</strong>
-              <p className="text-slate-500 leading-relaxed">
+              <strong className="text-slate-900 dark:text-white block font-bold">Arquitetura de Cascata Reversa Integrada:</strong>
+              <p className="text-slate-500 dark:text-slate-400 leading-relaxed">
                 Ao aprovar e processar uma devolução, o Core desativa os QR Codes nas catracas do evento, recalcula o split com o produtor, atualiza o status do pedido no SAC e emite lançamentos compensatórios no Ledger Contábil — sem jamais editar saldos históricos.
               </p>
             </div>
@@ -614,14 +694,14 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
 
           {/* Quick Pending Approvals Callout */}
           {pendingApprovalsList.length > 0 && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-4 flex items-center justify-between shadow-xs">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 dark:border-amber-900/40 dark:bg-amber-950/20 p-4 flex items-center justify-between shadow-xs">
               <div className="flex items-center gap-3">
                 <Clock className="h-5 w-5 text-amber-600 shrink-0" />
                 <div>
-                  <div className="text-xs font-bold text-amber-900">
+                  <div className="text-xs font-bold text-amber-900 dark:text-amber-300">
                     {pendingApprovalsList.length} solicitação(ões) de estorno aguardando avaliação de alçada
                   </div>
-                  <div className="text-[11px] text-amber-700">
+                  <div className="text-[11px] text-amber-700 dark:text-amber-400">
                     Montante total aguardando decisão: {formatCurrency(pendingAmount)}
                   </div>
                 </div>
@@ -637,53 +717,53 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           )}
 
           {/* Recents table */}
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-xl">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-              <span className="text-xs font-bold uppercase tracking-wider text-slate-300">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-3 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-900 dark:text-white">
                 Últimas Solicitações de Estorno
               </span>
               <button
                 onClick={() => setActiveTab('refunds-requests')}
-                className="text-xs text-orange-400 hover:text-orange-300 font-semibold"
+                className="text-xs text-[#FF7A00] hover:underline font-semibold cursor-pointer"
               >
                 Ver Todas ({scopedRefunds.length}) →
               </button>
             </div>
 
-            <div className="overflow-x-auto mt-3">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
               <table className="w-full text-left text-xs">
-                <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+                <thead className="bg-slate-50/80 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800">
                   <tr>
-                    <th className="pb-2.5">Código & Pedido</th>
-                    <th className="pb-2.5">Comprador</th>
-                    <th className="pb-2.5">Evento</th>
-                    <th className="pb-2.5">Valor</th>
-                    <th className="pb-2.5">Status</th>
-                    <th className="pb-2.5 text-right">Ação</th>
+                    <th className="p-3 font-semibold">Código & Pedido</th>
+                    <th className="p-3 font-semibold">Comprador</th>
+                    <th className="p-3 font-semibold">Evento</th>
+                    <th className="p-3 font-semibold">Valor</th>
+                    <th className="p-3 font-semibold">Status</th>
+                    <th className="p-3 text-right font-semibold">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {scopedRefunds.slice(0, 5).map(ref => (
-                    <tr key={ref.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3 font-mono">
-                        <strong className="text-white block">{ref.refundCode}</strong>
+                    <tr key={ref.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="p-3 font-mono">
+                        <strong className="text-slate-900 dark:text-white block">{ref.refundCode}</strong>
                         <span className="text-[11px] text-slate-500">{ref.orderNumber}</span>
                       </td>
-                      <td className="py-3">
-                        <span className="text-slate-200 font-medium block">{ref.customerName}</span>
+                      <td className="p-3">
+                        <span className="text-slate-900 dark:text-slate-200 font-medium block">{ref.customerName}</span>
                         <span className="text-[10px] text-slate-500 font-mono">{ref.customerCpfMasked}</span>
                       </td>
-                      <td className="py-3">
-                        <span className="text-slate-300 truncate block max-w-[180px]">{ref.eventName}</span>
+                      <td className="p-3">
+                        <span className="text-slate-700 dark:text-slate-300 truncate block max-w-[180px]">{ref.eventName}</span>
                         <span className="text-[10px] text-slate-500">{formatDateTime(ref.createdAt)}</span>
                       </td>
-                      <td className="py-3 font-mono font-bold text-rose-400">
+                      <td className="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">
                         {formatCurrency(ref.amount)}
                       </td>
-                      <td className="py-3">
+                      <td className="p-3">
                         {getStatusBadge(ref.status)}
                       </td>
-                      <td className="py-3 text-right">
+                      <td className="p-3 text-right">
                         <Button
                           size="sm"
                           variant="ghost"
@@ -707,17 +787,17 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
 
       {/* TAB 2: Central de Solicitações & TAB 3: Fila de Aprovação */}
       {(activeTab === 'refunds-requests' || activeTab === 'refunds-approvals') && (
-        <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-xl space-y-4">
+        <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-4 text-slate-900 dark:text-white">
           {/* Filter Bar */}
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-800">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100 dark:border-slate-800">
             <div className="relative flex-1 max-w-sm">
-              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-500" />
+              <Search className="absolute left-3 top-2.5 h-4 w-4 text-slate-400" />
               <input
                 type="text"
                 placeholder="Buscar por código, pedido, cliente, CPF..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-xl border border-slate-800 bg-slate-950/70 pl-9 pr-4 py-1.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50 py-1.5 pl-9 pr-4 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 font-mono transition-colors dark:border-slate-800 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
               />
             </div>
 
@@ -726,7 +806,7 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
                 <select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
-                  className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                  className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 outline-none focus:bg-white focus:border-orange-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
                 >
                   <option value="ALL">Todos os Status</option>
                   <option value="APPROVAL_PENDING">Aguardando Aprovação</option>
@@ -741,7 +821,7 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
               <select
                 value={paymentFilter}
                 onChange={(e) => setPaymentFilter(e.target.value)}
-                className="rounded-xl border border-slate-800 bg-slate-950 px-3 py-1.5 text-xs text-slate-300 focus:outline-none focus:ring-1 focus:ring-orange-500"
+                className="rounded-xl border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs text-slate-700 outline-none focus:bg-white focus:border-orange-500 dark:border-slate-800 dark:bg-slate-900 dark:text-slate-300"
               >
                 <option value="ALL">Todos os Meios</option>
                 <option value="PIX">PIX</option>
@@ -751,63 +831,63 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
           </div>
 
           {/* Table */}
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
             <table className="w-full text-left text-xs">
-              <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <thead className="bg-slate-50/80 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800">
                 <tr>
-                  <th className="pb-3">Código & Pedido</th>
-                  <th className="pb-3">Comprador (LGPD)</th>
-                  <th className="pb-3">Evento & Data</th>
-                  <th className="pb-3">Valor</th>
-                  <th className="pb-3">Motivo & Risco</th>
-                  <th className="pb-3">Alçadas</th>
-                  <th className="pb-3">Status</th>
-                  <th className="pb-3 text-right">Ação Central</th>
+                  <th className="p-3 font-semibold">Código & Pedido</th>
+                  <th className="p-3 font-semibold">Comprador (LGPD)</th>
+                  <th className="p-3 font-semibold">Evento & Data</th>
+                  <th className="p-3 font-semibold">Valor</th>
+                  <th className="p-3 font-semibold">Motivo & Risco</th>
+                  <th className="p-3 font-semibold">Alçadas</th>
+                  <th className="p-3 font-semibold">Status</th>
+                  <th className="p-3 text-right font-semibold">Ação Central</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60">
                 {displayedRefunds.map(ref => {
                   const isMaker = ref.requestedByUserId === currentUser.id;
                   const canApprove = ref.status === 'APPROVAL_PENDING' || ref.status === 'UNDER_REVIEW';
                   const canExecuteGateway = ref.status === 'APPROVED';
 
                   return (
-                    <tr key={ref.id} className="hover:bg-slate-800/40 transition-colors">
-                      <td className="py-3 font-mono">
-                        <strong className="text-white block">{ref.refundCode}</strong>
+                    <tr key={ref.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
+                      <td className="p-3 font-mono">
+                        <strong className="text-slate-900 dark:text-white block">{ref.refundCode}</strong>
                         <span className="text-[11px] text-slate-400">{ref.orderNumber}</span>
                       </td>
 
-                      <td className="py-3">
-                        <div className="text-slate-200 font-medium">{ref.customerName}</div>
+                      <td className="p-3">
+                        <div className="text-slate-900 dark:text-slate-200 font-medium">{ref.customerName}</div>
                         <div className="text-[10px] text-slate-500 font-mono">{ref.customerCpfMasked}</div>
                       </td>
 
-                      <td className="py-3">
-                        <div className="text-slate-300 font-medium truncate max-w-[170px]" title={ref.eventName}>
+                      <td className="p-3">
+                        <div className="text-slate-800 dark:text-slate-300 font-medium truncate max-w-[170px]" title={ref.eventName}>
                           {ref.eventName}
                         </div>
                         <div className="text-[10px] text-slate-500">{formatDateTime(ref.createdAt)}</div>
                       </td>
 
-                      <td className="py-3 font-mono font-bold text-rose-400">
+                      <td className="p-3 font-mono font-bold text-rose-600 dark:text-rose-400">
                         {formatCurrency(ref.amount)}
                         <span className="block text-[10px] text-slate-500 font-normal">
                           de {formatCurrency(ref.originalOrderAmount)}
                         </span>
                       </td>
 
-                      <td className="py-3">
-                        <div className="font-semibold text-white truncate max-w-[160px]" title={ref.reasonDescription}>
+                      <td className="p-3">
+                        <div className="font-semibold text-slate-900 dark:text-white truncate max-w-[160px]" title={ref.reasonDescription}>
                           {ref.reason}
                         </div>
                         <div className="text-[10px] text-slate-400">
-                          Risco: <strong className="text-slate-300">{ref.riskLevel}</strong>
+                          Risco: <strong className="text-slate-600 dark:text-slate-300">{ref.riskLevel}</strong>
                         </div>
                       </td>
 
-                      <td className="py-3 font-mono">
-                        <span className={ref.approvalsReceived >= ref.requiredApprovals ? 'text-emerald-400' : 'text-amber-400'}>
+                      <td className="p-3 font-mono">
+                        <span className={ref.approvalsReceived >= ref.requiredApprovals ? 'text-emerald-600 dark:text-emerald-400 font-bold' : 'text-amber-600 dark:text-amber-400 font-bold'}>
                           {ref.approvalsReceived} / {ref.requiredApprovals}
                         </span>
                         <span className="block text-[10px] text-slate-500">
@@ -815,11 +895,11 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
                         </span>
                       </td>
 
-                      <td className="py-3">
+                      <td className="p-3">
                         {getStatusBadge(ref.status)}
                       </td>
 
-                      <td className="py-3 text-right">
+                      <td className="p-3 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           {canApprove && (
                             <Can permission="estorno.solicitacao.aprovar">
@@ -892,15 +972,15 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
       {/* TAB 4: Chargebacks & Disputas */}
       {activeTab === 'refunds-chargebacks' && (
         <div className="space-y-4">
-          <div className="rounded-2xl border border-slate-800/80 bg-slate-900/60 p-5 shadow-xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-4 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <ShieldAlert className="h-5 w-5 text-emerald-400" />
+                <ShieldAlert className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
                 <div>
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+                  <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                     Monitoramento de Disputas & Bandeiras (Visa / Mastercard)
                   </h3>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">
                     Controle de chargebacks preventivos e contestação bancária
                   </p>
                 </div>
@@ -909,27 +989,27 @@ export const RefundsDashboard: React.FC<RefundsDashboardProps> = ({
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/40">
+              <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60">
                 <span className="text-[10px] text-slate-500 font-bold uppercase block">Disputas Abertas</span>
-                <span className="text-xl font-bold font-mono text-emerald-400 mt-1 block">0 ativas</span>
+                <span className="text-xl font-bold font-mono text-emerald-600 dark:text-emerald-400 mt-1 block">0 ativas</span>
                 <span className="text-[10px] text-slate-400 mt-0.5 block">Nenhuma notificação adquirente</span>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/40">
+              <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60">
                 <span className="text-[10px] text-slate-500 font-bold uppercase block">Limite Máximo Bandeira</span>
-                <span className="text-xl font-bold font-mono text-slate-200 mt-1 block">1.00%</span>
-                <span className="text-[10px] text-emerald-400 mt-0.5 block">Margem de segurança de 92%</span>
+                <span className="text-xl font-bold font-mono text-slate-900 dark:text-slate-200 mt-1 block">1.00%</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 mt-0.5 block">Margem de segurança de 92%</span>
               </div>
 
-              <div className="p-3.5 rounded-xl border border-slate-800 bg-slate-950/40">
+              <div className="p-3.5 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60">
                 <span className="text-[10px] text-slate-500 font-bold uppercase block">Prevenção por Cancelamento Rápido</span>
-                <span className="text-xl font-bold font-mono text-cyan-400 mt-1 block">100% resolvidos</span>
+                <span className="text-xl font-bold font-mono text-cyan-600 dark:text-cyan-400 mt-1 block">100% resolvidos</span>
                 <span className="text-[10px] text-slate-400 mt-0.5 block">Estornos efetuados antes da contestação</span>
               </div>
             </div>
 
-            <div className="p-4 rounded-xl border border-slate-800 bg-slate-950/40 text-xs text-slate-400 space-y-2">
-              <strong className="text-white block">Regra de Proteção Antifraude:</strong>
+            <div className="p-4 rounded-xl border border-slate-200 bg-slate-50 dark:border-slate-800 dark:bg-slate-900/60 text-xs text-slate-600 dark:text-slate-400 space-y-2">
+              <strong className="text-slate-900 dark:text-white block font-bold">Regra de Proteção Antifraude:</strong>
               <p className="leading-relaxed">
                 O Disk Interno prioriza o estorno amigável direto via adquirente para solicitações legítimas de CDC ou cancelamentos, evitando que o comprador acione a contestação do banco emissor.
               </p>

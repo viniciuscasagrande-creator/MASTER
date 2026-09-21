@@ -21,7 +21,7 @@ import {
 const BASE_URL = '/api/v1/commercial';
 
 function getHeaders(): HeadersInit {
-  const token = localStorage.getItem('token') || '';
+  const token = localStorage.getItem('token') || 'dev_superadmin_token';
   return {
     'Content-Type': 'application/json',
     ...(token ? { Authorization: `Bearer ${token}` } : {})

@@ -29,28 +29,28 @@ export const SectionCard: React.FC<SectionCardProps> = ({
   return (
     <div
       className={cn(
-        'rounded-xl border border-slate-800 bg-[#0F172A] text-white shadow-sm',
+        'rounded-xl border border-slate-200 bg-white text-slate-900 shadow-xs dark:border-slate-800 dark:bg-slate-900 dark:text-white',
         className
       )}
     >
       {hasHeader && (
         <div
           className={cn(
-            'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-800',
+            'flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 sm:p-5 border-b border-slate-100 dark:border-slate-800',
             headerClassName
           )}
         >
           <div>
             <div className="flex items-center gap-2">
               {typeof title === 'string' ? (
-                <h2 className="text-sm font-bold text-white">{title}</h2>
+                <h2 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h2>
               ) : (
                 title
               )}
               {badge}
             </div>
             {description && (
-              <p className="mt-0.5 text-xs text-slate-400">{description}</p>
+              <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{description}</p>
             )}
           </div>
           {actions && (
@@ -59,7 +59,12 @@ export const SectionCard: React.FC<SectionCardProps> = ({
         </div>
       )}
 
-      <div className={cn(noPadding ? '' : 'p-4 sm:p-5', bodyClassName)}>
+      <div
+        className={cn(
+          noPadding ? 'p-0' : 'p-4 sm:p-5',
+          bodyClassName
+        )}
+      >
         {children}
       </div>
     </div>

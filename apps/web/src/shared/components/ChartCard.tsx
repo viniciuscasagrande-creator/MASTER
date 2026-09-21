@@ -29,20 +29,20 @@ export const ChartCard: React.FC<ChartCardProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col justify-between rounded-xl border border-slate-800 bg-[#0F172A] p-4 sm:p-5 shadow-sm transition-all duration-150 hover:border-slate-700 text-white',
+        'flex flex-col justify-between rounded-xl border border-slate-200 bg-white dark:border-slate-800 dark:bg-slate-900 p-4 sm:p-5 shadow-xs transition-all duration-150 hover:border-slate-300 dark:hover:border-slate-700',
         heightClass,
         className
       )}
     >
       {/* Chart Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-800">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-white">{title}</h3>
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">{title}</h3>
             {badge}
           </div>
           {subtitle && (
-            <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
           )}
         </div>
         {actions && (
@@ -58,11 +58,11 @@ export const ChartCard: React.FC<ChartCardProps> = ({
             <span className="text-xs">Carregando gráfico...</span>
           </div>
         ) : empty ? (
-          <div className="text-center text-slate-400 px-4">
-            <p className="text-xs">{emptyMessage}</p>
+          <div className="flex flex-col items-center justify-center gap-1.5 text-center text-slate-400">
+            <span className="text-xs">{emptyMessage}</span>
           </div>
         ) : (
-          <div className="h-full w-full">{children}</div>
+          children
         )}
       </div>
     </div>

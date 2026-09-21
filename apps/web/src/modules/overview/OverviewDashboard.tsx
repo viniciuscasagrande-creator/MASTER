@@ -312,10 +312,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   </defs>
 
                   {/* Horizontal Grid lines */}
-                  <line x1="0" y1="20" x2="500" y2="20" stroke="#1e293b" strokeDasharray="3 3" />
-                  <line x1="0" y1="60" x2="500" y2="60" stroke="#1e293b" strokeDasharray="3 3" />
-                  <line x1="0" y1="100" x2="500" y2="100" stroke="#1e293b" strokeDasharray="3 3" />
-                  <line x1="0" y1="140" x2="500" y2="140" stroke="#1e293b" strokeDasharray="3 3" />
+                  <line x1="0" y1="20" x2="500" y2="20" stroke="#F1F5F9" className="dark:stroke-slate-800" strokeDasharray="3 3" />
+                  <line x1="0" y1="60" x2="500" y2="60" stroke="#F1F5F9" className="dark:stroke-slate-800" strokeDasharray="3 3" />
+                  <line x1="0" y1="100" x2="500" y2="100" stroke="#F1F5F9" className="dark:stroke-slate-800" strokeDasharray="3 3" />
+                  <line x1="0" y1="140" x2="500" y2="140" stroke="#F1F5F9" className="dark:stroke-slate-800" strokeDasharray="3 3" />
 
                   {/* Area fill */}
                   <path
@@ -333,11 +333,11 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   />
 
                   {/* Active highlight point on the curve */}
-                  <circle cx="500" cy="45" r="4.5" fill="#FF7A00" stroke="#0F172A" strokeWidth="2" />
+                  <circle cx="500" cy="45" r="4.5" fill="#FF7A00" stroke="#FFFFFF" className="dark:stroke-slate-900" strokeWidth="2" />
                 </svg>
 
                 {/* Y-Axis Labels */}
-                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] font-mono text-slate-400 pointer-events-none">
+                <div className="absolute left-0 top-0 bottom-0 flex flex-col justify-between text-[10px] font-mono text-slate-400 dark:text-slate-500 pointer-events-none">
                   <span>200k</span>
                   <span>150k</span>
                   <span>100k</span>
@@ -347,7 +347,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
               </div>
 
               {/* X-Axis Dates */}
-              <div className="flex justify-between text-[10px] font-mono text-slate-400 pt-2 pl-8 border-t border-slate-800">
+              <div className="flex justify-between text-[10px] font-mono text-slate-500 dark:text-slate-400 pt-2 pl-8 border-t border-slate-100 dark:border-slate-800">
                 <span>25/07</span>
                 <span>01/08</span>
                 <span>08/08</span>
@@ -371,7 +371,8 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   <path
                     d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
                     fill="none"
-                    stroke="#1e293b"
+                    stroke="#F1F5F9"
+                    className="dark:stroke-slate-800"
                     strokeWidth="3.8"
                   />
                   {/* Segment 1: Resolvidos 48% (Emerald) */}
@@ -418,33 +419,33 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#22C55E] shrink-0" />
-                    <span className="text-slate-300">Resolvidos</span>
+                    <span className="text-slate-600 dark:text-slate-300">Resolvidos</span>
                   </div>
-                  <span className="font-bold text-white font-mono">48%</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">48%</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#3B82F6] shrink-0" />
-                    <span className="text-slate-300">Em andamento</span>
+                    <span className="text-slate-600 dark:text-slate-300">Em andamento</span>
                   </div>
-                  <span className="font-bold text-white font-mono">32%</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">32%</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#F59E0B] shrink-0" />
-                    <span className="text-slate-300">Aguardando cliente</span>
+                    <span className="text-slate-600 dark:text-slate-300">Aguardando cliente</span>
                   </div>
-                  <span className="font-bold text-white font-mono">12%</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">12%</span>
                 </div>
 
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="h-2.5 w-2.5 rounded-full bg-[#FF7A00] shrink-0" />
-                    <span className="text-slate-300">Não atribuídos</span>
+                    <span className="text-slate-600 dark:text-slate-300">Não atribuídos</span>
                   </div>
-                  <span className="font-bold text-white font-mono">8%</span>
+                  <span className="font-bold text-slate-900 dark:text-white font-mono">8%</span>
                 </div>
               </div>
             </div>
@@ -455,9 +456,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
       {/* 4. Linha de Listas Operacionais: Últimos atendimentos + Próximas ações */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
         {/* Últimos Atendimentos (Conforme Referência) */}
-        <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5 shadow-sm text-white">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h3 className="text-sm font-bold text-white">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
               Últimos atendimentos
             </h3>
             <button
@@ -468,22 +469,22 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </button>
           </div>
 
-          <div className="divide-y divide-slate-800 mt-1">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 mt-1">
             {recentTickets.map((t) => (
               <div
                 key={t.id}
                 onClick={() => onNavigate('sac', 'sac-query-center')}
-                className="flex items-center justify-between py-3 hover:bg-slate-800/60 px-1 rounded-lg transition-colors cursor-pointer"
+                className="flex items-center justify-between py-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/60 px-1 rounded-lg transition-colors cursor-pointer"
               >
                 <div className="flex items-center gap-3 min-w-0">
-                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-slate-800 text-orange-400 font-bold text-xs border border-slate-700">
+                  <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-orange-50 text-orange-600 font-bold text-xs border border-orange-100 dark:bg-slate-800 dark:text-orange-400 dark:border-slate-700">
                     {t.name.split(' ').map((n) => n[0]).join('').slice(0, 2)}
                   </div>
                   <div className="min-w-0">
-                    <div className="text-xs font-bold text-white truncate">
+                    <div className="text-xs font-bold text-slate-900 dark:text-white truncate">
                       {t.name}
                     </div>
-                    <div className="text-[11px] text-slate-400 truncate">
+                    <div className="text-[11px] text-slate-500 dark:text-slate-400 truncate">
                       {t.desc}
                     </div>
                   </div>
@@ -491,7 +492,7 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
 
                 <div className="flex items-center gap-3 shrink-0 ml-2">
                   <StatusBadge status={t.status} size="sm" />
-                  <span className="text-[11px] text-slate-400 font-mono hidden sm:inline">
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono hidden sm:inline">
                     {t.time}
                   </span>
                 </div>
@@ -501,9 +502,9 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
         </div>
 
         {/* Próximas Ações (Checklist interativo da Referência) */}
-        <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5 shadow-sm text-white">
-          <div className="flex items-center justify-between pb-3 border-b border-slate-800">
-            <h3 className="text-sm font-bold text-white">
+        <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-xs text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white">
               Próximas ações
             </h3>
             <span className="text-xs font-semibold text-[#FF7A00] hover:underline cursor-pointer">
@@ -511,12 +512,12 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
             </span>
           </div>
 
-          <div className="divide-y divide-slate-800 mt-1">
+          <div className="divide-y divide-slate-100 dark:divide-slate-800 mt-1">
             {tasks.map((task) => (
               <div
                 key={task.id}
                 onClick={() => toggleTask(task.id)}
-                className="flex items-start gap-3 py-3 hover:bg-slate-800/60 px-1 rounded-lg transition-colors cursor-pointer"
+                className="flex items-start gap-3 py-3 hover:bg-slate-50/80 dark:hover:bg-slate-800/60 px-1 rounded-lg transition-colors cursor-pointer"
               >
                 <div className="mt-0.5 text-slate-400 hover:text-orange-500 transition-colors shrink-0">
                   {task.done ? (
@@ -526,10 +527,10 @@ export const OverviewDashboard: React.FC<OverviewDashboardProps> = ({
                   )}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className={`text-xs font-semibold ${task.done ? 'line-through text-slate-500' : 'text-slate-200'} truncate`}>
+                  <div className={`text-xs font-semibold ${task.done ? 'line-through text-slate-400' : 'text-slate-800 dark:text-slate-200'} truncate`}>
                     {task.title}
                   </div>
-                  <div className="text-[11px] text-slate-400">
+                  <div className="text-[11px] text-slate-500 dark:text-slate-400">
                     {task.time}
                   </div>
                 </div>

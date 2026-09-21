@@ -18,7 +18,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
   title,
   description,
   icon,
-  iconBg = 'bg-slate-100 text-slate-700 dark:bg-slate-700 dark:text-slate-200',
+  iconBg = 'bg-orange-50 text-orange-600 border-orange-100 dark:bg-slate-800 dark:text-orange-400 dark:border-slate-700',
   badge,
   badgeVariant = 'slate',
   actionLabel,
@@ -37,7 +37,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         }
       }}
       className={cn(
-        'group relative flex flex-col justify-between rounded-xl border border-slate-800 bg-[#0F172A] p-4 sm:p-5 shadow-sm transition-all duration-150 hover:-translate-y-0.5 hover:border-orange-500/50 hover:shadow-md cursor-pointer select-none min-h-[145px] max-h-[175px] h-full text-white',
+        'group relative flex flex-col justify-between rounded-xl border border-slate-200 bg-white p-4 sm:p-5 shadow-xs transition-all duration-150 hover:-translate-y-0.5 hover:border-orange-400/60 hover:shadow-sm cursor-pointer select-none min-h-[145px] max-h-[175px] h-full text-slate-900 dark:border-slate-800 dark:bg-slate-900 dark:text-white',
         className
       )}
     >
@@ -45,7 +45,7 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
         <div className="flex items-start justify-between gap-3">
           <div
             className={cn(
-              'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 text-orange-400 shadow-xs transition-transform duration-150 group-hover:scale-105',
+              'flex h-9 w-9 shrink-0 items-center justify-center rounded-xl border shadow-xs transition-transform duration-150 group-hover:scale-105',
               iconBg
             )}
           >
@@ -55,14 +55,14 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           {badge && (
             <span
               className={cn(
-                'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-bold border shrink-0',
-                badgeVariant === 'orange' && 'bg-orange-500/15 text-orange-400 border-orange-500/30',
-                badgeVariant === 'emerald' && 'bg-emerald-500/15 text-emerald-400 border-emerald-500/30',
-                badgeVariant === 'amber' && 'bg-amber-500/15 text-amber-400 border-amber-500/30',
-                badgeVariant === 'rose' && 'bg-rose-500/15 text-rose-400 border-rose-500/30',
-                badgeVariant === 'cyan' && 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
-                badgeVariant === 'purple' && 'bg-purple-500/15 text-purple-400 border-purple-500/30',
-                badgeVariant === 'slate' && 'bg-slate-800 text-slate-300 border-slate-700'
+                'inline-flex items-center rounded-md px-1.5 py-0.5 text-[10px] font-semibold border shrink-0',
+                badgeVariant === 'orange' && 'bg-orange-50 text-orange-700 border-orange-200 dark:bg-orange-500/15 dark:text-orange-400 dark:border-orange-500/30',
+                badgeVariant === 'emerald' && 'bg-emerald-50 text-emerald-700 border-emerald-200 dark:bg-emerald-500/15 dark:text-emerald-400 dark:border-emerald-500/30',
+                badgeVariant === 'amber' && 'bg-amber-50 text-amber-700 border-amber-200 dark:bg-amber-500/15 dark:text-amber-400 dark:border-amber-500/30',
+                badgeVariant === 'rose' && 'bg-rose-50 text-rose-700 border-rose-200 dark:bg-rose-500/15 dark:text-rose-400 dark:border-rose-500/30',
+                badgeVariant === 'cyan' && 'bg-cyan-50 text-cyan-700 border-cyan-200 dark:bg-cyan-500/15 dark:text-cyan-400 dark:border-cyan-500/30',
+                badgeVariant === 'purple' && 'bg-purple-50 text-purple-700 border-purple-200 dark:bg-purple-500/15 dark:text-purple-400 dark:border-purple-500/30',
+                badgeVariant === 'slate' && 'bg-slate-50 text-slate-600 border-slate-200 dark:bg-slate-800 dark:text-slate-300 dark:border-slate-700'
               )}
             >
               {badge}
@@ -70,19 +70,20 @@ export const FeatureCard: React.FC<FeatureCardProps> = ({
           )}
         </div>
 
-        <h3 className="mt-3 text-sm font-bold text-white transition-colors group-hover:text-[#FF7A00] line-clamp-1">
+        <h3 className="mt-3 text-sm font-bold text-slate-900 group-hover:text-[#FF7A00] transition-colors line-clamp-1 dark:text-white">
           {title}
         </h3>
-
-        <p className="mt-1 text-xs text-slate-400 line-clamp-2 leading-relaxed">
+        <p className="mt-1 text-xs text-slate-500 dark:text-slate-400 line-clamp-2 leading-relaxed">
           {description}
         </p>
       </div>
 
-      <div className="mt-3 flex items-center justify-between border-t border-slate-800 pt-2.5 text-xs font-semibold text-slate-300 group-hover:text-[#FF7A00] transition-colors">
-        <span>{actionLabel || 'Acessar ferramenta'}</span>
-        <ChevronRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
-      </div>
+      {actionLabel && (
+        <div className="mt-3 flex items-center gap-1 text-xs font-semibold text-orange-600 dark:text-orange-400 group-hover:underline">
+          <span>{actionLabel}</span>
+          <ChevronRight className="h-3.5 w-3.5 transition-transform duration-150 group-hover:translate-x-0.5" />
+        </div>
+      )}
     </div>
   );
 };

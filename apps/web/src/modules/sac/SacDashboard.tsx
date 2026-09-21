@@ -33,6 +33,7 @@ import { CustomerDossierModal } from './CustomerDossierModal';
 import { NewSacTicketModal } from './NewSacTicketModal';
 import { SacTicketDetailModal } from './SacTicketDetailModal';
 import { OrderDossierModal } from '../../features/commercial/orders/OrderDossierModal';
+import { SacApi } from '../../features/sac/api/sac.api';
 
 interface SacDashboardProps {
   initialSubItem?: string;
@@ -165,6 +166,33 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
     }
   ]);
 
+  // Load real tickets and metrics from backend /api/v1/sac
+  const [backendMetrics, setBackendMetrics] = useState<any>(null);
+
+  useEffect(() => {
+    let isMounted = true;
+    async function loadSacData() {
+      try {
+        const [ticketsRes, metricsRes] = await Promise.allSettled([
+          SacApi.getTickets(),
+          SacApi.getMetrics()
+        ]);
+        if (isMounted) {
+          if (ticketsRes.status === 'fulfilled' && ticketsRes.value?.tickets?.length > 0) {
+            setLocalTickets(ticketsRes.value.tickets);
+          }
+          if (metricsRes.status === 'fulfilled') {
+            setBackendMetrics(metricsRes.value);
+          }
+        }
+      } catch (err) {
+        console.warn('[SAC] Backend load fallback:', err);
+      }
+    }
+    loadSacData();
+    return () => { isMounted = false; };
+  }, []);
+
   // Central de Consulta: Filter customers, orders, tickets by search query
   const cleanDigits = searchQuery.replace(/\D/g, '');
   const searchLower = searchQuery.toLowerCase().trim();
@@ -213,45 +241,63 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
     setIsNewTicketOpen(true);
   };
 
-  const handleCreateTicket = (data: any) => {
+  const handleCreateTicket = async (data: any) => {
     const cust = customers.find(c => c.id === data.customerId) || newTicketTargetCustomer;
     const order = orders.find(o => o.id === data.orderId) || newTicketTargetOrder;
-    const newCode = `SAC-2026-${String(Math.floor(1000 + Math.random() * 9000))}`;
     
-    const newTicket = {
-      id: `sac-${Date.now()}`,
-      ticketCode: newCode,
-      customerId: data.customerId,
-      customerName: cust ? cust.name : 'Consumidor',
-      orderId: data.orderId,
-      orderNumber: order ? order.orderNumber : undefined,
-      eventName: order ? order.eventName : undefined,
-      channel: data.channel,
-      subject: data.subject,
-      status: 'OPEN',
-      priority: data.priority,
-      queue: data.queue,
-      agentName: 'Atendente SAC',
-      slaMinutesRemaining: data.priority === 'URGENT' ? 30 : data.priority === 'HIGH' ? 60 : 120,
-      slaBreached: false,
-      slaPaused: false,
-      messages: [
-        {
-          id: `msg-${Date.now()}`,
-          type: 'CUSTOMER',
-          authorName: cust ? cust.name : 'Consumidor',
-          content: data.initialMessage,
-          createdAt: new Date().toISOString()
-        }
-      ],
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-
-    setLocalTickets(prev => [newTicket, ...prev]);
+    try {
+      const created = await SacApi.createTicket({
+        customerId: data.customerId || cust?.id || 'cust-1',
+        customerName: cust ? cust.name : 'Consumidor',
+        orderId: data.orderId || order?.id,
+        orderNumber: order ? order.orderNumber : undefined,
+        eventName: order ? order.eventName : undefined,
+        producerId: order ? order.producerId : undefined,
+        channel: data.channel,
+        subject: data.subject,
+        priority: data.priority,
+        queue: data.queue,
+        initialMessage: data.initialMessage
+      });
+      setLocalTickets(prev => [created, ...prev]);
+    } catch (err) {
+      console.warn('[SAC] Fallback to in-memory ticket creation:', err);
+      const newCode = `SAC-2026-${String(Math.floor(1000 + Math.random() * 9000))}`;
+      const newTicket = {
+        id: `sac-${Date.now()}`,
+        ticketCode: newCode,
+        customerId: data.customerId,
+        customerName: cust ? cust.name : 'Consumidor',
+        orderId: data.orderId,
+        orderNumber: order ? order.orderNumber : undefined,
+        eventName: order ? order.eventName : undefined,
+        channel: data.channel,
+        subject: data.subject,
+        status: 'OPEN',
+        priority: data.priority,
+        queue: data.queue,
+        agentName: 'Atendente SAC',
+        slaMinutesRemaining: data.priority === 'URGENT' ? 30 : data.priority === 'HIGH' ? 60 : 120,
+        slaBreached: false,
+        slaPaused: false,
+        messages: [
+          {
+            id: `msg-${Date.now()}`,
+            type: 'CUSTOMER',
+            authorName: cust ? cust.name : 'Consumidor',
+            content: data.initialMessage,
+            createdAt: new Date().toISOString()
+          }
+        ],
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString()
+      };
+      setLocalTickets(prev => [newTicket, ...prev]);
+    }
   };
 
-  const handleAddMessageToTicket = (ticketId: string, type: 'AGENT' | 'INTERNAL_NOTE', content: string) => {
+  const handleAddMessageToTicket = async (ticketId: string, type: 'AGENT' | 'INTERNAL_NOTE', content: string) => {
+    // Optimistic local update
     setLocalTickets(prev =>
       prev.map(t => {
         if (t.id === ticketId) {
@@ -264,7 +310,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           };
           return {
             ...t,
-            messages: [...t.messages, newMsg],
+            messages: [...(t.messages || []), newMsg],
             updatedAt: new Date().toISOString(),
             status: t.status === 'WAITING_CUSTOMER' && type === 'AGENT' ? 'IN_PROGRESS' : t.status
           };
@@ -279,7 +325,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
         return {
           ...prev,
           messages: [
-            ...prev.messages,
+            ...(prev.messages || []),
             {
               id: `msg-${Date.now()}`,
               type,
@@ -293,9 +339,15 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       }
       return prev;
     });
+
+    try {
+      await SacApi.addMessage(ticketId, { type, content });
+    } catch (err) {
+      console.warn('[SAC] Real addMessage dispatch failed, kept local:', err);
+    }
   };
 
-  const handleUpdateTicketStatus = (ticketId: string, status: string) => {
+  const handleUpdateTicketStatus = async (ticketId: string, status: string) => {
     setLocalTickets(prev =>
       prev.map(t => {
         if (t.id === ticketId) {
@@ -321,6 +373,12 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       }
       return prev;
     });
+
+    try {
+      await SacApi.updateStatus(ticketId, status as any);
+    } catch (err) {
+      console.warn('[SAC] Real updateStatus dispatch failed, kept local:', err);
+    }
   };
 
   const handleRequestRefundFromOrder = (order: any) => {
@@ -368,13 +426,13 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
       </div>
 
       {/* Operational Subnavigation Tabs */}
-      <div className="flex items-center gap-1 border border-slate-800 bg-[#0F172A] p-1 rounded-xl text-xs font-semibold overflow-x-auto shadow-sm">
+      <div className="flex items-center gap-1 border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-1 rounded-xl text-xs font-semibold overflow-x-auto shadow-xs">
         <button
           onClick={() => setActiveSubTab('sac-dashboard')}
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-dashboard'
               ? 'bg-orange-500 text-white font-bold shadow-xs'
-              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
           <Sparkles className="w-3.5 h-3.5" />
@@ -385,7 +443,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-query-center'
               ? 'bg-orange-500 text-white font-bold shadow-xs'
-              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
           <Search className="w-3.5 h-3.5" />
@@ -396,7 +454,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-queue'
               ? 'bg-orange-500 text-white font-bold shadow-xs'
-              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
           <Headphones className="w-3.5 h-3.5" />
@@ -407,7 +465,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           className={`px-3.5 py-2 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap ${
             activeSubTab === 'sac-customers'
               ? 'bg-orange-500 text-white font-bold shadow-xs'
-              : 'text-slate-300 hover:text-white hover:bg-slate-800'
+              : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
           }`}
         >
           <User className="w-3.5 h-3.5" />
@@ -423,43 +481,43 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
             <StatCard
               title="ATENDIMENTOS ABERTOS"
               value={localTickets.filter(t => t.status !== 'RESOLVED' && t.status !== 'CLOSED').length.toString()}
-              icon={<MessageSquare className="h-4 w-4 text-orange-400" />}
+              icon={<MessageSquare className="h-4 w-4 text-orange-500" />}
               badge="Tempo Real"
               badgeVariant="orange"
             />
             <StatCard
               title="EM ANDAMENTO"
               value={localTickets.filter(t => t.status === 'IN_PROGRESS').length.toString()}
-              icon={<Clock className="h-4 w-4 text-cyan-400" />}
+              icon={<Clock className="h-4 w-4 text-cyan-500" />}
               badge="Ativos"
               badgeVariant="cyan"
             />
             <StatCard
               title="AGUARDANDO CLIENTE"
               value={localTickets.filter(t => t.status === 'WAITING_CUSTOMER').length.toString()}
-              icon={<User className="h-4 w-4 text-amber-400" />}
+              icon={<User className="h-4 w-4 text-amber-500" />}
               badge="SLA Pausado"
               badgeVariant="amber"
             />
             <StatCard
               title="RESOLVIDOS"
               value={localTickets.filter(t => t.status === 'RESOLVED' || t.status === 'CLOSED').length.toString()}
-              icon={<CheckCircle2 className="h-4 w-4 text-emerald-400" />}
+              icon={<CheckCircle2 className="h-4 w-4 text-emerald-500" />}
               badge="Concluídos"
               badgeVariant="emerald"
             />
           </div>
 
           {/* Quick Query Search Banner */}
-          <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5 shadow-sm text-white">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs text-slate-900 dark:text-white">
             <div className="max-w-2xl space-y-2">
-              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400 border border-orange-500/30">
+              <span className="text-[10px] font-extrabold uppercase tracking-wider px-2.5 py-0.5 rounded-full bg-orange-50 text-orange-600 border border-orange-200 dark:bg-orange-500/15 dark:text-orange-400 dark:border-orange-500/30">
                 Atalho Central de Atendimento
               </span>
-              <h2 className="text-base sm:text-lg font-bold text-white tracking-tight">
+              <h2 className="text-base sm:text-lg font-bold text-slate-900 dark:text-white tracking-tight">
                 Localize rapidamente compradores, pedidos e ingressos
               </h2>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-slate-500 dark:text-slate-400">
                 Consulte por CPF, nome, e-mail, telefone, código do pedido (DK-...) ou voucher para abrir a ficha consolidada.
               </p>
             </div>
@@ -475,7 +533,7 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                   onKeyDown={(e) => {
                     if (e.key === 'Enter') setActiveSubTab('sac-query-center');
                   }}
-                  className="w-full rounded-xl border border-slate-700 bg-slate-900 py-2 pl-9 pr-3 text-xs text-white placeholder:text-slate-500 outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 font-mono transition-colors"
+                  className="w-full rounded-xl border border-slate-200 bg-slate-50 py-2 pl-9 pr-3 text-xs text-slate-900 placeholder:text-slate-400 outline-none focus:bg-white focus:border-orange-500 focus:ring-1 focus:ring-orange-500/20 font-mono transition-colors dark:border-slate-700 dark:bg-slate-900 dark:text-white dark:placeholder:text-slate-500"
                 />
               </div>
               <Button
@@ -489,9 +547,9 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
           </div>
 
           {/* Recent Tickets Table */}
-          <div className="rounded-xl border border-slate-800 bg-[#0F172A] p-5 shadow-sm space-y-3 text-white">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+          <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] p-5 shadow-xs space-y-3 text-slate-900 dark:text-white">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100 dark:border-slate-800">
+              <h3 className="text-xs font-bold text-slate-900 dark:text-white uppercase tracking-wider">
                 Atendimentos Recentes
               </h3>
               <button
@@ -502,9 +560,9 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
               </button>
             </div>
 
-            <div className="overflow-x-auto rounded-xl border border-slate-800">
+            <div className="overflow-x-auto rounded-xl border border-slate-200/80 dark:border-slate-800">
               <table className="w-full text-left text-xs">
-                <thead className="bg-slate-900 text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-800">
+                <thead className="bg-slate-50/80 text-slate-500 dark:bg-slate-900/60 dark:text-slate-400 uppercase tracking-wider text-[10px] border-b border-slate-200 dark:border-slate-800">
                   <tr>
                     <th className="p-3 font-semibold">Código</th>
                     <th className="p-3 font-semibold">Comprador</th>
@@ -515,14 +573,14 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                     <th className="p-3 text-right font-semibold">Ação</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800">
+                <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
                   {localTickets.slice(0, 5).map(t => (
-                    <tr key={t.id} className="hover:bg-slate-800/60 transition-colors">
+                    <tr key={t.id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/60 transition-colors">
                       <td className="p-3 font-mono font-bold text-[#FF7A00]">{t.ticketCode}</td>
-                      <td className="p-3 text-white font-medium">{t.customerName}</td>
-                      <td className="p-3 text-slate-300 truncate max-w-[240px]">{t.subject}</td>
-                      <td className="p-3 uppercase text-slate-400 text-[11px] font-mono">{t.channel}</td>
-                      <td className="p-3 text-slate-300">{t.queue}</td>
+                      <td className="p-3 text-slate-900 dark:text-white font-medium">{t.customerName}</td>
+                      <td className="p-3 text-slate-600 dark:text-slate-300 truncate max-w-[240px]">{t.subject}</td>
+                      <td className="p-3 uppercase text-slate-500 dark:text-slate-400 text-[11px] font-mono">{t.channel}</td>
+                      <td className="p-3 text-slate-600 dark:text-slate-300">{t.queue}</td>
                       <td className="p-3">
                         <Badge
                           variant={
@@ -534,15 +592,16 @@ export const SacDashboard: React.FC<SacDashboardProps> = ({
                         </Badge>
                       </td>
                       <td className="p-3 text-right">
-                        <button
+                        <Button
+                          size="sm"
+                          variant="secondary"
                           onClick={() => {
                             setSelectedTicketForDetail(t);
                             setIsTicketDetailOpen(true);
                           }}
-                          className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-[11px] font-semibold border border-slate-700 transition-colors cursor-pointer"
                         >
                           Atender
-                        </button>
+                        </Button>
                       </td>
                     </tr>
                   ))}

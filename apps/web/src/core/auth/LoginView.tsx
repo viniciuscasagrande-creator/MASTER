@@ -27,11 +27,11 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
   const [needs2FA, setNeeds2FA] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
 
-  const handleLoginSubmit = (e: React.FormEvent) => {
+  const handleLoginSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
 
-    const res = login(email, password, needs2FA ? twoFactorCode : undefined);
+    const res = await login(email, password, needs2FA ? twoFactorCode : undefined);
 
     if (res.requires2FA) {
       setNeeds2FA(true);

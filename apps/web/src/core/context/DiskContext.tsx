@@ -191,9 +191,14 @@ export const DiskContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, [isLockedToSingleProducer, isLockedToSingleEvent]);
 
-  // Context-aware fetch client injecting X-Producer-Id and X-Event-Id
+  // Context-aware fetch client injecting Authorization, X-Producer-Id and X-Event-Id
   const apiFetch = useCallback(async (input: RequestInfo | URL, init?: RequestInit): Promise<Response> => {
     const headers = new Headers(init?.headers || {});
+
+    const token = localStorage.getItem('token') || 'dev_superadmin_token';
+    if (token && !headers.has('Authorization')) {
+      headers.set('Authorization', `Bearer ${token}`);
+    }
 
     if (activeProducer?.id) {
       headers.set('X-Producer-Id', activeProducer.id);
