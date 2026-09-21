@@ -164,6 +164,12 @@ const MainShell: React.FC = () => {
         return <ApprovalThresholdsAdminView />;
       case 'admin-audit':
         return <AdminAuditView />;
+      case 'config-parameters':
+        return <ConfigurationCenterView initialSubItem="config-parameters" onNavigate={handleNavigate} />;
+      case 'jobs-overview':
+        return <ProcessingCenterView initialSubItem="jobs-overview" onNavigate={handleNavigate} />;
+      case 'data-overview':
+        return <DataManagementCenterView initialTab="OVERVIEW" />;
       default:
         return (
           <AdminDashboardView
@@ -219,7 +225,11 @@ const MainShell: React.FC = () => {
       case 'sac':
         return (
           <ProtectedRoute permission="sac.consulta.acessar" onBack={() => handleNavigate('overview')}>
-            <SacDashboard onNavigateToRefunds={() => handleNavigate('refunds', 'refunds-approvals')} />
+            <SacDashboard
+              initialSubItem={activeSubItem}
+              onNavigate={handleNavigate}
+              onNavigateToRefunds={() => handleNavigate('refunds', 'refunds-approvals')}
+            />
           </ProtectedRoute>
         );
 
@@ -392,6 +402,7 @@ const MainShell: React.FC = () => {
           onOpenAudit={() => setIsAuditOpen(true)}
           onOpenNewSale={() => setIsNewSaleModalOpen(true)}
           onNavigateToAdmin={() => handleNavigate('admin', 'admin-dashboard')}
+          onNavigate={handleNavigate}
           activeModuleName={MODULE_NAMES[activeModule] || activeModule}
         />
 

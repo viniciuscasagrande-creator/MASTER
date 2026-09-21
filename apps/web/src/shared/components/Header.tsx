@@ -32,6 +32,7 @@ interface HeaderProps {
   onOpenAudit: () => void;
   onOpenNewSale: () => void;
   onNavigateToAdmin?: () => void;
+  onNavigate?: (moduleId: string, subItemId?: string) => void;
   activeModuleName?: string;
 }
 
@@ -41,6 +42,7 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenAudit,
   onOpenNewSale,
   onNavigateToAdmin,
+  onNavigate,
   activeModuleName = 'Visão Geral'
 }) => {
   const { currentUser, users, switchUser, logout, hasPermission } = useAuth();
@@ -180,6 +182,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={() => {
                         setProducer('all');
                         setIsProducerPopoverOpen(false);
+                        if (onNavigate) onNavigate('overview', 'overview-main');
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors ${
                         selectedProducerId === 'all'
@@ -197,6 +200,7 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => {
                           setProducer(p.id);
                           setIsProducerPopoverOpen(false);
+                          if (onNavigate) onNavigate('events', 'events-all');
                         }}
                         className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors ${
                           selectedProducerId === p.id
@@ -261,6 +265,7 @@ export const Header: React.FC<HeaderProps> = ({
                       onClick={() => {
                         setEvent('all');
                         setIsEventPopoverOpen(false);
+                        if (onNavigate) onNavigate('events', 'events-all');
                       }}
                       className={`flex w-full items-center justify-between rounded-xl px-2.5 py-1.5 text-xs text-left transition-colors ${
                         selectedEventId === 'all'
@@ -278,6 +283,7 @@ export const Header: React.FC<HeaderProps> = ({
                         onClick={() => {
                           setEvent(e.id);
                           setIsEventPopoverOpen(false);
+                          if (onNavigate) onNavigate('events', 'events-dashboard');
                         }}
                         className={`flex w-full items-center justify-between rounded-xl px-2.5 py-2 text-xs text-left transition-colors ${
                           selectedEventId === e.id
@@ -299,7 +305,10 @@ export const Header: React.FC<HeaderProps> = ({
 
             {isFiltered && !isLockedToSingleProducer && (
               <button
-                onClick={resetScope}
+                onClick={() => {
+                  resetScope();
+                  if (onNavigate) onNavigate('overview', 'overview-main');
+                }}
                 title="Limpar filtros operacionais globais"
                 className="flex h-6 w-6 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-800 hover:text-white transition-colors ml-1"
               >
@@ -501,7 +510,10 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{activeProducer.name}</span>
               {!isLockedToSingleProducer && (
                 <button
-                  onClick={clearProducer}
+                  onClick={() => {
+                    clearProducer();
+                    if (onNavigate) onNavigate('overview', 'overview-main');
+                  }}
                   title="Remover filtro de produtora"
                   className="hover:text-white ml-0.5"
                 >
@@ -522,7 +534,10 @@ export const Header: React.FC<HeaderProps> = ({
               <span>{activeEvent.title}</span>
               {!isLockedToSingleEvent && (
                 <button
-                  onClick={clearEvent}
+                  onClick={() => {
+                    clearEvent();
+                    if (onNavigate) onNavigate('events', 'events-all');
+                  }}
                   title="Remover filtro de evento"
                   className="hover:text-white ml-0.5"
                 >

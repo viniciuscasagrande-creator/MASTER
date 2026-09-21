@@ -105,10 +105,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'events-all', label: isProducer ? 'Eventos Cadastrados' : 'Todos os Eventos' },
             { id: 'events-create', label: 'Criar Evento', requiredPermission: 'eventos.evento.criar' },
             { id: 'events-venues', label: 'Locais & Plantas', requiredPermission: 'eventos.locais.visualizar' },
-            { id: 'events-sessions', label: 'Sessões & Calendário', requiredPermission: 'eventos.sessoes.visualizar' },
-            { id: 'events-operation', label: 'Operação Geral', requiredPermission: 'eventos.operacao.visualizar' },
-            { id: 'events-tasks', label: 'Pendências Globais', requiredPermission: 'eventos.pendencias.visualizar' },
-            { id: 'events-archive', label: 'Eventos Arquivados', requiredPermission: 'eventos.arquivamento.visualizar' }
+            { id: 'events-sessions', label: 'Sessões & Calendário', requiredPermission: 'eventos.sessoes.visualizar' }
           ]
         },
         {
@@ -123,15 +120,8 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'commercial-performance', label: 'Performance de Vendas', requiredPermission: 'comercial.vendas.visualizar' },
             { id: 'commercial-conditions', label: 'Condições & Taxas', requiredPermission: 'comercial.contratos.visualizar' },
             { id: 'commercial-channels', label: 'Canais de Venda', requiredPermission: 'comercial.dashboard.visualizar' },
-            { id: 'commercial-advances', label: 'Antecipações (Advanced)', requiredPermission: 'comercial.vendas.visualizar' },
-            { id: 'commercial-producers', label: 'Produtoras (Carteira)', requiredPermission: 'comercial.produtores.visualizar' },
-            { id: 'commercial-portfolio', label: 'Minha Carteira', requiredPermission: 'comercial.carteira.visualizar' },
-            { id: 'commercial-account-management', label: 'Gestão de Contas & Renovações', requiredPermission: 'comercial.gestao_contas.visualizar' },
-            { id: 'commercial-contracts', label: 'Contratos Comerciais', requiredPermission: 'comercial.contratos.visualizar' },
-            { id: 'commercial-proposals', label: 'Propostas Comerciais', requiredPermission: 'comercial.propostas.visualizar' },
-            { id: 'commercial-opportunities', label: 'Oportunidades & Pipeline', requiredPermission: 'comercial.oportunidades.visualizar' },
-            { id: 'commercial-leads', label: 'Prospecções (Leads)', requiredPermission: 'comercial.prospeccoes.visualizar' },
-            { id: 'commercial-catalog', label: 'Catálogo DiskIngressos', requiredPermission: 'comercial.catalogo.visualizar' }
+            { id: 'commercial-producers', label: 'Carteira de Produtores', requiredPermission: 'comercial.produtores.visualizar' },
+            { id: 'commercial-advances', label: 'Antecipações', requiredPermission: 'comercial.vendas.visualizar' }
           ]
         },
         {
@@ -154,10 +144,9 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
           badge: openSac > 0 ? openSac : undefined,
           subItems: [
             { id: 'sac-dashboard', label: 'Painel SAC' },
-            { id: 'sac-query-center', label: 'Central de Consulta' },
-            { id: 'sac-customers', label: 'Clientes' },
-            { id: 'sac-orders', label: 'Pedidos e Ingressos' },
-            { id: 'sac-queue', label: 'Fila de Atendimento', badge: openSac }
+            { id: 'sac-query-center', label: 'Central de Atendimento' },
+            { id: 'sac-queue', label: 'Fila de Atendimento', badge: openSac },
+            { id: 'sac-customers', label: 'Clientes e Ingressos' }
           ]
         },
         {
@@ -175,7 +164,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
       ]
     },
     {
-      title: 'GESTÃO & BI',
+      title: 'FINANÇAS & RESULTADOS',
       items: [
         {
           id: 'finance',
@@ -187,7 +176,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'finance-event-balances', label: 'Saldos por Evento' },
             { id: 'finance-payouts', label: 'Repasses', requiredPermission: 'financeiro.repasses.visualizar' },
             { id: 'finance-reconciliation', label: 'Conciliação', requiredPermission: 'financeiro.conciliacao.executar' },
-            { id: 'finance-reports', label: 'Relatórios', requiredPermission: 'financeiro.relatorio.exportar' }
+            { id: 'finance-reports', label: 'Relatórios Financeiros', requiredPermission: 'financeiro.relatorio.exportar' }
           ]
         },
         {
@@ -208,7 +197,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
           requiredPermission: 'marketing.campanha.visualizar',
           subItems: [
             { id: 'marketing-dashboard', label: 'Painel de Marketing' },
-            { id: 'marketing-campaigns', label: 'Campanhas e ROAS' },
+            { id: 'marketing-campaigns', label: 'Campanhas & ROAS' },
             { id: 'marketing-pixels', label: 'Pixels por Evento', requiredPermission: 'marketing.pixel.configurar' }
           ]
         },
@@ -222,69 +211,11 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'remarketing-abandoned-carts', label: 'Carrinhos Abandonados' },
             { id: 'remarketing-journeys', label: 'Réguas de Automação', requiredPermission: 'remarketing.regua.configurar' }
           ]
-        },
-        {
-          id: 'analytics',
-          label: 'Relatórios & BI',
-          icon: <BarChart3 className="h-4 w-4 text-orange-400" />,
-          requiredPermission: 'relatorios.central.visualizar',
-          subItems: [
-            { id: 'analytics-overview', label: 'Visão Geral Executiva' },
-            { id: 'analytics-builder', label: 'Criar Relatório', requiredPermission: 'relatorios.relatorio.criar' },
-            { id: 'analytics-reports', label: 'Relatórios Salvos' },
-            { id: 'analytics-exports', label: 'Central de Exportações', requiredPermission: 'relatorios.exportacao.criar' }
-          ]
         }
       ]
     },
     {
-      title: 'FERRAMENTAS TRANSVERSAIS',
-      items: [
-        {
-          id: 'notifications',
-          label: 'Notificações',
-          icon: <Bell className="h-4 w-4 text-yellow-400" />,
-          badge: unreadCount > 0 ? unreadCount : undefined
-        },
-        {
-          id: 'approvals',
-          label: 'Aprovações',
-          icon: <CheckSquare className="h-4 w-4 text-emerald-400" />,
-          requiredPermission: 'aprovacoes.solicitacao.visualizar',
-          subItems: [
-            { id: 'approvals-inbox', label: 'Minha Caixa de Entrada' },
-            { id: 'approvals-my-requests', label: 'Minhas Solicitações' },
-            { id: 'approvals-history', label: 'Histórico de Decisões' },
-            { id: 'approvals-rules', label: 'Regras de Aprovação', requiredPermission: 'aprovacoes.regra.visualizar' },
-            { id: 'approvals-thresholds', label: 'Alçadas de Aprovação', requiredPermission: 'aprovacoes.alcada.visualizar' }
-          ]
-        },
-        {
-          id: 'documents',
-          label: 'Documentos',
-          icon: <FileText className="h-4 w-4 text-cyan-400" />,
-          requiredPermission: 'documentos.central.visualizar',
-          subItems: [
-            { id: 'documents-all', label: 'Central de Documentos' },
-            { id: 'documents-upload', label: 'Enviar Arquivo', requiredPermission: 'documentos.arquivo.enviar' }
-          ]
-        },
-        {
-          id: 'tasks',
-          label: 'Central de Trabalho',
-          icon: <ListTodo className="h-4 w-4 text-amber-400" />,
-          requiredPermission: 'tarefas.central.visualizar',
-          subItems: [
-            { id: 'tasks-inbox', label: 'Minha Caixa de Entrada' },
-            { id: 'tasks-all', label: 'Todas as Tarefas' },
-            { id: 'tasks-kanban', label: 'Quadro Kanban' },
-            { id: 'tasks-dashboard', label: 'Produtividade & SLAs' }
-          ]
-        }
-      ]
-    },
-    {
-      title: 'SISTEMA & PLATAFORMA',
+      title: 'SISTEMA',
       items: [
         {
           id: 'admin',
@@ -293,58 +224,13 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
           requiredPermission: 'admin.usuarios.visualizar',
           subItems: [
             { id: 'admin-dashboard', label: 'Painel Administrativo' },
-            { id: 'admin-users', label: 'Usuários' },
-            { id: 'admin-roles', label: 'Perfis de Acesso' },
+            { id: 'admin-users', label: 'Usuários & Perfis' },
             { id: 'admin-permissions', label: 'Permissões' },
-            { id: 'admin-sessions', label: 'Sessões Ativas' },
             { id: 'admin-security', label: 'Segurança & 2FA' },
-            { id: 'admin-audit', label: 'Auditoria' }
-          ]
-        },
-        {
-          id: 'configurations',
-          label: 'Regras & Políticas',
-          icon: <Sliders className="h-4 w-4 text-purple-400" />,
-          requiredPermission: 'configuracoes.central.visualizar',
-          subItems: [
-            { id: 'config-parameters', label: 'Parâmetros do Sistema' },
-            { id: 'config-policies', label: 'Políticas de Negócio' },
-            { id: 'config-simulator', label: 'Simulador de Regras' },
-            { id: 'config-features', label: 'Feature Flags & Rollout' }
-          ]
-        },
-        {
-          id: 'observability',
-          label: 'Auditoria & Observabilidade',
-          icon: <Activity className="h-4 w-4 text-emerald-400" />,
-          requiredPermission: 'observabilidade.dashboard.visualizar',
-          subItems: [
-            { id: 'obs-overview', label: 'Visão Geral & Métricas' },
-            { id: 'obs-audit', label: 'Auditoria de Negócio', requiredPermission: 'auditoria.registro.visualizar' },
-            { id: 'obs-errors', label: 'Central de Falhas', requiredPermission: 'observabilidade.erro.visualizar' },
-            { id: 'obs-queues', label: 'Filas & Workers', requiredPermission: 'observabilidade.fila.visualizar' }
-          ]
-        },
-        {
-          id: 'jobs',
-          label: 'Processamentos',
-          icon: <Layers className="h-4 w-4 text-cyan-400" />,
-          requiredPermission: 'processamentos.central.visualizar',
-          subItems: [
-            { id: 'jobs-overview', label: 'Visão Geral' },
-            { id: 'jobs-running', label: 'Em Execução', requiredPermission: 'processamentos.job.visualizar' },
-            { id: 'jobs-schedules', label: 'Agendamentos', requiredPermission: 'processamentos.agendamento.visualizar' }
-          ]
-        },
-        {
-          id: 'data-management',
-          label: 'Importação & Qualidade',
-          icon: <Database className="h-4 w-4 text-emerald-400" />,
-          requiredPermission: 'dados.importacao.visualizar',
-          subItems: [
-            { id: 'data-overview', label: 'Visão Geral' },
-            { id: 'data-imports', label: 'Lotes de Importação' },
-            { id: 'data-wizard', label: 'Assistente (Wizard)', requiredPermission: 'dados.importacao.criar' }
+            { id: 'admin-audit', label: 'Auditoria do Sistema' },
+            { id: 'config-parameters', label: 'Regras & Políticas' },
+            { id: 'jobs-overview', label: 'Processamentos & Filas' },
+            { id: 'data-overview', label: 'Importação & Dados' }
           ]
         },
         {
