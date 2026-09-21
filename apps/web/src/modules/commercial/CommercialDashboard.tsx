@@ -141,7 +141,7 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
     );
   }
 
-  // Condições Comerciais & Taxas dos Eventos (Recuperado SafeSaff)
+  // Condições Comerciais & Taxas dos Eventos (Disk MASTER)
   if (currentView === 'commercial-conditions') {
     return <CommercialConditionsPage />;
   }

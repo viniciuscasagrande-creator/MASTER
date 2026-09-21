@@ -297,10 +297,10 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
         className
       )}
     >
-      {/* Top Header: Disk SafeSaff Logo + Collapse Button */}
+      {/* Top Header: Disk MASTER Logo + Collapse Button */}
       <div className="flex h-16 items-center justify-between px-4 border-b border-slate-100 dark:border-slate-800 shrink-0">
         <div className="flex items-center gap-2.5 min-w-0">
-          {/* Official Orange Disk Logo from Reference Image */}
+          {/* Official Orange Disk Logo */}
           <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#FF7A00] text-white shadow-xs shadow-orange-500/25">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
               <circle cx="12" cy="12" r="9" />
@@ -311,12 +311,12 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
 
           {isExpanded && (
             <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1">
+              <div className="flex items-center gap-1.5">
                 <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
                   Disk
                 </span>
-                <span className="text-xs font-bold text-[#FF7A00] tracking-tight">
-                  SafeSaff
+                <span className="text-base font-extrabold text-[#FF7A00] tracking-tight">
+                  MASTER
                 </span>
               </div>
               <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">

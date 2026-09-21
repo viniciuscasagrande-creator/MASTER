@@ -79,7 +79,7 @@ export const AppHeader: React.FC<AppHeaderProps> = ({
               title={connectionStatus === 'CONNECTED' ? 'Sistema Online e Integrado' : 'Conectando...'}
             />
             <span className="hidden sm:inline text-xs font-semibold text-slate-700 dark:text-slate-300">
-              Disk SafeSaff
+              Disk MASTER
             </span>
           </div>
         </div>

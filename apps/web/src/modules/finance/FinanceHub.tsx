@@ -291,14 +291,14 @@ export const FinanceHub: React.FC<FinanceHubProps> = ({
           />
         )}
 
-        {matchesSearch('transferencias entre eventos remanejamento safesaff') && (
+        {matchesSearch('transferencias entre eventos remanejamento master contabil') && (
           <ModuleFeatureCard
             id="f-transfers"
             title="Transferências entre Eventos"
             description="Remanejamento direto de saldos entre eventos do mesmo produtor com compensação contábil."
             icon={<ArrowRightLeft className="h-5 w-5" />}
             iconTheme="purple"
-            metricValue="SafeSaff"
+            metricValue="Disk MASTER"
             metricLabel="Motor Contábil"
             badge="Governança"
             badgeVariant="purple"
