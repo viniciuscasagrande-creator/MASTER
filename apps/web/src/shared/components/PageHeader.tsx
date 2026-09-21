@@ -19,19 +19,19 @@ export const PageHeader: React.FC<PageHeaderProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs dark:bg-slate-800 dark:border-slate-700',
+        'flex flex-col sm:flex-row sm:items-center justify-between gap-4 rounded-xl border border-slate-800 bg-[#0F172A] p-4 sm:p-5 shadow-sm text-white',
         className
       )}
     >
       <div>
         <div className="flex items-center gap-2.5">
-          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
+          <h1 className="text-xl font-bold tracking-tight text-white">
             {title}
           </h1>
           {badge}
         </div>
         {description && (
-          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+          <p className="mt-1 text-xs text-slate-400">
             {description}
           </p>
         )}

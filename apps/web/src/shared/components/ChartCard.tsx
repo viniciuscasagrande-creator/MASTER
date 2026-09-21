@@ -29,20 +29,20 @@ export const ChartCard: React.FC<ChartCardProps> = ({
   return (
     <div
       className={cn(
-        'flex flex-col justify-between rounded-xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs transition-all duration-150 hover:border-slate-300 dark:border-slate-700 dark:bg-slate-800 dark:hover:border-slate-600',
+        'flex flex-col justify-between rounded-xl border border-slate-800 bg-[#0F172A] p-4 sm:p-5 shadow-sm transition-all duration-150 hover:border-slate-700 text-white',
         heightClass,
         className
       )}
     >
       {/* Chart Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-100 dark:border-slate-700/80">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-slate-800">
         <div>
           <div className="flex items-center gap-2">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-slate-100">{title}</h3>
+            <h3 className="text-sm font-bold text-white">{title}</h3>
             {badge}
           </div>
           {subtitle && (
-            <p className="mt-0.5 text-xs text-slate-500 dark:text-slate-400">{subtitle}</p>
+            <p className="mt-0.5 text-xs text-slate-400">{subtitle}</p>
           )}
         </div>
         {actions && (

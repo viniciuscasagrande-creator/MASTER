@@ -23,41 +23,41 @@ export const ModuleStatusPanel: React.FC<ModuleStatusPanelProps> = ({
   return (
     <div
       className={cn(
-        'rounded-2xl border border-slate-200/90 bg-white p-4 sm:p-5 shadow-xs',
+        'rounded-2xl border border-slate-800 bg-[#0F172A] p-4 sm:p-5 shadow-sm text-white',
         className
       )}
     >
-      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-100">
-        <ShieldCheck className="h-4 w-4 text-emerald-600" />
-        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-800">
+      <div className="flex items-center gap-2 mb-4 pb-3 border-b border-slate-800">
+        <ShieldCheck className="h-4 w-4 text-emerald-400" />
+        <span className="text-[11px] font-bold uppercase tracking-wider text-slate-300">
           {title}
         </span>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {items.map((item, idx) => (
-          <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-slate-50 border border-slate-200/80 shadow-2xs">
+          <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-[#1E293B] border border-slate-700/80 shadow-xs">
             <div className="mt-0.5 shrink-0">
               {item.isHealthy ? (
-                <CheckCircle2 className="h-4 w-4 text-emerald-600" />
+                <CheckCircle2 className="h-4 w-4 text-emerald-400" />
               ) : (
-                <AlertCircle className="h-4 w-4 text-amber-600" />
+                <AlertCircle className="h-4 w-4 text-amber-400" />
               )}
             </div>
             <div className="space-y-0.5 min-w-0">
-              <span className="text-xs font-bold text-slate-900 block truncate">
+              <span className="text-xs font-bold text-white block truncate">
                 {item.label}
               </span>
               <span
                 className={cn(
                   'text-[11px] font-semibold block',
-                  item.isHealthy ? 'text-emerald-700' : 'text-amber-700'
+                  item.isHealthy ? 'text-emerald-400' : 'text-amber-400'
                 )}
               >
                 {item.statusText}
               </span>
               {item.detail && (
-                <span className="text-[10px] text-slate-500 block truncate">
+                <span className="text-[10px] text-slate-400 block truncate">
                   {item.detail}
                 </span>
               )}

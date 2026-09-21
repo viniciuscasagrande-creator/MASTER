@@ -354,22 +354,22 @@ export const MarketingDashboard: React.FC<MarketingDashboardProps> = ({
           >
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 w-full h-full items-center">
               {channelsData.map((channel, idx) => (
-                <div key={idx} className="rounded-xl border border-slate-200 bg-slate-50/70 p-4 space-y-2">
-                  <div className="flex items-center justify-between text-xs font-bold text-slate-900">
+                <div key={idx} className="rounded-xl border border-slate-700/80 bg-slate-900/90 p-4 space-y-2 shadow-xs">
+                  <div className="flex items-center justify-between text-xs font-bold text-white">
                     <span className="truncate pr-1">{channel.name.split(' ')[0]} Ads</span>
-                    <span className="text-orange-600 font-mono">{channel.roas}</span>
+                    <span className="text-[#FF7A00] font-mono font-bold">{channel.roas}</span>
                   </div>
-                  <div className="space-y-1 text-[11px] text-slate-500 font-mono">
+                  <div className="space-y-1.5 text-[11px] font-mono">
                     <div className="flex justify-between">
-                      <span>Investido:</span>
-                      <span className="text-slate-800 font-semibold">{formatCurrency(channel.spend)}</span>
+                      <span className="text-slate-400">Investido:</span>
+                      <span className="text-slate-200 font-semibold">{formatCurrency(channel.spend)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Receita:</span>
-                      <span className="text-emerald-700 font-bold">{formatCurrency(channel.revenue)}</span>
+                      <span className="text-slate-400">Receita:</span>
+                      <span className="text-emerald-400 font-bold">{formatCurrency(channel.revenue)}</span>
                     </div>
                   </div>
-                  <div className="h-1.5 w-full bg-slate-200 rounded-full overflow-hidden mt-2">
+                  <div className="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden mt-2">
                     <div className={`h-full ${channel.color} rounded-full`} style={{ width: `${channel.share * 2}%` }} />
                   </div>
                 </div>

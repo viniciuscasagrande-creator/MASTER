@@ -40,20 +40,20 @@ export function DataTable<T>({
 }: DataTableProps<T>) {
   if (isLoading) {
     return (
-      <div className={cn('w-full overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-xs dark:border-slate-700 dark:bg-slate-800', className)}>
+      <div className={cn('w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A] shadow-sm', className)}>
         <div className="p-8 text-center">
           <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-orange-500 border-t-transparent mb-2" />
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400">Carregando dados...</p>
+          <p className="text-xs font-medium text-slate-400">Carregando dados...</p>
         </div>
       </div>
     );
   }
 
   return (
-    <div className={cn('w-full overflow-hidden rounded-xl border border-slate-200/90 bg-white shadow-xs dark:border-slate-700 dark:bg-slate-800', className)}>
+    <div className={cn('w-full overflow-hidden rounded-xl border border-slate-800 bg-[#0F172A] shadow-sm text-white', className)}>
       <div className="overflow-x-auto">
-        <table className="w-full text-left text-xs text-slate-700 dark:text-slate-300">
-          <thead className="border-b border-slate-200 bg-slate-50/80 text-[11px] font-bold uppercase tracking-wider text-slate-500 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400">
+        <table className="w-full text-left text-xs text-slate-200">
+          <thead className="border-b border-slate-800 bg-slate-900 text-[11px] font-bold uppercase tracking-wider text-slate-400">
             <tr>
               {columns.map((col, idx) => (
                 <th
@@ -70,11 +70,11 @@ export function DataTable<T>({
               ))}
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-100 dark:divide-slate-700/60">
+          <tbody className="divide-y divide-slate-800/80">
             {data.length === 0 ? (
               <tr>
-                <td colSpan={columns.length} className="py-10 px-4 text-center text-slate-400 dark:text-slate-500">
-                  {emptyIcon && <div className="mb-2 flex justify-center text-slate-300 dark:text-slate-600">{emptyIcon}</div>}
+                <td colSpan={columns.length} className="py-10 px-4 text-center text-slate-400">
+                  {emptyIcon && <div className="mb-2 flex justify-center text-slate-500">{emptyIcon}</div>}
                   <p className="text-xs font-medium">{emptyMessage}</p>
                 </td>
               </tr>
@@ -87,7 +87,7 @@ export function DataTable<T>({
                     onClick={() => isClickable && onRowClick?.(item)}
                     className={cn(
                       'transition-colors duration-150',
-                      isClickable ? 'cursor-pointer hover:bg-slate-50/90 dark:hover:bg-slate-700/50' : 'hover:bg-slate-50/50 dark:hover:bg-slate-700/30'
+                      isClickable ? 'cursor-pointer hover:bg-slate-800/80' : 'hover:bg-slate-800/40'
                     )}
                   >
                     {columns.map((col, colIdx) => {
@@ -121,27 +121,27 @@ export function DataTable<T>({
 
       {/* Pagination Footer */}
       {pagination && pagination.totalPages > 1 && (
-        <div className="flex items-center justify-between border-t border-slate-100 px-4 py-2.5 text-xs text-slate-500 dark:border-slate-700 dark:text-slate-400">
+        <div className="flex items-center justify-between border-t border-slate-800 px-4 py-2.5 text-xs text-slate-400">
           <div>
             {pagination.totalItems !== undefined && (
-              <span>Total de <strong>{pagination.totalItems}</strong> registros</span>
+              <span>Total de <strong className="text-white">{pagination.totalItems}</strong> registros</span>
             )}
           </div>
           <div className="flex items-center gap-1.5">
             <button
               onClick={() => pagination.onPageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage <= 1}
-              className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer"
+              className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
             >
               Anterior
             </button>
-            <span className="px-2 text-xs font-semibold text-slate-700 dark:text-slate-200">
+            <span className="px-2 text-xs font-semibold text-white">
               {pagination.currentPage} de {pagination.totalPages}
             </span>
             <button
               onClick={() => pagination.onPageChange(pagination.currentPage + 1)}
               disabled={pagination.currentPage >= pagination.totalPages}
-              className="rounded-lg border border-slate-200 px-2.5 py-1 text-xs font-medium text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:pointer-events-none dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-700 cursor-pointer"
+              className="rounded-lg border border-slate-700 bg-slate-800 px-2.5 py-1 text-xs font-medium text-slate-200 hover:bg-slate-700 disabled:opacity-40 disabled:pointer-events-none cursor-pointer"
             >
               Próxima
             </button>

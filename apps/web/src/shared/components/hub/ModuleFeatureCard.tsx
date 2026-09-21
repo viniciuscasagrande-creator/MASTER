@@ -83,8 +83,8 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
     <div
       onClick={disabled ? undefined : onClick}
       className={cn(
-        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-200/90 bg-white p-5 shadow-xs transition-all duration-200 text-left',
-        !disabled && 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-slate-300',
+        'group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-slate-800 bg-[#0F172A] p-5 shadow-sm transition-all duration-200 text-left text-white',
+        !disabled && 'cursor-pointer hover:-translate-y-0.5 hover:shadow-md hover:border-slate-700',
         !disabled && currentTheme.borderHover,
         disabled && 'opacity-60 cursor-not-allowed',
         className
@@ -103,7 +103,7 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
         <div className="flex items-start justify-between gap-3">
           <div
             className={cn(
-              'flex h-11 w-11 items-center justify-center rounded-xl border transition-all duration-200 shadow-2xs',
+              'flex h-11 w-11 items-center justify-center rounded-xl border border-slate-700 bg-slate-800 transition-all duration-200 shadow-xs',
               currentTheme.iconBg
             )}
           >
@@ -118,33 +118,33 @@ export const ModuleFeatureCard: React.FC<ModuleFeatureCardProps> = ({
 
         {/* Title and description */}
         <div className="space-y-1.5">
-          <h3 className={cn("text-sm sm:text-base font-bold text-slate-900 tracking-tight transition-colors", currentTheme.titleHover)}>
+          <h3 className={cn("text-sm sm:text-base font-bold text-white tracking-tight transition-colors", currentTheme.titleHover)}>
             {title}
           </h3>
-          <p className="text-xs text-slate-500 leading-relaxed line-clamp-2">
+          <p className="text-xs text-slate-400 leading-relaxed line-clamp-2">
             {description}
           </p>
         </div>
       </div>
 
       {/* Card Footer: Live metric or direct arrow */}
-      <div className="mt-5 pt-3.5 border-t border-slate-100 flex items-center justify-between">
+      <div className="mt-5 pt-3.5 border-t border-slate-800 flex items-center justify-between">
         {metricValue ? (
           <div>
             <span className="text-[10px] uppercase font-bold text-slate-400 block">
               {metricLabel || 'Posição Atual'}
             </span>
-            <span className="text-sm font-bold font-mono text-slate-900 tracking-tight">
+            <span className="text-sm font-bold font-mono text-white tracking-tight">
               {metricValue}
             </span>
           </div>
         ) : (
-          <span className="text-[11px] font-semibold text-slate-500 group-hover:text-slate-800 transition-colors">
+          <span className="text-[11px] font-semibold text-slate-400 group-hover:text-slate-200 transition-colors">
             Acessar Área
           </span>
         )}
 
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-200 bg-slate-50 text-slate-500 group-hover:border-slate-300 group-hover:bg-slate-100 group-hover:text-slate-900 transition-all shadow-2xs">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-slate-700 bg-slate-800 text-slate-300 group-hover:border-slate-600 group-hover:bg-slate-700 group-hover:text-white transition-all shadow-xs">
           <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover:translate-x-0.5" />
         </div>
       </div>
