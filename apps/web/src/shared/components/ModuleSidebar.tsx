@@ -172,7 +172,7 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
           icon: <DollarSign className="h-4 w-4 text-emerald-400" />,
           requiredPermission: 'financeiro.saldo.visualizar',
           subItems: [
-            { id: 'finance-dashboard', label: 'Painel Financeiro' },
+            { id: 'finance-hub', label: 'Hub Financeiro' },
             { id: 'finance-event-balances', label: 'Saldos por Evento' },
             { id: 'finance-transfers', label: 'Transferências entre Eventos', requiredPermission: 'financeiro.transferencia.criar' },
             { id: 'finance-receivables-payables', label: 'Contas a Pagar & Receber' },

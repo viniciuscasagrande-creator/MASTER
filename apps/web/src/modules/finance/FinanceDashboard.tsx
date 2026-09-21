@@ -17,7 +17,11 @@ import {
   Filter,
   ArrowRightLeft,
   Receipt,
-  Landmark
+  Landmark,
+  ArrowLeft,
+  LayoutGrid,
+  Percent,
+  FileCheck
 } from 'lucide-react';
 import { useDiskContext } from '../../core/context/DiskContext';
 import { useAuth } from '../../core/auth/AuthContext';
@@ -34,6 +38,9 @@ import { TransfersView } from './TransfersView';
 import { ReceivablesPayablesView } from './ReceivablesPayablesView';
 import { TreasuryCashFlowView } from './TreasuryCashFlowView';
 import { NewTransferModal } from './NewTransferModal';
+import { FinanceHub } from './FinanceHub';
+import { AdvancesView } from './AdvancesView';
+import { BorderoView } from './BorderoView';
 
 interface FinanceDashboardProps {
   initialSubItem?: string;
@@ -41,18 +48,20 @@ interface FinanceDashboardProps {
 }
 
 export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
-  initialSubItem = 'finance-dashboard',
+  initialSubItem = 'finance-hub',
   onNavigate
 }) => {
   const { activeProducer, activeEvent } = useDiskContext();
   const { currentUser, hasPermission } = useAuth();
 
-  // Tab State
-  const [activeTab, setActiveTab] = useState<string>(initialSubItem);
+  // Tab State: default directly to Hub Financeiro for premium entry experience
+  const [activeTab, setActiveTab] = useState<string>(
+    initialSubItem === 'finance-dashboard' ? 'finance-hub' : (initialSubItem || 'finance-hub')
+  );
 
   useEffect(() => {
     if (initialSubItem) {
-      setActiveTab(initialSubItem);
+      setActiveTab(initialSubItem === 'finance-dashboard' ? 'finance-hub' : initialSubItem);
     }
   }, [initialSubItem]);
 
@@ -69,6 +78,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   // Modals
   const [isNewPayoutModalOpen, setIsNewPayoutModalOpen] = useState(false);
+  const [isNewTransferModalOpen, setIsNewTransferModalOpen] = useState(false);
   const [selectedPayout, setSelectedPayout] = useState<any | null>(null);
   const [preselectedEventId, setPreselectedEventId] = useState<string>('');
 
@@ -136,22 +146,99 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
   const canApprove = hasPermission('financeiro.repasses.aprovar') || currentUser.roleSlug === 'admin_geral';
 
+  // 1. HUB FINANCEIRO (LANDING VIEW PRINCIPAL)
+  if (activeTab === 'finance-hub') {
+    return (
+      <div className="space-y-6 animate-fadeIn">
+        <FinanceHub
+          producerName={producerName}
+          summary={summary}
+          eventBalances={eventBalances}
+          payouts={payouts}
+          statement={statement}
+          reconciliations={reconciliations}
+          isLoading={isLoading}
+          onRefresh={loadFinancialData}
+          onNavigateToView={(viewId) => {
+            setActiveTab(viewId);
+            onNavigate?.('finance', viewId);
+          }}
+          onOpenNewPayout={() => {
+            setPreselectedEventId('');
+            setIsNewPayoutModalOpen(true);
+          }}
+          onOpenNewTransfer={() => setIsNewTransferModalOpen(true)}
+          onOpenNewPayable={() => {
+            setActiveTab('finance-receivables-payables');
+            onNavigate?.('finance', 'finance-receivables-payables');
+          }}
+        />
+
+        {/* Global Modals Mounted for Instant Hub Access */}
+        <NewPayoutModal
+          isOpen={isNewPayoutModalOpen}
+          onClose={() => setIsNewPayoutModalOpen(false)}
+          producerId={producerId}
+          producerName={producerName}
+          events={eventBalances.map(e => ({
+            id: e.eventId,
+            title: e.eventTitle,
+            availableBalance: e.availableBalance
+          }))}
+          onSuccess={loadFinancialData}
+        />
+
+        <NewTransferModal
+          isOpen={isNewTransferModalOpen}
+          onClose={() => setIsNewTransferModalOpen(false)}
+          producerId={producerId}
+          eventBalances={eventBalances}
+          onSuccess={loadFinancialData}
+        />
+      </div>
+    );
+  }
+
+  // 2. TELAS FUNCIONAIS OPERACIONAIS (COM BREADCRUMB E RETORNO AO HUB)
   return (
-    <div className="space-y-6">
-      {/* Top Module Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-        <div>
-          <div className="flex items-center gap-2">
-            <h1 className="text-xl font-bold tracking-tight text-white">
-              FINANCEIRO & REPASSES
-            </h1>
-            <Badge variant="emerald" size="sm">
-              Módulo Gestão Factual
-            </Badge>
+    <div className="space-y-6 animate-fadeIn">
+      {/* Top Breadcrumb Header with Return to Hub */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800">
+        <div className="flex items-center gap-3">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => {
+              setActiveTab('finance-hub');
+              onNavigate?.('finance', 'finance-hub');
+            }}
+            icon={<ArrowLeft className="h-3.5 w-3.5 text-emerald-400" />}
+          >
+            Hub Financeiro
+          </Button>
+          <div className="h-4 w-px bg-slate-800 hidden sm:block" />
+          <div>
+            <div className="flex items-center gap-2">
+              <h1 className="text-base font-bold tracking-tight text-white uppercase">
+                {activeTab === 'finance-dashboard' && 'Posição Geral & Indicadores'}
+                {activeTab === 'finance-event-balances' && 'Saldos Segregados por Evento'}
+                {activeTab === 'finance-transfers' && 'Transferências entre Eventos (SafeSaff)'}
+                {activeTab === 'finance-receivables-payables' && 'Contas a Pagar & Receber'}
+                {activeTab === 'finance-payouts' && 'Repasses Programados'}
+                {activeTab === 'finance-treasury' && 'Tesouraria, Fluxo de Caixa & DRE'}
+                {activeTab === 'finance-statement' && 'Extrato Analítico da Conta'}
+                {activeTab === 'finance-reconciliation' && 'Conciliação com Gateways'}
+                {activeTab === 'finance-advances' && 'Antecipações & Crédito Pro'}
+                {activeTab === 'finance-bordero' && 'Borderô Oficial de Fechamento'}
+              </h1>
+              <Badge variant="emerald" size="sm">
+                Disk Pro
+              </Badge>
+            </div>
+            <p className="text-xs text-slate-400 mt-0.5">
+              {producerName} • Gestão Factual Integrada
+            </p>
           </div>
-          <p className="text-xs text-slate-400 mt-1">
-            {producerName} • Gestão analítica de liquidação bancária, saldos segregados e conciliação
-          </p>
         </div>
 
         {/* Global Actions */}
@@ -168,6 +255,15 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
           <Button
             size="sm"
+            variant="outline"
+            onClick={() => setIsNewTransferModalOpen(true)}
+            icon={<ArrowRightLeft className="h-3.5 w-3.5 text-purple-400" />}
+          >
+            Transferir
+          </Button>
+
+          <Button
+            size="sm"
             variant="primary"
             onClick={() => {
               setPreselectedEventId('');
@@ -180,8 +276,19 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
         </div>
       </div>
 
-      {/* Navigation Sub-Tabs */}
+      {/* Sub-Tabs Bar */}
       <div className="flex items-center gap-2 border-b border-slate-800 pb-2 overflow-x-auto text-xs font-medium">
+        <button
+          onClick={() => {
+            setActiveTab('finance-hub');
+            onNavigate?.('finance', 'finance-hub');
+          }}
+          className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 bg-slate-900 border border-slate-800 text-slate-300 hover:text-white hover:border-emerald-500/30"
+        >
+          <LayoutGrid className="h-3.5 w-3.5 text-emerald-400" />
+          <span>Hub Principal</span>
+        </button>
+
         <button
           onClick={() => {
             setActiveTab('finance-dashboard');
@@ -292,6 +399,34 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
           }`}
         >
           Conciliação de Gateways
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('finance-advances');
+            onNavigate?.('finance', 'finance-advances');
+          }}
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+            activeTab === 'finance-advances'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Antecipações & Crédito
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('finance-bordero');
+            onNavigate?.('finance', 'finance-bordero');
+          }}
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+            activeTab === 'finance-bordero'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Borderô de Fechamento
         </button>
       </div>
 
@@ -622,6 +757,23 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
         />
       )}
 
+      {/* TAB 6: ANTECIPAÇÕES & CRÉDITO PRO */}
+      {activeTab === 'finance-advances' && (
+        <AdvancesView
+          producerId={producerId}
+          eventBalances={eventBalances}
+          onRefreshBalances={loadFinancialData}
+        />
+      )}
+
+      {/* TAB 7: BORDERÔ OFICIAL DE FECHAMENTO */}
+      {activeTab === 'finance-bordero' && (
+        <BorderoView
+          producerName={producerName}
+          eventBalances={eventBalances}
+        />
+      )}
+
       {/* MODAL 1: Novo Repasse */}
       <NewPayoutModal
         isOpen={isNewPayoutModalOpen}
@@ -643,6 +795,15 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
         payout={selectedPayout}
         onRefresh={loadFinancialData}
         canApprove={canApprove}
+      />
+
+      {/* MODAL 3: Nova Transferência entre Eventos */}
+      <NewTransferModal
+        isOpen={isNewTransferModalOpen}
+        onClose={() => setIsNewTransferModalOpen(false)}
+        producerId={producerId}
+        eventBalances={eventBalances}
+        onSuccess={loadFinancialData}
       />
     </div>
   );
