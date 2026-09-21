@@ -121,14 +121,17 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
             { id: 'commercial-orders', label: 'Central de Pedidos', requiredPermission: 'comercial.pedidos.visualizar' },
             { id: 'commercial-sales', label: 'Central de Vendas', requiredPermission: 'comercial.vendas.visualizar' },
             { id: 'commercial-performance', label: 'Performance de Vendas', requiredPermission: 'comercial.vendas.visualizar' },
-            { id: 'commercial-producers', label: 'Central de Produtores', requiredPermission: 'comercial.produtores.visualizar' },
+            { id: 'commercial-conditions', label: 'Condições & Taxas', requiredPermission: 'comercial.contratos.visualizar' },
+            { id: 'commercial-channels', label: 'Canais de Venda', requiredPermission: 'comercial.dashboard.visualizar' },
+            { id: 'commercial-advances', label: 'Antecipações (Advanced)', requiredPermission: 'comercial.vendas.visualizar' },
+            { id: 'commercial-producers', label: 'Produtoras (Carteira)', requiredPermission: 'comercial.produtores.visualizar' },
             { id: 'commercial-portfolio', label: 'Minha Carteira', requiredPermission: 'comercial.carteira.visualizar' },
             { id: 'commercial-account-management', label: 'Gestão de Contas & Renovações', requiredPermission: 'comercial.gestao_contas.visualizar' },
             { id: 'commercial-contracts', label: 'Contratos Comerciais', requiredPermission: 'comercial.contratos.visualizar' },
             { id: 'commercial-proposals', label: 'Propostas Comerciais', requiredPermission: 'comercial.propostas.visualizar' },
             { id: 'commercial-opportunities', label: 'Oportunidades & Pipeline', requiredPermission: 'comercial.oportunidades.visualizar' },
             { id: 'commercial-leads', label: 'Prospecções (Leads)', requiredPermission: 'comercial.prospeccoes.visualizar' },
-            { id: 'commercial-catalog', label: 'Catálogo & Planos', requiredPermission: 'comercial.catalogo.visualizar' }
+            { id: 'commercial-catalog', label: 'Catálogo DiskIngressos', requiredPermission: 'comercial.catalogo.visualizar' }
           ]
         },
         {

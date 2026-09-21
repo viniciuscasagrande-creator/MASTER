@@ -9,14 +9,21 @@ import {
   ChevronLeft,
   ChevronRight,
   Eye,
-  AlertCircle
+  AlertCircle,
+  FileText,
+  ShieldCheck,
+  Globe,
+  Building,
+  Store,
+  UserCheck
 } from 'lucide-react';
 import { OrderDTO, OrderStatus } from '@shared/types/index';
 import { CommercialApi } from '../api/commercial.api';
 import { Badge } from '../../../shared/components/Badge';
 import { Button } from '../../../shared/components/Button';
-import { formatCurrency } from '../../../shared/utils/formatters';
+import { formatCurrency, formatDateTime } from '../../../shared/utils/formatters';
 import { useCoreData } from '../../../core/context/CoreDataContext';
+import { OrderDossierModal } from './OrderDossierModal';
 
 interface OrdersPageProps {
   onSelectOrder: (orderId: string) => void;
@@ -37,7 +44,10 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedStatus, setSelectedStatus] = useState<OrderStatus | 'ALL'>('ALL');
   const [selectedEventId, setSelectedEventId] = useState('');
-  const [selectedChannelId, setSelectedChannelId] = useState('');
+  const [selectedChannel, setSelectedChannel] = useState<string>('ALL');
+
+  // Modal State for Dossier
+  const [dossierOrder, setDossierOrder] = useState<OrderDTO | null>(null);
 
   const loadOrders = async () => {
     try {
@@ -47,7 +57,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
         search: searchTerm || undefined,
         status: selectedStatus,
         eventId: selectedEventId || undefined,
-        salesChannelId: selectedChannelId || undefined,
+        salesChannelId: selectedChannel !== 'ALL' ? selectedChannel : undefined,
         page,
         pageSize: 15
       });
@@ -63,7 +73,7 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
 
   useEffect(() => {
     loadOrders();
-  }, [page, selectedStatus, selectedEventId, selectedChannelId]);
+  }, [page, selectedStatus, selectedEventId, selectedChannel]);
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -87,14 +97,14 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
         <div>
           <div className="flex items-center gap-2">
             <h1 className="text-xl font-bold tracking-tight text-white">
-              CENTRAL DE PEDIDOS
+              CENTRAL DE PEDIDOS OMNICHANNEL
             </h1>
             <Badge variant="orange" size="sm">
               Gestão de Transações
             </Badge>
           </div>
           <p className="text-xs text-slate-400 mt-1">
-            Consulta unificada de pedidos, rastreabilidade de compras, compradores e status de liquidação
+            Consulta unificada de pedidos originados pelo Site Oficial, Bilheterias, PDVs e Portal do Produtor
           </p>
         </div>
 
@@ -161,8 +171,37 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
           </Button>
         </form>
 
-        {/* Status Filter Tabs */}
+        {/* Channel Filter Tabs */}
         <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/80">
+          <span className="text-[11px] font-bold text-slate-400 mr-2 uppercase tracking-wider">
+            Canal:
+          </span>
+          {[
+            { id: 'ALL', label: 'Todos os Canais' },
+            { id: 'SITE', label: 'Site Oficial' },
+            { id: 'BOX_OFFICE', label: 'Bilheteria' },
+            { id: 'PDV', label: 'PDV' },
+            { id: 'DISK', label: 'Portal Produtor' }
+          ].map((ch) => (
+            <button
+              key={ch.id}
+              onClick={() => {
+                setSelectedChannel(ch.id);
+                setPage(1);
+              }}
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
+                selectedChannel === ch.id
+                  ? 'bg-orange-500 text-white font-bold shadow'
+                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+              }`}
+            >
+              {ch.label}
+            </button>
+          ))}
+        </div>
+
+        {/* Status Filter Tabs */}
+        <div className="flex flex-wrap items-center gap-1.5 pt-2 border-t border-slate-800/40">
           <span className="text-[11px] font-bold text-slate-400 mr-2 uppercase tracking-wider">
             Status:
           </span>
@@ -180,10 +219,10 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                 setSelectedStatus(tab.id as any);
                 setPage(1);
               }}
-              className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors ${
+              className={`rounded-lg px-3 py-1 text-xs font-medium transition-colors cursor-pointer ${
                 selectedStatus === tab.id
-                  ? 'bg-orange-500 text-white font-bold shadow'
-                  : 'bg-slate-800 text-slate-300 hover:bg-slate-700 hover:text-white'
+                  ? 'bg-slate-700 text-white font-bold'
+                  : 'bg-slate-950 text-slate-400 hover:bg-slate-800 hover:text-white'
               }`}
             >
               {tab.label}
@@ -207,8 +246,8 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
           <table className="w-full text-left text-xs">
             <thead className="border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400 bg-slate-950/40">
               <tr>
-                <th className="py-3 px-4">Código do Pedido</th>
-                <th className="py-3 px-4">Data de Criação</th>
+                <th className="py-3 px-4">Código / Protocolo</th>
+                <th className="py-3 px-4">Data</th>
                 <th className="py-3 px-4">Evento</th>
                 <th className="py-3 px-4">Comprador</th>
                 <th className="py-3 px-4">Canal</th>
@@ -236,34 +275,29 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                   <tr key={order.id} className="hover:bg-slate-800/40 transition-colors">
                     <td className="py-3 px-4 font-mono font-bold text-orange-400">
                       <button
-                        onClick={() => onSelectOrder(order.id)}
-                        className="hover:underline text-left font-mono"
+                        onClick={() => setDossierOrder(order)}
+                        className="hover:underline text-left font-mono cursor-pointer"
+                        title="Abrir dossiê operacional do pedido"
                       >
-                        {order.publicCode}
+                        {order.publicCode || order.id}
                       </button>
                     </td>
                     <td className="py-3 px-4 text-slate-400 font-mono">
-                      {new Date(order.createdAt).toLocaleString('pt-BR', {
-                        day: '2-digit',
-                        month: '2-digit',
-                        year: 'numeric',
-                        hour: '2-digit',
-                        minute: '2-digit'
-                      })}
+                      {formatDateTime(order.createdAt)}
                     </td>
                     <td className="py-3 px-4 font-medium text-slate-200">
-                      {order.eventName || 'Evento'}
+                      {order.eventName || 'Evento Geral'}
                     </td>
                     <td className="py-3 px-4">
                       <div className="text-slate-200 font-medium">
-                        {order.buyerSnapshot?.name || 'Cliente'}
+                        {order.buyerSnapshot?.name || 'Cliente Balcão'}
                       </div>
                       <div className="text-[10px] text-slate-500 font-mono">
                         {order.buyerSnapshot?.documentMasked || '***'}
                       </div>
                     </td>
                     <td className="py-3 px-4 text-slate-400">
-                      {order.salesChannelName || 'Online'}
+                      {order.salesChannelName || 'Site Oficial'}
                     </td>
                     <td className="py-3 px-4 text-center font-mono font-bold text-slate-200">
                       {order.totalTicketsCount || order.itemsCount || 1}
@@ -298,13 +332,16 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
                       </Badge>
                     </td>
                     <td className="py-3 px-4 text-right">
-                      <button
-                        onClick={() => onSelectOrder(order.id)}
-                        className="inline-flex items-center gap-1 rounded border border-slate-700 bg-slate-800 px-2.5 py-1 text-[11px] font-medium text-slate-300 hover:bg-slate-700 hover:text-white transition-colors"
-                      >
-                        <Eye className="h-3 w-3 text-orange-400" />
-                        Detalhes
-                      </button>
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          onClick={() => setDossierOrder(order)}
+                          className="inline-flex items-center gap-1 rounded-lg border border-orange-500/30 bg-orange-500/10 px-2.5 py-1 text-[11px] font-semibold text-orange-400 hover:bg-orange-500 hover:text-white transition-all cursor-pointer"
+                          title="Abrir dossiê operacional completo"
+                        >
+                          <Eye className="h-3 w-3" />
+                          Dossiê
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
@@ -340,6 +377,16 @@ export const OrdersPage: React.FC<OrdersPageProps> = ({ onSelectOrder, onBackToD
           </Button>
         </div>
       </div>
+
+      {/* Order Operational Dossier Modal */}
+      {dossierOrder && (
+        <OrderDossierModal
+          order={dossierOrder}
+          isOpen={Boolean(dossierOrder)}
+          onClose={() => setDossierOrder(null)}
+          onOrderUpdated={loadOrders}
+        />
+      )}
     </div>
   );
 };

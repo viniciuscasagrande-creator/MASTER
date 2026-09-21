@@ -46,7 +46,58 @@ router.post(
   CommercialController.transitionOrder
 );
 
-// 4. Exportações
+router.post(
+  '/orders/:id/reconcile',
+  requireAnyPermission(['comercial.pedidos.detalhes', 'admin.sistema.configurar']),
+  CommercialController.reconcileOrder
+);
+
+router.post(
+  '/tickets/:id/reissue',
+  requireAnyPermission(['comercial.pedidos.detalhes', 'admin.sistema.configurar']),
+  CommercialController.reissueTicket
+);
+
+// 4. Acordos Comerciais dos Eventos (Taxas, Spread, Repasse)
+router.get(
+  '/events/:eventId/agreement',
+  requireAnyPermission(['comercial.dashboard.visualizar', 'eventos.dashboard.comercial.visualizar', 'comercial.contratos.visualizar']),
+  CommercialController.getEventAgreement
+);
+
+router.post(
+  '/events/:eventId/agreement',
+  requireAnyPermission(['comercial.contratos.editar', 'admin.sistema.configurar']),
+  CommercialController.saveEventAgreement
+);
+
+router.put(
+  '/events/:eventId/agreement',
+  requireAnyPermission(['comercial.contratos.editar', 'admin.sistema.configurar']),
+  CommercialController.saveEventAgreement
+);
+
+// 5. Operações de Antecipação (Advanced)
+router.get(
+  '/events/:eventId/advances',
+  requireAnyPermission(['comercial.vendas.visualizar', 'financeiro.saldo.visualizar']),
+  CommercialController.getEventAdvances
+);
+
+router.post(
+  '/events/:eventId/advance',
+  requireAnyPermission(['comercial.vendas.visualizar', 'financeiro.saldo.visualizar']),
+  CommercialController.createEventAdvance
+);
+
+// 6. Canais de Venda Omnichannel
+router.get(
+  '/channels',
+  requireAnyPermission(['comercial.dashboard.visualizar']),
+  CommercialController.listSalesChannels
+);
+
+// 7. Exportações
 router.get(
   '/export/orders',
   requireAnyPermission(['comercial.pedidos.exportar']),

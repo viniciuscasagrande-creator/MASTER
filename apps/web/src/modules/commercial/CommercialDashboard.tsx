@@ -3,6 +3,9 @@ import { CommercialDashboardPage } from '../../features/commercial/dashboard/Com
 import { OrdersPage } from '../../features/commercial/orders/OrdersPage';
 import { OrderDetailsPage } from '../../features/commercial/orders/OrderDetailsPage';
 import { CommercialSalesPage } from '../../features/commercial/sales/CommercialSalesPage';
+import { CommercialConditionsPage } from '../../features/commercial/conditions/CommercialConditionsPage';
+import { CommercialChannelsPage } from '../../features/commercial/channels/CommercialChannelsPage';
+import { CommercialAdvancesPage } from '../../features/commercial/advances/CommercialAdvancesPage';
 import { ProducersPage } from '../../features/commercial/producers/ProducersPage';
 import { ProducerCommercialPage } from '../../features/commercial/producers/ProducerCommercialPage';
 import { MyPortfolioPage } from '../../features/commercial/portfolio/MyPortfolioPage';
@@ -107,7 +110,10 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
     setCurrentView('commercial-catalog');
   };
 
-  // Route switcher
+  // =========================================================================
+  // 1. CORE OPERACIONAL DE VENDAS & INGRESSOS
+  // =========================================================================
+
   if (currentView === 'commercial-orders-detail' && selectedOrderId) {
     return (
       <OrderDetailsPage
@@ -134,6 +140,25 @@ export const CommercialDashboard: React.FC<CommercialDashboardProps> = ({
       />
     );
   }
+
+  // Condições Comerciais & Taxas dos Eventos (Recuperado SafeSaff)
+  if (currentView === 'commercial-conditions') {
+    return <CommercialConditionsPage />;
+  }
+
+  // Canais de Venda Omnichannel
+  if (currentView === 'commercial-channels') {
+    return <CommercialChannelsPage />;
+  }
+
+  // Operações de Antecipação (Advanced)
+  if (currentView === 'commercial-advances') {
+    return <CommercialAdvancesPage />;
+  }
+
+  // =========================================================================
+  // 2. GESTÃO COMERCIAL B2B (CARTEIRA, PIPELINE, CONTRATOS & CATÁLOGO)
+  // =========================================================================
 
   // Producer Commercial Detail (Visão Comercial do Produtor)
   if (currentView === 'commercial-producer-detail' && selectedProducerId) {

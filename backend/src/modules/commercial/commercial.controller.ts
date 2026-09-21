@@ -983,4 +983,92 @@ export class CommercialController {
       next(err);
     }
   }
+
+  public static async getEventAgreement(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { eventId } = req.params;
+      const agreement = await (await import('./agreements/event-agreement.service')).EventAgreementService.getAgreement(String(eventId));
+      res.status(200).json(agreement);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async saveEventAgreement(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { eventId } = req.params;
+      const user = req.user!;
+      const result = await (await import('./agreements/event-agreement.service')).EventAgreementService.saveAgreement(
+        String(eventId),
+        req.body,
+        user
+      );
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async getEventAdvances(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { eventId } = req.params;
+      const advances = await (await import('./agreements/event-agreement.service')).EventAgreementService.listAdvances(String(eventId));
+      res.status(200).json(advances);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async createEventAdvance(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { eventId } = req.params;
+      const user = req.user!;
+      const { requestedCents, notes } = req.body;
+      const advance = await (await import('./agreements/event-agreement.service')).EventAgreementService.requestAdvance(
+        String(eventId),
+        Number(requestedCents),
+        user,
+        notes
+      );
+      res.status(201).json(advance);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async reconcileOrder(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const user = req.user!;
+      const result = await (await import('./agreements/event-agreement.service')).EventAgreementService.reconcileOrder(String(id), user);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async reissueTicket(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      const { id } = req.params;
+      const user = req.user!;
+      const { reason } = req.body;
+      const result = await (await import('./agreements/event-agreement.service')).EventAgreementService.reissueTicket(String(id), reason, user);
+      res.status(200).json(result);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  public static async listSalesChannels(req: Request, res: Response, next: NextFunction): Promise<void> {
+    try {
+      res.status(200).json([
+        { id: 'chan-1', code: 'SITE', name: 'Site Oficial DiskIngressos', commissionRatePercent: 10.0, status: 'active' },
+        { id: 'chan-2', code: 'BOX_OFFICE', name: 'Bilheteria Física', commissionRatePercent: 5.0, status: 'active' },
+        { id: 'chan-3', code: 'PDV', name: 'PDVs Parceiros', commissionRatePercent: 7.5, status: 'active' },
+        { id: 'chan-4', code: 'DISK', name: 'Portal Produtor (Emissão Direta)', commissionRatePercent: 0.0, status: 'active' }
+      ]);
+    } catch (err) {
+      next(err);
+    }
+  }
 }

@@ -271,6 +271,20 @@ export const EventContextSidebar: React.FC<EventContextSidebarProps> = ({
           requiredPermission: 'comercial.pedidos.visualizar'
         },
         {
+          id: 'commercial-sales',
+          moduleId: 'commercial',
+          label: 'Vendas do Evento',
+          icon: <TrendingUp className="h-4 w-4 text-amber-400" />,
+          requiredPermission: 'comercial.vendas.visualizar'
+        },
+        {
+          id: 'commercial-conditions',
+          moduleId: 'commercial',
+          label: 'Taxas & Condições do Evento',
+          icon: <Sliders className="h-4 w-4 text-emerald-400" />,
+          requiredPermission: 'comercial.contratos.visualizar'
+        },
+        {
           id: 'sac-dashboard',
           moduleId: 'sac',
           label: 'Atendimento SAC do Evento',
