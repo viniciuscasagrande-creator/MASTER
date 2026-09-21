@@ -14,7 +14,10 @@ import {
   RefreshCw,
   AlertCircle,
   CheckCircle2,
-  Filter
+  Filter,
+  ArrowRightLeft,
+  Receipt,
+  Landmark
 } from 'lucide-react';
 import { useDiskContext } from '../../core/context/DiskContext';
 import { useAuth } from '../../core/auth/AuthContext';
@@ -27,6 +30,10 @@ import { PayoutDetailModal } from './PayoutDetailModal';
 import { EventBalancesView, EventBalanceItemUI } from './EventBalancesView';
 import { AccountStatementView, FinancialTransactionUI } from './AccountStatementView';
 import { ReconciliationView, GatewayReconciliationRecordUI } from './ReconciliationView';
+import { TransfersView } from './TransfersView';
+import { ReceivablesPayablesView } from './ReceivablesPayablesView';
+import { TreasuryCashFlowView } from './TreasuryCashFlowView';
+import { NewTransferModal } from './NewTransferModal';
 
 interface FinanceDashboardProps {
   initialSubItem?: string;
@@ -180,7 +187,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-dashboard');
             onNavigate?.('finance', 'finance-dashboard');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             activeTab === 'finance-dashboard'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
               : 'text-slate-400 hover:text-white'
@@ -194,7 +201,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-event-balances');
             onNavigate?.('finance', 'finance-event-balances');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             activeTab === 'finance-event-balances'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
               : 'text-slate-400 hover:text-white'
@@ -205,10 +212,38 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
         <button
           onClick={() => {
+            setActiveTab('finance-transfers');
+            onNavigate?.('finance', 'finance-transfers');
+          }}
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+            activeTab === 'finance-transfers'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Transferências entre Eventos
+        </button>
+
+        <button
+          onClick={() => {
+            setActiveTab('finance-receivables-payables');
+            onNavigate?.('finance', 'finance-receivables-payables');
+          }}
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+            activeTab === 'finance-receivables-payables'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Contas a Pagar & Receber
+        </button>
+
+        <button
+          onClick={() => {
             setActiveTab('finance-payouts');
             onNavigate?.('finance', 'finance-payouts');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             activeTab === 'finance-payouts'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
               : 'text-slate-400 hover:text-white'
@@ -219,10 +254,24 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
 
         <button
           onClick={() => {
+            setActiveTab('finance-treasury');
+            onNavigate?.('finance', 'finance-treasury');
+          }}
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
+            activeTab === 'finance-treasury'
+              ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
+              : 'text-slate-400 hover:text-white'
+          }`}
+        >
+          Tesouraria, Fluxo & DRE
+        </button>
+
+        <button
+          onClick={() => {
             setActiveTab('finance-statement');
             onNavigate?.('finance', 'finance-reports');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             activeTab === 'finance-statement' || activeTab === 'finance-reports'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
               : 'text-slate-400 hover:text-white'
@@ -236,7 +285,7 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             setActiveTab('finance-reconciliation');
             onNavigate?.('finance', 'finance-reconciliation');
           }}
-          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer ${
+          className={`px-3 py-1.5 rounded-lg transition-colors cursor-pointer shrink-0 ${
             activeTab === 'finance-reconciliation'
               ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold'
               : 'text-slate-400 hover:text-white'
@@ -527,6 +576,33 @@ export const FinanceDashboard: React.FC<FinanceDashboardProps> = ({
             </table>
           </div>
         </div>
+      )}
+
+      {/* TAB: TRANSFERÊNCIAS ENTRE EVENTOS */}
+      {activeTab === 'finance-transfers' && (
+        <TransfersView
+          producerId={producerId}
+          eventBalances={eventBalances}
+          onRefreshBalances={loadFinancialData}
+          canApprove={canApprove}
+        />
+      )}
+
+      {/* TAB: CONTAS A PAGAR & RECEBER */}
+      {activeTab === 'finance-receivables-payables' && (
+        <ReceivablesPayablesView
+          producerId={producerId}
+          eventBalances={eventBalances}
+          onRefreshBalances={loadFinancialData}
+        />
+      )}
+
+      {/* TAB: TESOURARIA, FLUXO & DRE */}
+      {activeTab === 'finance-treasury' && (
+        <TreasuryCashFlowView
+          producerId={producerId}
+          eventId={eventId}
+        />
       )}
 
       {/* TAB 4: EXTRATO DA CONTA CORRENTE */}

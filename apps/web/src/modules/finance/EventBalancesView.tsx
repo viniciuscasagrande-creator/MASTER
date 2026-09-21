@@ -24,6 +24,8 @@ export interface EventBalanceItemUI {
   netRevenue: number;
   paidPayouts: number;
   pendingPayouts: number;
+  transfersIn?: number;
+  transfersOut?: number;
   availableBalance: number;
 }
 

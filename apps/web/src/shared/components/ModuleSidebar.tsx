@@ -174,9 +174,12 @@ export const ModuleSidebar: React.FC<ModuleSidebarProps> = ({
           subItems: [
             { id: 'finance-dashboard', label: 'Painel Financeiro' },
             { id: 'finance-event-balances', label: 'Saldos por Evento' },
-            { id: 'finance-payouts', label: 'Repasses', requiredPermission: 'financeiro.repasses.visualizar' },
-            { id: 'finance-reconciliation', label: 'Conciliação', requiredPermission: 'financeiro.conciliacao.executar' },
-            { id: 'finance-reports', label: 'Relatórios Financeiros', requiredPermission: 'financeiro.relatorio.exportar' }
+            { id: 'finance-transfers', label: 'Transferências entre Eventos', requiredPermission: 'financeiro.transferencia.criar' },
+            { id: 'finance-receivables-payables', label: 'Contas a Pagar & Receber' },
+            { id: 'finance-payouts', label: 'Repasses Programados', requiredPermission: 'financeiro.repasses.visualizar' },
+            { id: 'finance-treasury', label: 'Tesouraria & Fluxo de Caixa' },
+            { id: 'finance-reports', label: 'Extrato da Conta Corrente', requiredPermission: 'financeiro.relatorio.exportar' },
+            { id: 'finance-reconciliation', label: 'Conciliação de Gateways', requiredPermission: 'financeiro.conciliacao.executar' }
           ]
         },
         {

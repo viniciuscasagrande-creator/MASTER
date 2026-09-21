@@ -71,31 +71,96 @@ router.get(
   FinanceRealController.getReconciliation
 );
 
-// Rotas de Compatibilidade
-router.get(
-  '/producers/:producerId/balance',
-  requirePermission('financeiro.saldo.visualizar'),
-  requireScope({ producerParam: 'producerId' }),
-  FinanceRealController.getBalance
-);
-
+// ==============================================================================
+// 10. TRANSFERÊNCIAS ENTRE EVENTOS (Módulo Central SafeSaff)
+// ==============================================================================
 router.get(
   '/transfers',
-  requireAnyPermission(['financeiro.saldo.visualizar', 'financeiro.repasses.visualizar']),
+  requireAnyPermission(['financeiro.saldo.visualizar', 'financeiro.transferencia.criar', 'financeiro.repasses.visualizar']),
   FinanceRealController.listTransfers
 );
 
 router.post(
   '/transfers',
   requirePermission('financeiro.transferencia.criar'),
-  requireScope({ producerParam: 'producerId' }),
   FinanceRealController.createTransfer
+);
+
+router.post(
+  '/transfers/:id/approve',
+  requirePermission('financeiro.transferencia.aprovar'),
+  FinanceRealController.approveTransfer
 );
 
 router.put(
   '/transfers/:id/approve',
   requirePermission('financeiro.transferencia.aprovar'),
   FinanceRealController.approveTransfer
+);
+
+router.post(
+  '/transfers/:id/revert',
+  requirePermission('financeiro.transferencia.aprovar'),
+  FinanceRealController.revertTransfer
+);
+
+// ==============================================================================
+// 11. CONTAS A RECEBER E CONTAS A PAGAR
+// ==============================================================================
+router.get(
+  '/receivables',
+  requirePermission('financeiro.saldo.visualizar'),
+  FinanceRealController.listReceivables
+);
+
+router.get(
+  '/payables',
+  requirePermission('financeiro.saldo.visualizar'),
+  FinanceRealController.listPayables
+);
+
+router.post(
+  '/payables',
+  requirePermission('financeiro.transferencia.criar'),
+  FinanceRealController.createPayable
+);
+
+router.post(
+  '/payables/:id/pay',
+  requirePermission('financeiro.transferencia.aprovar'),
+  FinanceRealController.payPayable
+);
+
+// ==============================================================================
+// 12. TESOURARIA & CONTAS BANCÁRIAS
+// ==============================================================================
+router.get(
+  '/bank-accounts',
+  requirePermission('financeiro.saldo.visualizar'),
+  FinanceRealController.listBankAccounts
+);
+
+// ==============================================================================
+// 13. FLUXO DE CAIXA & DRE GERENCIAL
+// ==============================================================================
+router.get(
+  '/cash-flow',
+  requirePermission('financeiro.saldo.visualizar'),
+  FinanceRealController.getCashFlow
+);
+
+router.get(
+  '/management-dre',
+  requirePermission('financeiro.saldo.visualizar'),
+  FinanceRealController.getManagementDRE
+);
+
+// Rotas de Compatibilidade
+router.get(
+  '/producers/:producerId/balance',
+  requirePermission('financeiro.saldo.visualizar'),
+  requireScope({ producerParam: 'producerId' }),
+  FinanceRealController.getBalance
 );
 
 export default router;
