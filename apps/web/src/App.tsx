@@ -236,7 +236,7 @@ const MainShell: React.FC = () => {
       case 'refunds':
         return (
           <ProtectedRoute permission="estorno.solicitacao.visualizar" onBack={() => handleNavigate('overview')}>
-            <RefundsDashboard />
+            <RefundsDashboard initialSubItem={activeSubItem} onNavigate={handleNavigate} />
           </ProtectedRoute>
         );
 

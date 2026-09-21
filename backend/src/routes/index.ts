@@ -43,6 +43,7 @@ import catalogRoutes from '../modules/commercial/catalog/catalog.routes';
 import accountManagementRoutes from '../modules/commercial/account-management/account-management.routes';
 import entitlementRoutes from '../modules/entitlements/entitlement.routes';
 import sacRoutes from '../modules/sac/sac.routes';
+import refundRoutes from '../modules/refunds/refund.routes';
 import { authenticate } from '../core/middleware/authenticate';
 
 const router = Router();
@@ -81,6 +82,7 @@ router.use('/commercial', commercialRoutes);
 router.use('/entitlements', entitlementRoutes);
 router.use('/orders', ordersRoutes);
 router.use('/sac', sacRoutes);
+router.use('/refunds', refundRoutes);
 router.use('/audit', auditRoutes);
 router.use('/marketing', marketingRoutes);
 router.use('/accounting', accountingRoutes);
