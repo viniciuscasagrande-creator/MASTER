@@ -136,8 +136,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
               </div>
             )}
 
-            <Button type="submit" variant="primary" className="w-full py-2.5 text-xs font-semibold">
-              {needs2FA ? 'Confirmar Token 2FA e Entrar' : 'Autenticar no Disk Interno'}
+            <Button type="submit" variant="primary" className="w-full py-2.5 text-xs font-semibold notranslate" translate="no">
+              {needs2FA ? 'Confirmar Token 2FA e Entrar' : 'Autenticar no Disk MASTER'}
             </Button>
           </form>
 
@@ -176,8 +176,8 @@ export const LoginView: React.FC<LoginViewProps> = ({ onSuccess }) => {
         </div>
 
         {/* Footer */}
-        <div className="text-center text-[11px] text-slate-500 font-mono">
-          Disk Interno • Plataforma de Gestão e Operações
+        <div className="text-center text-[11px] text-slate-500 font-mono notranslate" translate="no">
+          Disk MASTER • Plataforma de Gestão e Operações
         </div>
       </div>
     </div>

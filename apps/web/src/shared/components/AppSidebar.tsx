@@ -310,16 +310,16 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
           </div>
 
           {isExpanded && (
-            <div className="flex flex-col min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white">
+            <div className="flex flex-col min-w-0 notranslate" translate="no">
+              <div className="flex items-center gap-1.5 notranslate" translate="no">
+                <span className="text-base font-extrabold tracking-tight text-slate-900 dark:text-white notranslate" translate="no">
                   Disk
                 </span>
-                <span className="text-base font-extrabold text-[#FF7A00] tracking-tight">
+                <span className="text-base font-extrabold text-[#FF7A00] tracking-tight notranslate" translate="no">
                   MASTER
                 </span>
               </div>
-              <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate">
+              <span className="text-[10px] font-medium text-slate-400 dark:text-slate-500 truncate notranslate" translate="no">
                 Gestão Integrada
               </span>
             </div>

@@ -501,9 +501,10 @@ export const Header: React.FC<HeaderProps> = ({
             onClick={() => {
               if (onNavigate) onNavigate('overview', 'overview-main');
             }}
-            className="font-bold text-slate-800 hover:text-orange-600 transition-colors"
+            className="font-bold text-slate-800 hover:text-orange-600 transition-colors notranslate"
+            translate="no"
           >
-            Disk Interno
+            Disk MASTER
           </button>
           <ChevronRight className="h-3.5 w-3.5 text-slate-400" />
 
